@@ -1,0 +1,204 @@
+HC -- HoubySoft Calculator readme
+=================================
+(c) Jan Dlabal, 2009. Provided under the GNU GPLv3, see LICENSE for more information.
+http://hc.houbysoft.com/
+http://houbysoft.com/
+
+The objective for this program is to provide a calculator with a simple and easy-to-use interface, similar to a command prompt, but a lot of options and abundant functions.
+
+You can also type "help" in the command prompt if you need any help - or contact me (http://houbysoft.com/en/about.php).
+
+RELEASE NOTES
+=============
+0.5:
+  - added support for user-defined functions
+  - added support for user-defined variables
+  - many bugfixes
+0.4.2.1:
+  - fixed a bug in the syntax-checking function
+0.4.2:
+  - created a GUI version (Linux, Windows experimental)
+  - squashed a few bugs
+0.4.1:
+  - added support for the '!' notation for factorial
+  - added support for the C-style '%' notation for modulus
+  - added a new function : totient()
+0.4:
+  - all functions are now in high-precision - including sum(), product(), nCr() and nPr()
+  - the calculator does not quit now after syntax errors, only shows a message (finally :)
+  - added a cbrt() function; remember though that you can also use x^(1/n) etc. to get the nth root of x
+0.3.1:
+  - important internal changes in the hc_postfix_result function, now stack elements are allocated dynamically
+  - fixed a bug with very large numbers
+  - added g (9.80655) and a well-known h2g2 constant :)
+0.3:
+  - added a few new constants
+  - big change - constants are now 'fully' supported, ie you don't have to use constant_name(), just constant_name, for example "pi" instead of "pi()"
+  - fixed a bug in the strreplace function which caused malfunctions when attempting to calculate for example sum(exp(x)+x,1,5)
+  - fixed a bug in the syntax checker
+  - added a "credits" command which displays credits and license info
+  - updated compiling instructions, finally :)
+0.2.5:
+  - added some other conversion functions - mltofloz(), floztoml(), inchtocm(), cmtoinch(), mtoft(), fttom()
+  - added the command "conversions" which will print the list of the converter functions
+0.2.4:
+  - added commands to switch between RAD / DEG / GRAD modes (\rad, \deg and \grad)
+  - added some conversion functions - ctof(), ftoc(), ctok(), ktoc(), ftok(), ktof(), mitokm(), kmtomi() -- see functions list for details
+  - now hc announces its configuration in a smaller, one-line format :)
+0.2.3:
+  - added a function to generate the fibonacci numbers sequence : fibo()
+  - another small change to improve stability
+0.2.2:
+  - improved stability, bug fixes
+  - included functions to prevent overflows in the result buffer if you supply very large expressions as input
+  - "locked" precision to 128 decimal places maximum for improved stability    - and default constants in MAPM are ~128 decimal places accurate only anyway
+0.2.1:
+  - greatly improved precision for most functions and basic arithmetic using the MAPM (arbitrary precision math) library (http://www.tc.umn.edu/~ringx004/mapm-main.html) - default precision is 16 decimal places, but you can go very high - the maximum stable value right now seems to be 515 decimal places
+0.2:
+  - added RPN entry mode (to switch between RPN and infix notation, use \rpn)
+  - added a configuration file - ~/.hc on Operating Systems and %APPDATA%\hc.cfg on Windows
+  - added "exit" - because from now on if you use CTRL+C, configuration will not be saved
+  - fixed a few bugs
+0.1.6:
+  - added two functions : lcm() and gcd()
+  - fixed "syntax errors" when results are infinity or undefined (like 1/0)
+0.1.5:
+  - added two functions : sum() and product()
+  - started implementing variables - for now you can only use x in sum and product, but this will definitively change in the future
+  - fixed bad behavior with functions with a prepended minus sign, ie in older versions pi() + -pi() would give 6.283...; now it will correctly return 0
+0.1.4:
+  - function names are now all case-insensitive
+  - added a convenience function - ans(), which will get replaced by the result of the last entered expression
+  - changed the name of the binomc() function to nCr()
+  - added nPr() - number of permutations (combinatorics)
+0.1.3:
+  - added new functions : binomc (binomial coefficient), exp, ln, log10
+  - fixed an issue with "encapsulated" functions
+  - changed output format - unnecessary 0's are not shown (ie 2.00... is shown as 2), and the program switches to an exponential notation when the results get large
+0.1.2:
+  - added help - simply type help in the prompt
+  - added factorial
+0.1.1:
+  - added "Did you know?" tips (you can disable them with -DI_HATE_TIPS
+  - a few new functions : abs, pi, acos, asin, atan, cos, sin, tan, cosh, sinh, tanh
+0.1 :
+  - This is the first public beta version
+  - The core of the calculator is written
+  - Only two functions are included as of now, but this will rapidly change
+  - Because this is only a beta, bugs may be present - if you find any, please contact me using one of the methods at http://houbysoft.com/en/about.php.
+
+FEATURES
+========
+All functions are implemented with the MAPM library allowing for high precision.
+Constants are stored with 128 decimal places.
+
+- RPN / infix modes of input
+- simple operations (+,-,*,/,%,!)
+- powers (use the ^ sign, for example 2^5)
+- user-defined functions (see the USER-DEFINED VARIABLES AND FUNCTIONS section)
+- ans() - returns the result of the last expression
+- abs(x) - absolute value of x
+- acos(x) - arc cosine of x
+- asin(x) - arc sine of x
+- atan(x) - arc tangent of x
+- cbrt(x) - returns the cube root of x (you could also use x^(1/3))
+- cmtoinch(x) - converts x, which has to be in cm, to inches
+- cos(x) - cosine of x
+- cosh(x) - hyperbolic cosine of x
+- ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit
+- ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin
+- exp(x) - exponential function
+- factorial(x) - factorial of x (you can also use the '!' notation)
+- fibo(x) - return the xth term of the Fibonacci sequence
+- floztoml(x) - converts x, which has to be in US fluid ounces, to ml
+- ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius
+- ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin
+- fttom(x) - converts x, which has to be in feet, to meters
+- gcd(x,y) - finds the greatest common divisor of x and y
+- inchtocm(x) - converts x, which has to be in inches, to cm
+- kmtomi(x) - converts x, which has to be in km, to miles
+- ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius
+- ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit
+- lcm(x,y) - finds the least common multiple of x and y
+- ln(x) - natural logarithm
+- log10(x) - common logarithm
+- mitokm(x) - converts x, which has to be in miles, to km
+- mltofloz(x) - converts x, which has to be in ml, to US fluid ounces
+- mod(x,y) - modulus (you can also use the C-style '%' notation)
+- mtoft(x) - converts x, which has to be in m, to feet
+- nCr(n,k) - binomial coefficient (combinatorics)
+- nPr(n,k) - number of permutations (combinatorics)
+- product(expr,low,high) - expression can contain 'x', which
+  	     will be incremented from low to high inclusive, for example:
+	     > product(x^2,1,5)
+	     = 14400
+- sin(x) - sine of x
+- sinh(x) - hyperbolic sine of x
+- sqrt(x) - returns the square root of x
+- sum(expr,low,high) - expression can contain 'x', which will
+             be incremented from low to high inclusive, for example:
+	     > sum(x^2,1,5)
+	     = 55
+- tan(x) - tangent of x
+- tanh(x) - hyperbolic tangent of x
+- totient(x) - Euler's totient function
+- Constants:
+  - answer - The Answer
+  - c - speed of light
+  - e - Euler's number
+  - g - standard gravitational acceleration on Earth
+  - phi - Golden ratio
+  - pi
+
+USER-DEFINED VARIABLES AND FUNCTIONS
+====================================
+From hc version 0.5, there is support for user-defined variables and functions in the calculator.
+This is a brief description of how to use them and how they work.
+
+Naming
+------
+Names must consist of only numbers and letters. The first character must be a letter.
+
+Defining
+--------
+To define a variable, use this syntax:
+VAR_NAME = VAR_VALUE
+VAR_NAME is the variable's name (surprisingly), and VAR_VALUE is any valid expression.
+So, for example, to define a new variable named x and having the value 27, you would type for example this:
+x = 20+7+sqrt(0)
+Then, you can use x in calculations, so after this definition, if you type x^2, you will get this answer:
+> x^2
+ 729
+
+To define a function, use this syntax:
+FUNC_NAME(ARG1, ARG2, ..., ARGN) = EXPRESSION
+FUNC_NAME is again the function's name, ARG1...N are its arguments, and EXPRESSION is the function's expression.
+I'll give you an example again since I think this is the best way to demonstrate how to use this.
+Let's say you want to create a function that will square its first argument, and you want to name it func. To accomplish that, you would type (for example):
+func(x) = x^2
+Then you can test your new function by typing for example func(3) in the prompt; you will get 9 as the answer.
+
+Clearing
+--------
+If you want to clear all custom variables and functions that you defined, either restart the program, or type \clear in the command line version.
+Please also keep in mind that you can always redefine a variable that you defined, so if you made for example a squaring function:
+> func(x) = x^2
+but then you want it to be a cubeing function, just type:
+> func(x) = x^3
+
+USAGE
+=====
+Source code:
+  - download and install the MAPM library if you don't have it already
+    (URL : www.tc.umn.edu/~ringx004/mapm-main.html)
+  - a simple "make" should then be enough
+  - then run "./hc"
+  - enter the expression of which you want to know the result, for example "1 + 2 * 3 / sqrt(mod(4,5))", and then press ENTER
+
+Linux version:
+  - run the "hc" binary provided in the package (either double click on it in your file manager, or open a terminal, then "cd" to the appropriate folder, and run "./hc")
+  - enter the expression of which you want to know the result, for example "1 + 2 * 3 / sqrt(mod(4,5))", and then press ENTER
+
+Windows version:
+  - run "hc.exe"
+  - enter the expression of which you want to know the result, for example "1 + 2 * 3 / sqrt(mod(4,5))", and then press ENTER
