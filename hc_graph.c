@@ -108,6 +108,7 @@ char hc_graph(char *e)
   if (!hc.plplot_dev_override)
     plsdev("pngcairo");
   plinit();
+  plcol0(15);
   plenv(xmin,xmax,ymin,ymax,0,1);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
   if (!graph_top_label)
@@ -115,7 +116,7 @@ char hc_graph(char *e)
   strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
   strcat(graph_top_label,func_expr);
   pllab("x","y",graph_top_label);
-  plcol0(2);
+  plcol0(1);
   plline(HC_GRAPH_POINTS,(PLFLT *)&a_x,(PLFLT *)&a);
   plend();
 
