@@ -71,6 +71,7 @@
 #define varname_error() {notify_error("Invalid variable name.\n");return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define recursive_error() {notify_error("Error : recursive definition.\n");return;}
+#define recursion_error() {notify_error("Error : too much recursion/nestedness. This can be bypassed in the command-line version if you know what you are doing.\n");}
 #endif
 #define mem_error() {printf("Cannot allocate enough memory.\n");exit(5);}
 //#define range_error(str) {printf("Range error : %s\n",str);exit(6);}

@@ -112,8 +112,13 @@ char hc_graph(char *e)
     }
   }
 
+#ifndef HCG
   if (!hc.plplot_dev_override)
     plsdev("pngcairo");
+#else
+  plsdev("pngcairo");
+  plsfnam("tmp-graph.png");
+#endif
   plinit();
   plcol0(15);
   plenv(xmin,xmax,ymin,ymax,0,1);
