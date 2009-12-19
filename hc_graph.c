@@ -26,7 +26,6 @@
 
 
 #define HC_GRAPH_POINTS 1000
-#define HC_GRAPH_XPOINTS 7
 
 
 // Draw a defined function
