@@ -115,6 +115,7 @@ M_APM hc_lans_mapm;
 M_APM MM_MOne; // Minus one
 struct hc_config hc;
 char announce_errors=TRUE;
+char graphing_ignore_errors=FALSE;
 int hc_nested;
 
 

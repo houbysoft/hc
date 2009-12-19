@@ -46,15 +46,15 @@
 #endif
 #endif
 #ifndef HCG_E
-#define d0_error() {printf("Division by zero error.\n");}
+#define d0_error() {if (!graphing_ignore_errors){printf("Division by zero error.\n");}}
 #else
-#define d0_error() {notify_error("Division by zero error.\n");}
+#define d0_error() {if (!graphing_ignore_errors){notify_error("Division by zero error.\n");}}
 #endif
 #ifndef HCG_E
-#define arg_error(str) {printf("Argument Error : %s\n",str);return FAIL;}
+#define arg_error(str) {if (!graphing_ignore_errors){printf("Argument Error : %s\n",str);}return FAIL;}
 #define arg_error_custom() {printf("User-defined function argument error.\n");}
 #else
-#define arg_error(str) {notify_error("Argument Error.");return FAIL;}
+#define arg_error(str) {if (!graphing_ignore_errors){notify_error("Argument Error.");}return FAIL;}
 #define arg_error_custom() {notify_error("User-defined function argument error.\n");}
 #endif
 #ifndef HCG_E
@@ -146,6 +146,7 @@ typedef struct hc_ventry {
 extern struct hc_config hc;
 extern struct hc_ventry *hc_var_first;
 extern char announce_errors;
+extern char graphing_ignore_errors;
 extern const char *hc_fnames[];
 
 extern void hc_load_cfg();

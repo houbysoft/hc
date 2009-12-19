@@ -84,6 +84,7 @@ char hc_graph(char *e)
   double step = fabs(xmax-xmin) / HC_GRAPH_POINTS;
   double curx = xmin;
 
+  graphing_ignore_errors = TRUE;
   for (; i<HC_GRAPH_POINTS; i++,curx+=step)
   {
     char tmp_curx[256];
@@ -111,6 +112,7 @@ char hc_graph(char *e)
       t_2[i] = TRUE;
     }
   }
+  graphing_ignore_errors = FALSE;
 
 #ifndef HCG
   if (!hc.plplot_dev_override)
@@ -145,6 +147,11 @@ char hc_graph(char *e)
   free(a_x);
   free(a);
   free(a_hasval);
+
+#ifdef HCG
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#endif
   
   return SUCCESS;
 }
