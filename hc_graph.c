@@ -71,6 +71,7 @@ char hc_graph(char *e)
   unsigned int i = 0;
   PLFLT a[HC_GRAPH_POINTS];
   PLFLT a_x[HC_GRAPH_POINTS];
+  char a_hasval[HC_GRAPH_POINTS];
   char **t = malloc(sizeof (char *) * HC_GRAPH_POINTS);
   char *t_2 = malloc(sizeof (char) * HC_GRAPH_POINTS);
   for (j=0; j<HC_GRAPH_POINTS; j++)
@@ -92,9 +93,12 @@ char hc_graph(char *e)
     char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
     char *tmp_2 = hc_result_(tmp_expr);
     if (tmp_2)
+    {
+      a_hasval[i] = 'y';
       a[i] = strtod(tmp_2,NULL);
-    else
-      a[i] = 0; // GDC_NOVALUE FIX FIX FIX
+    } else {
+      a_hasval[i] = 'n';
+    }
     free(tmp_expr);
     if (tmp_2)
       free(tmp_2);
@@ -117,7 +121,8 @@ char hc_graph(char *e)
   strcat(graph_top_label,func_expr);
   pllab("x","y",graph_top_label);
   plcol0(1);
-  plline(HC_GRAPH_POINTS,(PLFLT *)&a_x,(PLFLT *)&a);
+  if (strchr(a_hasval,'n')==NULL)
+    plline(HC_GRAPH_POINTS,(PLFLT *)&a_x,(PLFLT *)&a);
   plend();
 
   free(graph_top_label);
