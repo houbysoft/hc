@@ -572,7 +572,10 @@ char *hc_result_(char *f)
       m_apm_set_string(tmp_num,fme);
       free(fme);
       if ((m_apm_compare(tmp_num,MM_One)==1) || (m_apm_compare(tmp_num,MM_MOne)==-1))
+      {
+	hc_nested--;
 	arg_error("acos() : NaN");
+      }
       m_apm_acos(f_result,HC_DEC_PLACES,tmp_num);
       hc_from_rad(f_result);
       break;
@@ -583,7 +586,10 @@ char *hc_result_(char *f)
       m_apm_set_string(tmp_num,fme);
       free(fme);
       if ((m_apm_compare(tmp_num,MM_One)==1) || (m_apm_compare(tmp_num,MM_MOne)==-1))
+      {
+	hc_nested--;
 	arg_error("asin() : NaN");
+      }
       m_apm_asin(f_result,HC_DEC_PLACES,tmp_num);
       hc_from_rad(f_result);
       break;
@@ -708,7 +714,10 @@ char *hc_result_(char *f)
       m_apm_set_string(tmp_num,fme);
       free(fme);
       if (m_apm_compare(tmp_num,MM_Zero)==-1)
+      {
+	hc_nested--;
 	arg_error("sqrt() : non-real result.");
+      }
       m_apm_sqrt(f_result,HC_DEC_PLACES,tmp_num);
       break;
 
