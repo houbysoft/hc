@@ -10,6 +10,9 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+0.6:
+  - added graph generation (generates a PNG file in command-line) - see graph() function
+  - bugfixes
 0.5:
   - added support for user-defined functions
   - added support for user-defined variables
@@ -115,6 +118,8 @@ Constants are stored with 128 decimal places.
 - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin
 - fttom(x) - converts x, which has to be in feet, to meters
 - gcd(x,y) - finds the greatest common divisor of x and y
+- graph(expr,xmin,xmax,ymin,ymax) - draw a graph (generate a PNG file if in command-line), example syntax:
+    graph(x^2,-10,10,-100,100)
 - inchtocm(x) - converts x, which has to be in inches, to cm
 - kmtomi(x) - converts x, which has to be in km, to miles
 - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius
@@ -191,6 +196,8 @@ USAGE
 Source code:
   - download and install the MAPM library if you don't have it already
     (URL : www.tc.umn.edu/~ringx004/mapm-main.html)
+  - download and install the plplot library if you don't have it already
+    (URL : plplot.sf.net)
   - a simple "make" should then be enough
   - then run "./hc"
   - enter the expression of which you want to know the result, for example "1 + 2 * 3 / sqrt(mod(4,5))", and then press ENTER
