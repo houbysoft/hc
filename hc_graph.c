@@ -69,9 +69,9 @@ char hc_graph(char *e)
   // freed later (needed for labels)
 
   unsigned int i = 0;
-  PLFLT a[HC_GRAPH_POINTS];
-  PLFLT a_x[HC_GRAPH_POINTS];
-  char a_hasval[HC_GRAPH_POINTS];
+  PLFLT *a= malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
+  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
+  char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS);
   char **t = malloc(sizeof (char *) * HC_GRAPH_POINTS);
   char *t_2 = malloc(sizeof (char) * HC_GRAPH_POINTS);
   for (j=0; j<HC_GRAPH_POINTS; j++)
@@ -125,8 +125,11 @@ char hc_graph(char *e)
   strcat(graph_top_label,func_expr);
   pllab("x","y",graph_top_label);
   plcol0(1);
-  // TODO : Check for discontinuity such as 1/x for x=0
-  plline(HC_GRAPH_POINTS,(PLFLT *)&a_x,(PLFLT *)&a);
+  for (i=0; i<HC_GRAPH_POINTS-1; i++)
+  {
+    if (a_hasval[i]=='y' && a_hasval[i+1]=='y') // discontinuity check
+      pljoin(a_x[i],a[i],a_x[i+1],a[i+1]);
+  }
   plend();
 
   free(graph_top_label);
@@ -135,6 +138,9 @@ char hc_graph(char *e)
   free(arg_xmax);
   free(t);
   free(t_2);
+  free(a_x);
+  free(a);
+  free(a_hasval);
   
   return SUCCESS;
 }

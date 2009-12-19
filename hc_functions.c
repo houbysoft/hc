@@ -51,6 +51,7 @@ char *strreplace(char *in, char *old, char *new)
     if (!result)
       mem_error();
     strcpy(result,in);
+    free(tnew);
     return result;
   } else {
     char dorpl = FALSE;
@@ -99,6 +100,7 @@ char *strreplace(char *in, char *old, char *new)
 	result = strreplace(result,old,new);
       }
       free(tmp);
+      free(tnew);
       return result;
     } else {
       int result_malloc = sizeof(char)*(strlen(in)-strlen(p+1)+1);
@@ -126,6 +128,7 @@ char *strreplace(char *in, char *old, char *new)
       strcat(tmp,cat);
       free(result);
       free(cat);
+      free(tnew);
       return tmp;
     }
   }
