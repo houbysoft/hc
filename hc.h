@@ -58,9 +58,9 @@
 #define arg_error_custom() {notify_error("User-defined function argument error.\n");}
 #endif
 #ifndef HCG_E
-#define undef_error() {printf("Function name undefined.\n");}
+#define undef_error() {printf("Function name undefined or you used an undefined variable name as an argument.\n");}
 #else
-#define undef_error() {notify_error("Function name undefined.\n");}
+#define undef_error() {notify_error("Function name undefined or you used an undefined variable name as an argument.\n");}
 #endif
 #ifndef HCG_E
 #define varname_error() {printf("Invalid variable name.\n");return;}
@@ -152,6 +152,7 @@ extern char *hc_result(char *e);
 extern char *hc_result_(char *e);
 extern char *hc_plusminus(char *);
 extern void hc_varassign(char *);
+extern char hc_check_varname(char *);
 extern unsigned int simple_hash(char *p);
 
 #endif

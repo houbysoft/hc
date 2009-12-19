@@ -315,8 +315,22 @@ char *hc_result_(char *f)
 	    if (t1)
 	    {
 	      char *t1fme = t1;
-	      t1 = hc_result_(t1);
-	      free(t1fme);
+	      char *tmp_check_me = malloc(strlen(t1));
+	      if (!tmp_check_me)
+		mem_error();
+	      strcpy(tmp_check_me,(char *)t1+sizeof(char));
+	      tmp_check_me[strlen(tmp_check_me)-1]=0;
+	      if (!hc_check_varname(tmp_check_me))
+	      {
+		free(tmp_check_me);
+		t1 = hc_result_(t1);
+		free(t1fme);
+	      } else {
+		free(tmp_check_me);
+		// skip this function and go to next one
+		k = -1;
+		break;
+	      }
 	    }
 	    char *t2 = hc_get_arg(var_tmp->args,k);
 	    if (t1 && t2)

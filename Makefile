@@ -29,3 +29,8 @@ hc_varassign.o: hc_varassign.c
 hc_graph.o: hc_graph.c
 	gcc `pkg-config --cflags --libs plplotd` ${COPT} -c hc_graph.c
 
+clean:
+	rm hc&
+	rm *.o&
+	rm *~&
+	rm *.png&
