@@ -97,6 +97,10 @@ char hc_graph(char *e)
       a_hasval[i] = 'y';
       a[i] = strtod(tmp_2,NULL);
     } else {
+      if (i!=0)
+	a[i] = a[i-1];
+      else
+	a[i] = 0;
       a_hasval[i] = 'n';
     }
     free(tmp_expr);
@@ -121,8 +125,8 @@ char hc_graph(char *e)
   strcat(graph_top_label,func_expr);
   pllab("x","y",graph_top_label);
   plcol0(1);
-  if (strchr(a_hasval,'n')==NULL)
-    plline(HC_GRAPH_POINTS,(PLFLT *)&a_x,(PLFLT *)&a);
+  // TODO : Check for discontinuity such as 1/x for x=0
+  plline(HC_GRAPH_POINTS,(PLFLT *)&a_x,(PLFLT *)&a);
   plend();
 
   free(graph_top_label);
