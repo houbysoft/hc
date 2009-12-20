@@ -25,7 +25,8 @@
 #include "hc_graph.h"
 
 
-#define HC_GRAPH_POINTS 100
+#define HC_GRAPH_POINTS 500
+#define HC_GRAPH_POINTS_3D 50
 
 
 // Draw a defined function
@@ -194,24 +195,24 @@ char hc_graph3d(char *e)
   // freed later (needed for labels)
 
   unsigned int i = 0;
-  PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS);
-  for (i=0; i<HC_GRAPH_POINTS; i++)
-    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
-  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
-  PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
-  char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS*HC_GRAPH_POINTS);
-  double stepx = fabs(xmax-xmin) / HC_GRAPH_POINTS;
-  double stepy = fabs(ymax-ymin) / HC_GRAPH_POINTS;
+  PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS_3D);
+  for (i=0; i<HC_GRAPH_POINTS_3D; i++)
+    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
+  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
+  PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
+  char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS_3D*HC_GRAPH_POINTS_3D);
+  double stepx = fabs(xmax-xmin) / HC_GRAPH_POINTS_3D;
+  double stepy = fabs(ymax-ymin) / HC_GRAPH_POINTS_3D;
   double curx = xmin;
   double cury = ymin;
 
   graphing_ignore_errors = TRUE;
   unsigned int ii = 0;
-  for (i=0; i<HC_GRAPH_POINTS; i++,curx+=stepx)
+  for (i=0; i<HC_GRAPH_POINTS_3D; i++,curx+=stepx)
   {
     printf("i is now %i\n",i);
     cury = ymin;
-    for (ii=0; ii<HC_GRAPH_POINTS; ii++,cury+=stepy)
+    for (ii=0; ii<HC_GRAPH_POINTS_3D; ii++,cury+=stepy)
     {
       char tmp_curx[256],tmp_cury[256];
       sprintf(tmp_curx,"%f",curx);
@@ -267,7 +268,7 @@ char hc_graph3d(char *e)
   strcat(graph_top_label,func_expr);
   pllab("x","y",graph_top_label);*/
   plcol0(1);
-  plot3d(a_x,a_y,a,HC_GRAPH_POINTS,HC_GRAPH_POINTS,DRAW_LINEXY,TRUE);
+  plot3d(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY,TRUE);
   plend();
 
   //free(graph_top_label);
