@@ -54,6 +54,7 @@
 #define HASH_LCM 16999
 
 #define HASH_GRAPH 11798
+#define HASH_GRAPH3D 5921
 
 // Sequences
 #define HASH_FIBO 23880

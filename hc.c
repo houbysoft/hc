@@ -834,6 +834,16 @@ char *hc_result_(char *f)
       return NULL;
       break;
 
+    case HASH_GRAPH3D:
+      hc_graph3d(f_expr);
+      announce_errors = FALSE;
+      m_apm_free(tmp_num);
+      m_apm_free(f_result);
+      free(e);
+      hc_nested--;
+      return NULL;
+      break;
+
     default:
       m_apm_free(tmp_num);
       m_apm_free(f_result);

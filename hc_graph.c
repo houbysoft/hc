@@ -25,7 +25,7 @@
 #include "hc_graph.h"
 
 
-#define HC_GRAPH_POINTS 1000
+#define HC_GRAPH_POINTS 100
 
 
 // Draw a defined function
@@ -47,7 +47,7 @@ char hc_graph(char *e)
   double xmin,xmax,ymin,ymax;
 
   if (!func_expr || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
-    arg_error("graph() needs 3 arguments (expr,xmin,xmax,ymin,ymax).");
+    arg_error("graph() needs 5 arguments (expr,xmin,xmax,ymin,ymax).");
 
   xmin = strtod(arg_xmin,NULL);
   xmax = strtod(arg_xmax,NULL);
@@ -71,16 +71,6 @@ char hc_graph(char *e)
   PLFLT *a= malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
   PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
   char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS);
-  char **t = malloc(sizeof (char *) * HC_GRAPH_POINTS);
-  char *t_2 = malloc(sizeof (char) * HC_GRAPH_POINTS);
-  for (j=0; j<HC_GRAPH_POINTS; j++)
-    t[j] = NULL;
-  t[0] = arg_xmin;
-  t[HC_GRAPH_POINTS-1] = arg_xmax;
-  for (j=0; j<HC_GRAPH_POINTS; j++)
-    t_2[j] = FALSE;
-  t_2[0] = TRUE;
-  t_2[HC_GRAPH_POINTS-1] = TRUE;
   double step = fabs(xmax-xmin) / HC_GRAPH_POINTS;
   double curx = xmin;
 
@@ -106,11 +96,6 @@ char hc_graph(char *e)
     free(tmp_expr);
     if (tmp_2)
       free(tmp_2);
-    if (fabs(curx) <= step)
-    {
-      t[i] = "0";
-      t_2[i] = TRUE;
-    }
   }
   graphing_ignore_errors = FALSE;
 
@@ -150,8 +135,6 @@ char hc_graph(char *e)
   free(func_expr);
   free(arg_xmin);
   free(arg_xmax);
-  free(t);
-  free(t_2);
   free(a_x);
   free(a);
   free(a_hasval);
@@ -164,4 +147,143 @@ char hc_graph(char *e)
 #endif
   
   return SUCCESS;
+}
+
+
+
+char hc_graph3d(char *e)
+{
+  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_zmin,*arg_zmax;
+  func_expr = hc_get_arg(e,1);
+  t1 = hc_get_arg(e,2);
+  t2 = hc_get_arg(e,3);
+  t3 = hc_get_arg(e,4);
+  t4 = hc_get_arg(e,5);
+  t5 = hc_get_arg(e,6);
+  t6 = hc_get_arg(e,7);
+  arg_xmin = hc_result_(t1);
+  arg_xmax = hc_result_(t2);
+  arg_ymin = hc_result_(t3);
+  arg_ymax = hc_result_(t4);
+  arg_zmin = hc_result_(t5);
+  arg_zmax = hc_result_(t6);
+  // free those
+  double xmin,xmax,ymin,ymax,zmin,zmax;
+
+  if (!func_expr || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax || !arg_zmin || !arg_zmax)
+    arg_error("graph3d() needs 7 arguments (expr,xmin,xmax,ymin,ymax,zmin,zmax).");
+
+  xmin = strtod(arg_xmin,NULL);
+  xmax = strtod(arg_xmax,NULL);
+  ymin = strtod(arg_ymin,NULL);
+  ymax = strtod(arg_ymax,NULL);
+  zmin = strtod(arg_zmin,NULL);
+  zmax = strtod(arg_zmax,NULL);
+
+  int j=strlen(arg_xmin)-1;
+  while (arg_xmin[j]=='0')
+    arg_xmin[j--]=0;
+  if (arg_xmin[j]=='.')
+    arg_xmin[j]=0;
+  j = strlen(arg_xmax)-1;
+  while (arg_xmax[j]=='0')
+    arg_xmax[j--]=0;
+  if (arg_xmax[j]=='.')
+    arg_xmax[j]=0;
+
+  // freed later (needed for labels)
+
+  unsigned int i = 0;
+  PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS);
+  for (i=0; i<HC_GRAPH_POINTS; i++)
+    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
+  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
+  PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
+  char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS*HC_GRAPH_POINTS);
+  double stepx = fabs(xmax-xmin) / HC_GRAPH_POINTS;
+  double stepy = fabs(ymax-ymin) / HC_GRAPH_POINTS;
+  double curx = xmin;
+  double cury = ymin;
+
+  graphing_ignore_errors = TRUE;
+  unsigned int ii = 0;
+  for (i=0; i<HC_GRAPH_POINTS; i++,curx+=stepx)
+  {
+    printf("i is now %i\n",i);
+    cury = ymin;
+    for (ii=0; ii<HC_GRAPH_POINTS; ii++,cury+=stepy)
+    {
+      char tmp_curx[256],tmp_cury[256];
+      sprintf(tmp_curx,"%f",curx);
+      sprintf(tmp_cury,"%f",cury);
+      a_x[i] = strtod(tmp_curx,NULL);
+      a_y[ii] = strtod(tmp_cury,NULL);
+      char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
+      char *tmp_expr2 = strreplace(tmp_expr,"y",tmp_cury);
+      free(tmp_expr);
+      tmp_expr = tmp_expr2;
+      char *tmp_2 = hc_result_(tmp_expr);
+      if (tmp_2)
+      {
+	a_hasval[i] = 'y';
+	a[i][ii] = strtod(tmp_2,NULL);
+      } else {
+	printf("FIX FIX FIX (setting to 0)\n");
+	a[i][ii] = 0;
+      }
+      free(tmp_expr);
+      if (tmp_2)
+	free(tmp_2);
+    }
+  }
+  graphing_ignore_errors = FALSE;
+
+#ifndef HCG
+  if (!hc.plplot_dev_override)
+#ifndef WIN32
+    plsdev("pngcairo");
+#else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
+  plsdev("pngcairo");
+  plsfnam("tmp-graph.png");
+#else
+  plsdev("wingcc");
+#endif
+#endif
+  plinit();
+  plcol0(15);
+  //plenv(xmin,xmax,ymin,ymax,0,1);
+  pladv(0);
+  plvpor(0.0,1.0,0.0,0.9);
+  plwind(-1.0,1.0,-1.0,1.5);
+  plw3d(1.0,1.0,1.0,xmin,xmax,ymin,ymax,zmin,zmax,33,24);
+  /*char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
+  if (!graph_top_label)
+    mem_error();
+  strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
+  strcat(graph_top_label,func_expr);
+  pllab("x","y",graph_top_label);*/
+  plcol0(1);
+  plot3d(a_x,a_y,a,HC_GRAPH_POINTS,HC_GRAPH_POINTS,DRAW_LINEXY,TRUE);
+  plend();
+
+  //free(graph_top_label);
+  free(func_expr);
+  free(arg_xmin);
+  free(arg_xmax);
+  free(a_x);
+  free(a);
+  free(a_hasval);
+
+#ifdef HCG
+#ifndef WIN32
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#endif
+#endif
+  
+  return SUCCESS; 
 }
