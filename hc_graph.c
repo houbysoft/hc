@@ -116,10 +116,18 @@ char hc_graph(char *e)
 
 #ifndef HCG
   if (!hc.plplot_dev_override)
+#ifndef WIN32
     plsdev("pngcairo");
 #else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
   plsdev("pngcairo");
   plsfnam("tmp-graph.png");
+#else
+  plsdev("wingcc");
+#endif
 #endif
   plinit();
   plcol0(15);
@@ -149,8 +157,10 @@ char hc_graph(char *e)
   free(a_hasval);
 
 #ifdef HCG
+#ifndef WIN32
   hcg_disp_graph("tmp-graph.png");
   remove("tmp-graph.png");
+#endif
 #endif
   
   return SUCCESS;
