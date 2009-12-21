@@ -274,6 +274,9 @@ char *hc_result_(char *f)
       }
       if (ffound)
       {
+#ifdef DBG
+	printf("User-defined function found\n");
+#endif
 	unsigned int i=0;
 	while (isalpha(ffound[i]))
 	  i++;
@@ -287,6 +290,9 @@ char *hc_result_(char *f)
 	  i--;
 	  char *args = malloc((strlen(ffound)+1-i)*sizeof(char));
 	  strcpy(args,ffound+(sizeof(char)*i+sizeof(char)));
+#ifdef DBG
+	  printf("args - %s\n",args);
+#endif
 	  unsigned int par=1,j=1;
 	  while (par!=0)
 	  {
@@ -313,22 +319,27 @@ char *hc_result_(char *f)
 	  unsigned int k = 1;
 	  while (k!=-1)
 	  {
-	    char *t1 = hc_get_arg(args,k);
+	    char *tmp_args = malloc(strlen(args));
+	    if (!tmp_args)
+	      mem_error();
+	    strcpy(tmp_args,(char *)(args+sizeof(char)));
+	    tmp_args[strlen(tmp_args)-1]=0;
+	    char *t1 = hc_get_arg(tmp_args,k);
+	    free(tmp_args);
+#ifdef DBG
+	    printf("t1 = %s\n",t1);
+#endif
 	    if (t1)
 	    {
 	      char *t1fme = t1;
-	      char *tmp_check_me = malloc(strlen(t1));
-	      if (!tmp_check_me)
-		mem_error();
-	      strcpy(tmp_check_me,(char *)t1+sizeof(char));
-	      tmp_check_me[strlen(tmp_check_me)-1]=0;
-	      if (!hc_check_varname(tmp_check_me))
+	      if (!hc_check_varname(t1))
 	      {
-		free(tmp_check_me);
 		t1 = hc_result_(t1);
+#ifdef DBG
+		printf("t1 is now %s\n",t1);
+#endif
 		free(t1fme);
 	      } else {
-		free(tmp_check_me);
 		// skip this function and go to next one
 		k = -1;
 		break;

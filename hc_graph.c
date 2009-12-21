@@ -25,8 +25,30 @@
 #include "hc_graph.h"
 
 
-#define HC_GRAPH_POINTS 500
-#define HC_GRAPH_POINTS_3D 50
+#define HC_GRAPH_POINTS 100
+#define HC_GRAPH_POINTS_3D 30
+
+
+// Taken from example 11, to setup the color palette for 3D graphs
+static void cmap1_init()
+{
+  PLFLT i[2], h[2], l[2], s[2];
+
+  i[0] = 0.0;		/* left boundary */
+  i[1] = 1.0;		/* right boundary */
+
+  h[0] = 240; /* blue -> green -> yellow -> */
+  h[1] = 0;   /* -> red */
+
+  l[0] = 0.6;
+  l[1] = 0.6;
+
+  s[0] = 0.8;
+  s[1] = 0.8;
+
+  plscmap1n(256);
+  c_plscmap1l(0, 2, i, h, l, s, NULL);
+}
 
 
 // Draw a defined function
@@ -72,7 +94,7 @@ char hc_graph(char *e)
   PLFLT *a= malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
   PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
   char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS);
-  double step = fabs(xmax-xmin) / HC_GRAPH_POINTS;
+  double step = fabs(xmax-xmin) / (HC_GRAPH_POINTS - 1);
   double curx = xmin;
 
   graphing_ignore_errors = TRUE;
@@ -201,8 +223,8 @@ char hc_graph3d(char *e)
   PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
   PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
   char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS_3D*HC_GRAPH_POINTS_3D);
-  double stepx = fabs(xmax-xmin) / HC_GRAPH_POINTS_3D;
-  double stepy = fabs(ymax-ymin) / HC_GRAPH_POINTS_3D;
+  double stepx = fabs(xmax-xmin) / (HC_GRAPH_POINTS_3D - 1);
+  double stepy = fabs(ymax-ymin) / (HC_GRAPH_POINTS_3D - 1);
   double curx = xmin;
   double cury = ymin;
 
@@ -210,7 +232,6 @@ char hc_graph3d(char *e)
   unsigned int ii = 0;
   for (i=0; i<HC_GRAPH_POINTS_3D; i++,curx+=stepx)
   {
-    printf("i is now %i\n",i);
     cury = ymin;
     for (ii=0; ii<HC_GRAPH_POINTS_3D; ii++,cury+=stepy)
     {
@@ -256,22 +277,23 @@ char hc_graph3d(char *e)
 #endif
   plinit();
   plcol0(15);
-  //plenv(xmin,xmax,ymin,ymax,0,1);
   pladv(0);
   plvpor(0.0,1.0,0.0,0.9);
   plwind(-1.0,1.0,-1.0,1.5);
   plw3d(1.0,1.0,1.0,xmin,xmax,ymin,ymax,zmin,zmax,33,24);
-  /*char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
+  char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
   if (!graph_top_label)
     mem_error();
   strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
   strcat(graph_top_label,func_expr);
-  pllab("x","y",graph_top_label);*/
-  plcol0(1);
-  plot3d(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY,TRUE);
+  plmtex("t",0.5,0.5,0.5,graph_top_label);
+  plbox3("bnstu","x",0,0,"bnstu","y",0,0,"bcdmnstuv","z",0,0);
+  plcol0(0);
+  cmap1_init();
+  plmesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY | MAG_COLOR);
   plend();
 
-  //free(graph_top_label);
+  free(graph_top_label);
   free(func_expr);
   free(arg_xmin);
   free(arg_xmax);

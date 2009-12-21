@@ -187,7 +187,12 @@ char hc_check_varname(char *e)
   for (; ii < HC_FNAMES; ii++)
   {
     if (name_hash == simple_hash((char *)hc_fnames[ii]))
-      varname_predefined_error();
+    {
+      if (!graphing_ignore_errors)
+        varname_predefined_error()
+      else
+	return 0;
+    }
   }
 
   unsigned int i = 0;
