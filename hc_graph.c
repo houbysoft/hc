@@ -278,7 +278,7 @@ char hc_graph3d(char *e)
   plinit();
   plcol0(15);
   pladv(0);
-  plvpor(0.0,1.0,0.0,0.9);
+  plvpor(0,1.0,-0.2,0.9);
   plwind(-1.0,1.0,-1.0,1.5);
   plw3d(1.0,1.0,1.0,xmin,xmax,ymin,ymax,zmin,zmax,33,24);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
