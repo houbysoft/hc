@@ -221,14 +221,19 @@ char hc_graph3d(char *e)
 
   unsigned int i = 0;
   PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS_3D);
+  char **a_hasval = malloc(sizeof(char *)*HC_GRAPH_POINTS_3D);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)
+  {
     a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
+    a_hasval[i] = malloc(sizeof(char)*HC_GRAPH_POINTS_3D);
+  }
   PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
   PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
   double stepx = fabs(xmax-xmin) / (HC_GRAPH_POINTS_3D - 1);
   double stepy = fabs(ymax-ymin) / (HC_GRAPH_POINTS_3D - 1);
   double curx = xmin;
   double cury = ymin;
+  char discont = FALSE;
 
   graphing_ignore_errors = TRUE;
   unsigned int ii = 0;
@@ -252,9 +257,10 @@ char hc_graph3d(char *e)
 	a[i][ii] = strtod(tmp_2,NULL);
 	if (a[i][ii]<zmin)
 	  a[i][ii] = zmin;
+	a_hasval[i][ii] = 'y';
       } else {
-	printf("FIX FIX FIX (setting to 0)\n");
-	a[i][ii] = 0;
+	a_hasval[i][ii] = 'n';
+	discont = TRUE; // we have at least one discontinuity/absence of value - this will switch to the slow-but-safe plotting mode
       }
       free(tmp_expr);
       if (tmp_2)
@@ -293,7 +299,12 @@ char hc_graph3d(char *e)
   plbox3("bnstu","x",0,0,"bnstu","y",0,0,"bcdmnstuv","z",0,0);
   plcol0(0);
   cmap1_init();
-  plmesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY | MAG_COLOR);
+  if (!discont)
+    plmesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY | MAG_COLOR);
+  else
+  {
+    // Discontinuity present
+  }
   plend();
 
   free(graph_top_label);
