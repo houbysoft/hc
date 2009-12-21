@@ -65,8 +65,8 @@ char hc_graph(char *e)
   arg_xmax = hc_result_(t2);
   arg_ymin = hc_result_(t3);
   arg_ymax = hc_result_(t4);
-  free(t1);
-  free(t2);
+  free(t1);free(t3);
+  free(t2);free(t4);
   double xmin,xmax,ymin,ymax;
 
   if (!func_expr || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
@@ -158,6 +158,8 @@ char hc_graph(char *e)
   free(func_expr);
   free(arg_xmin);
   free(arg_xmax);
+  free(arg_ymin);
+  free(arg_ymax);
   free(a_x);
   free(a);
   free(a_hasval);
@@ -190,7 +192,8 @@ char hc_graph3d(char *e)
   arg_ymax = hc_result_(t4);
   arg_zmin = hc_result_(t5);
   arg_zmax = hc_result_(t6);
-  // free those
+  free(t1); free(t2); free(t3);
+  free(t4); free(t5); free(t6);
   double xmin,xmax,ymin,ymax,zmin,zmax;
 
   if (!func_expr || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax || !arg_zmin || !arg_zmax)
@@ -222,7 +225,6 @@ char hc_graph3d(char *e)
     a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
   PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
   PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
-  char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS_3D*HC_GRAPH_POINTS_3D);
   double stepx = fabs(xmax-xmin) / (HC_GRAPH_POINTS_3D - 1);
   double stepy = fabs(ymax-ymin) / (HC_GRAPH_POINTS_3D - 1);
   double curx = xmin;
@@ -247,8 +249,9 @@ char hc_graph3d(char *e)
       char *tmp_2 = hc_result_(tmp_expr);
       if (tmp_2)
       {
-	a_hasval[i] = 'y';
 	a[i][ii] = strtod(tmp_2,NULL);
+	if (a[i][ii]<zmin)
+	  a[i][ii] = zmin;
       } else {
 	printf("FIX FIX FIX (setting to 0)\n");
 	a[i][ii] = 0;
@@ -295,11 +298,11 @@ char hc_graph3d(char *e)
 
   free(graph_top_label);
   free(func_expr);
-  free(arg_xmin);
-  free(arg_xmax);
+  free(arg_xmin); free(arg_ymin); free(arg_zmin);
+  free(arg_xmax); free(arg_ymax); free(arg_zmax);
   free(a_x);
-  free(a);
-  free(a_hasval);
+  free(a_y);
+  free(a); // check this free, check 2nd dimension
 
 #ifdef HCG
 #ifndef WIN32
