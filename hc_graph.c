@@ -303,6 +303,31 @@ char hc_graph3d(char *e)
     plmesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY | MAG_COLOR);
   else
   {
+    PLFLT **a1 = malloc(sizeof(PLFLT *)*2);
+    a1[0] = malloc(sizeof(PLFLT)*2);
+    a1[1] = malloc(sizeof(PLFLT)*2);
+    PLFLT *a_x1 = malloc(sizeof(PLFLT)*2);
+    PLFLT *a_y1 = malloc(sizeof(PLFLT)*2);
+    // Check 2x2 squares, if all have a value, plot them, otherwise skip
+    for (i=0; i<HC_GRAPH_POINTS_3D-1; i++)
+    {
+      for (j=0; j<HC_GRAPH_POINTS_3D-1; j++)
+      {
+	if (a_hasval[i][j]=='y' && a_hasval[i+1][j]=='y' && a_hasval[i+1][j+1]=='y' && a_hasval[i][j+1])
+	{
+	  // All points in the square have a value, plot them!
+	  a_x1[0] = a_x[i];
+	  a_x1[1] = a_x[i+1];
+	  a_y1[0] = a_y[j];
+	  a_y1[1] = a_y[j+1];
+	  a1[0][0] = a[i][j];
+	  a1[0][1] = a[i][j+1];
+	  a1[1][0] = a[i+1][j];
+	  a1[1][1] = a[i+1][j+1];
+	  plmesh(a_x1,a_y1,a1,2,2,DRAW_LINEXY | MAG_COLOR);
+	}
+      }
+    }
     // Discontinuity present
   }
   plend();
