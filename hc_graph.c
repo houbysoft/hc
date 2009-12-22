@@ -333,6 +333,11 @@ char hc_graph3d(char *e)
 	}
       }
     }
+    free(a_x1);
+    free(a_y1);
+    free(a1[0]);
+    free(a1[1]);
+    free(a1);
     // Discontinuity present
   }
   plend();
@@ -343,6 +348,8 @@ char hc_graph3d(char *e)
   free(arg_xmax); free(arg_ymax); free(arg_zmax);
   free(a_x);
   free(a_y);
+  for (i=0; i<HC_GRAPH_POINTS_3D; i++)
+    free(a[i]);
   free(a); // check this free, check 2nd dimension
 
 #ifdef HCG
