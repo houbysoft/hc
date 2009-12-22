@@ -257,6 +257,8 @@ char hc_graph3d(char *e)
 	a[i][ii] = strtod(tmp_2,NULL);
 	if (a[i][ii]<zmin)
 	  a[i][ii] = zmin;
+	if (a[i][ii]>zmax)
+	  a[i][ii] = zmax;
 	a_hasval[i][ii] = 'y';
       } else {
 	a_hasval[i][ii] = 'n';
