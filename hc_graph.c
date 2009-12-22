@@ -255,11 +255,13 @@ char hc_graph3d(char *e)
       if (tmp_2)
       {
 	a[i][ii] = strtod(tmp_2,NULL);
-	if (a[i][ii]<zmin)
-	  a[i][ii] = zmin;
-	if (a[i][ii]>zmax)
-	  a[i][ii] = zmax;
-	a_hasval[i][ii] = 'y';
+	if (a[i][ii]<zmin || a[i][ii]>zmax)
+	{
+	  a_hasval[i][ii] = 'n';
+	  discont = TRUE;
+	} else {
+	  a_hasval[i][ii] = 'y';
+	}
       } else {
 	a_hasval[i][ii] = 'n';
 	discont = TRUE; // we have at least one discontinuity/absence of value - this will switch to the slow-but-safe plotting mode
