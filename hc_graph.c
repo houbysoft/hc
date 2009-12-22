@@ -308,6 +308,7 @@ char hc_graph3d(char *e)
     plmesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY | MAG_COLOR);
   else
   {
+    // Discontinuity present
     PLFLT **a1 = malloc(sizeof(PLFLT *)*2);
     a1[0] = malloc(sizeof(PLFLT)*2);
     a1[1] = malloc(sizeof(PLFLT)*2);
@@ -338,7 +339,6 @@ char hc_graph3d(char *e)
     free(a1[0]);
     free(a1[1]);
     free(a1);
-    // Discontinuity present
   }
   plend();
 
