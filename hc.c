@@ -1529,6 +1529,17 @@ void hc_process_direction(char *d)
       printf("Precision is now set to %i decimal places.",hc.precision);
       //}
     break;
+  case HASH_3DPOINTS:
+    if (atoi(&d[i+1]) < 2)
+    {
+      error_nq("Amount of points needs to be a positive number greater than 1.");
+      break;
+    }
+    hc.graph_points_3d = atoi(&d[i+1]);
+    printf("3D graphs will now be computed using %ix%i points.",hc.graph_points_3d,hc.graph_points_3d);
+    if (hc.graph_points_3d > HC_GP3D_FAST)
+      printf("\nWarning : your setting will probably cause the graph to render slowly. Consider lowering to the default, %ix%i points.",HC_GP3D_DEFAULT,HC_GP3D_DEFAULT);
+    break;
   case HASH_DEG:
     hc.angle = 'd';
     printf("Angle format is now set to DEG.");
@@ -1600,6 +1611,7 @@ void hc_load_cfg()
 {
   FILE *fr = fopen(HC_CFG_FILE,"r");
   hc.angle = 'r';
+  hc.graph_points_3d = HC_GP3D_DEFAULT;
   if (!fr)
   {
     hc.rpn = FALSE;
@@ -1672,6 +1684,14 @@ void hc_load_cfg()
 	else
 	  hc.bypass_nested = FALSE;
 	break;
+      case HASH_3DPOINTS:
+	if (atoi(&buffer[i+1]) < 2)
+	{
+	  hc.graph_points_3d = HC_GP3D_DEFAULT;
+	} else {
+	  hc.graph_points_3d = atoi(&buffer[i+1]);
+	}
+	break;
       }
     }
     free(buffer);
@@ -1700,5 +1720,6 @@ void hc_save_cfg()
   else
     fprintf(fw,"pldev=$\n");
   fprintf(fw,"angle=%c\n",hc.angle);
+  fprintf(fw,"3dpoints=%i\n",hc.graph_points_3d);
   fclose(fw);
 }

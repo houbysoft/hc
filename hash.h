@@ -89,5 +89,6 @@
 #define HASH_CLEAR 10938
 #define HASH_PLDEV 20278
 #define HASH_BPN 7793
+#define HASH_3DPOINTS 26374
 
 #endif

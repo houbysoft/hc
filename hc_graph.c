@@ -27,7 +27,7 @@
 
 
 #define HC_GRAPH_POINTS 100
-#define HC_GRAPH_POINTS_3D 30
+#define HC_GRAPH_POINTS_3D (hc.graph_points_3d)
 
 
 // Taken from example 11, to setup the color palette for 3D graphs
@@ -350,7 +350,7 @@ char hc_graph3d(char *e)
   free(a_y);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)
     free(a[i]);
-  free(a); // check this free, check 2nd dimension
+  free(a);
 
 #ifdef HCG
 #ifndef WIN32

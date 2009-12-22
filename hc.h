@@ -93,6 +93,8 @@
 //#define MAX_DOUBLE_STACK MAX_EXPR
 #define HC_INF "inf"
 #define HC_DEC_PLACES (hc.precision*2)
+#define HC_GP3D_DEFAULT 25
+#define HC_GP3D_FAST 250
 
 #define PW_SIGN '^'
 
@@ -127,6 +129,7 @@ typedef struct hc_config {
   int graph_points;
   int graph_width;
   int graph_height;
+  unsigned int graph_points_3d;
 } hc_config_;
 
 typedef struct hc_stack_element {
