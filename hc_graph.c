@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <plplot/plplot.h>
+#include <errno.h>
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_graph.h"
@@ -255,7 +256,7 @@ char hc_graph3d(char *e)
       if (tmp_2)
       {
 	a[i][ii] = strtod(tmp_2,NULL);
-	if (a[i][ii]<zmin || a[i][ii]>zmax)
+	if (a[i][ii]<zmin || a[i][ii]>zmax || errno==ERANGE)
 	{
 	  a_hasval[i][ii] = 'n';
 	  discont = TRUE;
@@ -317,7 +318,7 @@ char hc_graph3d(char *e)
     {
       for (j=0; j<HC_GRAPH_POINTS_3D-1; j++)
       {
-	if (a_hasval[i][j]=='y' && a_hasval[i+1][j]=='y' && a_hasval[i+1][j+1]=='y' && a_hasval[i][j+1])
+	if (a_hasval[i][j]=='y' && a_hasval[i+1][j]=='y' && a_hasval[i+1][j+1]=='y' && a_hasval[i][j+1]=='y')
 	{
 	  // All points in the square have a value, plot them!
 	  a_x1[0] = a_x[i];
