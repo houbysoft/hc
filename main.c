@@ -16,8 +16,10 @@
 /*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
 
 #include <stdio.h>
+#ifndef WIN32
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
 #include <stdlib.h>
 #ifndef I_HATE_TIPS
 #include <time.h>

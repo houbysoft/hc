@@ -10,6 +10,9 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+0.6.1:
+  - added better editing capabilities with GNU readline and history
+  - small bug fix
 0.6:
   - added graph generation (generates a PNG file in command-line) - see graph() function
   - bugfixes
