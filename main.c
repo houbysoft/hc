@@ -58,7 +58,9 @@ int main(int argc, char *argv[])
 #endif
   char *fme;
 
+#ifndef WIN32
   using_history();
+#endif
 
   printf("%s(type help for help, and exit to exit)\n",NAME_VERSION);
 
@@ -69,13 +71,26 @@ int main(int argc, char *argv[])
 
   hc_load_cfg();
 
+#ifndef WIN32
   char *expr;
+#else
+  char *expr = malloc(sizeof(char) * MAX_EXPR + sizeof(char));
+  memset(expr,0,MAX_EXPR+1);
+#endif
 
   while (42)
   {
+#ifndef WIN32
     expr = readline("> ");
+#else
+    printf("> ");
+    fgets(expr,MAX_EXPR+1,stdin);
+#endif
     if (strlen(expr)>=MAX_EXPR)
       overflow_error();
+#ifdef WIN32
+    expr[strlen(expr)-1]=0;
+#endif
     if (strcmp(expr,"exit")==0)
       exit(0);
     fme = hc_result(expr);
@@ -84,8 +99,10 @@ int main(int argc, char *argv[])
       printf(" %s\n",fme);
       free(fme);
     }
+#ifndef WIN32
     add_history(expr);
     free(expr);
+#endif
   }
 
   return 0;
