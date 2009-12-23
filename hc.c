@@ -183,6 +183,8 @@ char *hc_result(char *e)
 // do NOT call this if you want to use the hc core in your own open source project, call hc_result() instead
 char *hc_result_(char *f)
 {
+  if (!f)
+    return NULL;
   hc_nested++;
 
   if (hc_nested>HC_NESTED_MAX && !hc.bypass_nested)
