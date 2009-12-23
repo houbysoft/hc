@@ -16,6 +16,8 @@
 /*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
 
 #include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include <stdlib.h>
 #ifndef I_HATE_TIPS
 #include <time.h>
@@ -54,10 +56,9 @@ int main(int argc, char *argv[])
 #ifdef WIN32
   atexit(exit_fn);
 #endif
-  char *expr = malloc(sizeof(char) * MAX_EXPR + sizeof(char));
   char *fme;
 
-  memset(expr,0,MAX_EXPR+1);
+  using_history();
 
   printf("%s(type help for help, and exit to exit)\n",NAME_VERSION);
 
@@ -68,13 +69,13 @@ int main(int argc, char *argv[])
 
   hc_load_cfg();
 
+  char *expr;
+
   while (42)
   {
-    printf("> ");
-    fgets(expr,MAX_EXPR+1,stdin);
+    expr = readline("> ");
     if (strlen(expr)>=MAX_EXPR)
       overflow_error();
-    expr[strlen(expr)-1] = 0;
     if (strcmp(expr,"exit")==0)
       exit(0);
     fme = hc_result(expr);
@@ -83,6 +84,8 @@ int main(int argc, char *argv[])
       printf(" %s\n",fme);
       free(fme);
     }
+    add_history(expr);
+    free(expr);
   }
 
   return 0;

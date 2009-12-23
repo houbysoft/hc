@@ -12,7 +12,7 @@ COPT=-Wall -g
 LOPT=
 
 hc: main.o hc.o hc_functions.o hc_varassign.o hc_graph.o
-	gcc `pkg-config --cflags --libs plplotd` ${LOPT} main.o hc.o hc_functions.o hc_varassign.o hc_graph.o /usr/lib/libmapm.a -lgdc -lgd -lm -o $@
+	gcc `pkg-config --cflags --libs plplotd` ${LOPT} main.o hc.o hc_functions.o hc_varassign.o hc_graph.o /usr/lib/libmapm.a -lgdc -lgd -lm -lreadline -o $@
 
 main.o: main.c
 	gcc ${COPT} -c main.c
