@@ -10,6 +10,9 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+0.7:
+  - added 3D graphing support with the graph3() function
+  - added tab-completion using GNU readline
 0.6.1:
   - added better editing capabilities with GNU readline and history
   - small bug fix
@@ -123,6 +126,8 @@ Constants are stored with 128 decimal places.
 - gcd(x,y) - finds the greatest common divisor of x and y
 - graph(expr,xmin,xmax,ymin,ymax) - draw a graph (generate a PNG file if in command-line), example syntax:
     graph(x^2,-10,10,-100,100)
+- graph3(expr,xmin,xmax,ymin,ymax,zmin,zmax) - draw a 3D graph (generate a PNG file if in command-line), example syntax:
+    graph3(x+y,-10,10,-10,10,-20,20)
 - inchtocm(x) - converts x, which has to be in inches, to cm
 - kmtomi(x) - converts x, which has to be in km, to miles
 - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius
