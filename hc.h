@@ -28,7 +28,7 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 16
 #define HC_MAX_PRECISION 128
-#define HC_FNAMES 51
+#define HC_FNAMES 59
 #define HC_NESTED_MAX 128
 
 #define SUCCESS 1

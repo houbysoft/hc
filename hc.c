@@ -83,7 +83,16 @@ const char *hc_fnames[][2] = {
   {"help","cmd"},
   {"credits","cmd"},
   {"constants","cmd"},
-  {"conversions","cmd"}
+  {"conversions","cmd"},
+  // DIRECTIONS/CONFIG (for tab-complete)
+  {"\\p","dir"},
+  {"\\rpn","dir"},
+  {"\\sci","dir"},
+  {"\\deg","dir"},
+  {"\\rad","dir"},
+  {"\\grad","dir"},
+  {"\\clear","dir"},
+  {"\\3dpoints","dir"}
 };
 
 
