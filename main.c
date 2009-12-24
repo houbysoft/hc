@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
 
 char **hc_completion(const char *text, int start, int end)
 {
+  rl_completion_suppress_append = 1;
   char **matches = (char **)NULL;
   matches = rl_completion_matches(text, hc_cmd_generator);
   return matches;
@@ -136,23 +137,35 @@ char *hc_cmd_generator(const char *text, int state)
     list_index = 0;
     len = strlen (text);
   }
-  
+
+  char isfunc;
+
   /* Return the next name which partially matches from the command list. */
   while (list_index < HC_FNAMES)
   {
-    name = (char *)hc_fnames[list_index];
-      list_index++;
+    name = (char *)hc_fnames[list_index][0];
+    if (strcmp((char *)hc_fnames[list_index][1],"func")==0)
+      isfunc = 1;
+    else
+      isfunc = 0;
+    list_index++;
 
-      if (strncmp (name, text, len) == 0)
-      {
-	char *ret = malloc(strlen(name)+1);
-	if (!ret)
-	  mem_error();
-	strcpy(ret,name);
-        return ret;
-      }
+    if (strncmp (name, text, len) == 0)
+    {
+      char *ret;
+      if (!isfunc)
+	ret = malloc(strlen(name)+1);
+      else
+	ret = malloc(strlen(name)+2);
+      if (!ret)
+	mem_error();
+      strcpy(ret,name);
+      if (isfunc)
+	strcat(ret,"(");
+      return ret;
     }
-
+  }
+  
   /* If no names matched, then return NULL. */
   return ((char *)NULL);
 }

@@ -186,7 +186,7 @@ char hc_check_varname(char *e)
   unsigned int name_hash = simple_hash(e);
   for (; ii < HC_FNAMES; ii++)
   {
-    if (name_hash == simple_hash((char *)hc_fnames[ii]))
+    if (name_hash == simple_hash((char *)hc_fnames[ii][0]))
     {
       if (!graphing_ignore_errors)
         varname_predefined_error()

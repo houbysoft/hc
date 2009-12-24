@@ -150,7 +150,7 @@ extern struct hc_config hc;
 extern struct hc_ventry *hc_var_first;
 extern char announce_errors;
 extern char graphing_ignore_errors;
-extern const char *hc_fnames[];
+extern const char *hc_fnames[][2];
 
 extern void hc_load_cfg();
 extern char *hc_result(char *e);
