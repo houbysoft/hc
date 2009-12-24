@@ -52,6 +52,11 @@ char *tips[] = {
 void exit_fn() {printf("Press Enter to close this window.");getchar();}
 #endif
 
+#ifndef WIN32
+char **hc_completion(const char *text, int start, int end);
+char *hc_cmd_generator(const char *text, int state);
+#endif
+
 
 int main(int argc, char *argv[])
 {
@@ -62,6 +67,8 @@ int main(int argc, char *argv[])
 
 #ifndef WIN32
   using_history();
+  rl_readline_name = "HC";
+  rl_attempted_completion_function = hc_completion;
 #endif
 
   printf("%s(type help for help, and exit to exit)\n",NAME_VERSION);
@@ -108,4 +115,44 @@ int main(int argc, char *argv[])
   }
 
   return 0;
+}
+
+
+char **hc_completion(const char *text, int start, int end)
+{
+  char **matches = (char **)NULL;
+  matches = rl_completion_matches(text, hc_cmd_generator);
+  return matches;
+}
+
+
+char *hc_cmd_generator(const char *text, int state)
+{
+  static int list_index, len;
+  char *name;
+
+  if (!state)
+  {
+    list_index = 0;
+    len = strlen (text);
+  }
+  
+  /* Return the next name which partially matches from the command list. */
+  while (list_index < HC_FNAMES)
+  {
+    name = (char *)hc_fnames[list_index];
+      list_index++;
+
+      if (strncmp (name, text, len) == 0)
+      {
+	char *ret = malloc(strlen(name)+1);
+	if (!ret)
+	  mem_error();
+	strcpy(ret,name);
+        return ret;
+      }
+    }
+
+  /* If no names matched, then return NULL. */
+  return ((char *)NULL);
 }
