@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
   using_history();
   rl_readline_name = "HC";
   rl_attempted_completion_function = hc_completion;
+  rl_basic_word_break_characters = " \t\n\"'`@$><=;|&{(*/+-)^,!%";
 #endif
 
   printf("%s(type help for help, and exit to exit)\n",NAME_VERSION);
