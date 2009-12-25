@@ -198,7 +198,7 @@ char hc_graph3d(char *e)
   double xmin,xmax,ymin,ymax,zmin,zmax;
 
   if (!func_expr || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax || !arg_zmin || !arg_zmax)
-    arg_error("graph3d() needs 7 arguments (expr,xmin,xmax,ymin,ymax,zmin,zmax).");
+    arg_error("graph3() needs 7 arguments (expr,xmin,xmax,ymin,ymax,zmin,zmax).");
 
   xmin = strtod(arg_xmin,NULL);
   xmax = strtod(arg_xmax,NULL);

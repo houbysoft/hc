@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
 char **hc_completion(const char *text, int start, int end)
 {
-  rl_completion_suppress_append = 0;
+  rl_completion_suppress_append = 1;
   char **matches = (char **)NULL;
   matches = rl_completion_matches(text, hc_cmd_generator);
   return matches;
