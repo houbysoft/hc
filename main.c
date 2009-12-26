@@ -131,12 +131,14 @@ char **hc_completion(const char *text, int start, int end)
 char *hc_cmd_generator(const char *text, int state)
 {
   static int list_index, len;
+  static struct hc_ventry *var_tmp;
   char *name;
 
   if (!state)
   {
     list_index = 0;
     len = strlen (text);
+    var_tmp = hc_var_first;
   }
 
   char isfunc;
@@ -167,6 +169,40 @@ char *hc_cmd_generator(const char *text, int state)
     }
   }
   
+  while (var_tmp)
+  {
+    if (var_tmp->name)
+    {
+      name = var_tmp->name;
+      if (var_tmp->type == HC_USR_FUNC)
+	isfunc = 1;
+      else
+	isfunc = 0;
+      if (var_tmp->next)
+	var_tmp = var_tmp->next;
+      else
+	var_tmp = NULL;
+
+      if (strncmp (name, text, len) == 0)
+      {
+	char *ret;
+	if (!isfunc)
+	  ret = malloc(strlen(name)+1);
+	else
+	  ret = malloc(strlen(name)+2);
+	if (!ret)
+	mem_error();
+	strcpy(ret,name);
+	if (isfunc)
+	  strcat(ret,"(");
+	return ret;
+      }
+    } else {
+      var_tmp = NULL;
+      break;
+    }
+  }
+
   /* If no names matched, then return NULL. */
   return ((char *)NULL);
 }
