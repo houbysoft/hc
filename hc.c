@@ -27,6 +27,7 @@
 #include "hc_functions.h"
 #include "hash.h"
 #include "hc_graph.h"
+#include "hc_complex.h"
 #define NHASH 29989 // use a large prime number
 #define MULT 31
 
@@ -1001,26 +1002,30 @@ char *hc_postfix_result(char *e)
      struct hc_stack_element *first;
      struct hc_stack_element *curr;
      first = malloc(sizeof(struct hc_stack_element));
-     first->v = m_apm_init();
+     first->re = m_apm_init();
+     first->im = m_apm_init();
      first->p = NULL;
      first->n = malloc(sizeof(struct hc_stack_element));
      first->n->p = first;
-     first->n->v = m_apm_init();
+     first->n->re = m_apm_init();
+     first->n->im = m_apm_init();
      first->n->n = NULL;
 
      curr = first;
      int sp = 0;
 
      //M_APM stack[MAX_DOUBLE_STACK];
-     M_APM op1,op2;
+     M_APM op1_r,op1_i,op2_r,op2_i;
 
      char tmp_num[MAX_DOUBLE_STRING];
      int i=0,j=0;
 
      //for (;i<MAX_DOUBLE_STACK;i++)
      //  stack[i] = m_apm_init();
-     op1 = m_apm_init();
-     op2 = m_apm_init();
+     op1_r = m_apm_init();
+     op1_i = m_apm_init();
+     op2_r = m_apm_init();
+     op2_i = m_apm_init();
 
      i = 0;
 

@@ -135,7 +135,8 @@ typedef struct hc_config {
 
 typedef struct hc_stack_element {
   struct hc_stack_element *p;
-  M_APM v;
+  M_APM re; // real part of the number
+  M_APM im; // imaginary part of the number
   struct hc_stack_element *n;
 } hc_stack_element_;
 
