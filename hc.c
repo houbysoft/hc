@@ -510,7 +510,7 @@ char *hc_result_(char *f)
     }
     if (isalpha(e[i]) && (isalpha(e[i+1]) || e[i+1]=='(' || e[i+1]==0))
       break;
-    if (isalpha(e[i]) && (isdigit(e[i+1])))
+    if (isalpha(e[i]) && tolower(e[i])!='i' && tolower(e[i])!='e' && (isdigit(e[i+1])))
       break;
   }
 
@@ -1243,31 +1243,52 @@ char *hc_postfix_result(char *e)
      
      curr = curr->p;
 
-     char *result;
+     char *result_re,*result_im;
      if (hc.sci)
      {
-       result = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->v))+1)); // x.hc.precisionEexponent + null char
+       result_re = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->re))+1)); // x.hc.precisionEexponent + null char
+       if (m_apm_compare(curr->im,MM_Zero)!=0)
+       {
+	 result_im = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->im))+1));
+	 m_apm_to_string(result_im,hc.precision,curr->im);
+       } else {
+	 result_im = NULL;
+       }
 #ifdef DBG
-       printf("hc_postfix_result allocated ==> %i\n",hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->v))+1);
+       printf("hc_postfix_result allocated ==> %i (real part)\n",hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->re))+1);
 #endif
-       m_apm_to_string(result,hc.precision,curr->v);
+       m_apm_to_string(result_re,hc.precision,curr->re);
      } else {
-       result = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->v,'.',0,0);
+       result_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->re,'.',0,0);
+       if (m_apm_compare(curr->im,MM_Zero)!=0)
+	 result_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->im,'.',0,0);
+       else
+	 result_im = NULL;
      }
-     m_apm_free(op1);
-     m_apm_free(op2);
+     m_apm_free(op1_r);m_apm_free(op1_i);
+     m_apm_free(op2_r);m_apm_free(op2_i);
 
      while (first->n)
      {
-       m_apm_free(first->v);
+       m_apm_free(first->re);m_apm_free(first->im);
        first = first->n;
        free(first->p);
      }
 
-     m_apm_free(first->v);
+     m_apm_free(first->re);m_apm_free(first->im);
      free(first);
 
-     return result;
+     if (!result_im)
+       return result_re;
+     else
+     {
+       char *result_cplx = malloc(strlen(result_re)+1+strlen(result_im)+1);
+                           // re i im \0
+       strcpy(result_cplx,result_re);
+       strcat(result_cplx,"i");
+       strcat(result_cplx,result_im);
+       return result_cplx;
+     }
 }
 
 
