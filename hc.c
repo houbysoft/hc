@@ -151,6 +151,7 @@ char *hc_result(char *e)
     hc_var_first->value = NULL;
     hc_var_first->name = NULL;
     hc_var_first->args = NULL;
+    m_apmc_init();
     init = 1;
   }
 
