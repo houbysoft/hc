@@ -1037,93 +1037,93 @@ char *hc_postfix_result(char *e)
        case '*':
 	 if (sp < 2)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   syntax_error2();
 	   return NULL;
 	 }
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2,curr->v);
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1,curr->v);
-	 m_apm_multiply(curr->v,op1,op2);
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
        case '/':
 	 if (sp < 2)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   syntax_error2();
 	   return NULL;
 	 }
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2,curr->v);
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1,curr->v);
-	 if (m_apm_sign(op2)==0)
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 if (m_apm_sign(op2_r)==0 && m_apm_sign(op2_i)==0)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   d0_error();
 	   return NULL;
 	 }
-	 m_apm_divide(curr->v,HC_DEC_PLACES,op1,op2);
+	 m_apmc_divide(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
-       case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
+	 /*       case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
 	 if (sp < 2)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   syntax_error2();
 	   return NULL;
 	 }
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2,curr->v);
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1,curr->v);
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
 	 M_APM tmp = m_apm_init();
 	 m_apm_integer_div_rem(tmp,curr->v,op1,op2);
 	 m_apm_free(tmp);
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
-         break;
+         break; FIX FIX FIX NO EQUIV FUNCTION?? */
        case '+':
 	 if (sp < 2)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   syntax_error2();
 	   return NULL;
 	 }
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2,curr->v);
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1,curr->v);
-	 m_apm_add(curr->v,op1,op2);
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 m_apmc_add(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
@@ -1131,16 +1131,16 @@ char *hc_postfix_result(char *e)
 	 if (sp < 2)
 	 {
 	   curr = curr->p; // [--sp]
-	   m_apm_copy(op1,curr->v);
-	   m_apm_subtract(curr->v,MM_Zero,op1);
+	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	   m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
 	   curr = curr->n; // [sp++]
 	   // no need to modify sp here
 	 } else {
 	   curr = curr->p; // [--sp]
-	   m_apm_copy(op2,curr->v);
+	   m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
 	   curr = curr->p; // [--sp]
-	   m_apm_copy(op1,curr->v);
-	   m_apm_subtract(curr->v,op1,op2);
+	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	   m_apmc_subtract(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
 	   curr = curr->n; // [sp++]
 	   sp -= 1;
 	 }
@@ -1148,32 +1148,33 @@ char *hc_postfix_result(char *e)
        case PW_SIGN:
 	 if (sp < 2)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   syntax_error2();
 	   return NULL;
 	 }
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2,curr->v);
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
 	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1,curr->v);
-	 m_apm_pow(curr->v,HC_DEC_PLACES,op1,op2);
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
 	 break;
        case '!':
+	 /* FIX FIX FIX NO EQUIV FUNCTION? FACTORIAL NOT DEFINED FOR CPLX?
 	 if (sp < 1)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   syntax_error2();
 	   return NULL;
 	 }
@@ -1189,10 +1190,10 @@ char *hc_postfix_result(char *e)
 	   arg_error("! : an integer is required.");
 	   return NULL;
 	 }
-	 m_apm_copy(op1,curr->v);
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
 	 m_apm_factorial(curr->v,op1);
 	 curr = curr->n; // [sp++]
-	 break;
+	 break;*/
        default:
          j = 0;
          while (!isspace(e[i]) && (!isoperator(e[i]) || tolower(e[i-1])=='e') && e[i])
@@ -1201,11 +1202,23 @@ char *hc_postfix_result(char *e)
          }
          i--;
          tmp_num[j]=0;
-	 m_apm_set_string(curr->v,tmp_num);
+	 char *tmp_num2;
+	 tmp_num2 = hc_real_part(tmp_num);
+	 m_apm_set_string(curr->re,tmp_num2); // set real part
+	 free(tmp_num2);
+	 tmp_num2 = hc_imag_part(tmp_num);
+	 if (tmp_num2)
+	 {
+	   m_apm_set_string(curr->im,tmp_num2); // set imaginary part
+	   free(tmp_num2);
+	 } else {
+	   m_apm_set_string(curr->im,"0"); // set null imaginary part
+	 }
 	 if (curr->n == NULL)
 	 {
 	   curr->n = malloc(sizeof(struct hc_stack_element));
-	   curr->n->v = m_apm_init();
+	   curr->n->re = m_apm_init();
+	   curr->n->im = m_apm_init();
 	   curr->n->n = NULL;
 	 }
 	 curr->n->p = curr;
@@ -1218,12 +1231,12 @@ char *hc_postfix_result(char *e)
 
      if (sp!=1)
      {
-       m_apm_free(op1);m_apm_free(op2);
+       m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
        while (first->n)
        {
-	 m_apm_free(first->v);first = first->n;free(first->p);
+	 m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
        }
-       m_apm_free(first->v);free(first);
+       m_apm_free(first->re);m_apm_free(first->im);free(first);
        syntax_error2();
        return NULL;
      }
@@ -1326,7 +1339,7 @@ char hc_check(char *e)
 	  last_was_op = 0;
 	  if (first)
 	    first = 2;
-          if (last_was_int && isalpha(e[i]) && tolower(e[i])!='e')
+          if (last_was_int && isalpha(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')
 	  {
 	    return 0;
 	  }
