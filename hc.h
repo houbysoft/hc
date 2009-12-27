@@ -20,6 +20,7 @@
 #define HC_H
 #include <math.h>
 #include <m_apm.h>
+#include <mapmx/m_apmc.h>
 //#define NDEBUG
 //#include <assert.h>
 
