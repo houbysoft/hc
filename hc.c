@@ -650,97 +650,196 @@ char *hc_result_(char *f)
     case HASH_ASIN:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      /*
       if ((m_apm_compare(tmp_num,MM_One)==1) || (m_apm_compare(tmp_num,MM_MOne)==-1))
       {
 	hc_nested--;
 	arg_error("asin() : NaN");
-      }
-      m_apm_asin(f_result,HC_DEC_PLACES,tmp_num);
-      hc_from_rad(f_result);
+      }*/
+      m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      // FIX FIX FIX 
+      hc_from_rad(f_result_re);
       break;
 
     case HASH_ATAN:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_atan(f_result,HC_DEC_PLACES,tmp_num);
-      hc_from_rad(f_result);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      // FIX FIX FIX
+      hc_from_rad(f_result_re);
       break;
 
     case HASH_COS:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      hc_to_rad(tmp_num);
-      m_apm_cos(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      // FIX FIX FIX
+      hc_to_rad(tmp_num_re);
+      m_apmc_cos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_EXP:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_exp(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_exp(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_FACTORIAL:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      if (!m_apm_is_integer(tmp_num))
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); arg_error("factorial() : an integer is required."); hc_nested--; return NULL;}
-      m_apm_factorial(f_result,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (!m_apm_is_integer(tmp_num_re) || m_apm_compare(tmp_num_im,MM_Zero)!=0)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); arg_error("factorial() : an integer is required."); hc_nested--; return NULL;}
+      m_apm_factorial(f_result_re,tmp_num_re);
+      m_apm_set_string(f_result_im,"0");
       break;
 
     case HASH_GCD:
-      if (hc_gcd(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_gcd(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_LCM:
-      if (hc_lcm(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_lcm(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_LN:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_log(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_log(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_LOG10:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_log10(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_log10(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_SIN:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      hc_to_rad(tmp_num);
-      m_apm_sin(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      // FIX FIX FIX
+      hc_to_rad(tmp_num_re);
+      m_apmc_sin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_TAN:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      hc_to_rad(tmp_num);
-      m_apm_tan(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      // FIX FIX FIX
+      hc_to_rad(tmp_num_re);
+      m_apmc_tan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
+      /*
+	MODIFY TO PERMIT USAGE OF COMPLEX NUMBERS
     case HASH_SUM:
       if (hc_sum(f_result,f_expr) == FAIL)
       {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
@@ -750,49 +849,102 @@ char *hc_result_(char *f)
       if (hc_product(f_result,f_expr) == FAIL)
       {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
       break;
+      */
 
     case HASH_COSH:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_cosh(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_cosh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_SINH:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_sinh(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_sinh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_TANH:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_tanh(f_result,HC_DEC_PLACES,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_tanh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_SQRT:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      /*
       if (m_apm_compare(tmp_num,MM_Zero)==-1)
       {
 	hc_nested--;
 	arg_error("sqrt() : non-real result.");
-      }
-      m_apm_sqrt(f_result,HC_DEC_PLACES,tmp_num);
+	}*/
+      m_apmc_sqrt(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
+      /* FIX FIX FIX TODO
     case HASH_CBRT:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
       m_apm_cbrt(f_result,HC_DEC_PLACES,tmp_num);
       break;
 
@@ -890,12 +1042,15 @@ char *hc_result_(char *f)
       if (hc_permutations(f_result,f_expr) == FAIL)
       {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
       break;
+      */
 
     case HASH_GRAPH:
       hc_graph(f_expr);
       announce_errors = FALSE;
-      m_apm_free(tmp_num);
-      m_apm_free(f_result);
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_re);
+      m_apm_free(f_result_im);
       free(e);
       hc_nested--;
       return NULL;
@@ -904,16 +1059,20 @@ char *hc_result_(char *f)
     case HASH_GRAPH3D:
       hc_graph3d(f_expr);
       announce_errors = FALSE;
-      m_apm_free(tmp_num);
-      m_apm_free(f_result);
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_re);
+      m_apm_free(f_result_im);
       free(e);
       hc_nested--;
       return NULL;
       break;
 
     default:
-      m_apm_free(tmp_num);
-      m_apm_free(f_result);
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_re);
+      m_apm_free(f_result_im);
       free(e);
       undef_error();
       hc_nested--;
