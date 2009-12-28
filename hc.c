@@ -179,7 +179,7 @@ char *hc_result(char *e)
       if (r)
       {
 	char *tmp_num = hc_real_part(r);
-	m_apm_set_string(hc_lans_mapm_re,r);
+	m_apm_set_string(hc_lans_mapm_re,tmp_num);
 	free(tmp_num);
 	tmp_num = hc_imag_part(r);
 	if (tmp_num)
@@ -864,13 +864,12 @@ char *hc_result_(char *f)
       m_apmc_tan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
+    case HASH_SUM:
+      if (hc_sum(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      break;
       /*
 	MODIFY TO PERMIT USAGE OF COMPLEX NUMBERS
-    case HASH_SUM:
-      if (hc_sum(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
-      break;
-
     case HASH_PRODUCT:
       if (hc_product(f_result,f_expr) == FAIL)
       {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
