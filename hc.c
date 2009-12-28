@@ -1395,7 +1395,12 @@ char *hc_postfix_result(char *e)
 	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
 	 curr = curr->p; // [--sp]
 	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	 if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op2_r,MM_Two)==0)
+	 {
+	   m_apmc_sqr(curr->re,curr->im,op1_r,op1_i);
+	 } else {
+	   m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	 }
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
 	 break;
