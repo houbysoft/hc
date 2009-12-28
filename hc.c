@@ -187,13 +187,39 @@ char *hc_result(char *e)
 	  m_apm_set_string(hc_lans_mapm_im,tmp_num);
 	  free(tmp_num);
 	}
-	int i=strlen(r)-1;
 	if (hc.sci == FALSE)
 	{
-	  while (r[i]=='0')
-	    r[i--]=0;
-	  if (r[i]=='.')
-	    r[i]=0;
+	  char *r_re,*r_im;
+	  r_re = hc_real_part(r); r_im = hc_imag_part(r);
+	  free(r);
+	  if (!r_im)
+	  {
+	    r = r_re;
+	    int i=strlen(r)-1;
+	    while (r[i]=='0')
+	      r[i--]=0;
+	    if (r[i]=='.')
+	      r[i]=0;
+	  } else {
+	    int i=strlen(r_re)-1;
+	    while (r_re[i]=='0')
+	      r_re[i--]=0;
+	    if (r_re[i]=='.')
+	      r_re[i]=0;
+
+	    i = strlen(r_im)-1;
+	    while (r_im[i]=='0')
+	      r_im[i--]=0;
+	    if (r_im[i]=='.')
+	      r_im[i]=0;
+
+	    r = malloc(strlen(r_re)+1+strlen(r_im)+1);
+	        // r_re i r_im \0
+	    strcpy(r,r_re);
+	    strcat(r,"i");
+	    strcat(r,r_im);
+	    free(r_re); free(r_im);
+	  }
 	}
       }
     }
