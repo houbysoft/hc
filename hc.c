@@ -1082,8 +1082,20 @@ char *hc_result_(char *f)
     
     strncpy(e,e_tmp,i);
     e[i]=0;
-    //char f_result_tmp[MAX_DOUBLE_STRING];
-    char *f_result_tmp = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result,'.',0,0);
+    char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
+    char *f_result_tmp_im,*f_result_tmp;
+    if (m_apm_compare(f_result_im,MM_Zero)!=0)
+    {
+      f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
+      f_result_tmp = malloc(strlen(f_result_tmp_re)+1+strlen(f_result_tmp_im)+1);
+                     // re i im \0
+      strcpy(f_result_tmp,f_result_tmp_re);
+      strcat(f_result_tmp,"i");
+      strcat(f_result_tmp,f_result_tmp_im);
+      free(f_result_tmp_re); free(f_result_tmp_im);
+    } else {
+      f_result_tmp = f_result_tmp_re;
+    }
     if (strlen(e_tmp)+strlen(f_result_tmp)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
       overflow_error();
     //m_apm_to_string(f_result_tmp,HC_DEC_PLACES,f_result);
@@ -1092,8 +1104,8 @@ char *hc_result_(char *f)
     strcat(e,((char *)&e_tmp)+f_expr_e+1);
     char *rme = hc_result_(e);
     free(e_fme);
-    m_apm_free(f_result);
-    m_apm_free(tmp_num);
+    m_apm_free(f_result_re); m_apm_free(f_result_im);
+    m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
     hc_nested--;
     return rme;
   }
