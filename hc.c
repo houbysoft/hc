@@ -123,7 +123,8 @@ void hc_load_cfg();
 void hc_save_cfg();
 
 
-M_APM hc_lans_mapm;
+M_APM hc_lans_mapm_re;
+M_APM hc_lans_mapm_im;
 M_APM MM_MOne; // Minus one
 struct hc_config hc;
 char announce_errors=TRUE;
@@ -141,7 +142,8 @@ char *hc_result(char *e)
   {
     atexit(hc_save_cfg);
     hc_load_cfg();
-    hc_lans_mapm = m_apm_init();
+    hc_lans_mapm_re = m_apm_init();
+    hc_lans_mapm_im = m_apm_init();
     MM_MOne = m_apm_init();
     m_apm_set_double(MM_MOne,(double)-1);
     hc_var_first = malloc(sizeof (struct hc_ventry));
@@ -176,7 +178,15 @@ char *hc_result(char *e)
       r = hc_result_(e);
       if (r)
       {
-	m_apm_set_string(hc_lans_mapm,r);
+	char *tmp_num = hc_real_part(r);
+	m_apm_set_string(hc_lans_mapm_re,r);
+	free(tmp_num);
+	tmp_num = hc_imag_part(r);
+	if (tmp_num)
+	{
+	  m_apm_set_string(hc_lans_mapm_im,tmp_num);
+	  free(tmp_num);
+	}
 	int i=strlen(r)-1;
 	if (hc.sci == FALSE)
 	{
@@ -536,7 +546,8 @@ char *hc_result_(char *f)
     hc_nested--;
     return e;
   } else {
-    M_APM f_result = m_apm_init();
+    M_APM f_result_re = m_apm_init();
+    M_APM f_result_im = m_apm_init();
     // we need to replace a function with its result
     // e[i] points to the start of the function
     j = i;
@@ -546,7 +557,7 @@ char *hc_result_(char *f)
       f_name[k++] = e[j];
       if (k >= MAX_F_NAME)
       {
-	m_apm_free(f_result);
+	m_apm_free(f_result_re);m_apm_free(f_result_im);
 	free(e);
 	syntax_error2();
 	hc_nested--;
@@ -579,39 +590,66 @@ char *hc_result_(char *f)
     f_expr[f_expr_e - f_expr_s] = 0;
     
     char *fme;
-    M_APM tmp_num = m_apm_init();
+    M_APM tmp_num_re = m_apm_init();
+    M_APM tmp_num_im = m_apm_init();
+    char *tmp_ri; // tmp for real/imaginary parts of the number
 
     switch (simple_hash(f_name))
     {
     case HASH_ABS:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
-      m_apm_absolute_value(f_result,tmp_num);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+	m_apm_set_string(f_result_im,"0");
+	m_apmc_abs(f_result_re,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      } else {
+	m_apm_set_string(f_result_im,"0");
+	m_apm_absolute_value(f_result_re,tmp_num_re);
+      }
       break;
 
     case HASH_ANS:
-      m_apm_copy(f_result,hc_lans_mapm);
+      m_apm_copy(f_result_re,hc_lans_mapm_re);
+      m_apm_copy(f_result_im,hc_lans_mapm_im);
       break;
 
     case HASH_ACOS:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
-      m_apm_set_string(tmp_num,fme);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
       free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      /*
       if ((m_apm_compare(tmp_num,MM_One)==1) || (m_apm_compare(tmp_num,MM_MOne)==-1))
       {
 	hc_nested--;
 	arg_error("acos() : NaN");
-      }
-      m_apm_acos(f_result,HC_DEC_PLACES,tmp_num);
-      hc_from_rad(f_result);
+      }*/
+      m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      // FIX FIX FIX
+      hc_from_rad(f_result_re);
       break;
       
     case HASH_ASIN:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       if ((m_apm_compare(tmp_num,MM_One)==1) || (m_apm_compare(tmp_num,MM_MOne)==-1))
@@ -625,7 +663,7 @@ char *hc_result_(char *f)
 
     case HASH_ATAN:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_atan(f_result,HC_DEC_PLACES,tmp_num);
@@ -634,7 +672,7 @@ char *hc_result_(char *f)
 
     case HASH_COS:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       hc_to_rad(tmp_num);
@@ -643,7 +681,7 @@ char *hc_result_(char *f)
 
     case HASH_EXP:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_exp(f_result,HC_DEC_PLACES,tmp_num);
@@ -651,7 +689,7 @@ char *hc_result_(char *f)
 
     case HASH_FACTORIAL:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       if (!m_apm_is_integer(tmp_num))
@@ -671,7 +709,7 @@ char *hc_result_(char *f)
 
     case HASH_LN:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_log(f_result,HC_DEC_PLACES,tmp_num);
@@ -679,7 +717,7 @@ char *hc_result_(char *f)
 
     case HASH_LOG10:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_log10(f_result,HC_DEC_PLACES,tmp_num);
@@ -687,7 +725,7 @@ char *hc_result_(char *f)
 
     case HASH_SIN:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       hc_to_rad(tmp_num);
@@ -696,7 +734,7 @@ char *hc_result_(char *f)
 
     case HASH_TAN:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       hc_to_rad(tmp_num);
@@ -715,7 +753,7 @@ char *hc_result_(char *f)
 
     case HASH_COSH:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_cosh(f_result,HC_DEC_PLACES,tmp_num);
@@ -723,7 +761,7 @@ char *hc_result_(char *f)
 
     case HASH_SINH:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_sinh(f_result,HC_DEC_PLACES,tmp_num);
@@ -731,7 +769,7 @@ char *hc_result_(char *f)
 
     case HASH_TANH:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_tanh(f_result,HC_DEC_PLACES,tmp_num);
@@ -739,7 +777,7 @@ char *hc_result_(char *f)
 
     case HASH_SQRT:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       if (m_apm_compare(tmp_num,MM_Zero)==-1)
@@ -752,7 +790,7 @@ char *hc_result_(char *f)
 
     case HASH_CBRT:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       m_apm_set_string(tmp_num,fme);
       free(fme);
       m_apm_cbrt(f_result,HC_DEC_PLACES,tmp_num);
