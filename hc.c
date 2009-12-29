@@ -1319,8 +1319,17 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
-	 /*       case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
-	 if (sp < 2)
+       case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
+	 if (sp >= 2)
+	 {
+	   curr = curr->p; // [--sp]
+	   m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	   curr = curr->p; // [--sp]
+	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 } else {
+	   m_apm_set_string(op1_i,"1"); m_apm_set_string(op2_i,"1");
+	 }
+	 if (sp < 2 || m_apm_compare(op1_i,MM_Zero)!=0 || m_apm_compare(op2_i,MM_Zero)!=0)
 	 {
 	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
@@ -1328,19 +1337,21 @@ char *hc_postfix_result(char *e)
 	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
 	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
+	   if (sp < 2)
+	   {
+	     syntax_error2();
+	   } else {
+	     arg_error("% : real arguments are required.");
+	   }
 	   return NULL;
 	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
 	 M_APM tmp = m_apm_init();
-	 m_apm_integer_div_rem(tmp,curr->v,op1,op2);
+	 m_apm_integer_div_rem(tmp,curr->re,op1_r,op2_r);
+	 m_apm_set_string(curr->im,"0");
 	 m_apm_free(tmp);
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
-         break; FIX FIX FIX NO EQUIV FUNCTION?? */
+         break;
        case '+':
 	 if (sp < 2)
 	 {
@@ -1405,7 +1416,6 @@ char *hc_postfix_result(char *e)
 	 sp -= 1;
 	 break;
        case '!':
-	 /* FIX FIX FIX NO EQUIV FUNCTION? FACTORIAL NOT DEFINED FOR CPLX?
 	 if (sp < 1)
 	 {
 	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
@@ -1418,21 +1428,22 @@ char *hc_postfix_result(char *e)
 	   return NULL;
 	 }
 	 curr = curr->p; // [--sp]
-	 if (!m_apm_is_integer(curr->v))
+	 if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
 	 {
-	   m_apm_free(op1);m_apm_free(op2);
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
 	   {
-	     m_apm_free(first->v);first = first->n;free(first->p);
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
 	   }
-	   m_apm_free(first->v);free(first);
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
 	   arg_error("! : an integer is required.");
 	   return NULL;
 	 }
 	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apm_factorial(curr->v,op1);
+	 m_apm_factorial(curr->re,op1_r);
+	 m_apm_set_string(curr->im,"0");
 	 curr = curr->n; // [sp++]
-	 break;*/
+	 break;
        default:
          j = 0;
          while (!isspace(e[i]) && (!isoperator(e[i]) || tolower(e[i-1])=='e') && e[i])
