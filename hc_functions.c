@@ -433,13 +433,13 @@ int hc_sum(M_APM result_re, M_APM result_im, char *e)
 }
 
 
-int hc_product(M_APM result, char *e)
+int hc_product(M_APM result_re, M_APM result_im, char *e)
 {
   /* 3-arg INIT mod */
   char *arg1,*arg2,*arg3,*t1,*t2,*t3;
   t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2); t3 = hc_get_arg(e,3);
   if (t1 == NULL || t2 == NULL || t3 == NULL)
-    arg_error("product() needs 3 arguments (expr,low,high).");
+    arg_error("sum() needs 3 arguments (expr,low,high).");
   arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2); arg3 = (char *)hc_plusminus(t3);
   free(t1); free(t2); free(t3);
   t1 = arg1; t2 = arg2; t3 = arg3;
@@ -449,15 +449,17 @@ int hc_product(M_APM result, char *e)
   free(t2); free(t3);
   /* 3-arg INIT END */
 
-  M_APM min,max,res,copy_tmp,copy_tmp2;
+  M_APM min,max,res_re,res_im,copy_tmp_re,copy_tmp_im,copy_tmp2_re,copy_tmp2_im;
   min = m_apm_init();
   max = m_apm_init();
-  res = m_apm_init();
-  copy_tmp = m_apm_init();
-  copy_tmp2 = m_apm_init();
+  res_re = m_apm_init();
+  res_im = m_apm_init();
+  copy_tmp_re = m_apm_init();
+  copy_tmp_im = m_apm_init();
+  copy_tmp2_re = m_apm_init();
+  copy_tmp2_im = m_apm_init();
   m_apm_set_string(min,arg2);
   m_apm_set_string(max,arg3);
-  m_apm_set_string(res,"1");
 
   free(arg2); free(arg3);
 
@@ -468,6 +470,7 @@ int hc_product(M_APM result, char *e)
   char *tmp_i_str = malloc(sizeof(char) * (sizeof(int)*8+1));
   char *tmp_fme;
   char *tmp_res;
+  char init = 0;
 
   while (m_apm_compare(min,max)!=1)
   {
@@ -482,22 +485,37 @@ int hc_product(M_APM result, char *e)
       free(tmp_expr);
       free(tmp_i_str);
       free(arg1);
-      m_apm_free(min); m_apm_free(max); m_apm_free(res); m_apm_free(copy_tmp); m_apm_free(copy_tmp2);
+      m_apm_free(min); m_apm_free(max); m_apm_free(res_re); m_apm_free(res_im); m_apm_free(copy_tmp_re); m_apm_free(copy_tmp_im); m_apm_free(copy_tmp2_re); m_apm_free(copy_tmp2_im);
       return FAIL;
     }
-    m_apm_copy(copy_tmp,res);
-    m_apm_set_string(copy_tmp2,tmp_res);
-    m_apm_multiply(res,copy_tmp,copy_tmp2);
-    free(tmp_res);
-    m_apm_copy(copy_tmp,min);
-    m_apm_add(min,copy_tmp,MM_One);
+    m_apm_copy(copy_tmp_re,res_re);
+    m_apm_copy(copy_tmp_im,res_im);
+    char *tmp_res_re = hc_real_part(tmp_res);
+    char *tmp_res_im = hc_imag_part(tmp_res);
+    m_apm_set_string(copy_tmp2_re,tmp_res_re);
+    if (tmp_res_im)
+      m_apm_set_string(copy_tmp2_im,tmp_res_im);
+    else
+      m_apm_set_string(copy_tmp2_im,"0");
+    if (init)
+      m_apmc_multiply(res_re,res_im,copy_tmp_re,copy_tmp_im,copy_tmp2_re,copy_tmp2_im);
+    else
+    {
+      m_apm_copy(res_re,copy_tmp2_re);
+      m_apm_copy(res_im,copy_tmp2_im);
+      init = 1;
+    }
+    free(tmp_res); free(tmp_res_re); if (tmp_res_im) free(tmp_res_im);
+    m_apm_copy(copy_tmp_re,min);
+    m_apm_add(min,copy_tmp_re,MM_One);
   }
 
   free(arg1);
   free(tmp_expr);
   free(tmp_i_str);
-  m_apm_copy(result,res);
-  m_apm_free(min); m_apm_free(max); m_apm_free(res); m_apm_free(copy_tmp); m_apm_free(copy_tmp2);
+  m_apm_copy(result_re,res_re);
+  m_apm_copy(result_im,res_im);
+  m_apm_free(min); m_apm_free(max); m_apm_free(res_re); m_apm_free(res_im); m_apm_free(copy_tmp_re); m_apm_free(copy_tmp_im); m_apm_free(copy_tmp2_re); m_apm_free(copy_tmp2_im);
   return SUCCESS;
 }
 

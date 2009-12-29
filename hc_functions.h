@@ -26,7 +26,7 @@ extern double hc_strtod(const char *, char *);
 extern int hc_binomc(M_APM, char *);
 extern int hc_permutations(M_APM, char *);
 extern int hc_sum(M_APM, M_APM, char *);
-extern int hc_product(M_APM, char *);
+extern int hc_product(M_APM, M_APM, char *);
 extern int hc_modulus(M_APM, char *);
 extern int hc_gcd(M_APM, char *);
 extern int hc_lcm(M_APM, char *);

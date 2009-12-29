@@ -868,13 +868,11 @@ char *hc_result_(char *f)
       if (hc_sum(f_result_re,f_result_im,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
-      /*
-	MODIFY TO PERMIT USAGE OF COMPLEX NUMBERS
+
     case HASH_PRODUCT:
-      if (hc_product(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_product(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
-      */
 
     case HASH_COSH:
       fme = hc_result_(f_expr);
