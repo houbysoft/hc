@@ -209,6 +209,21 @@ int hc_modulus(M_APM result, char *e)
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
+  char *ipart = hc_imag_part(arg1);
+  if (ipart)
+  {
+    free(ipart);
+    free(arg1); free(arg2);
+    arg_error("mod() : real arguments are required.");
+  } else {
+    ipart = hc_imag_part(arg2);
+    if (ipart)
+    {
+      free(ipart);
+      free(arg1); free(arg2);
+      arg_error("mod() : real arguments are required.");
+    }
+  }
   M_APM a,b,tmp;
   tmp = m_apm_init();
   a = m_apm_init(); m_apm_set_string(a,arg1);
@@ -216,6 +231,7 @@ int hc_modulus(M_APM result, char *e)
   m_apm_integer_div_rem(tmp,result,a,b);
 
   m_apm_free(a); m_apm_free(b); m_apm_free(tmp);
+  free(arg1); free(arg2);
   return SUCCESS;
 }
 
@@ -236,6 +252,22 @@ int hc_binomc(M_APM result, char *e)
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
+
+  char *ipart = hc_imag_part(arg1);
+  if (ipart)
+  {
+    free(ipart);
+    free(arg1); free(arg2);
+    arg_error("nCr() arguments must be real numbers.");
+  } else {
+    ipart = hc_imag_part(arg2);
+    if (ipart)
+    {
+      free(ipart);
+      free(arg1); free(arg2);
+      arg_error("nCr() arguments must be real numbers.");
+    }
+  }
 
   M_APM n,k;
   n = m_apm_init();
@@ -301,6 +333,22 @@ int hc_permutations(M_APM result, char *e)
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
+
+  char *ipart = hc_imag_part(arg1);
+  if (ipart)
+  {
+    free(ipart);
+    free(arg1); free(arg2);
+    arg_error("nPr() arguments must be real numbers.");
+  } else {
+    ipart = hc_imag_part(arg2);
+    if (ipart)
+    {
+      free(ipart);
+      free(arg1); free(arg2);
+      arg_error("nPr() arguments must be real numbers.");
+    }
+  }
 
   M_APM n,k;
   n = m_apm_init();
@@ -579,6 +627,12 @@ int hc_fibo(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("fibo() : argument must be a strictly positive integer");
+  }
   M_APM target = m_apm_init();
   M_APM curr = m_apm_init();
   M_APM curr2 = m_apm_init();
@@ -586,6 +640,7 @@ int hc_fibo(M_APM result, char *e)
   M_APM b = m_apm_init();
   M_APM c = m_apm_init();
   m_apm_set_string(target,fme);
+  free(fme);
 
   if (!m_apm_is_integer(target))
     arg_error("fibo() : argument must be a strictly positive integer");
@@ -625,7 +680,6 @@ int hc_fibo(M_APM result, char *e)
   m_apm_free(b);
   m_apm_copy(result,c);
   m_apm_free(c);
-  free(fme);
 
   return SUCCESS;
 }
@@ -907,6 +961,14 @@ int hc_totient(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart);
+    free(fme);
+    arg_error("totient() : argument has to be a positive integer.");
+  }
 
   M_APM i,j,copy_tmp,copy_tmp2;
   i = m_apm_init();

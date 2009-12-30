@@ -968,25 +968,24 @@ char *hc_result_(char *f)
 	m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_root(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im,3,3);
-      //m_apm_cbrt(f_result,HC_DEC_PLACES,tmp_num);
       break;
 
-      /* FIX FIX FIX TODO
     case HASH_MOD:
-      if (hc_modulus(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_modulus(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_FIBO:
-      if (hc_fibo(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_fibo(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_TOTIENT:
-      if (hc_totient(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_totient(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
+      /* FIX FIX FIX TODO
     case HASH_CTOF:
       if (hc_c2f(f_result,f_expr) == FAIL)
       {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
@@ -1056,17 +1055,17 @@ char *hc_result_(char *f)
       if (hc_m2ft(f_result,f_expr) == FAIL)
       {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
       break;
+      */
 
     case HASH_NCR:
-      if (hc_binomc(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_binomc(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_NPR:
-      if (hc_permutations(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_permutations(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
-      */
 
     case HASH_GRAPH:
       hc_graph(f_expr);
