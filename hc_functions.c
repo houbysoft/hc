@@ -692,6 +692,12 @@ int hc_f2c(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("ftoc() : argument must be a real number.");
+  }
   M_APM f = m_apm_init();
   M_APM x = m_apm_init();
   m_apm_set_string(f,fme);
@@ -716,6 +722,12 @@ int hc_c2f(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("ctof() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
   m_apm_set_string(tmp,fme);
@@ -740,6 +752,12 @@ int hc_c2k(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("ctok() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 
@@ -763,6 +781,12 @@ int hc_k2c(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("ktoc() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 
@@ -812,6 +836,12 @@ int hc_km2mi(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("kmtomi() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
   m_apm_set_string(x,"0.621371192"); // Source : Google calculator
@@ -829,6 +859,12 @@ int hc_mi2km(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("mitokm() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
   m_apm_set_string(x,"0.621371192"); // Source : Google calculator
@@ -846,6 +882,12 @@ int hc_floz2ml(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("floztoml() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 
@@ -865,6 +907,12 @@ int hc_ml2floz(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("mltofloz() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 
@@ -884,6 +932,12 @@ int hc_inch2cm(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("inchtocm() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 
@@ -903,6 +957,12 @@ int hc_cm2inch(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("cmtoinch() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 
@@ -922,6 +982,12 @@ int hc_ft2m(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("fttom() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 
@@ -941,6 +1007,12 @@ int hc_m2ft(M_APM result, char *e)
   char *fme = hc_result_(e);
   if (fme == NULL)
     return FAIL;
+  char *ipart = hc_imag_part(fme);
+  if (ipart)
+  {
+    free(ipart); free(fme);
+    arg_error("mtoft() : argument must be a real number.");
+  }
   M_APM tmp = m_apm_init();
   M_APM x = m_apm_init();
 

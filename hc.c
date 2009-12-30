@@ -985,77 +985,75 @@ char *hc_result_(char *f)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
-      /* FIX FIX FIX TODO
     case HASH_CTOF:
-      if (hc_c2f(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_c2f(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_FTOC:
-      if (hc_f2c(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_f2c(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_CTOK:
-      if (hc_c2k(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_c2k(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_KTOC:
-      if (hc_k2c(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_k2c(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_FTOK:
-      if (hc_f2k(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_f2k(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_KTOF:
-      if (hc_k2f(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_k2f(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_MITOKM:
-      if (hc_mi2km(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_mi2km(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_KMTOMI:
-      if (hc_km2mi(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_km2mi(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_MLTOFLOZ:
-      if (hc_ml2floz(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_ml2floz(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_FLOZTOML:
-      if (hc_floz2ml(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_floz2ml(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_INCHTOCM:
-      if (hc_inch2cm(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_inch2cm(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_CMTOINCH:
-      if (hc_cm2inch(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_cm2inch(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_FTTOM:
-      if (hc_ft2m(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_ft2m(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_MTOFT:
-      if (hc_m2ft(f_result,f_expr) == FAIL)
-      {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
+      if (hc_m2ft(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
-      */
 
     case HASH_NCR:
       if (hc_binomc(f_result_re,f_expr) == FAIL)
