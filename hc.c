@@ -1504,10 +1504,10 @@ char *hc_postfix_result(char *e)
      char *result_re,*result_im;
      if (hc.sci)
      {
-       result_re = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->re))+1)); // x.hc.precisionEexponent + null char
+       result_re = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->re))+2)); // x.hc.precisionE+sign+exponent + null char
        if (m_apm_compare(curr->im,MM_Zero)!=0)
        {
-	 result_im = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->im))+1));
+	 result_im = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->im))+2));
 	 m_apm_to_string(result_im,hc.precision,curr->im);
        } else {
 	 result_im = NULL;
@@ -1545,6 +1545,8 @@ char *hc_postfix_result(char *e)
        strcpy(result_cplx,result_re);
        strcat(result_cplx,"i");
        strcat(result_cplx,result_im);
+       free(result_re);
+       free(result_im);
        return result_cplx;
      }
 }
