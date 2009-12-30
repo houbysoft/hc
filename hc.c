@@ -952,7 +952,6 @@ char *hc_result_(char *f)
       m_apmc_sqrt(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
-      /* FIX FIX FIX TODO
     case HASH_CBRT:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
@@ -968,9 +967,11 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      m_apm_cbrt(f_result,HC_DEC_PLACES,tmp_num);
+      m_apmc_root(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im,3,3);
+      //m_apm_cbrt(f_result,HC_DEC_PLACES,tmp_num);
       break;
 
+      /* FIX FIX FIX TODO
     case HASH_MOD:
       if (hc_modulus(f_result,f_expr) == FAIL)
       {m_apm_free(tmp_num); m_apm_free(f_result); free(e); hc_nested--; return NULL;}
@@ -1313,7 +1314,13 @@ char *hc_postfix_result(char *e)
 	   d0_error();
 	   return NULL;
 	 }
-	 m_apmc_divide(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	 if (m_apm_compare(op1_i,MM_Zero)==0 && m_apm_compare(op2_i,MM_Zero)==0)
+	 {
+	   m_apm_set_string(curr->im,"0");
+	   m_apm_divide(curr->re,HC_DEC_PLACES,op1_r,op2_r);
+	 } else {
+	   m_apmc_divide(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	 }
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
@@ -1408,7 +1415,13 @@ char *hc_postfix_result(char *e)
 	 {
 	   m_apmc_sqr(curr->re,curr->im,op1_r,op1_i);
 	 } else {
-	   m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	   if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op1_i,MM_Zero)==0)
+	   {
+	     m_apm_set_string(curr->im,"0");
+	     m_apm_pow(curr->re,HC_DEC_PLACES,op1_r,op2_r);
+	   } else {
+	     m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	   }
 	 }
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
