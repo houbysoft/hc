@@ -1202,8 +1202,26 @@ char *hc_2sci(char *n)
   m_apm_free(_n_);
   if (n[0]=='0')
   {
-    // FIX FIX FIX TODO
-    return n;
+    r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
+    if (!r)
+      mem_error();
+    unsigned int i = 2;
+    while (n[i]=='0')
+      i++;
+    r[0] = n[i];
+    r[1] = '.';
+    unsigned int j = 2;
+    i++;
+    while (n[i]!='\0')
+      r[j++] = n[i++];
+    r[j] = 'E';
+    r[j+1] = 0;
+    char *_exp_ = malloc(hc_need_space_int(exp)+1);
+    sprintf(_exp_,"%i",exp);
+    strcat(r,_exp_);
+    free(_exp_);
+    free(n);
+    return r;
   } else {
     r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
     if (!r)
