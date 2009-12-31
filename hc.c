@@ -187,39 +187,46 @@ char *hc_result(char *e)
 	  m_apm_set_string(hc_lans_mapm_im,tmp_num);
 	  free(tmp_num);
 	}
-	if (hc.sci == FALSE)
+	char *r_re,*r_im;
+	r_re = hc_real_part(r); r_im = hc_imag_part(r);
+	free(r);
+	if (!r_im)
 	{
-	  char *r_re,*r_im;
-	  r_re = hc_real_part(r); r_im = hc_imag_part(r);
-	  free(r);
-	  if (!r_im)
+	  r = r_re;
+	  int i=strlen(r)-1;
+	  while (r[i]=='0')
+	    r[i--]=0;
+	  if (r[i]=='.')
+	    r[i]=0;
+	  if (hc.sci == TRUE)
 	  {
-	    r = r_re;
-	    int i=strlen(r)-1;
-	    while (r[i]=='0')
-	      r[i--]=0;
-	    if (r[i]=='.')
-	      r[i]=0;
-	  } else {
-	    int i=strlen(r_re)-1;
-	    while (r_re[i]=='0')
-	      r_re[i--]=0;
-	    if (r_re[i]=='.')
-	      r_re[i]=0;
-
-	    i = strlen(r_im)-1;
-	    while (r_im[i]=='0')
-	      r_im[i--]=0;
-	    if (r_im[i]=='.')
-	      r_im[i]=0;
-
-	    r = malloc(strlen(r_re)+1+strlen(r_im)+1);
-	        // r_re i r_im \0
-	    strcpy(r,r_re);
-	    strcat(r,"i");
-	    strcat(r,r_im);
-	    free(r_re); free(r_im);
+	    r = hc_2sci(r);
 	  }
+	} else {
+	  int i=strlen(r_re)-1;
+	  while (r_re[i]=='0')
+	    r_re[i--]=0;
+	  if (r_re[i]=='.')
+	    r_re[i]=0;
+	  
+	  i = strlen(r_im)-1;
+	  while (r_im[i]=='0')
+	    r_im[i--]=0;
+	  if (r_im[i]=='.')
+	    r_im[i]=0;
+
+	  if (hc.sci)
+	  {
+	    r_re = hc_2sci(r_re);
+	    r_im = hc_2sci(r_im);
+	  }
+	  
+	  r = malloc(strlen(r_re)+1+strlen(r_im)+1);
+	  // r_re i r_im \0
+	  strcpy(r,r_re);
+	  strcat(r,"i");
+	  strcat(r,r_im);
+	  free(r_re); free(r_im);
 	}
       }
     }
@@ -1502,27 +1509,11 @@ char *hc_postfix_result(char *e)
      curr = curr->p;
 
      char *result_re,*result_im;
-     if (hc.sci)
-     {
-       result_re = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->re))+2)); // x.hc.precisionE+sign+exponent + null char
-       if (m_apm_compare(curr->im,MM_Zero)!=0)
-       {
-	 result_im = malloc(sizeof(char)*(hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->im))+2));
-	 m_apm_to_string(result_im,hc.precision,curr->im);
-       } else {
-	 result_im = NULL;
-       }
-#ifdef DBG
-       printf("hc_postfix_result allocated ==> %i (real part)\n",hc.precision+2+1+hc_need_space_int(m_apm_exponent(curr->re))+1);
-#endif
-       m_apm_to_string(result_re,hc.precision,curr->re);
-     } else {
-       result_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->re,'.',0,0);
-       if (m_apm_compare(curr->im,MM_Zero)!=0)
-	 result_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->im,'.',0,0);
-       else
-	 result_im = NULL;
-     }
+     result_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->re,'.',0,0);
+     if (m_apm_compare(curr->im,MM_Zero)!=0)
+       result_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->im,'.',0,0);
+     else
+       result_im = NULL;
      m_apm_free(op1_r);m_apm_free(op1_i);
      m_apm_free(op2_r);m_apm_free(op2_i);
 

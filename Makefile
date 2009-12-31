@@ -11,8 +11,11 @@ COPT=-Wall -g
 # additional options to pass to gcc when linking
 LOPT=
 
-hc: main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o
-	gcc `pkg-config --cflags --libs plplotd` ${LOPT} main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o -lmapmx /usr/lib/libmapm.a -lgdc -lgd -lm -lreadline -o $@
+hc: main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o
+	gcc `pkg-config --cflags --libs plplotd` ${LOPT} main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o /usr/lib/libmapm.a -lgdc -lgd -lm -lreadline -o $@
+
+m_apmc.o: m_apmc.c
+	gcc ${COPT} -c m_apmc.c
 
 main.o: main.c
 	gcc ${COPT} -c main.c
