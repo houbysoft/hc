@@ -669,15 +669,17 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      /*
-      if ((m_apm_compare(tmp_num,MM_One)==1) || (m_apm_compare(tmp_num,MM_MOne)==-1))
-      {
-	hc_nested--;
-	arg_error("acos() : NaN");
-      }*/
       m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      // FIX FIX FIX
-      hc_from_rad(f_result_re);
+      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("acos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_from_rad(f_result_re);
+      }
       break;
       
     case HASH_ASIN:
@@ -695,15 +697,17 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      /*
-      if ((m_apm_compare(tmp_num,MM_One)==1) || (m_apm_compare(tmp_num,MM_MOne)==-1))
-      {
-	hc_nested--;
-	arg_error("asin() : NaN");
-      }*/
       m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      // FIX FIX FIX 
-      hc_from_rad(f_result_re);
+      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("asin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_from_rad(f_result_re);
+      }
       break;
 
     case HASH_ATAN:
@@ -722,8 +726,16 @@ char *hc_result_(char *f)
 	m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      // FIX FIX FIX
-      hc_from_rad(f_result_re);
+      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("atan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_from_rad(f_result_re);
+      }
       break;
 
     case HASH_COS:
@@ -741,9 +753,17 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      // FIX FIX FIX
-      hc_to_rad(tmp_num_re);
-      m_apmc_cos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("cos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_to_rad(tmp_num_re);
+        m_apmc_cos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
       break;
 
     case HASH_EXP:
@@ -846,9 +866,17 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      // FIX FIX FIX
-      hc_to_rad(tmp_num_re);
-      m_apmc_sin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("sin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_to_rad(tmp_num_re);
+        m_apmc_sin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
       break;
 
     case HASH_TAN:
@@ -866,9 +894,17 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      // FIX FIX FIX
-      hc_to_rad(tmp_num_re);
-      m_apmc_tan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("tan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_to_rad(tmp_num_re);
+        m_apmc_tan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
       break;
 
     case HASH_SUM:
@@ -896,7 +932,16 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      m_apmc_cosh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("cosh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+        m_apmc_cosh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
       break;
 
     case HASH_SINH:
@@ -914,7 +959,16 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      m_apmc_sinh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("sinh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+        m_apmc_sinh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
       break;
 
     case HASH_TANH:
@@ -932,7 +986,16 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      m_apmc_tanh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	free(e);
+	hc_nested--;
+	arg_error("tanh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+        m_apmc_tanh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
       break;
 
     case HASH_SQRT:
@@ -950,12 +1013,6 @@ char *hc_result_(char *f)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      /*
-      if (m_apm_compare(tmp_num,MM_Zero)==-1)
-      {
-	hc_nested--;
-	arg_error("sqrt() : non-real result.");
-	}*/
       m_apmc_sqrt(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
 
