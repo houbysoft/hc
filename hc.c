@@ -198,9 +198,18 @@ char *hc_result(char *e)
 	    r[i--]=0;
 	  if (r[i]=='.')
 	    r[i]=0;
-	  if (hc.sci == TRUE)
+	  switch (hc.exp)
 	  {
+	  case 's':
 	    r = hc_2sci(r);
+	    break;
+
+	  case 'e':
+	    r = hc_2eng(r);
+	    break;
+
+	  default:
+	    break;
 	  }
 	} else {
 	  int i=strlen(r_re)-1;
@@ -215,10 +224,20 @@ char *hc_result(char *e)
 	  if (r_im[i]=='.')
 	    r_im[i]=0;
 
-	  if (hc.sci)
+	  switch (hc.exp)
 	  {
+	  case 's': // SCI
 	    r_re = hc_2sci(r_re);
 	    r_im = hc_2sci(r_im);
+	    break;
+
+	  case 'e': // ENG
+	    r_re = hc_2eng(r_re);
+	    r_im = hc_2eng(r_im);
+	    break;
+
+	  default:
+	    break;
 	  }
 	  
 	  r = malloc(strlen(r_re)+1+strlen(r_im)+1);
@@ -1864,11 +1883,16 @@ void hc_process_direction(char *d)
       notify("RPN mode is now off.");
     break;
   case HASH_SCI:
-    hc.sci = hc.sci==TRUE ? FALSE : TRUE;
-    if (hc.sci == TRUE)
-      notify("SCI mode is now on.")
-    else
-      notify("SCI mode is now off.");
+    hc.exp = 's';
+    notify("Exponential format is now SCI.");
+    break;
+  case HASH_ENG:
+    hc.exp = 'e';
+    notify("Exponential format is now ENG.");
+    break;
+  case HASH_NORMAL:
+    hc.exp = 'n';
+    notify("Exponential format is now normal.");
     break;
   case HASH_BPN:
     hc.bypass_nested = hc.bypass_nested==TRUE ? FALSE : TRUE;
@@ -1980,7 +2004,7 @@ void hc_load_cfg()
   {
     hc.rpn = FALSE;
     hc.precision = 16;
-    hc.sci = FALSE;
+    hc.exp = 'n';
     hc.keys = TRUE;
     hc.plplot_dev_override = NULL;
   } else {
@@ -2012,11 +2036,13 @@ void hc_load_cfg()
 	else
 	  hc.rpn = FALSE;
 	break;
-      case HASH_SCI:
-	if (buffer[i+1]=='1')
-	  hc.sci = TRUE;
-	else
-	  hc.sci = FALSE;
+      case HASH_EXP_FORMAT:
+	hc.exp = buffer[i+1];
+	if (hc.exp!='s' && hc.exp!='e' && hc.exp!='n')
+	{
+	  warning("configuration file has incorrect exponential format specification. Setting to normal.");
+	  hc.exp = 'n';
+	}
 	break;
       case HASH_PRECISION:
 	hc.precision = atoi(&buffer[i+1]);
@@ -2065,7 +2091,7 @@ void hc_load_cfg()
   static char announce = TRUE;
   if (announce == TRUE)
   {
-    printf("Configuration :\n Angle format = %s | RPN mode = %s | Precision = %i | SCI mode = %s\n",hc.angle=='r' ? "RAD" : hc.angle=='d' ? "DEG" : "GRAD",hc.rpn==0 ? "off" : "on",hc.precision,hc.sci==0 ? "off" : "on");
+    printf("Configuration :\n Angle format = %s | RPN mode = %s | Precision = %i | EXP format = %s\n",hc.angle=='r' ? "RAD" : hc.angle=='d' ? "DEG" : "GRAD",hc.rpn==0 ? "off" : "on",hc.precision,hc.exp=='s' ? "SCI" : hc.exp=='e' ? "ENG" : "NORMAL");
     announce = FALSE;
   }
 }
@@ -2076,7 +2102,6 @@ void hc_save_cfg()
   FILE *fw = fopen(HC_CFG_FILE,"w");
   fprintf(fw,"rpn=%i\n",hc.rpn==0 ? FALSE : TRUE);
   fprintf(fw,"precision=%i\n",hc.precision);
-  fprintf(fw,"sci=%i\n",hc.sci==0 ? FALSE : TRUE);
   fprintf(fw,"keys=%i\n",hc.keys==0 ? FALSE : TRUE);
   fprintf(fw,"bpn=%i\n",hc.bypass_nested==0 ? FALSE : TRUE);
   if (hc.plplot_dev_override)
@@ -2084,6 +2109,7 @@ void hc_save_cfg()
   else
     fprintf(fw,"pldev=$\n");
   fprintf(fw,"angle=%c\n",hc.angle);
+  fprintf(fw,"expf=%c\n",hc.exp);
   fprintf(fw,"3dpoints=%i\n",hc.graph_points_3d);
   fclose(fw);
 }

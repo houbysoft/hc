@@ -1245,3 +1245,74 @@ char *hc_2sci(char *n)
     return r;
   }
 }
+
+
+char *hc_2eng(char *n)
+{
+  if (!n)
+    return NULL;
+  char *r;
+  M_APM _n_ = m_apm_init(); m_apm_set_string(_n_,n);
+  int exp = m_apm_exponent(_n_);
+  m_apm_free(_n_);
+
+  switch (exp % 3)
+  {
+  case 0:
+    return hc_2sci(n);
+    break;
+
+  case 1:
+    break;
+
+  case 2:
+    break;
+  }
+
+
+  if (n[0]=='0')
+  {
+    r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
+    if (!r)
+      mem_error();
+    unsigned int i = 2;
+    while (n[i]=='0')
+      i++;
+    r[0] = n[i];
+    r[1] = '.';
+    unsigned int j = 2;
+    i++;
+    while (n[i]!='\0')
+      r[j++] = n[i++];
+    r[j] = 'E';
+    r[j+1] = 0;
+    char *_exp_ = malloc(hc_need_space_int(exp)+1);
+    sprintf(_exp_,"%i",exp);
+    strcat(r,_exp_);
+    free(_exp_);
+    free(n);
+    return r;
+  } else {
+    r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
+    if (!r)
+      mem_error();
+    r[0] = n[0];
+    r[1] = '.';
+    unsigned int i = 1, j = 2;
+    while (n[i]!='\0')
+    {
+      if (n[i]=='.')
+	i++;
+      r[j++] = n[i++];
+    }
+    r[j] = 'E';
+    r[j+1] = 0;
+    char *_exp_ = malloc(hc_need_space_int(exp)+1);
+    sprintf(_exp_,"%i",exp);
+    strcat(r,_exp_);
+    free(_exp_);
+    free(n);
+    return r;
+  }
+}
+

@@ -122,7 +122,7 @@ typedef struct hc_config {
   char rpn;
   int precision;
   char output_format;
-  char sci;
+  char exp;
   char angle;
   char keys; // GUI only - whether the clickable keys should be displayed
   char bypass_nested; // used to bypass the recursion protection
