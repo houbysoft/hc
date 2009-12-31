@@ -1200,17 +1200,26 @@ char *hc_2sci(char *n)
   M_APM _n_ = m_apm_init(); m_apm_set_string(_n_,n);
   int exp = m_apm_exponent(_n_);
   m_apm_free(_n_);
-  if (n[0]=='0')
+  if ((n[0]=='-' && n[1]=='0') || n[0]=='0')
   {
     r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
     if (!r)
       mem_error();
     unsigned int i = 2;
-    while (n[i]=='0')
+    while (n[i]=='0' || n[i]=='-' || n[i]=='.')
       i++;
-    r[0] = n[i];
-    r[1] = '.';
+    if (n[0]=='-')
+    {
+      r[0] = '-';
+      r[1] = n[i];
+      r[2] = '.';
+    } else {
+      r[0] = n[i];
+      r[1] = '.';
+    }
     unsigned int j = 2;
+    if (n[0]=='-')
+      j++;
     i++;
     while (n[i]!='\0')
       r[j++] = n[i++];
@@ -1226,9 +1235,20 @@ char *hc_2sci(char *n)
     r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
     if (!r)
       mem_error();
-    r[0] = n[0];
-    r[1] = '.';
+    if (n[0]=='-')
+    {
+      r[0] = '-';
+      r[1] = n[1];
+      r[2] = '.';
+    } else {
+      r[0] = n[0];
+      r[1] = '.';
+    }
     unsigned int i = 1, j = 2;
+    if (n[0]=='-')
+    {
+      i++; j++;
+    }
     while (n[i]!='\0')
     {
       if (n[i]=='.')
@@ -1251,21 +1271,48 @@ char *hc_2eng(char *n)
 {
   if (!n)
     return NULL;
-  char *r;
   M_APM _n_ = m_apm_init(); m_apm_set_string(_n_,n);
   int exp = m_apm_exponent(_n_);
   m_apm_free(_n_);
+  char *r = hc_2sci(n);
+  char *tmp;
 
   switch (exp % 3)
   {
   case 0:
-    return hc_2sci(n);
+    return r;
     break;
 
   case 1:
+    // take two numbers, then add exponent -1
+    if (r[0]=='-')
+    {
+      r[2] = r[3];
+      r[3] = '.';
+    } else {
+      r[1] = r[2];
+      r[2] = '.';
+    }
+    char *x = malloc(hc_need_space_int(exp-1)+1);
+    sprintf(x,"%i",exp-1);
+    r[strchr(r,'E')-r+1] = 0;
+    tmp = malloc(strlen(x)+strlen(r)+1);
+    strcpy(tmp,r);
+    strcat(tmp,x);
+    free(r); free(x);
+    return tmp;
     break;
 
   case 2:
+    // take three numbers, then add exponent -2
+    break;
+
+  case -1:
+    // take three numbers, then add exponent -2
+    break;
+
+  case -2:
+    // take two numbers, then add exponent -1
     break;
   }
 
