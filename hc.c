@@ -39,6 +39,7 @@ const char *hc_fnames[][2] = {
   {"asin","func"},
   {"atan","func"},
   {"cbrt","func"},
+  {"ceil","func"},
   {"cmtoinch","func"},
   {"cos","func"},
   {"cosh","func"},
@@ -47,6 +48,7 @@ const char *hc_fnames[][2] = {
   {"exp","func"},
   {"factorial","func"},
   {"fibo","func"},
+  {"floor","func"},
   {"floztoml","func"},
   {"ftoc","func"},
   {"ftok","func"},
@@ -522,7 +524,7 @@ char *hc_result_(char *f)
 
   if (strcmp(e,"help")==0)
   {
-    printf("Welcome to HC!\nTo calculate an expression, simply enter it on the command-line in infix notation and press enter.\nTo use a constant, simply type its name with english characters - for example pi. For more info type \"constants\".\nTo draw a graph, use the graph() function; see below for more info.\nYou can also use a few functions; the list of them is below:\n - ans() - Will be replaced by the result of the last entered expression\n - abs(x) - absolute value of x\n - acos(x) - arc cosine of x\n - asin(x) arc sine of x\n - atan(x) - arc tangent of x\n - cbrt(x) - returns the cube root of x (you could also use x^(1/3))\n - cmtoinch(x) - converts x, which has to be in cm, to inches\n - cos(x) - cosine of x\n - cosh(x) - hyperbolic cosine of x\n - ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit\n - ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin\n - exp(x) - exponential function\n - factorial(x) - factorial of x (you can also use the '!' notation)\n - fibo(x) - returns the xth term of the Fibonacci sequence\n - floztoml(x) - converts x, which has to be in US fluid ounces, to ml\n - ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius\n - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin\n - fttom(x) - converts x, which has to be in feet, to meters\n - gcd(x,y) - finds the greatest common divisor of x and y\n - graph(expr,xmin,xmax,ymin,ymax) - draw a graph (generate a PNG file if in command-line), example syntax:\n     graph(x^2,-10,10,-100,100)\n - graph3(expr,xmin,xmax,ymin,ymax,zmin,zmax) - draw a 3D graph (generate a PNG file if in command-line), example syntax:\n     graph3(x+y,-10,10,-10,10,-20,20)\n - inchtocm(x) - converts x, which has to be in inches, to cm\n - kmtomi(x) - converts x, which has to be in km, to miles\n - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius\n - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit\n - lcm(x,y) - finds the least common multiple of x and y\n - ln(x) - natural logarithm\n - log10(x) - common logarithm\n - mitokm(x) - converts x, which has to be in miles, to km\n - mltofloz(x) - converts x, which has to be in ml, to US fluid ounces\n - mod(x,y) - modulus (you can also use the C-style '%%' notation)\n - mtoft(x) - converts x, which has to be in m, to feet\n - nCr(n,k) - binomial coefficient (combinatorics)\n - nPr(n,k) - number of permutations (combinatorics)\n - product(expr,low,high) - returns the product of expr with x from low to high inclusive (WARNING : As of now, other variable names will be ignored)\n - sin(x) - sine of x\n - sinh(x) - hyperbolic sine of x\n - sqrt(x) - returns the square root of x\n - sum(expr,low,high) - same as product, except the result is summation, not multiplication\n - tan(x) - tangent of x\n - tanh(x) - hyperbolic tangent of x\n - totient(x) - Euler's totient function\nYou can also use these directions/configuration commands:\n - \\p PRECISION - change current precision to PRECISION decimal places\n - \\rpn - change modes (RPN / infix)\n - \\sci - switch between \"normal\" and scientific notation for results\n - \\deg, \\rad, \\grad - switch between DEG, RAD, and GRAD modes for angles\n - \\clear - clear all user-defined variables and functions\n - \\3dpoints SIDE - setup the 3D graphing function to compute a square of SIDE^2 points\nTo get a list of only the converter functions, type \"conversions\".\nTo read the license and credits, type \"credits\".\nTo exit The HoubySoft Calculator, just type \"exit\" in the prompt (you can also use CTRL+C on systems that support it, but configuration will not be saved if you do that).\n");
+    printf("Welcome to HC!\nTo calculate an expression, simply enter it on the command-line in infix notation and press enter.\nTo use a constant, simply type its name with english characters - for example pi. For more info type \"constants\".\nTo draw a graph, use the graph() function; see below for more info.\nYou can also use a few functions; the list of them is below:\n - ans() - Will be replaced by the result of the last entered expression\n - abs(x) - absolute value of x\n - acos(x) - arc cosine of x\n - asin(x) arc sine of x\n - atan(x) - arc tangent of x\n - cbrt(x) - returns the cube root of x (you could also use x^(1/3))\n - ceil(x) - returns x rounded to the nearest integer upwards\n - cmtoinch(x) - converts x, which has to be in cm, to inches\n - cos(x) - cosine of x\n - cosh(x) - hyperbolic cosine of x\n - ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit\n - ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin\n - exp(x) - exponential function\n - factorial(x) - factorial of x (you can also use the '!' notation)\n - fibo(x) - returns the xth term of the Fibonacci sequence\n - floor(x) - returns x rounded to the nearest integer downwards\n - floztoml(x) - converts x, which has to be in US fluid ounces, to ml\n - ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius\n - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin\n - fttom(x) - converts x, which has to be in feet, to meters\n - gcd(x,y) - finds the greatest common divisor of x and y\n - graph(expr,xmin,xmax,ymin,ymax) - draw a graph (generate a PNG file if in command-line), example syntax:\n     graph(x^2,-10,10,-100,100)\n - graph3(expr,xmin,xmax,ymin,ymax,zmin,zmax) - draw a 3D graph (generate a PNG file if in command-line), example syntax:\n     graph3(x+y,-10,10,-10,10,-20,20)\n - inchtocm(x) - converts x, which has to be in inches, to cm\n - kmtomi(x) - converts x, which has to be in km, to miles\n - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius\n - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit\n - lcm(x,y) - finds the least common multiple of x and y\n - ln(x) - natural logarithm\n - log10(x) - common logarithm\n - mitokm(x) - converts x, which has to be in miles, to km\n - mltofloz(x) - converts x, which has to be in ml, to US fluid ounces\n - mod(x,y) - modulus (you can also use the C-style '%%' notation)\n - mtoft(x) - converts x, which has to be in m, to feet\n - nCr(n,k) - binomial coefficient (combinatorics)\n - nPr(n,k) - number of permutations (combinatorics)\n - product(expr,low,high) - returns the product of expr with x from low to high inclusive (WARNING : As of now, other variable names will be ignored)\n - sin(x) - sine of x\n - sinh(x) - hyperbolic sine of x\n - sqrt(x) - returns the square root of x\n - sum(expr,low,high) - same as product, except the result is summation, not multiplication\n - tan(x) - tangent of x\n - tanh(x) - hyperbolic tangent of x\n - totient(x) - Euler's totient function\nYou can also use these directions/configuration commands:\n - \\p PRECISION - change current precision to PRECISION decimal places\n - \\rpn - change modes (RPN / infix)\n - \\sci - switch between \"normal\" and scientific notation for results\n - \\deg, \\rad, \\grad - switch between DEG, RAD, and GRAD modes for angles\n - \\clear - clear all user-defined variables and functions\n - \\3dpoints SIDE - setup the 3D graphing function to compute a square of SIDE^2 points\nTo get a list of only the converter functions, type \"conversions\".\nTo read the license and credits, type \"credits\".\nTo exit The HoubySoft Calculator, just type \"exit\" in the prompt (you can also use CTRL+C on systems that support it, but configuration will not be saved if you do that).\n");
     free(e);
     hc_nested--;
     return NULL;
@@ -666,6 +668,42 @@ char *hc_result_(char *f)
 	m_apm_set_string(f_result_im,"0");
 	m_apm_absolute_value(f_result_re,tmp_num_re);
       }
+      break;
+
+    case HASH_FLOOR:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(f_result_im,"0");
+      }
+      m_apmc_floor(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_CEIL:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(f_result_im,"0");
+      }
+      m_apmc_ceil(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
       break;
 
     case HASH_ANS:

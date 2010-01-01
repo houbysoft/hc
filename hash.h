@@ -56,6 +56,10 @@
 #define HASH_GRAPH 11798
 #define HASH_GRAPH3D 5921
 
+// Rounding
+#define HASH_FLOOR 2568
+#define HASH_CEIL 20844
+
 // Sequences
 #define HASH_FIBO 23880
 #define HASH_TOTIENT 3603

@@ -1284,7 +1284,7 @@ char *hc_2eng(char *n)
   int exp = m_apm_exponent(_n_);
   m_apm_free(_n_);
   char *r = hc_2sci(n);
-  char *tmp;
+  char *tmp,*x;
 
   switch (exp % 3)
   {
@@ -1300,7 +1300,10 @@ char *hc_2eng(char *n)
       if (isdigit(r[3]))
       {
 	r[2] = r[3];
-	r[3] = '.';
+	if (isdigit(r[4]))
+	  r[3] = '.';
+	else
+	  memmove(r+3,r+4,strlen(r)-4);
       }
       else
       {
@@ -1311,7 +1314,10 @@ char *hc_2eng(char *n)
       if (isdigit(r[2]))
       {
 	r[1] = r[2];
-	r[2] = '.';
+	if (isdigit(r[3]))
+	  r[2] = '.';
+	else
+	  memmove(r+2,r+3,strlen(r)-3);
       }
       else
       {
@@ -1319,7 +1325,7 @@ char *hc_2eng(char *n)
 	r[1] = '0';
       }
     }
-    char *x = malloc(hc_need_space_int(exp-1)+1);
+    x = malloc(hc_need_space_int(exp-1)+1);
     sprintf(x,"%i",exp-1);
     r[strchr(r,'E')-r+1] = 0;
     tmp = malloc(strlen(x)+strlen(r)+1);
@@ -1330,62 +1336,65 @@ char *hc_2eng(char *n)
     break;
 
   case 2:
-    // take three numbers, then add exponent -2
-    break;
-
   case -1:
     // take three numbers, then add exponent -2
-    break;
-
-    //  case -2:
-    // take two numbers, then add exponent -1
-    //break;
-  }
-
-
-  if (n[0]=='0')
-  {
-    r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
-    if (!r)
-      mem_error();
-    unsigned int i = 2;
-    while (n[i]=='0')
-      i++;
-    r[0] = n[i];
-    r[1] = '.';
-    unsigned int j = 2;
-    i++;
-    while (n[i]!='\0')
-      r[j++] = n[i++];
-    r[j] = 'E';
-    r[j+1] = 0;
-    char *_exp_ = malloc(hc_need_space_int(exp)+1);
-    sprintf(_exp_,"%i",exp);
-    strcat(r,_exp_);
-    free(_exp_);
-    free(n);
-    return r;
-  } else {
-    r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
-    if (!r)
-      mem_error();
-    r[0] = n[0];
-    r[1] = '.';
-    unsigned int i = 1, j = 2;
-    while (n[i]!='\0')
+    if (r[0]=='-')
     {
-      if (n[i]=='.')
-	i++;
-      r[j++] = n[i++];
+      if (r[2]=='.' && isdigit(r[3]) && isdigit(r[4]))
+      {
+	r[2] = r[3];
+	r[3] = r[4];
+	if (isdigit(r[5]))
+	  r[4] = '.';
+	else
+	  memmove(r+4,r+5,strlen(r)-5);
+      }
+      else
+      {
+	if (r[2]=='.' && isdigit(r[3]))
+	{
+	  r[2] = r[3];
+	  r[3] = '0';
+	} else {
+	  memmove(r+4,r+2,strlen(r)-2);
+	  r[2] = '0';
+	  r[3] = '0';
+	}
+      }
+    } else {
+      if (r[1]=='.' && isdigit(r[2]) && isdigit(r[3]))
+      {
+	r[1] = r[2];
+	r[2] = r[3];
+	if (isdigit(r[4]))
+	  r[3] = '.';
+	else
+	  memmove(r+3,r+4,strlen(r)-4);
+      }
+      else
+      {
+	if (r[1]=='.' && isdigit(r[2]))
+	{
+	  r[1] = r[2];
+	  r[2] = '0';
+	} else {
+	  memmove(r+3,r+1,strlen(r)-1);
+	  r[1] = '0';
+	  r[2] = '0';
+	}
+      }
     }
-    r[j] = 'E';
-    r[j+1] = 0;
-    char *_exp_ = malloc(hc_need_space_int(exp)+1);
-    sprintf(_exp_,"%i",exp);
-    strcat(r,_exp_);
-    free(_exp_);
-    free(n);
-    return r;
+    x = malloc(hc_need_space_int(exp-2)+1);
+    sprintf(x,"%i",exp-2);
+    r[strchr(r,'E')-r+1] = 0;
+    tmp = malloc(strlen(x)+strlen(r)+1);
+    strcpy(tmp,r);
+    strcat(tmp,x);
+    free(r); free(x);
+    return tmp;
+    break;
   }
+
+  return NULL;
 }
 
