@@ -10,6 +10,10 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+0.8:
+  - added support for complex numbers
+  - added support for engineering notation
+  - added floor() and ceil()
 0.7:
   - added 3D graphing support with the graph3() function
   - added tab-completion using GNU readline
@@ -111,6 +115,7 @@ Constants are stored with 128 decimal places.
 - asin(x) - arc sine of x
 - atan(x) - arc tangent of x
 - cbrt(x) - returns the cube root of x (you could also use x^(1/3))
+- ceil(x) - returns x rounded to the nearest integer upwards
 - cmtoinch(x) - converts x, which has to be in cm, to inches
 - cos(x) - cosine of x
 - cosh(x) - hyperbolic cosine of x
@@ -119,6 +124,7 @@ Constants are stored with 128 decimal places.
 - exp(x) - exponential function
 - factorial(x) - factorial of x (you can also use the '!' notation)
 - fibo(x) - return the xth term of the Fibonacci sequence
+- floor(x) - returns x rounded to the nearest integer downwards
 - floztoml(x) - converts x, which has to be in US fluid ounces, to ml
 - ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius
 - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin
