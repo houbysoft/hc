@@ -89,6 +89,7 @@ const char *hc_fnames[][2] = {
   {"credits","cmd"},
   {"constants","cmd"},
   {"conversions","cmd"},
+  {"i","sys"},
   // DIRECTIONS/CONFIG (for tab-complete)
   {"\\p","dir"},
   {"\\rpn","dir"},
