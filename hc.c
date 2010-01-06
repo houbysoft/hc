@@ -572,7 +572,6 @@ char *hc_result_(char *f)
   strcpy(e_tmp,tmp1);
   free(tmp1);
   strcpy(e,e_tmp);
-  printf("e - %s\n",e);
   int i,j,k;
   int left_par=0,right_par=0,f_expr_s=0,f_expr_e=0;
 
@@ -1287,6 +1286,8 @@ char *hc_i2p(char *f)
   memset(e,0,MAX_EXPR);
   int i=0,j=0;
 
+  char neg=0;
+
   stack[sp++] = '=';
 
   while (tmp[i]!=0)
@@ -1297,6 +1298,11 @@ char *hc_i2p(char *f)
       {
 	if (sp>=MAX_OP_STACK)
 	  overflow_error();
+	if (tmp[i]=='_' && tmp[i+1]=='(')
+	{
+	  neg = 1;
+	  i++;
+	}
 	switch (tmp[i])
 	{
 	case '=': // terminating character
@@ -1310,6 +1316,12 @@ char *hc_i2p(char *f)
 	  sp--;
 	  while (stack[sp]!='(')
 	    e[j++] = stack[sp--];
+	  if (neg)
+	  {
+	    e[j++] = '_';
+	    e[j++] = ' '; // otherwise following number is treated as a negative
+	    neg=0;
+	  }
 	  break;
 	case '^':
 	case '!':
@@ -1805,9 +1817,7 @@ char *hc_plusminus(char *f)
   // Rules:
   //  1) If minus occurs first on input, prepend a 0
   //  2) If + & - appear next to each other, figure out the resulting number
-  printf("f == %s\n",f);
   f = strreplace_(f,"i-","i_");
-  printf("f == %s\n",f);
   char *e = malloc(MAX_EXPR);
   if (!e)
     mem_error();
