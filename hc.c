@@ -1815,7 +1815,7 @@ char *hc_plusminus(char *f)
     overflow_error();
   strcpy(e,f);
 
-  int i=0,j=0;
+  int i=0;
   int count=0;
   char new[MAX_EXPR];
   memset(&new,0,MAX_EXPR);
@@ -1837,53 +1837,7 @@ char *hc_plusminus(char *f)
 	{
 	  if (last_was_op)
 	  {
-	    strncpy(new,e,i);
-	    if (!hc.rpn)
-	    {
-	      strcat(new,"(0-");
-	      j = strlen(new);
-	    } else {
-	      strcat(new,"0 ");
-	      j = strlen(new);
-	    }
-	    i++;
-	    if (isdigit(e[i]) || e[i]=='.')
-	    {
-	      // number
-	      while (isdigit(e[i]) || e[i]=='.' || tolower(e[i])=='e' ||
-		     (isoperator(e[i]) && (tolower(e[i-1])=='e')))
-		new[j++] = e[i++];
-	    } else {
-	      // function
-	      char end=0;
-	      char left_par=0,right_par=0;
-	      if (!isalpha(e[i+1]))
-	      {
-		// variable
-		new[j++] = e[i++];
-	      } else {
-		while (!end)
-		{
-		  if (e[i]=='(')
-		    left_par++;
-		  if (e[i]==')')
-		    right_par++;
-		  new[j++] = e[i++];
-		  if ((right_par == left_par) && (right_par))
-		    end = 1;
-		}
-	      }
-	    }
-	    if (!hc.rpn)
-	    {
-	      new[j++] = ')';
-	    } else {
-	      new[j++] = '-';
-	    }
-	    new[j] = 0;
-	    strcat(new,e + sizeof(char) * (i));
-	    free(e);
-	    return hc_plusminus(new);
+	    e[i]='_';
 	  } else {
 	    last_was_op = 1;
 	  }
