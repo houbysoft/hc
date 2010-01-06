@@ -1358,7 +1358,7 @@ char *hc_i2p(char *f)
 	}
 
       } else {
-	while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || tolower(tmp[i-1])=='e' || tmp[i]=='_'))
+	while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
 	  e[j++] = tmp[i++];
 	e[j++] = ' ';
 	i--;
@@ -1619,7 +1619,7 @@ char *hc_postfix_result(char *e)
 	 if (e[i]=='@')
 	   e[i] = '_';
          j = 0;
-         while (!isspace(e[i]) && (!isoperator(e[i]) || tolower(e[i-1])=='e' || e[i]=='_') && e[i])
+         while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
          {
            tmp_num[j++] = e[i++];
          }
@@ -1824,6 +1824,7 @@ char *hc_plusminus(char *f)
   if (strlen(f)>MAX_EXPR-1)
     overflow_error();
   strcpy(e,f);
+  free(f);
 
   int i=0;
   int count=0;
