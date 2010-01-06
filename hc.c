@@ -113,8 +113,8 @@ unsigned int simple_hash(char *p)
 }
 
 
-#define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='=') || (c==',') || (c=='!') || (c=='%'))
-#define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='=') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%'))
+#define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='=') || (c==',') || (c=='!') || (c=='%') || (c=='_'))
+#define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='=') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_'))
 #define isdirection(x) (x[0]=='\\')
 #define isvarassign(x) (strchr(x,'=')!=NULL)
 
@@ -1236,10 +1236,14 @@ char *hc_result_(char *f)
     strncpy(e,e_tmp,i);
     e[i]=0;
     char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
+    if (f_result_tmp_re[0]=='-')
+      f_result_tmp_re[0] = '_';
     char *f_result_tmp_im,*f_result_tmp;
     if (m_apm_compare(f_result_im,MM_Zero)!=0)
     {
       f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
+      if (f_result_tmp_im[0]=='-')
+	f_result_tmp_im[0] = '_';
       f_result_tmp = malloc(strlen(f_result_tmp_re)+1+strlen(f_result_tmp_im)+1);
                      // re i im \0
       strcpy(f_result_tmp,f_result_tmp_re);
@@ -1288,7 +1292,7 @@ char *hc_i2p(char *f)
   {
     if (!isspace(tmp[i]))
     {
-      if (isoperator(tmp[i]))
+      if (isoperator(tmp[i]) && (tmp[i]!='_' || !isdigit(tmp[i+1])))
       {
 	if (sp>=MAX_OP_STACK)
 	  overflow_error();
@@ -1308,7 +1312,7 @@ char *hc_i2p(char *f)
 	  break;
 	case '^':
 	case '!':
-	  if ((stack[sp-1]=='+')||(stack[sp-1]=='-')||(stack[sp-1]=='=')||(stack[sp-1]=='(')||(stack[sp-1]=='*')||(stack[sp-1]=='/')||(stack[sp-1]==PW_SIGN)||(stack[sp-1]=='%'))
+	  if ((stack[sp-1]=='+')||(stack[sp-1]=='-')||(stack[sp-1]=='_')||(stack[sp-1]=='=')||(stack[sp-1]=='(')||(stack[sp-1]=='*')||(stack[sp-1]=='/')||(stack[sp-1]==PW_SIGN)||(stack[sp-1]=='%'))
 	  {
 	    stack[sp++] = tmp[i];
 	  } else {
@@ -1319,7 +1323,7 @@ char *hc_i2p(char *f)
 	case '*':
 	case '/':
 	case '%':
-	  if ((stack[sp-1]=='+')||(stack[sp-1]=='-')||(stack[sp-1]=='=')||(stack[sp-1]=='('))
+	  if ((stack[sp-1]=='+')||(stack[sp-1]=='-')||(stack[sp-1]=='_')||(stack[sp-1]=='=')||(stack[sp-1]=='('))
 	  {
 	    stack[sp++] = tmp[i];
 	  } else {
@@ -1327,6 +1331,7 @@ char *hc_i2p(char *f)
 	    i--;
 	  }
 	  break;
+	case '_':
 	case '+':
 	case '-':
 	    if ((stack[sp-1]!='(')&&(stack[sp-1]!='='))
@@ -1340,7 +1345,7 @@ char *hc_i2p(char *f)
 	}
 
       } else {
-	while ((!isspace(tmp[i]))&&((!isoperator(tmp[i]) || tolower(tmp[i-1])=='e')))
+	while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || tolower(tmp[i-1])=='e' || tmp[i]=='_'))
 	  e[j++] = tmp[i++];
 	e[j++] = ' ';
 	i--;
@@ -1506,6 +1511,19 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
+       case '_':
+	 if (!isdigit(e[i+1]))
+	 {
+	   curr = curr->p;
+	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	   m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
+	   curr = curr->n;
+	   break;
+	 } else {
+	   e[i] = '@';
+	   i--;
+	   break;
+	 }
        case '-':
 	 if (sp < 2)
 	 {
@@ -1585,8 +1603,10 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 break;
        default:
+	 if (e[i]=='@')
+	   e[i] = '_';
          j = 0;
-         while (!isspace(e[i]) && (!isoperator(e[i]) || tolower(e[i-1])=='e') && e[i])
+         while (!isspace(e[i]) && (!isoperator(e[i]) || tolower(e[i-1])=='e' || e[i]=='_') && e[i])
          {
            tmp_num[j++] = e[i++];
          }
@@ -1594,11 +1614,15 @@ char *hc_postfix_result(char *e)
          tmp_num[j]=0;
 	 char *tmp_num2;
 	 tmp_num2 = hc_real_part(tmp_num);
+	 if (tmp_num2[0]=='_')
+	   tmp_num2[0] = '-';
 	 m_apm_set_string(curr->re,tmp_num2); // set real part
 	 free(tmp_num2);
 	 tmp_num2 = hc_imag_part(tmp_num);
 	 if (tmp_num2)
 	 {
+	   if (tmp_num2[0]=='_')
+	     tmp_num2[0] = '-';
 	   m_apm_set_string(curr->im,tmp_num2); // set imaginary part
 	   free(tmp_num2);
 	 } else {
@@ -1658,8 +1682,12 @@ char *hc_postfix_result(char *e)
      {
        char *result_cplx = malloc(strlen(result_re)+1+strlen(result_im)+1);
                            // re i im \0
+       /*       if (result_re[0]=='-')
+		result_re[0] = '_';*/
        strcpy(result_cplx,result_re);
        strcat(result_cplx,"i");
+       /*       if (result_re[0]=='_')
+		result_re[0] = '-';*/
        strcat(result_cplx,result_im);
        free(result_re);
        free(result_im);
@@ -1708,14 +1736,14 @@ char hc_check(char *e)
     {
       if (!isspace(e[i]) && (first==0))
       {
-	if ((isoperator_np(e[i])) && (e[i]!='-'))
+	if ((isoperator_np(e[i])) && (e[i]!='-') && (e[i]!='_'))
 	{
 	  return 0;
 	} else {
 	  first = 1;
 	}
       }
-      if ((!isalnum(e[i])) && (!isoperator(e[i])) && (e[i]!='^') && (e[i]!='.') && !isspace(e[i]) && (e[i]!=',') && (e[i]!='x'))
+      if ((!isalnum(e[i])) && (!isoperator(e[i])) && (e[i]!='^') && (e[i]!='.') && !isspace(e[i]) && (e[i]!=',') && (e[i]!='x') && (e[i]!='_'))
       {
 	return 0;
       }
