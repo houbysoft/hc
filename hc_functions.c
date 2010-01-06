@@ -32,6 +32,75 @@ double hc_strtod(const char *e, char *unused)
 }
 
 
+char *strreplace_(char *in, char *old, char *new)
+{
+#ifdef DBG
+  printf("strreplace_ received %s\n",in);
+#endif
+  char *p = strstr(in,old);
+  char *result;
+  if (!p)
+  {
+    result = malloc(sizeof(char) * (strlen(in) + 1));
+    if (!result)
+      mem_error();
+    strcpy(result,in);
+    return result;
+  } else {
+
+    if (TRUE)
+    {
+      result = malloc(sizeof(char) * (strlen(in)+1-strlen(old)+strlen(new)));
+      if (!result)
+	mem_error();
+      memset(result,0,strlen(in)+1-strlen(old)+strlen(new));
+      strncpy(result,in,p-in);
+      strcat(result,new);
+      p+= strlen(old);
+      strcat(result,p);
+      char *tmp=malloc(2);
+      strcpy(tmp,"#");
+      while (strstr(result,old)!=NULL && strcmp(tmp,result)!=0)
+      {
+        if (tmp)
+          free(tmp);
+	tmp = result;
+	result = strreplace(result,old,new);
+      }
+      free(tmp);
+      return result;
+    } else {
+      int result_malloc = sizeof(char)*(strlen(in)-strlen(p+1)+1);
+      result = malloc(result_malloc);
+      if (!result)
+	mem_error();
+      strncpy(result,in,(strlen(in)-strlen(p+1)));
+      result[(strlen(in)-strlen(p+1))]=0;
+      char *ptr = in+sizeof(char)*strlen(in)-strlen(p+1);
+      while (isalpha((char)(ptr-sizeof(char))[0]) && isalpha(ptr[0]))
+      {
+	char apme[2];
+	apme[0] = ptr[0];
+	apme[1] = 0;
+	result = realloc(result,++result_malloc);
+	strcat(result,apme);
+	ptr++;
+      }
+      //char *cat = strreplace(in+sizeof(char)*(strlen(in)-strlen(p+1)),old,new);
+      char *cat = strreplace(ptr,old,new);
+      char *tmp = malloc(sizeof(char) * (strlen(cat)+strlen(result)+1));
+      if (!tmp)
+	mem_error();
+      strcpy(tmp,result);
+      strcat(tmp,cat);
+      free(result);
+      free(cat);
+      return tmp;
+    }
+  }
+}
+
+
 char *strreplace(char *in, char *old, char *new)
 {
 #ifdef DBG

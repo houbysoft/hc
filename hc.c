@@ -572,6 +572,7 @@ char *hc_result_(char *f)
   strcpy(e_tmp,tmp1);
   free(tmp1);
   strcpy(e,e_tmp);
+  printf("e - %s\n",e);
   int i,j,k;
   int left_par=0,right_par=0,f_expr_s=0,f_expr_e=0;
 
@@ -1804,6 +1805,9 @@ char *hc_plusminus(char *f)
   // Rules:
   //  1) If minus occurs first on input, prepend a 0
   //  2) If + & - appear next to each other, figure out the resulting number
+  printf("f == %s\n",f);
+  f = strreplace_(f,"i-","i_");
+  printf("f == %s\n",f);
   char *e = malloc(MAX_EXPR);
   if (!e)
     mem_error();
@@ -1825,50 +1829,8 @@ char *hc_plusminus(char *f)
       {
 	if (e[i] == '-')
 	{
-	  if (!hc.rpn)
-	  {
-	    strcpy(new,"(0-");
-	    j = strlen(new);
-	  }
-	  i++;
-	  if (isdigit(e[i]) || e[i]=='.')
-	  {
-	    // number
-	    while (isdigit(e[i]) || e[i]=='.' || tolower(e[i])=='e' ||
-		   (isoperator(e[i]) && (tolower(e[i-1])=='e')))
-	      new[j++] = e[i++];
-	  } else {
-	    // function / variable
-	    char end=0;
-	    char left_par=0,right_par=0;
-	    if (!isalpha(e[i+1]))
-	    {
-	      // variable
-	      new[j++] = e[i++];
-	    } else {
-	      // function
-	      while (!end)
-	      {
-		if (e[i]=='(')
-		  left_par++;
-		if (e[i]==')')
-		  right_par++;
-		new[j++] = e[i++];
-		if ((right_par == left_par) && (right_par))
-		  end = 1;
-	      }
-	    }
-	  }
-	  if (!hc.rpn)
-	  {
-	    new[j++] = ')';
-	  } else {
-	    new[j++] = '-';
-	  }
-	  new[j] = 0;
-	  strcat(new,e + sizeof(char) * (i));
-	  free(e);
-	  return hc_plusminus(new);
+	  e[i]='_';
+	  count++;
 	}
       } else {
 	if (e[i]=='-')
