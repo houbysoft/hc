@@ -349,7 +349,10 @@ char hc_graph3d(char *e)
   free(a_x);
   free(a_y);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)
+  {
     free(a[i]);
+    free(a_hasval[i]);
+  }
   free(a);
 
 #ifdef HCG
