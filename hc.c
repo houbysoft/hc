@@ -22,7 +22,7 @@
 #include <string.h>
 #include <math.h>
 #include <m_apm.h>
-#include <mapmx/m_apmc.h>
+#include "m_apmc.h"
 #include "hc.h"
 #include "hc_functions.h"
 #include "hash.h"
