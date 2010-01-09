@@ -140,6 +140,14 @@ typedef struct hc_stack_element {
   struct hc_stack_element *n;
 } hc_stack_element_;
 
+typedef struct hc_stack_element_stats {
+  struct hc_stack_element_stats *p;
+  M_APM re;
+  M_APM im;
+  M_APM eff;
+  struct hc_stack_element_stats *n;
+} hc_stack_element_stats_;
+
 typedef struct hc_ventry {
   char *name;
   char *value;

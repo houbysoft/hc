@@ -56,6 +56,8 @@
 #define HASH_GRAPH 11798
 #define HASH_GRAPH3D 5921
 
+#define HASH_STATS 27848
+
 // Rounding
 #define HASH_FLOOR 2568
 #define HASH_CEIL 20844

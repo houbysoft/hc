@@ -55,6 +55,8 @@ extern char *strreplace_(char *in, char *old, char *new); // same as strreplace,
 extern char *hc_get_arg(char *e, int pos);
 extern int hc_need_space_int(int i);
 
+extern char hc_stats(char *e);
+
 extern char *hc_2sci(char *);
 extern char *hc_2eng(char *);
 

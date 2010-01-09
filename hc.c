@@ -1221,6 +1221,17 @@ char *hc_result_(char *f)
       return NULL;
       break;
 
+    case HASH_STATS:
+      hc_stats(f_expr);
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_im);
+      m_apm_free(f_result_re);
+      free(e);
+      hc_nested--;
+      return NULL;
+      break;
+
     default:
       m_apm_free(tmp_num_re);
       m_apm_free(tmp_num_im);
