@@ -32,7 +32,12 @@ char hc_stats(char *e)
   struct hc_stack_element_stats *curr;
 
   M_APM numtmp = m_apm_init();
+  M_APM numtmp2 = m_apm_init();
+  M_APM numtmp3 = m_apm_init();
+  M_APM numtmp4 = m_apm_init();
   M_APM n = m_apm_init();
+  M_APM avg_re = m_apm_init();
+  M_APM avg_im = m_apm_init();
 
   first->re = m_apm_init();
   first->im = m_apm_init();
@@ -77,6 +82,9 @@ char hc_stats(char *e)
     if (tmp_num_im)
       free(tmp_num_im);
     free(tmp_num_re); free(tmp_res); free(tmp);
+    m_apmc_multiply(numtmp2,numtmp3,curr->eff,MM_Zero,curr->re,curr->im);
+    m_apm_copy(numtmp4,avg_im); m_apm_copy(numtmp,avg_re);
+    m_apmc_add(avg_re,avg_im,numtmp2,numtmp3,numtmp,numtmp4);
     curr->n = malloc(sizeof(struct hc_stack_element_stats));
     curr->n->p = curr;
     curr->n->re = m_apm_init();
@@ -88,9 +96,30 @@ char hc_stats(char *e)
   }
   // End of initialization
 
+  // n (number of elements)
   tmp = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,n,'.',0,0);
   char *n_str = hc_result_(tmp);
   free(tmp);
-  printf("n = %s\n",n_str);
-  free(n_str);
+  tmp = hc_strip_0s(n_str);
+  printf("n = %s\n",tmp);
+  free(n_str); free(tmp);
+
+  // Average
+  m_apm_copy(numtmp,avg_re); m_apm_copy(numtmp2,avg_im);
+  m_apmc_divide(avg_re,avg_im,HC_DEC_PLACES,numtmp,numtmp2,n,MM_Zero);
+  tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,avg_re,'.',0,0);
+  tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,avg_im,'.',0,0);
+  tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
+  if (!tmp)
+    mem_error();
+  strcpy(tmp,tmp_num_re);
+  strcat(tmp,"i");
+  strcat(tmp,tmp_num_im);
+  char *avg_str = hc_result_(tmp);
+  free(tmp);
+  tmp = hc_strip_0s(avg_str);
+  free(tmp_num_re); free(tmp_num_im); free(avg_str);
+  printf("Average = %s\n",tmp);
+
+  return SUCCESS;
 }

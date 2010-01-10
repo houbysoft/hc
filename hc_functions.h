@@ -59,5 +59,6 @@ extern char hc_stats(char *e);
 
 extern char *hc_2sci(char *);
 extern char *hc_2eng(char *);
+extern char *hc_strip_0s(char *e);
 
 #endif
