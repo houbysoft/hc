@@ -127,6 +127,7 @@ char hc_stats(char *e)
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
   printf("Average = %s\n",tmp);
+  free(tmp);
 
   char iseven = m_apm_is_even(n);
   char iseven2;
@@ -172,6 +173,43 @@ char hc_stats(char *e)
       }
     }
   }
+  
+  curr = first;
+  m_apm_set_string(numtmp,"1");
+  while (m_apm_compare(numtmp,q1_idx)!=0)
+  {
+    curr = curr->n;
+    m_apm_copy(numtmp2,numtmp);
+    m_apm_add(numtmp,numtmp2,MM_One);
+  }
+  if (!iseven2)
+  {
+    m_apm_copy(numtmp,curr->re);
+    m_apm_copy(numtmp2,curr->im);
+  } else {
+    m_apm_copy(numtmp,curr->re);
+    m_apm_copy(numtmp2,curr->im);
+    m_apm_copy(numtmp3,curr->n->re);
+    m_apm_copy(numtmp4,curr->n->im);
+    m_apmc_add(avg_re,avg_im,numtmp,numtmp2,numtmp3,numtmp4);
+    m_apm_copy(numtmp,avg_re);
+    m_apm_copy(numtmp2,avg_im);
+    m_apmc_divide(numtmp,numtmp2,HC_DEC_PLACES,avg_re,avg_im,MM_Two,MM_Zero);
+  }
+  tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,numtmp,'.',0,0);
+  tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,numtmp2,'.',0,0);
+  tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
+  if (!tmp)
+    mem_error();
+  strcpy(tmp,tmp_num_re);
+  strcat(tmp,"i");
+  strcat(tmp,tmp_num_im);
+  avg_str = hc_result_(tmp);
+  free(tmp);
+  tmp = hc_strip_0s(avg_str);
+  free(tmp_num_re); free(tmp_num_im); free(avg_str);
+  printf("Q1 = %s\n",tmp);
+  free(tmp);
 
   m_apm_set_string(numtmp,"1");
   curr = first;
@@ -208,42 +246,7 @@ char hc_stats(char *e)
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
   printf("Median = %s\n",tmp);
-
-  curr = first;
-  m_apm_set_string(numtmp,"1");
-  while (m_apm_compare(numtmp,q1_idx)!=0)
-  {
-    curr = curr->n;
-    m_apm_copy(numtmp2,numtmp);
-    m_apm_add(numtmp,numtmp2,MM_One);
-  }
-  if (!iseven2)
-  {
-    m_apm_copy(numtmp,curr->re);
-    m_apm_copy(numtmp2,curr->im);
-  } else {
-    m_apm_copy(numtmp,curr->re);
-    m_apm_copy(numtmp2,curr->im);
-    m_apm_copy(numtmp3,curr->n->re);
-    m_apm_copy(numtmp4,curr->n->im);
-    m_apmc_add(avg_re,avg_im,numtmp,numtmp2,numtmp3,numtmp4);
-    m_apm_copy(numtmp,avg_re);
-    m_apm_copy(numtmp2,avg_im);
-    m_apmc_divide(numtmp,numtmp2,HC_DEC_PLACES,avg_re,avg_im,MM_Two,MM_Zero);
-  }
-  tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,numtmp,'.',0,0);
-  tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,numtmp2,'.',0,0);
-  tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
-  if (!tmp)
-    mem_error();
-  strcpy(tmp,tmp_num_re);
-  strcat(tmp,"i");
-  strcat(tmp,tmp_num_im);
-  avg_str = hc_result_(tmp);
   free(tmp);
-  tmp = hc_strip_0s(avg_str);
-  free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  printf("Q1 = %s\n",tmp);
 
   curr = first;
   m_apm_set_string(numtmp,"1");
@@ -280,6 +283,7 @@ char hc_stats(char *e)
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
   printf("Q3 = %s\n",tmp);
+  free(tmp);
 
 #ifdef DBG
   curr = first;
@@ -291,6 +295,20 @@ char hc_stats(char *e)
     curr = curr->n;
   }
 #endif
+
+  while (first->n)
+  {
+    m_apm_free(first->re);m_apm_free(first->im);
+    first = first->n;
+    free(first->p);
+  }
+  
+  m_apm_free(first->re);m_apm_free(first->im);
+  free(first);
+
+  m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4);
+  m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im);
+  m_apm_free(q1_idx); m_apm_free(q3_idx); m_apm_free(v_idx);
 
   return SUCCESS;
 }
