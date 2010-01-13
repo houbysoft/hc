@@ -230,8 +230,9 @@ char hc_stats(char *e, char g)
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
-  // FIX FIX : WARN THAT COMPLEX WON'T WORK
   pl_q1 = strtod(tmp_num_re,NULL);
+  if (g && m_apm_sign(numtmp2)!=0)
+    boxplot_cplx_error();
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -270,8 +271,9 @@ char hc_stats(char *e, char g)
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
-  // FIX FIX CPLX WON'T
   pl_q2 = strtod(tmp_num_re,NULL);
+  if (g && m_apm_sign(numtmp2)!=0)
+    boxplot_cplx_error();
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -310,8 +312,9 @@ char hc_stats(char *e, char g)
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
-  // FIX FIX CPLX WON'T
   pl_q3 = strtod(tmp_num_re,NULL);
+  if (g && m_apm_sign(numtmp2)!=0)
+    boxplot_cplx_error();
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -328,8 +331,9 @@ char hc_stats(char *e, char g)
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
-  // FIX FIX CPLX WON'T
   pl_min = strtod(tmp_num_re,NULL);
+  if (g && m_apm_sign(min_im)!=0)
+    boxplot_cplx_error();
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -347,6 +351,8 @@ char hc_stats(char *e, char g)
   if (!tmp)
     mem_error();
   pl_max = strtod(tmp_num_re,NULL);
+  if (g && m_apm_sign(max_im)!=0)
+    boxplot_cplx_error();
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);

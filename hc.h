@@ -68,11 +68,13 @@
 #define varname_predefined_error() {printf("You can't change a predefined variable.\n");return 0;}
 #define recursive_error() {printf("Error : recursive definition.\n");return;}
 #define recursion_error() {printf("Error : too much recursion/nestedness. If you know what you are doing, you can bypass this with:\n \\bpn.\n");}
+#define boxplot_cplx_error() {printf("Warning : Complex part of number was ignored in the boxplot.\n");}
 #else
 #define varname_error() {notify_error("Invalid variable name.\n");return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define recursive_error() {notify_error("Error : recursive definition.\n");return;}
 #define recursion_error() {notify_error("Error : too much recursion/nestedness. This can be bypassed in the command-line version if you know what you are doing.\n");}
+#define boxplot_cplx_error() {notify_error("Warning : Complex part of number was ignored in the boxplot.\n");}
 #endif
 #define mem_error() {printf("Cannot allocate enough memory.\n");exit(5);}
 //#define range_error(str) {printf("Range error : %s\n",str);exit(6);}
