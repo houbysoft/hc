@@ -39,6 +39,10 @@ char hc_stats(char *e)
   M_APM n = m_apm_init();
   M_APM avg_re = m_apm_init();
   M_APM avg_im = m_apm_init();
+  M_APM min_re = m_apm_init();
+  M_APM min_im = m_apm_init();
+  M_APM max_re = m_apm_init();
+  M_APM max_im = m_apm_init();
 
   first->re = m_apm_init();
   first->im = m_apm_init();
@@ -65,6 +69,24 @@ char hc_stats(char *e)
       m_apm_copy(curr->im,MM_Zero);
     if (tmp_num_im)
       free(tmp_num_im);
+    if (argc==1)
+    {
+      m_apm_copy(min_re,curr->re);
+      m_apm_copy(min_im,curr->im);
+      m_apm_copy(max_re,curr->re);
+      m_apm_copy(max_im,curr->im);
+    } else {
+      if (m_apmc_lt(curr->re,curr->im,min_re,min_im))
+      {
+	m_apm_copy(min_re,curr->re);
+	m_apm_copy(min_im,curr->im);
+      }
+      if (m_apmc_gt(curr->re,curr->im,max_re,max_im))
+      {
+	m_apm_copy(max_re,curr->re);
+	m_apm_copy(max_im,curr->im);
+      }
+    }
     free(tmp_num_re); free(tmp_res); free(tmp);
     //m_apmc_multiply(numtmp2,numtmp3,MM_One,MM_Zero,curr->re,curr->im);
     m_apm_copy(numtmp2,curr->re); m_apm_copy(numtmp3,curr->im);
@@ -285,6 +307,36 @@ char hc_stats(char *e)
   printf("Q3 = %s\n",tmp);
   free(tmp);
 
+tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_re,'.',0,0);
+  tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_im,'.',0,0);
+  tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
+  if (!tmp)
+    mem_error();
+  strcpy(tmp,tmp_num_re);
+  strcat(tmp,"i");
+  strcat(tmp,tmp_num_im);
+  avg_str = hc_result_(tmp);
+  free(tmp);
+  tmp = hc_strip_0s(avg_str);
+  free(tmp_num_re); free(tmp_num_im); free(avg_str);
+  printf("Min = %s\n",tmp);
+  free(tmp);
+
+  tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,max_re,'.',0,0);
+  tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,max_im,'.',0,0);
+  tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
+  if (!tmp)
+    mem_error();
+  strcpy(tmp,tmp_num_re);
+  strcat(tmp,"i");
+  strcat(tmp,tmp_num_im);
+  avg_str = hc_result_(tmp);
+  free(tmp);
+  tmp = hc_strip_0s(avg_str);
+  free(tmp_num_re); free(tmp_num_im); free(avg_str);
+  printf("Max = %s\n",tmp);
+  free(tmp);
+
 #ifdef DBG
   curr = first;
   if (curr->p)
@@ -309,6 +361,87 @@ char hc_stats(char *e)
   m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4);
   m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im);
   m_apm_free(q1_idx); m_apm_free(q3_idx); m_apm_free(v_idx);
+  m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
 
   return SUCCESS;
+}
+
+
+void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw)
+{
+    PLFLT px[5], py[5], mx[2], my[2], wx[2], wy[2], barx[2], bary[2];
+    PLFLT spacing;
+    PLFLT xmin, xmax;
+    PLFLT xmid, xwidth;
+
+    spacing = .4; /* in x axis units */
+
+    xmin = x + spacing / 2.;
+    xmax = x + 1. - spacing / 2.;
+
+    /* box */
+    
+    px[0] = xmin;
+    py[0] = y25;
+    px[1] = xmin;
+    py[1] = y75;
+    px[2] = xmax;
+    py[2] = y75;
+    px[3] = xmax;
+    py[3] = y25;
+    px[4] = xmin;
+    py[4] = y25;
+
+    plpsty(0);
+    plfill(4, px, py);
+    plcol0(1);
+    pllsty(1);
+    plline(5, px, py);
+
+
+    /* median */
+
+    mx[0] = xmin;
+    my[0] = y50;
+    mx[1] = xmax;
+    my[1] = y50;
+
+    pllsty(1);
+    plline(2, mx, my);
+    
+    /* lower whisker */
+
+    xmid = (xmin + xmax) / 2.;
+    xwidth = xmax - xmin;
+    wx[0] = xmid;
+    wy[0] = lw;
+    wx[1] = xmid;
+    wy[1] = y25;
+   
+    pllsty(2); /* short dashes and gaps */
+    plline(2, wx, wy);
+    
+    barx[0] = xmid - xwidth / 4.;
+    bary[0] = lw;
+    barx[1] = xmid + xwidth / 4.;
+    bary[1] = lw;
+
+    pllsty(1);
+    plline(2, barx, bary);
+
+    /* upper whisker */
+    
+    xmid = (xmin + xmax) / 2.;
+    xwidth = xmax - xmin;
+    wy[0] = y75;
+    wy[1] = uw;
+   
+    pllsty(2); /* short dashes and gaps */
+    plline(2, wx, wy);
+    
+    bary[0] = uw;
+    bary[1] = uw;
+
+    pllsty(1);
+    plline(2, barx, bary);
 }
