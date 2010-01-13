@@ -135,7 +135,8 @@ char hc_stats(char *e, char g)
   char *n_str = hc_result_(tmp);
   free(tmp);
   tmp = hc_strip_0s(n_str);
-  printf("n = %s\n",tmp);
+  if (!g)
+    printf("n = %s\n",tmp);
   free(n_str); free(tmp);
 
   // Average
@@ -153,7 +154,8 @@ char hc_stats(char *e, char g)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  printf("Average = %s\n",tmp);
+  if (!g)
+    printf("Average = %s\n",tmp);
   free(tmp);
 
   char iseven = m_apm_is_even(n);
@@ -237,7 +239,8 @@ char hc_stats(char *e, char g)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  printf("Q1 = %s\n",tmp);
+  if (!g)
+    printf("Q1 = %s\n",tmp);
   free(tmp);
 
   m_apm_set_string(numtmp,"1");
@@ -276,7 +279,8 @@ char hc_stats(char *e, char g)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  printf("Median = %s\n",tmp);
+  if (!g)
+    printf("Median = %s\n",tmp);
   free(tmp);
 
   curr = first;
@@ -315,7 +319,8 @@ char hc_stats(char *e, char g)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  printf("Q3 = %s\n",tmp);
+  if (!g)
+    printf("Q3 = %s\n",tmp);
   free(tmp);
 
   tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_re,'.',0,0);
@@ -332,7 +337,8 @@ char hc_stats(char *e, char g)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  printf("Min = %s\n",tmp);
+  if (!g)
+    printf("Min = %s\n",tmp);
   free(tmp);
 
   tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,max_re,'.',0,0);
@@ -348,7 +354,8 @@ char hc_stats(char *e, char g)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  printf("Max = %s\n",tmp);
+  if (!g)
+    printf("Max = %s\n",tmp);
   free(tmp);
 
 #ifdef DBG
