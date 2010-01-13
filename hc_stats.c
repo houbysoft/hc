@@ -27,7 +27,11 @@
 
 #define hc_stack_element_stats hc_stack_element
 
-char hc_stats(char *e)
+
+void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
+
+
+char hc_stats(char *e, char g)
 {
   struct hc_stack_element_stats *first = malloc(sizeof(struct hc_stack_element_stats));
   struct hc_stack_element_stats *curr;
@@ -43,6 +47,7 @@ char hc_stats(char *e)
   M_APM min_im = m_apm_init();
   M_APM max_re = m_apm_init();
   M_APM max_im = m_apm_init();
+  PLFLT pl_min,pl_q1,pl_q2,pl_q3,pl_max;
 
   first->re = m_apm_init();
   first->im = m_apm_init();
@@ -223,6 +228,8 @@ char hc_stats(char *e)
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
+  // FIX FIX : WARN THAT COMPLEX WON'T WORK
+  pl_q1 = strtod(tmp_num_re,NULL);
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -260,6 +267,8 @@ char hc_stats(char *e)
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
+  // FIX FIX CPLX WON'T
+  pl_q2 = strtod(tmp_num_re,NULL);
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -297,6 +306,8 @@ char hc_stats(char *e)
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
+  // FIX FIX CPLX WON'T
+  pl_q3 = strtod(tmp_num_re,NULL);
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -307,11 +318,13 @@ char hc_stats(char *e)
   printf("Q3 = %s\n",tmp);
   free(tmp);
 
-tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_re,'.',0,0);
+  tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_re,'.',0,0);
   tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_im,'.',0,0);
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
+  // FIX FIX CPLX WON'T
+  pl_min = strtod(tmp_num_re,NULL);
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -327,6 +340,7 @@ tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_re,'.',0,0);
   tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
   if (!tmp)
     mem_error();
+  pl_max = strtod(tmp_num_re,NULL);
   strcpy(tmp,tmp_num_re);
   strcat(tmp,"i");
   strcat(tmp,tmp_num_im);
@@ -363,6 +377,38 @@ tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_re,'.',0,0);
   m_apm_free(q1_idx); m_apm_free(q3_idx); m_apm_free(v_idx);
   m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
 
+  if (g)
+  {
+#ifndef HCG
+    if (!hc.plplot_dev_override)
+#ifndef WIN32
+      plsdev("pngcairo");
+#else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
+    plsdev("pngcairo");
+    plsfnam("tmp-graph.png");
+#else
+    plsdev("wingcc");
+#endif
+#endif
+    
+    plinit();
+    
+    pladv(0);
+    plvsta();
+    
+    plwind(-2, 5, pl_min - 0.5, pl_max + 0.5);
+    //plcol0(1);
+    plbox("bc", 1.0, 0, "bcgnst", 0, 0);
+    pllab("", "", "#frHoubySoft Calculator - Box plot");
+    plcol1(0);
+    plfbox(1, pl_q1, pl_q2, pl_q3, pl_min, pl_max);
+  
+    plend();
+  }
   return SUCCESS;
 }
 
