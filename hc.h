@@ -143,6 +143,15 @@ typedef struct hc_stack_element {
 } hc_stack_element_;
 
 
+typedef struct hc_stack_element_stats {
+  struct hc_stack_element_stats *p;
+  M_APM re; // real part of the number
+  M_APM im; // imaginary part of the number
+  M_APM ef; // effective / how many times that value is present in the set
+  struct hc_stack_element_stats *n;
+} hc_stack_element_stats_;
+
+
 typedef struct hc_ventry {
   char *name;
   char *value;

@@ -1222,7 +1222,18 @@ char *hc_result_(char *f)
       break;
 
     case HASH_STATS:
-      hc_stats(f_expr, FALSE);
+      hc_stats(f_expr, FALSE, FALSE);
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_im);
+      m_apm_free(f_result_re);
+      free(e);
+      hc_nested--;
+      return NULL;
+      break;
+
+   case HASH_STATS_EFF:
+      hc_stats(f_expr, FALSE, TRUE);
       m_apm_free(tmp_num_re);
       m_apm_free(tmp_num_im);
       m_apm_free(f_result_im);
@@ -1233,7 +1244,18 @@ char *hc_result_(char *f)
       break;
 
     case HASH_BOXPLOT:
-      hc_stats(f_expr, TRUE);
+      hc_stats(f_expr, TRUE, FALSE);
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_im);
+      m_apm_free(f_result_re);
+      free(e);
+      hc_nested--;
+      return NULL;
+      break;
+
+    case HASH_BOXPLOT_EFF:
+      hc_stats(f_expr, TRUE, TRUE);
       m_apm_free(tmp_num_re);
       m_apm_free(tmp_num_im);
       m_apm_free(f_result_im);

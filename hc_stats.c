@@ -25,13 +25,17 @@
 #include "hc_functions.h"
 #include "hc_complex.h"
 
-#define hc_stack_element_stats hc_stack_element
 
 
 void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
 
 
-char hc_stats(char *e, char g)
+// hc_stats()
+//   arguments:
+//     - e : list of comma separated arguments passed by the user
+//     - g : passed by the internal functions, TRUE if we should draw a boxplot, FALSE if we only should display information
+//     - ef : TRUE if e is a list of arguments followed by their effective, FALSE if e is just a list of arguments
+char hc_stats(char *e, char g, char ef)
 {
   struct hc_stack_element_stats *first = malloc(sizeof(struct hc_stack_element_stats));
   struct hc_stack_element_stats *curr;
@@ -51,6 +55,7 @@ char hc_stats(char *e, char g)
 
   first->re = m_apm_init();
   first->im = m_apm_init();
+  first->ef = m_apm_init();
   first->p = NULL;
   first->n = NULL;
   curr = first;
@@ -60,8 +65,6 @@ char hc_stats(char *e, char g)
   char *tmp_num_re,*tmp_num_im;
   while ((tmp = hc_get_arg(e,argc))!=NULL)
   {
-    m_apm_copy(numtmp,n);
-    m_apm_add(n,numtmp,MM_One);
     char *tmp_res = hc_result_(tmp);
     if (!tmp_res)
       exit(0); // FIX FIX FIX
@@ -93,14 +96,30 @@ char hc_stats(char *e, char g)
       }
     }
     free(tmp_num_re); free(tmp_res); free(tmp);
-    //m_apmc_multiply(numtmp2,numtmp3,MM_One,MM_Zero,curr->re,curr->im);
-    m_apm_copy(numtmp2,curr->re); m_apm_copy(numtmp3,curr->im);
+    if (ef)
+    {
+      argc++;
+      tmp = hc_get_arg(e,argc);
+      if (!tmp)
+	exit(0); // FIX FIX FIX
+      tmp_num_re = hc_real_part(tmp);
+      tmp_num_im = hc_imag_part(tmp);
+      if (tmp_num_im)
+	exit(0); // FIX FIX FIX
+      m_apm_set_string(curr->ef,tmp_num_re);
+    } else {
+      m_apm_set_string(curr->ef,"1");
+    }
+    m_apm_copy(numtmp,n);
+    m_apm_add(n,numtmp,curr->ef);
+    m_apmc_multiply(numtmp2,numtmp3,curr->ef,MM_Zero,curr->re,curr->im);
     m_apm_copy(numtmp4,avg_im); m_apm_copy(numtmp,avg_re);
     m_apmc_add(avg_re,avg_im,numtmp2,numtmp3,numtmp,numtmp4);
     curr->n = malloc(sizeof(struct hc_stack_element_stats));
     curr->n->p = curr;
     curr->n->re = m_apm_init();
     curr->n->im = m_apm_init();
+    curr->n->ef = m_apm_init();
     curr->n->n = NULL;
     if (curr->p!=NULL)
     {
@@ -131,6 +150,8 @@ char hc_stats(char *e, char g)
   // End of initialization
 
   // n (number of elements)
+  if (m_apm_compare(n,MM_Zero)==0)
+    exit(0); // FIX FIX FIX, something has gotten terribly wrong with the user input
   tmp = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,n,'.',0,0);
   char *n_str = hc_result_(tmp);
   free(tmp);
@@ -205,9 +226,16 @@ char hc_stats(char *e, char g)
   
   curr = first;
   m_apm_set_string(numtmp,"1");
+  m_apm_set_string(numtmp3,"0");
   while (m_apm_compare(numtmp,q1_idx)!=0)
   {
-    curr = curr->n;
+    m_apm_copy(numtmp2,numtmp3);
+    m_apm_add(numtmp3,numtmp2,MM_One);
+    if (m_apm_compare(numtmp3,curr->ef)==0)
+    {
+      m_apm_set_string(numtmp3,"0");
+      curr = curr->n;
+    }
     m_apm_copy(numtmp2,numtmp);
     m_apm_add(numtmp,numtmp2,MM_One);
   }
@@ -218,8 +246,16 @@ char hc_stats(char *e, char g)
   } else {
     m_apm_copy(numtmp,curr->re);
     m_apm_copy(numtmp2,curr->im);
-    m_apm_copy(numtmp3,curr->n->re);
-    m_apm_copy(numtmp4,curr->n->im);
+    m_apm_copy(numtmp4,numtmp3);
+    m_apm_add(numtmp3,numtmp4,MM_One);
+    if (m_apm_compare(numtmp3,curr->ef)==0)
+    {
+      m_apm_copy(numtmp3,curr->n->re);
+      m_apm_copy(numtmp4,curr->n->im);
+    } else {
+      m_apm_copy(numtmp3,curr->re);
+      m_apm_copy(numtmp4,curr->im);
+    }
     m_apmc_add(avg_re,avg_im,numtmp,numtmp2,numtmp3,numtmp4);
     m_apm_copy(numtmp,avg_re);
     m_apm_copy(numtmp2,avg_im);
@@ -243,12 +279,19 @@ char hc_stats(char *e, char g)
   if (!g)
     printf("Q1 = %s\n",tmp);
   free(tmp);
-
-  m_apm_set_string(numtmp,"1");
+  
   curr = first;
+  m_apm_set_string(numtmp,"1");
+  m_apm_set_string(numtmp3,"0");
   while (m_apm_compare(numtmp,v_idx)!=0)
   {
-    curr = curr->n;
+    m_apm_copy(numtmp2,numtmp3);
+    m_apm_add(numtmp3,numtmp2,MM_One);
+    if (m_apm_compare(numtmp3,curr->ef)==0)
+    {
+      m_apm_set_string(numtmp3,"0");
+      curr = curr->n;
+    }
     m_apm_copy(numtmp2,numtmp);
     m_apm_add(numtmp,numtmp2,MM_One);
   }
@@ -259,8 +302,14 @@ char hc_stats(char *e, char g)
   } else {
     m_apm_copy(numtmp,curr->re);
     m_apm_copy(numtmp2,curr->im);
-    m_apm_copy(numtmp3,curr->n->re);
-    m_apm_copy(numtmp4,curr->n->im);
+    if (m_apm_compare(numtmp3,curr->ef)==0)
+    {
+      m_apm_copy(numtmp3,curr->n->re);
+      m_apm_copy(numtmp4,curr->n->im);
+    } else {
+      m_apm_copy(numtmp3,curr->re);
+      m_apm_copy(numtmp4,curr->im);
+    }
     m_apmc_add(avg_re,avg_im,numtmp,numtmp2,numtmp3,numtmp4);
     m_apm_copy(numtmp,avg_re);
     m_apm_copy(numtmp2,avg_im);
@@ -287,9 +336,16 @@ char hc_stats(char *e, char g)
 
   curr = first;
   m_apm_set_string(numtmp,"1");
+  m_apm_set_string(numtmp3,"0");
   while (m_apm_compare(numtmp,q3_idx)!=0)
   {
-    curr = curr->n;
+    m_apm_copy(numtmp2,numtmp3);
+    m_apm_add(numtmp3,numtmp2,MM_One);
+    if (m_apm_compare(numtmp3,curr->ef)==0)
+    {
+      m_apm_set_string(numtmp3,"0");
+      curr = curr->n;
+    }
     m_apm_copy(numtmp2,numtmp);
     m_apm_add(numtmp,numtmp2,MM_One);
   }
@@ -300,8 +356,14 @@ char hc_stats(char *e, char g)
   } else {
     m_apm_copy(numtmp,curr->re);
     m_apm_copy(numtmp2,curr->im);
-    m_apm_copy(numtmp3,curr->n->re);
-    m_apm_copy(numtmp4,curr->n->im);
+    if (m_apm_compare(numtmp3,curr->ef)==0)
+    {
+      m_apm_copy(numtmp3,curr->n->re);
+      m_apm_copy(numtmp4,curr->n->im);
+    } else {
+      m_apm_copy(numtmp3,curr->re);
+      m_apm_copy(numtmp4,curr->im);
+    }
     m_apmc_add(avg_re,avg_im,numtmp,numtmp2,numtmp3,numtmp4);
     m_apm_copy(numtmp,avg_re);
     m_apm_copy(numtmp2,avg_im);
@@ -377,7 +439,7 @@ char hc_stats(char *e, char g)
 
   while (first->n)
   {
-    m_apm_free(first->re);m_apm_free(first->im);
+    m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
     first = first->n;
     free(first->p);
   }
