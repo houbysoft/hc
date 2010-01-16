@@ -24,7 +24,9 @@
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_complex.h"
-
+#ifdef HCG_E
+#undef notify
+#endif
 
 
 void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
@@ -45,6 +47,10 @@ char hc_stats(char *e, char g, char ef)
   M_APM numtmp3 = m_apm_init();
   M_APM numtmp4 = m_apm_init();
   M_APM n = m_apm_init();
+  M_APM sumx_re = m_apm_init(); m_apm_copy(sumx_re,MM_Zero);
+  M_APM sumx_im = m_apm_init(); m_apm_copy(sumx_im,MM_Zero);
+  M_APM sumx2_re = m_apm_init(); m_apm_copy(sumx2_re,MM_Zero);
+  M_APM sumx2_im = m_apm_init(); m_apm_copy(sumx2_im,MM_Zero);
   M_APM avg_re = m_apm_init();
   M_APM avg_im = m_apm_init();
   M_APM min_re = m_apm_init();
@@ -71,7 +77,7 @@ char hc_stats(char *e, char g, char ef)
     if (!tmp_res)
     {
       free(tmp);
-      m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+      m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
       while (first->n)
       {
 	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
@@ -116,7 +122,7 @@ char hc_stats(char *e, char g, char ef)
       tmp = hc_get_arg(e,argc);
       if (!tmp)
       {
-	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
 	while (first->n)
 	{
 	  m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
@@ -132,7 +138,7 @@ char hc_stats(char *e, char g, char ef)
       if (tmp_num_im)
       {
 	free(tmp); free(tmp_num_re); free(tmp_num_im);
-	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
 	while (first->n)
 	{
 	  m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
@@ -148,6 +154,15 @@ char hc_stats(char *e, char g, char ef)
     } else {
       m_apm_set_string(curr->ef,"1");
     }
+    m_apm_copy(numtmp,sumx_re);
+    m_apm_copy(numtmp2,sumx_im);
+    m_apmc_multiply(numtmp3,numtmp4,curr->re,curr->im,curr->ef,MM_Zero);
+    m_apmc_add(sumx_re,sumx_im,numtmp3,numtmp4,numtmp,numtmp2);
+    m_apmc_sqr(numtmp,numtmp2,curr->re,curr->im);
+    m_apmc_multiply(numtmp3,numtmp4,numtmp,numtmp2,curr->ef,MM_Zero);
+    m_apm_copy(numtmp,sumx2_re);
+    m_apm_copy(numtmp2,sumx2_im);
+    m_apmc_add(sumx2_re,sumx2_im,numtmp,numtmp2,numtmp3,numtmp4);
     m_apm_copy(numtmp,n);
     m_apm_add(n,numtmp,curr->ef);
     m_apmc_multiply(numtmp2,numtmp3,curr->ef,MM_Zero,curr->re,curr->im);
@@ -190,7 +205,7 @@ char hc_stats(char *e, char g, char ef)
   // n (number of elements)
   if (m_apm_compare(n,MM_Zero)==0)
   {
-    m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+    m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
     while (first->n)
     {
       m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
@@ -505,6 +520,50 @@ char hc_stats(char *e, char g, char ef)
   strcat(out_string,tmp);
   free(tmp);
 
+  tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,sumx_re,'.',0,0);
+  tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,sumx_im,'.',0,0);
+  tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
+  if (!tmp)
+    mem_error();
+  strcpy(tmp,tmp_num_re);
+  strcat(tmp,"i");
+  strcat(tmp,tmp_num_im);
+  avg_str = hc_result_(tmp);
+  free(tmp);
+  tmp = hc_strip_0s(avg_str);
+  free(tmp_num_re); free(tmp_num_im); free(avg_str);
+  avg_str = tmp;
+  tmp = malloc(strlen("sum(x) = \n")+strlen(tmp)+1);
+  if (!tmp)
+    mem_error();
+  sprintf(tmp,"sum(x) = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
+  free(tmp);
+
+  tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,sumx2_re,'.',0,0);
+  tmp_num_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,sumx2_im,'.',0,0);
+  tmp = malloc(strlen(tmp_num_re)+1+strlen(tmp_num_im)+1);
+  if (!tmp)
+    mem_error();
+  strcpy(tmp,tmp_num_re);
+  strcat(tmp,"i");
+  strcat(tmp,tmp_num_im);
+  avg_str = hc_result_(tmp);
+  free(tmp);
+  tmp = hc_strip_0s(avg_str);
+  free(tmp_num_re); free(tmp_num_im); free(avg_str);
+  avg_str = tmp;
+  tmp = malloc(strlen("sum(x^2) = \n")+strlen(tmp)+1);
+  if (!tmp)
+    mem_error();
+  sprintf(tmp,"sum(x^2) = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
+  free(tmp);
+
 #ifdef DBG
   curr = first;
   if (curr->p)
@@ -530,6 +589,7 @@ char hc_stats(char *e, char g, char ef)
   m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im);
   m_apm_free(q1_idx); m_apm_free(q3_idx); m_apm_free(v_idx);
   m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+  m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
 
   if (g)
   {
