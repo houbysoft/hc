@@ -67,7 +67,19 @@ char hc_stats(char *e, char g, char ef)
   {
     char *tmp_res = hc_result_(tmp);
     if (!tmp_res)
-      exit(0); // FIX FIX FIX
+    {
+      free(tmp);
+      m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+      while (first->n)
+      {
+	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+	first = first->n;
+	free(first->p);
+      }
+      m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+      free(first);
+      return FAIL;
+    }
     tmp_num_re = hc_real_part(tmp_res);
     tmp_num_im = hc_imag_part(tmp_res);
     m_apm_set_string(curr->re,tmp_num_re);
@@ -101,12 +113,36 @@ char hc_stats(char *e, char g, char ef)
       argc++;
       tmp = hc_get_arg(e,argc);
       if (!tmp)
-	exit(0); // FIX FIX FIX
+      {
+	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+	while (first->n)
+	{
+	  m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+	first = first->n;
+	free(first->p);
+	}
+	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+	free(first);
+	return FAIL;
+      }
       tmp_num_re = hc_real_part(tmp);
       tmp_num_im = hc_imag_part(tmp);
       if (tmp_num_im)
-	exit(0); // FIX FIX FIX
+      {
+	free(tmp); free(tmp_num_re); free(tmp_num_im);
+	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+	while (first->n)
+	{
+	  m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+	first = first->n;
+	free(first->p);
+	}
+	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+	free(first);
+	return FAIL;
+      }
       m_apm_set_string(curr->ef,tmp_num_re);
+      free(tmp_num_re); free(tmp);
     } else {
       m_apm_set_string(curr->ef,"1");
     }
@@ -151,7 +187,18 @@ char hc_stats(char *e, char g, char ef)
 
   // n (number of elements)
   if (m_apm_compare(n,MM_Zero)==0)
-    exit(0); // FIX FIX FIX, something has gotten terribly wrong with the user input
+  {
+    m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im);
+    while (first->n)
+    {
+      m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+      first = first->n;
+      free(first->p);
+    }
+    m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+    free(first);
+    return FAIL;
+  }
   tmp = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,n,'.',0,0);
   char *n_str = hc_result_(tmp);
   free(tmp);
@@ -444,7 +491,7 @@ char hc_stats(char *e, char g, char ef)
     free(first->p);
   }
   
-  m_apm_free(first->re);m_apm_free(first->im);
+  m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
   free(first);
 
   m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4);
