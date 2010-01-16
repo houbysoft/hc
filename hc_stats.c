@@ -53,6 +53,8 @@ char hc_stats(char *e, char g, char ef)
   M_APM max_im = m_apm_init();
   PLFLT pl_min,pl_q1,pl_q2,pl_q3,pl_max;
 
+  char *out_string = NULL;
+
   first->re = m_apm_init();
   first->im = m_apm_init();
   first->ef = m_apm_init();
@@ -203,8 +205,8 @@ char hc_stats(char *e, char g, char ef)
   char *n_str = hc_result_(tmp);
   free(tmp);
   tmp = hc_strip_0s(n_str);
-  if (!g)
-    printf("n = %s\n",tmp);
+  out_string = realloc(out_string, strlen(tmp)+strlen("n = \n")+1);
+  sprintf(out_string,"n = %s\n",tmp);
   free(n_str); free(tmp);
 
   // Average
@@ -222,8 +224,12 @@ char hc_stats(char *e, char g, char ef)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  if (!g)
-    printf("Average = %s\n",tmp);
+  avg_str = tmp;
+  tmp = malloc(strlen("Average = \n")+strlen(avg_str)+1);
+  sprintf(tmp,"Average = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
   free(tmp);
 
   char iseven = m_apm_is_even(n);
@@ -323,8 +329,12 @@ char hc_stats(char *e, char g, char ef)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  if (!g)
-    printf("Q1 = %s\n",tmp);
+  avg_str = tmp;
+  tmp = malloc(strlen("Q1 = \n")+strlen(avg_str)+1);
+  sprintf(tmp,"Q1 = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
   free(tmp);
   
   curr = first;
@@ -377,8 +387,12 @@ char hc_stats(char *e, char g, char ef)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  if (!g)
-    printf("Median = %s\n",tmp);
+  avg_str = tmp;
+  tmp = malloc(strlen("Median = \n")+strlen(avg_str)+1);
+  sprintf(tmp,"Median = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
   free(tmp);
 
   curr = first;
@@ -431,8 +445,14 @@ char hc_stats(char *e, char g, char ef)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  if (!g)
-    printf("Q3 = %s\n",tmp);
+  avg_str = tmp;
+  tmp = malloc(strlen("Q3 = \n")+strlen(avg_str)+1);
+  if (!tmp)
+    mem_error();
+  sprintf(tmp,"Q3 = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
   free(tmp);
 
   tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,min_re,'.',0,0);
@@ -450,8 +470,14 @@ char hc_stats(char *e, char g, char ef)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  if (!g)
-    printf("Min = %s\n",tmp);
+  avg_str = tmp;
+  tmp = malloc(strlen("Min = \n")+strlen(tmp)+1);
+  if (!tmp)
+    mem_error();
+  sprintf(tmp,"Min = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
   free(tmp);
 
   tmp_num_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,max_re,'.',0,0);
@@ -469,8 +495,14 @@ char hc_stats(char *e, char g, char ef)
   free(tmp);
   tmp = hc_strip_0s(avg_str);
   free(tmp_num_re); free(tmp_num_im); free(avg_str);
-  if (!g)
-    printf("Max = %s\n",tmp);
+  avg_str = tmp;
+  tmp = malloc(strlen("Max = \n")+strlen(tmp)+1);
+  if (!tmp)
+    mem_error();
+  sprintf(tmp,"Max = %s\n",avg_str);
+  free(avg_str);
+  out_string = realloc(out_string,strlen(out_string)+strlen(tmp)+1);
+  strcat(out_string,tmp);
   free(tmp);
 
 #ifdef DBG
@@ -530,6 +562,9 @@ char hc_stats(char *e, char g, char ef)
     plfbox(1, pl_q1, pl_q2, pl_q3, pl_min, pl_max);
   
     plend();
+  } else {
+    notify(out_string);
+    free(out_string);
   }
   return SUCCESS;
 }
