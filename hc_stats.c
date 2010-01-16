@@ -562,6 +562,12 @@ char hc_stats(char *e, char g, char ef)
     plfbox(1, pl_q1, pl_q2, pl_q3, pl_min, pl_max);
   
     plend();
+#ifdef HCG
+#ifndef WIN32
+    hcg_disp_graph("tmp-graph.png");
+    remove("tmp-graph.png");
+#endif
+#endif
   } else {
     notify(out_string);
     free(out_string);
