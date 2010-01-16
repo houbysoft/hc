@@ -526,7 +526,7 @@ char hc_stats(char *e, char g, char ef)
     plcol0(15);
     plbox("bc", 1.0, 0, "bcgnst", 0, 0);
     pllab("", "", "#frHoubySoft Calculator - Box plot");
-    plcol0(1);
+    plcol0(9);
     plfbox(1, pl_q1, pl_q2, pl_q3, pl_min, pl_max);
   
     plend();
@@ -562,7 +562,7 @@ void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw)
 
     plpsty(0);
     plfill(4, px, py);
-    plcol0(3);
+    plcol0(1);
     pllsty(1);
     plline(5, px, py);
 
