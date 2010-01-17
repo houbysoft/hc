@@ -131,6 +131,7 @@ char hc_stats(char *e, char g, char ef)
 	}
 	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
 	free(first);
+	arg_error("statsf() requires an even number of arguments.");
 	return FAIL;
       }
       tmp_num_re = hc_real_part(tmp);
