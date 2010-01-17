@@ -374,6 +374,8 @@ char hc_stats(char *e, char g, char ef)
   } else {
     m_apm_copy(numtmp,curr->re);
     m_apm_copy(numtmp2,curr->im);
+    m_apm_copy(numtmp4,numtmp3);
+    m_apm_add(numtmp3,numtmp4,MM_One);
     if (m_apm_compare(numtmp3,curr->ef)==0)
     {
       m_apm_copy(numtmp3,curr->n->re);
@@ -432,6 +434,8 @@ char hc_stats(char *e, char g, char ef)
   } else {
     m_apm_copy(numtmp,curr->re);
     m_apm_copy(numtmp2,curr->im);
+    m_apm_copy(numtmp4,numtmp3);
+    m_apm_add(numtmp3,numtmp4,MM_One);
     if (m_apm_compare(numtmp3,curr->ef)==0)
     {
       m_apm_copy(numtmp3,curr->n->re);
