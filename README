@@ -12,6 +12,7 @@ RELEASE NOTES
 =============
 0.9:
   - added statistics with functions stats(), statseff(), boxplot(), boxploteff()
+  - bugfix
 0.8:
   - added support for complex numbers
   - added support for engineering notation

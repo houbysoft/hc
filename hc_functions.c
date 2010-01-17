@@ -1265,6 +1265,9 @@ char *hc_2sci(char *n)
 {
   if (!n)
     return NULL;
+  char *tmp = hc_strip_0s(n);
+  free(n);
+  n = tmp;
   char *r;
   M_APM _n_ = m_apm_init(); m_apm_set_string(_n_,n);
   int exp = m_apm_exponent(_n_);
