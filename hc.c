@@ -1810,7 +1810,7 @@ char hc_check(char *e)
       }
       if (isoperator_np(e[i]))
       {
-	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')))
+	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')))
 	{
 	  return 0;
 	}
