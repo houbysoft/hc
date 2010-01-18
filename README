@@ -10,6 +10,8 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+0.9.1:
+  - only minor change : graph() and graph3() now 'remember' the last xmin, etc. provided, and can then be used without those to use the last ones - xmin, etc. are now optional arguments
 0.9:
   - added statistics with functions stats(), statseff(), boxplot(), boxploteff()
   - bugfix
@@ -136,10 +138,12 @@ Constants are stored with 128 decimal places.
 - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin
 - fttom(x) - converts x, which has to be in feet, to meters
 - gcd(x,y) - finds the greatest common divisor of x and y
-- graph(expr,xmin,xmax,ymin,ymax) - draw a graph (generate a PNG file if in command-line), example syntax:
+- graph(expr[,xmin,xmax,ymin,ymax]) - draw a graph (generate a PNG file if in command-line), example syntax:
     graph(x^2,-10,10,-100,100)
-- graph3(expr,xmin,xmax,ymin,ymax,zmin,zmax) - draw a 3D graph (generate a PNG file if in command-line), example syntax:
+    Note: the xmin, xmax, ymin and ymax arguments are optional; if not provided, the last will be used (ie after a call of the example, graph(something) would use -10, 10, -100 and 100
+- graph3(expr[,xmin,xmax,ymin,ymax,zmin,zmax]) - draw a 3D graph (generate a PNG file if in command-line), example syntax:
     graph3(x+y,-10,10,-10,10,-20,20)
+    Note: as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional
 - inchtocm(x) - converts x, which has to be in inches, to cm
 - kmtomi(x) - converts x, which has to be in km, to miles
 - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius
