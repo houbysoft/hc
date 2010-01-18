@@ -1,4 +1,4 @@
-/*    (c) 2009 Jan Dlabal <dlabaljan@gmail.com>                          */
+/*    (c) 2009-2010 Jan Dlabal <dlabaljan@gmail.com>                          */
 /*                                                                            */
 /*     This file is part of HC (HoubySoft Calculator).                                  */
 /*                                                                            */

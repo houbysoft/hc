@@ -1,5 +1,5 @@
 # Makefile for HC (HoubySoft Calculator)
-# HC is (c) Jan Dlabal, 2009.
+# HC is (c) Jan Dlabal, 2009-2010.
 # HC is provided under the GNU GPLv3 License
 
 # additional options to pass to gcc when compiling

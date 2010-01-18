@@ -1,4 +1,4 @@
-/*    (c) 2009 Jan Dlabal <dlabaljan@gmail.com>                          */
+/*    (c) 2009-2010 Jan Dlabal <dlabaljan@gmail.com>                          */
 /*                                                                            */
 /*     This file is part of HC (HoubySoft Calculator).                                  */
 /*                                                                            */
@@ -555,7 +555,7 @@ char *hc_result_(char *f)
 
   if (strcmp(e,"credits")==0)
   {
-    printf("HC was developed by Jan Dlabal (visit http://houbysoft.com/en/about.php for contact information) and is (C) 2009.\nThe homepage of this program is http://hc.houbysoft.com/.\nThis program was released under the GNU GPL v3 License. Visit gnu.org for more information.\n");
+    printf("HC was developed by Jan Dlabal (visit http://houbysoft.com/en/about.php for contact information) and is (C) 2009-2010.\nThe homepage of this program is http://hc.houbysoft.com/.\nThis program was released under the GNU GPL v3 License. Visit gnu.org for more information.\n");
     free(e);
     hc_nested--;
     return NULL;
