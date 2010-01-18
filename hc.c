@@ -531,7 +531,7 @@ char *hc_result_(char *f)
 
   if (strcmp(e,"help")==0)
   {
-    printf("Welcome to HC!\nTo calculate an expression, simply enter it on the command-line in infix notation (RPN is also available, to enable it, type \\rpn) and press enter.\nTo use a constant, simply type its name with english characters - for example pi. For more info type \"constants\".\nHC also supports complex numbers, type \"complex\" for more info.\nTo draw a graph, use the graph() function; see below for more info.\nYou can also use a few functions; the list of them is below:\n - ans() - Will be replaced by the result of the last entered expression\n - abs(x) - absolute value of x\n - acos(x) - arc cosine of x\n - asin(x) arc sine of x\n - atan(x) - arc tangent of x\n - boxplot(v1,v2,...,vn) - draw a boxplot of v1...vn\n - boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency\n - cbrt(x) - returns the cube root of x (you could also use x^(1/3))\n - ceil(x) - returns x rounded to the nearest integer upwards\n - cmtoinch(x) - converts x, which has to be in cm, to inches\n - cos(x) - cosine of x\n - cosh(x) - hyperbolic cosine of x\n - ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit\n - ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin\n - exp(x) - exponential function\n - factorial(x) - factorial of x (you can also use the '!' notation)\n - fibo(x) - returns the xth term of the Fibonacci sequence\n - floor(x) - returns x rounded to the nearest integer downwards\n - floztoml(x) - converts x, which has to be in US fluid ounces, to ml\n - ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius\n - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin\n - fttom(x) - converts x, which has to be in feet, to meters\n - gcd(x,y) - finds the greatest common divisor of x and y\n - graph(expr,xmin,xmax,ymin,ymax) - draw a graph (generate a PNG file if in command-line), example syntax:\n     graph(x^2,-10,10,-100,100)\n - graph3(expr,xmin,xmax,ymin,ymax,zmin,zmax) - draw a 3D graph (generate a PNG file if in command-line), example syntax:\n     graph3(x+y,-10,10,-10,10,-20,20)\n - inchtocm(x) - converts x, which has to be in inches, to cm\n - kmtomi(x) - converts x, which has to be in km, to miles\n - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius\n - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit\n - lcm(x,y) - finds the least common multiple of x and y\n - ln(x) - natural logarithm\n - log10(x) - common logarithm\n - mitokm(x) - converts x, which has to be in miles, to km\n - mltofloz(x) - converts x, which has to be in ml, to US fluid ounces\n - mod(x,y) - modulus (you can also use the C-style '%%' notation)\n - mtoft(x) - converts x, which has to be in m, to feet\n - nCr(n,k) - binomial coefficient (combinatorics)\n - nPr(n,k) - number of permutations (combinatorics)\n - product(expr,low,high) - returns the product of expr with x from low to high inclusive (WARNING : As of now, other variable names will be ignored)\n - sin(x) - sine of x\n - sinh(x) - hyperbolic sine of x\n - sqrt(x) - returns the square root of x\n - stats(v1,v2,...,vn) - show stats info of v1...vn\n - statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency\n - sum(expr,low,high) - same as product, except the result is summation, not multiplication\n - tan(x) - tangent of x\n - tanh(x) - hyperbolic tangent of x\n - totient(x) - Euler's totient function\nYou can also use these directions/configuration commands:\n - \\p PRECISION - change current precision to PRECISION decimal places\n - \\rpn - change modes (RPN / infix)\n - \\sci, \\eng, \\normal - switch between scientific, engineering, and normal exponentials formats for output\n - \\deg, \\rad, \\grad - switch between DEG, RAD, and GRAD modes for angles\n - \\clear - clear all user-defined variables and functions\n - \\3dpoints SIDE - setup the 3D graphing function to compute a square of SIDE^2 points\nTo get a list of only the converter functions, type \"conversions\".\nTo read the license and credits, type \"credits\".\nTo exit The HoubySoft Calculator, just type \"exit\" in the prompt (you can also use CTRL+C on systems that support it, but configuration will not be saved if you do that).\n");
+    printf("Welcome to HC!\nTo calculate an expression, simply enter it on the command-line in infix notation (RPN is also available, to enable it, type \\rpn) and press enter.\nTo use a constant, simply type its name with english characters - for example pi. For more info type \"constants\".\nHC also supports complex numbers, type \"complex\" for more info.\nTo draw a graph, use the graph() function or the graph3() function; see below for more info.\nYou can also use a few functions; the list of them is below:\n - ans() - Will be replaced by the result of the last entered expression\n - abs(x) - absolute value of x\n - acos(x) - arc cosine of x\n - asin(x) arc sine of x\n - atan(x) - arc tangent of x\n - boxplot(v1,v2,...,vn) - draw a boxplot of v1...vn\n - boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency\n - cbrt(x) - returns the cube root of x (you could also use x^(1/3))\n - ceil(x) - returns x rounded to the nearest integer upwards\n - cmtoinch(x) - converts x, which has to be in cm, to inches\n - cos(x) - cosine of x\n - cosh(x) - hyperbolic cosine of x\n - ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit\n - ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin\n - exp(x) - exponential function\n - factorial(x) - factorial of x (you can also use the '!' notation)\n - fibo(x) - returns the xth term of the Fibonacci sequence\n - floor(x) - returns x rounded to the nearest integer downwards\n - floztoml(x) - converts x, which has to be in US fluid ounces, to ml\n - ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius\n - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin\n - fttom(x) - converts x, which has to be in feet, to meters\n - gcd(x,y) - finds the greatest common divisor of x and y\n - graph(expr[,xmin,xmax,ymin,ymax]) - draw a graph (generate a PNG file if in command-line), example syntax:\n     graph(x^2,-10,10,-100,100)\n    Note : the xmin, xmax, ymin and ymax arguments are optional; if not provided, the last will be used (ie after a call of the example, graph(x^2) would use -10, 10, -100 and 100\n - graph3(expr[,xmin,xmax,ymin,ymax,zmin,zmax]) - draw a 3D graph (generate a PNG file if in command-line), example syntax:\n     graph3(x+y,-10,10,-10,10,-20,20)\n    Note : as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional\n - inchtocm(x) - converts x, which has to be in inches, to cm\n - kmtomi(x) - converts x, which has to be in km, to miles\n - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius\n - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit\n - lcm(x,y) - finds the least common multiple of x and y\n - ln(x) - natural logarithm\n - log10(x) - common logarithm\n - mitokm(x) - converts x, which has to be in miles, to km\n - mltofloz(x) - converts x, which has to be in ml, to US fluid ounces\n - mod(x,y) - modulus (you can also use the C-style '%%' notation)\n - mtoft(x) - converts x, which has to be in m, to feet\n - nCr(n,k) - binomial coefficient (combinatorics)\n - nPr(n,k) - number of permutations (combinatorics)\n - product(expr,low,high) - returns the product of expr with x from low to high inclusive (WARNING : As of now, other variable names will be ignored)\n - sin(x) - sine of x\n - sinh(x) - hyperbolic sine of x\n - sqrt(x) - returns the square root of x\n - stats(v1,v2,...,vn) - show stats info of v1...vn\n - statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency\n - sum(expr,low,high) - same as product, except the result is summation, not multiplication\n - tan(x) - tangent of x\n - tanh(x) - hyperbolic tangent of x\n - totient(x) - Euler's totient function\nYou can also use these directions/configuration commands:\n - \\p PRECISION - change current precision to PRECISION decimal places\n - \\rpn - change modes (RPN / infix)\n - \\sci, \\eng, \\normal - switch between scientific, engineering, and normal exponentials formats for output\n - \\deg, \\rad, \\grad - switch between DEG, RAD, and GRAD modes for angles\n - \\clear - clear all user-defined variables and functions\n - \\3dpoints SIDE - setup the 3D graphing function to compute a square of SIDE^2 points\nTo get a list of only the converter functions, type \"conversions\".\nTo read the license and credits, type \"credits\".\nTo exit The HoubySoft Calculator, just type \"exit\" in the prompt (you can also use CTRL+C on systems that support it, but configuration will not be saved if you do that).\n");
     free(e);
     hc_nested--;
     return NULL;
@@ -2052,6 +2052,8 @@ void hc_load_cfg()
   FILE *fr = fopen(HC_CFG_FILE,"r");
   hc.angle = 'r';
   hc.graph_points_3d = HC_GP3D_DEFAULT;
+  hc.xmin2d = hc.ymin2d = hc.xmin3d = hc.ymin3d = hc.zmin3d = -10;
+  hc.xmax2d = hc.ymax2d = hc.xmax3d = hc.ymax3d = hc.zmax3d = 10;
   if (!fr)
   {
     hc.rpn = FALSE;
@@ -2061,14 +2063,14 @@ void hc_load_cfg()
     hc.plplot_dev_override = NULL;
   } else {
     char *buffer = malloc(sizeof(char) * HC_CFG_BUF_SIZE);
-    char tmp[16];
+    char tmp[HC_CFG_BUF_SIZE];
     if (!buffer)
       mem_error();
     while (fgets(buffer,HC_CFG_BUF_SIZE,fr))
     {
       if (buffer[strlen(buffer)-1]=='\n')
 	buffer[strlen(buffer)-1]=0;
-      strncpy(tmp,buffer,16);
+      strncpy(tmp,buffer,HC_CFG_BUF_SIZE);
       int i=0;
       while (tmp[i]!='=' && tmp[i]!=' ' && i<16)
 	i++;
@@ -2134,6 +2136,36 @@ void hc_load_cfg()
 	  hc.graph_points_3d = atoi(&buffer[i+1]);
 	}
 	break;
+      case HASH_XMIN2D:
+	hc.xmin2d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_XMAX2D:
+	hc.xmax2d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMIN2D:
+	hc.ymin2d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMAX2D:
+	hc.ymax2d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_XMIN3D:
+	hc.xmin3d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_XMAX3D:
+	hc.xmax3d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMIN3D:
+	hc.ymin3d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMAX3D:
+	hc.ymax3d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_ZMIN3D:
+	hc.zmin3d = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_ZMAX3D:
+	hc.zmax3d = strtod(&buffer[i+1],NULL);
+	break;
       }
     }
     free(buffer);
@@ -2163,5 +2195,15 @@ void hc_save_cfg()
   fprintf(fw,"angle=%c\n",hc.angle);
   fprintf(fw,"expf=%c\n",hc.exp);
   fprintf(fw,"3dpoints=%i\n",hc.graph_points_3d);
+  fprintf(fw,"xmin2d=%f\n",hc.xmin2d);
+  fprintf(fw,"xmax2d=%f\n",hc.xmax2d);
+  fprintf(fw,"ymin2d=%f\n",hc.ymin2d);
+  fprintf(fw,"ymax2d=%f\n",hc.ymax2d);
+  fprintf(fw,"xmin3d=%f\n",hc.xmin3d);
+  fprintf(fw,"xmax3d=%f\n",hc.xmax3d);
+  fprintf(fw,"ymin3d=%f\n",hc.ymin3d);
+  fprintf(fw,"ymax3d=%f\n",hc.ymax3d);
+  fprintf(fw,"zmin3d=%f\n",hc.zmin3d);
+  fprintf(fw,"zmax3d=%f\n",hc.zmax3d);
   fclose(fw);
 }

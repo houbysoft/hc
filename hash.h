@@ -103,4 +103,17 @@
 #define HASH_BPN 7793
 #define HASH_3DPOINTS 26374
 
+// Graph min/max configuration
+#define HASH_XMIN2D 5577
+#define HASH_XMAX2D 16771
+#define HASH_YMIN2D 25222
+#define HASH_YMAX2D 6427
+
+#define HASH_XMIN3D 5608
+#define HASH_XMAX3D 16802
+#define HASH_YMIN3D 25253
+#define HASH_YMAX3D 6458
+#define HASH_ZMIN3D 14909
+#define HASH_ZMAX3D 26103
+
 #endif

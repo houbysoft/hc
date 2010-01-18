@@ -70,26 +70,23 @@ char hc_graph(char *e)
   free(t2);free(t4);
   double xmin,xmax,ymin,ymax;
 
-  if (!func_expr || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
-    arg_error("graph() needs 5 arguments (expr,xmin,xmax,ymin,ymax).");
+  if (!func_expr)
+    arg_error("graph() needs at least one argument (expr).");
 
-  xmin = strtod(arg_xmin,NULL);
-  xmax = strtod(arg_xmax,NULL);
-  ymin = strtod(arg_ymin,NULL);
-  ymax = strtod(arg_ymax,NULL);
-
-  int j=strlen(arg_xmin)-1;
-  while (arg_xmin[j]=='0')
-    arg_xmin[j--]=0;
-  if (arg_xmin[j]=='.')
-    arg_xmin[j]=0;
-  j = strlen(arg_xmax)-1;
-  while (arg_xmax[j]=='0')
-    arg_xmax[j--]=0;
-  if (arg_xmax[j]=='.')
-    arg_xmax[j]=0;
-
-  // freed later (needed for labels)
+  if (!arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
+  {
+    if (arg_xmin || arg_xmax || arg_ymin || arg_ymax)
+      notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
+    xmin = hc.xmin2d;
+    xmax = hc.xmax2d;
+    ymin = hc.ymin2d;
+    ymax = hc.ymax2d;
+  } else {
+    hc.xmin2d = xmin = strtod(arg_xmin,NULL);
+    hc.xmax2d = xmax = strtod(arg_xmax,NULL);
+    hc.ymin2d = ymin = strtod(arg_ymin,NULL);
+    hc.ymax2d = ymax = strtod(arg_ymax,NULL);
+  }
 
   unsigned int i = 0;
   PLFLT *a= malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
@@ -157,10 +154,14 @@ char hc_graph(char *e)
 
   free(graph_top_label);
   free(func_expr);
-  free(arg_xmin);
-  free(arg_xmax);
-  free(arg_ymin);
-  free(arg_ymax);
+  if (arg_xmin)
+    free(arg_xmin);
+  if (arg_xmax)
+    free(arg_xmax);
+  if (arg_ymin)
+    free(arg_ymin);
+  if (arg_ymax)
+    free(arg_ymax);
   free(a_x);
   free(a);
   free(a_hasval);
@@ -197,30 +198,29 @@ char hc_graph3d(char *e)
   free(t4); free(t5); free(t6);
   double xmin,xmax,ymin,ymax,zmin,zmax;
 
-  if (!func_expr || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax || !arg_zmin || !arg_zmax)
-    arg_error("graph3() needs 7 arguments (expr,xmin,xmax,ymin,ymax,zmin,zmax).");
+  if (!func_expr)
+    arg_error("graph3() needs at least one argument (expr).");
 
-  xmin = strtod(arg_xmin,NULL);
-  xmax = strtod(arg_xmax,NULL);
-  ymin = strtod(arg_ymin,NULL);
-  ymax = strtod(arg_ymax,NULL);
-  zmin = strtod(arg_zmin,NULL);
-  zmax = strtod(arg_zmax,NULL);
+  if (!arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax || !arg_zmin || !arg_zmax)
+  {
+    if (arg_xmin || arg_xmax || arg_ymin || arg_ymax || arg_zmin || arg_zmax)
+      notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
+    xmin = hc.xmin3d;
+    xmax = hc.xmax3d;
+    ymin = hc.ymin3d;
+    ymax = hc.ymax3d;
+    zmin = hc.zmin3d;
+    zmax = hc.zmax3d;
+  } else {
+    hc.xmin3d = xmin = strtod(arg_xmin,NULL);
+    hc.xmax3d = xmax = strtod(arg_xmax,NULL);
+    hc.ymin3d = ymin = strtod(arg_ymin,NULL);
+    hc.ymax3d = ymax = strtod(arg_ymax,NULL);
+    hc.zmin3d = zmin = strtod(arg_zmin,NULL);
+    hc.zmax3d = zmax = strtod(arg_zmax,NULL);
+  }
 
-  int j=strlen(arg_xmin)-1;
-  while (arg_xmin[j]=='0')
-    arg_xmin[j--]=0;
-  if (arg_xmin[j]=='.')
-    arg_xmin[j]=0;
-  j = strlen(arg_xmax)-1;
-  while (arg_xmax[j]=='0')
-    arg_xmax[j--]=0;
-  if (arg_xmax[j]=='.')
-    arg_xmax[j]=0;
-
-  // freed later (needed for labels)
-
-  unsigned int i = 0;
+  unsigned int i = 0, j = 0;
   PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS_3D);
   char **a_hasval = malloc(sizeof(char *)*HC_GRAPH_POINTS_3D);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)
@@ -344,8 +344,18 @@ char hc_graph3d(char *e)
 
   free(graph_top_label);
   free(func_expr);
-  free(arg_xmin); free(arg_ymin); free(arg_zmin);
-  free(arg_xmax); free(arg_ymax); free(arg_zmax);
+  if (arg_xmin)
+    free(arg_xmin);
+  if (arg_ymin)
+    free(arg_ymin);
+  if (arg_zmin)
+    free(arg_zmin);
+  if (arg_xmax)
+    free(arg_xmax);
+  if (arg_ymax)
+    free(arg_ymax);
+  if (arg_zmax)
+    free(arg_zmax);
   free(a_x);
   free(a_y);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)

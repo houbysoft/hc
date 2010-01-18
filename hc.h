@@ -27,7 +27,7 @@
 #define HC_CFG_RELATIVE "/.hc"
 #define HC_CFG_RELATIVE_WIN32 "\\hc.cfg"
 #define HC_CFG_FILE hc_cfg_get_fn()
-#define HC_CFG_BUF_SIZE 16
+#define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
 #define HC_FNAMES 69
 #define HC_NESTED_MAX 128
@@ -133,6 +133,16 @@ typedef struct hc_config {
   int graph_width;
   int graph_height;
   unsigned int graph_points_3d;
+  double xmin2d;
+  double xmax2d;
+  double ymin2d;
+  double ymax2d;
+  double xmin3d;
+  double xmax3d;
+  double ymin3d;
+  double ymax3d;
+  double zmin3d;
+  double zmax3d;
 } hc_config_;
 
 typedef struct hc_stack_element {
