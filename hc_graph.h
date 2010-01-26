@@ -20,6 +20,7 @@
 #define HC_GRAPH_H
 
 extern char hc_graph(char *e);
+extern char hc_graph_n(char *e);
 extern char hc_graph3d(char *e);
 
 #endif

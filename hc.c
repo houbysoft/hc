@@ -1213,6 +1213,18 @@ char *hc_result_(char *f)
       return NULL;
       break;
 
+    case HASH_GRAPHN:
+      hc_graph_n(f_expr);
+      announce_errors = FALSE;
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_re);
+      m_apm_free(f_result_im);
+      free(e);
+      hc_nested--;
+      return NULL;
+      break;
+
     case HASH_GRAPH3D:
       hc_graph3d(f_expr);
       announce_errors = FALSE;

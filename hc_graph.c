@@ -178,6 +178,126 @@ char hc_graph(char *e)
 
 
 
+// 2D graphs of more than one function
+// Arguments : func_expr_1, func_expr_2, ..., func_expr_n
+char hc_graph_n(char *e)
+{
+  char **func_expr = malloc(sizeof(char *)*HC_GRAPH_N_MAX);
+  if (!func_expr)
+    mem_error();
+  unsigned int j=0;
+  while ((func_expr[j] = hc_get_arg(e,j+1))!=NULL)
+  {
+    j++;
+  }
+
+  if (!*func_expr[0])
+    arg_error("graph() needs at least one argument (expr).");
+
+  double xmin = hc.xmin2d;
+  double xmax = hc.xmax2d;
+  double ymin = hc.ymin2d;
+  double ymax = hc.ymax2d;
+
+  unsigned int i = 0;
+  PLFLT **a= malloc(sizeof(PLFLT *)*j);
+  PLFLT **a_x = malloc(sizeof(PLFLT *)*j);
+  char **a_hasval = malloc(sizeof(char *)*j);
+  for (i=0; i<j; i++)
+  {
+    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
+    a_x[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
+    a_hasval[i] = malloc(sizeof(char)*HC_GRAPH_POINTS);
+  }
+  double step = fabs(xmax-xmin) / (HC_GRAPH_POINTS - 1);
+  double curx = xmin;
+
+  graphing_ignore_errors = TRUE;
+
+  unsigned int k=j;
+
+  for (j=0; j<k; j++)
+  {
+    curx = xmin;
+    for (; i<HC_GRAPH_POINTS; i++,curx+=step)
+    {
+      char tmp_curx[256];
+      sprintf(tmp_curx,"%f",curx);
+      a_x[j][i] = strtod(tmp_curx,NULL);
+      char *tmp_expr = strreplace(func_expr[j],"x",tmp_curx);
+      char *tmp_2 = hc_result_(tmp_expr);
+      if (tmp_2)
+      {
+	a_hasval[j][i] = 'y';
+	a[j][i] = strtod(tmp_2,NULL);
+      } else {
+	if (i!=0)
+	  a[j][i] = a[j][i-1];
+	else
+	  a[j][i] = 0;
+	a_hasval[j][i] = 'n';
+      }
+      free(tmp_expr);
+      if (tmp_2)
+	free(tmp_2);
+    }
+  }
+  graphing_ignore_errors = FALSE;
+  
+#ifndef HCG
+  if (!hc.plplot_dev_override)
+#ifndef WIN32
+    plsdev("pngcairo");
+#else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
+  plsdev("pngcairo");
+  plsfnam("tmp-graph.png");
+#else
+  plsdev("wingcc");
+#endif
+#endif
+  plinit();
+  plcol0(15);
+  plenv(xmin,xmax,ymin,ymax,0,1);
+  pllab("x","y","HoubySoft Calculator - multiple functions");
+  plcol0(1);
+  for (j=0; j<k; j++)
+  {
+    for (i=0; i<HC_GRAPH_POINTS-1; i++)
+    {
+      if (a_hasval[j][i]=='y' && a_hasval[j][i+1]=='y') // discontinuity check
+	pljoin(a_x[j][i],a[j][i],a_x[j][i+1],a[j][i+1]);
+    }
+  }
+  plend();
+
+  for (j=0; j<k; j++)
+  {
+    free(a_x[j]);
+    free(a[j]);
+    free(a_hasval[j]);
+    free(func_expr[j]);
+  }
+  free(a_x);
+  free(a);
+  free(a_hasval);
+  free(func_expr);
+    
+#ifdef HCG
+#ifndef WIN32
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#endif
+#endif
+  
+  return SUCCESS;
+}
+
+
+
 char hc_graph3d(char *e)
 {
   char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_zmin,*arg_zmax;

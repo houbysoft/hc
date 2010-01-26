@@ -32,6 +32,8 @@
 #define HC_FNAMES 69
 #define HC_NESTED_MAX 128
 
+#define HC_GRAPH_N_MAX 128
+
 #define SUCCESS 1
 #define FAIL 0
 
