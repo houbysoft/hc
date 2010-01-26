@@ -24,6 +24,7 @@
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_graph.h"
+#include "hc_complex.h"
 
 
 #define HC_GRAPH_POINTS 100
@@ -103,7 +104,8 @@ char hc_graph(char *e)
     a_x[i] = strtod(tmp_curx,NULL);
     char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
     char *tmp_2 = hc_result_(tmp_expr);
-    if (tmp_2)
+    char *tmp_3 = hc_imag_part(tmp_2);
+    if (!tmp_3)
     {
       a_hasval[i] = 'y';
       a[i] = strtod(tmp_2,NULL);
@@ -117,6 +119,8 @@ char hc_graph(char *e)
     free(tmp_expr);
     if (tmp_2)
       free(tmp_2);
+    if (tmp_3)
+      free(tmp_3);
   }
   graphing_ignore_errors = FALSE;
 
@@ -192,7 +196,7 @@ char hc_graph_n(char *e)
   }
 
   if (!*func_expr[0])
-    arg_error("graph() needs at least one argument (expr).");
+    arg_error("gmul() needs at least one argument (expr_1).");
 
   double xmin = hc.xmin2d;
   double xmax = hc.xmax2d;
@@ -219,14 +223,15 @@ char hc_graph_n(char *e)
   for (j=0; j<k; j++)
   {
     curx = xmin;
-    for (; i<HC_GRAPH_POINTS; i++,curx+=step)
+    for (i=0; i<HC_GRAPH_POINTS; i++,curx+=step)
     {
       char tmp_curx[256];
       sprintf(tmp_curx,"%f",curx);
       a_x[j][i] = strtod(tmp_curx,NULL);
       char *tmp_expr = strreplace(func_expr[j],"x",tmp_curx);
       char *tmp_2 = hc_result_(tmp_expr);
-      if (tmp_2)
+      char *tmp_3 = hc_imag_part(tmp_2);
+      if (!tmp_3)
       {
 	a_hasval[j][i] = 'y';
 	a[j][i] = strtod(tmp_2,NULL);
@@ -240,6 +245,8 @@ char hc_graph_n(char *e)
       free(tmp_expr);
       if (tmp_2)
 	free(tmp_2);
+      if (tmp_3)
+	free(tmp_3);
     }
   }
   graphing_ignore_errors = FALSE;
@@ -262,10 +269,32 @@ char hc_graph_n(char *e)
   plinit();
   plcol0(15);
   plenv(xmin,xmax,ymin,ymax,0,1);
-  pllab("x","y","HoubySoft Calculator - multiple functions");
-  plcol0(1);
+  int mallocme = strlen("HC - ")+1;
   for (j=0; j<k; j++)
   {
+    mallocme += strlen(func_expr[j]);
+    if (j<k-1)
+      mallocme += strlen("; ");
+  }
+  char *lbl = malloc(mallocme);
+  if (!lbl)
+    mem_error();
+  strcpy(lbl,"HC - ");
+  for (j=0; j<k; j++)
+  {
+    strcat(lbl,func_expr[j]);
+    if (j<k-1)
+      strcat(lbl,"; ");
+  }
+  pllab("x","y",lbl);
+  free(lbl);
+  int color=1;
+  for (j=0; j<k; j++)
+  {
+    plcol0(color);
+    color++;
+    if (color==15) // 15 is white, 0 is black, 1 is red, details on page 131/153 of plplot-5.9.5.pdf (get it on plplot.sf.net)
+      color = 1;
     for (i=0; i<HC_GRAPH_POINTS-1; i++)
     {
       if (a_hasval[j][i]=='y' && a_hasval[j][i+1]=='y') // discontinuity check
@@ -373,7 +402,8 @@ char hc_graph3d(char *e)
       free(tmp_expr);
       tmp_expr = tmp_expr2;
       char *tmp_2 = hc_result_(tmp_expr);
-      if (tmp_2)
+      char *tmp_3 = hc_imag_part(tmp_2);
+      if (!tmp_3)
       {
 	a[i][ii] = strtod(tmp_2,NULL);
 	if (a[i][ii]<zmin || a[i][ii]>zmax || errno==ERANGE)
@@ -390,6 +420,8 @@ char hc_graph3d(char *e)
       free(tmp_expr);
       if (tmp_2)
 	free(tmp_2);
+      if (tmp_3)
+	free(tmp_3);
     }
   }
   graphing_ignore_errors = FALSE;

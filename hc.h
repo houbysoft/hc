@@ -29,7 +29,7 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_FNAMES 69
+#define HC_FNAMES 70
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128
@@ -88,7 +88,7 @@
 #define notify(str) {printf(str);}
 #endif
 
-#define NAME_VERSION "Welcome to hc 0.9.1 (infix / RPN) -- http://hc.houbysoft.com/\n"
+#define NAME_VERSION "Welcome to hc 0.9.2 (infix / RPN) -- http://hc.houbysoft.com/\n"
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)

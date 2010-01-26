@@ -54,7 +54,7 @@
 #define HASH_LCM 16999
 
 #define HASH_GRAPH 11798
-#define HASH_GRAPHN 5980
+#define HASH_GMUL 28112
 #define HASH_GRAPH3D 5921
 
 #define HASH_STATS 27848

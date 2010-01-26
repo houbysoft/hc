@@ -10,6 +10,9 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+0.9.2:
+  - added gmul() - graph multiple 2D functions in one frame/image
+  - fixed discontinuities bug (due to the fact that previously I was checking for discontinuities by looking whether hc_result_() returned an error - but since I added complex numbers, things such as sqrt(-1) no longer give an error, yet are impossible to draw on a 2D graph)
 0.9.1:
   - only minor change : graph() and graph3() now 'remember' the last xmin, etc. provided, and can then be used without those to use the last ones - xmin, etc. are now optional arguments
 0.9:
@@ -138,6 +141,7 @@ Constants are stored with 128 decimal places.
 - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin
 - fttom(x) - converts x, which has to be in feet, to meters
 - gcd(x,y) - finds the greatest common divisor of x and y
+- gmul(expr_1, expr_2, ..., expr_n) - similar to graph, but can draw an arbitrary number of functions on one graph (note : to set xmin, etc., make a call to graph() first)
 - graph(expr[,xmin,xmax,ymin,ymax]) - draw a graph (generate a PNG file if in command-line), example syntax:
     graph(x^2,-10,10,-100,100)
     Note: the xmin, xmax, ymin and ymax arguments are optional; if not provided, the last will be used (ie after a call of the example, graph(something) would use -10, 10, -100 and 100
