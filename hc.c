@@ -128,6 +128,7 @@ char *hc_i2p(char *f);
 char *hc_postfix_result(char *e);
 char hc_check(char *e);
 char *hc_plusminus(char *e);
+char *hc_impmul_resolve(char *e);
 void hc_process_direction(char *d);
 void hc_load_cfg();
 void hc_save_cfg();
@@ -288,6 +289,8 @@ char *hc_result_(char *f)
     mem_error();
   strcpy(e,f);
   char *e_fme = e;
+
+  e = hc_impmul_resolve(e);
 
   // Constants
   // Pi
@@ -2057,6 +2060,29 @@ char *hc_cfg_get_fn()
 #endif
   }
   return fn;
+}
+
+
+char *hc_impmul_resolve(char *e)
+{
+  unsigned int i=0;
+  char last_was_num = 0;
+  for (; i<strlen(e); i++)
+  {
+    if (isalpha(e[i]) && last_was_num)
+    {
+      e = realloc(e, strlen(e)+2);
+      memmove(e+sizeof(char)*i+sizeof(char), e+sizeof(char)*i, strlen(e)-i+1);
+      e[i] = '*';
+      last_was_num = 0;
+    }
+    if (isdigit(e[i]) || e[i]=='.')
+      last_was_num = 1;
+    else
+      last_was_num = 0;
+  }
+
+  return e;
 }
 
 
