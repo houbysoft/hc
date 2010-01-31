@@ -2067,19 +2067,28 @@ char *hc_impmul_resolve(char *e)
 {
   unsigned int i=0;
   char last_was_num = 0;
+  char could_be_num = 1;
   for (; i<strlen(e); i++)
   {
-    if (isalpha(e[i]) && last_was_num)
+    if (!isspace(e[i]))
     {
-      e = realloc(e, strlen(e)+2);
-      memmove(e+sizeof(char)*i+sizeof(char), e+sizeof(char)*i, strlen(e)-i+1);
-      e[i] = '*';
-      last_was_num = 0;
+      if ((isalpha(e[i]) || e[i]=='(') && last_was_num)
+      {
+	e = realloc(e, strlen(e)+2);
+	memmove(e+sizeof(char)*i+sizeof(char), e+sizeof(char)*i, strlen(e)-i+1);
+	e[i] = '*';
+	last_was_num = 0;
+      }
+      if ((isdigit(e[i]) || e[i]=='.') && could_be_num)
+      {
+	last_was_num = 1;
+      } else {
+	last_was_num = 0;
+	could_be_num = 0;
+      }
+      if (isoperator(e[i]))
+	could_be_num = 1;
     }
-    if (isdigit(e[i]) || e[i]=='.')
-      last_was_num = 1;
-    else
-      last_was_num = 0;
   }
 
   return e;
