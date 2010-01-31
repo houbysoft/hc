@@ -42,9 +42,11 @@ char *tips[] = {
   "HC is also a good converter. For example, to convert 1 US Fl Oz to mL, type floztoml(1). Type conversions to get a list of other built-in conversions!",
   "You can type a constant's name with english characters to use it in a calculation.",
   "This calculator can provide you The Answer.",
-  "From version 0.4.1, you can use the '!' notation for factorial and the '%' notation for modulus."
+  "From version 0.4.1, you can use the '!' notation for factorial and the '%' notation for modulus.",
+  "You can use implied multiplication in hc.",
+  "You can graph multiple functions on one graph with the gmul() function."
 };
-#define TIP_COUNT 13
+#define TIP_COUNT 15
 #endif
 
 
