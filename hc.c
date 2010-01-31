@@ -291,6 +291,7 @@ char *hc_result_(char *f)
   char *e_fme = e;
 
   e = hc_impmul_resolve(e);
+  e_fme = e;
 
   // Constants
   // Pi
