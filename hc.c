@@ -2073,7 +2073,7 @@ char *hc_impmul_resolve(char *e)
   {
     if (!isspace(e[i]))
     {
-      if ((isalpha(e[i]) || e[i]=='(') && last_was_num)
+      if (((isalpha(e[i]) || e[i]=='(') && tolower(e[i])!='i' && tolower(e[i])!='e') && last_was_num)
       {
 	e = realloc(e, strlen(e)+2);
 	memmove(e+sizeof(char)*i+sizeof(char), e+sizeof(char)*i, strlen(e)-i+1);
