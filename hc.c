@@ -667,6 +667,7 @@ char *hc_result_(char *f)
     M_APM tmp_num_re = m_apm_init();
     M_APM tmp_num_im = m_apm_init();
     char *tmp_ri; // tmp for real/imaginary parts of the number
+    char *tmp;
 
     switch (simple_hash(f_name))
     {
@@ -1203,6 +1204,11 @@ char *hc_result_(char *f)
 
     case HASH_NPR:
       if (hc_permutations(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      break;
+
+    case HASH_RAND:
+      if (hc_rand(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 

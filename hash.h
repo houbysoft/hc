@@ -70,6 +70,8 @@
 #define HASH_FIBO 23880
 #define HASH_TOTIENT 3603
 
+#define HASH_RAND 14177
+
 // Conversions
 #define HASH_CTOF 5450
 #define HASH_FTOC 4853

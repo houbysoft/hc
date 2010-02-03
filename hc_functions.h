@@ -46,6 +46,7 @@ extern int hc_inch2cm(M_APM, char *);
 extern int hc_cm2inch(M_APM, char *);
 extern int hc_ft2m(M_APM, char *);
 extern int hc_m2ft(M_APM, char *);
+extern int hc_rand(M_APM, char *);
 
 extern void hc_from_rad(M_APM);
 extern void hc_to_rad(M_APM);

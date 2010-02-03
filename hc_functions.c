@@ -1504,3 +1504,54 @@ char *hc_strip_0s(char *e)
   free(re); free(im);
   return r;
 }
+
+
+int hc_rand(M_APM res, char *f_expr)
+{
+  char *t1 = hc_get_arg(f_expr,1);
+  char *tmp;
+  if (!t1)
+    tmp = NULL;
+  if (t1)
+  {
+    if (strlen(t1)==0)
+    {
+      free(t1);
+      tmp = NULL;
+    } else {
+      tmp = hc_result_(t1);
+      free(t1);
+      if (!tmp)
+	return FAIL;
+      t1 = hc_imag_part(tmp);
+      if (t1)
+      {
+	free(t1);
+	arg_error("rand() : if provided, argument must be a real, strictly positive integer.");
+      }
+    }
+  }
+
+  if (tmp!=NULL)
+  {
+    M_APM rand_tmp = m_apm_init();
+    M_APM rand_1 = m_apm_init();
+    M_APM rand_2 = m_apm_init();
+    m_apm_set_string(rand_tmp,tmp);
+    if (!m_apm_is_integer(rand_tmp) || m_apm_compare(rand_tmp,MM_Zero)!=1)
+    {
+      m_apm_free(rand_tmp);
+      m_apm_free(rand_1);
+      m_apm_free(rand_2);
+      arg_error("rand() : if provided, argument must be a real, strictly positive integer.");
+    }
+    m_apm_get_random(rand_1);
+    m_apm_multiply(rand_2,rand_1,rand_tmp);
+    m_apm_floor(rand_1,rand_2);
+    m_apm_add(res,rand_1,MM_One);
+    m_apm_free(rand_tmp); m_apm_free(rand_1); m_apm_free(rand_2); free(tmp);
+  } else {
+    m_apm_get_random(res);
+  }
+  return SUCCESS;
+}

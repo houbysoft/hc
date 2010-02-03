@@ -104,8 +104,10 @@ char hc_graph(char *e)
     a_x[i] = strtod(tmp_curx,NULL);
     char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
     char *tmp_2 = hc_result_(tmp_expr);
-    char *tmp_3 = hc_imag_part(tmp_2);
-    if (!tmp_3)
+    char *tmp_3 = NULL;
+    if (tmp_2)
+      tmp_3 = hc_imag_part(tmp_2);
+    if (!tmp_3 && tmp_2)
     {
       a_hasval[i] = 'y';
       a[i] = strtod(tmp_2,NULL);
@@ -230,8 +232,10 @@ char hc_graph_n(char *e)
       a_x[j][i] = strtod(tmp_curx,NULL);
       char *tmp_expr = strreplace(func_expr[j],"x",tmp_curx);
       char *tmp_2 = hc_result_(tmp_expr);
-      char *tmp_3 = hc_imag_part(tmp_2);
-      if (!tmp_3)
+      char *tmp_3 = NULL;
+      if (tmp_2)
+	tmp_3 = hc_imag_part(tmp_2);
+      if (!tmp_3 && tmp_2)
       {
 	a_hasval[j][i] = 'y';
 	a[j][i] = strtod(tmp_2,NULL);
@@ -402,8 +406,10 @@ char hc_graph3d(char *e)
       free(tmp_expr);
       tmp_expr = tmp_expr2;
       char *tmp_2 = hc_result_(tmp_expr);
-      char *tmp_3 = hc_imag_part(tmp_2);
-      if (!tmp_3)
+      char *tmp_3 = NULL;
+      if (tmp_2)
+	tmp_3 = hc_imag_part(tmp_2);
+      if (!tmp_3 && tmp_2)
       {
 	a[i][ii] = strtod(tmp_2,NULL);
 	if (a[i][ii]<zmin || a[i][ii]>zmax || errno==ERANGE)
