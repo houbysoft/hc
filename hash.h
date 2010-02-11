@@ -65,6 +65,7 @@
 // Rounding
 #define HASH_FLOOR 2568
 #define HASH_CEIL 20844
+#define HASH_ROUND 24006
 
 // Sequences
 #define HASH_FIBO 23880
