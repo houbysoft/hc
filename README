@@ -167,6 +167,8 @@ Constants are stored with 128 decimal places.
   	     will be incremented from low to high inclusive, for example:
 	     > product(x^2,1,5)
 	     = 14400
+- rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[
+- round(x) - round x to the nearest integer (for .5 cases, away from zero)
 - sin(x) - sine of x
 - sinh(x) - hyperbolic sine of x
 - sqrt(x) - returns the square root of x
