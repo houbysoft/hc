@@ -329,184 +329,223 @@ char *hc_result_(char *f)
   // Constants end
   // User-defined variables
 
-  struct hc_ventry *var_tmp = hc_var_first;
-  if (var_tmp->name == NULL)
-    var_tmp = NULL;
-  while (var_tmp)
+  int pos_cur=0,pos_beg;
+  char couldbevar=0;
+  while (e[pos_cur])
   {
-    if (var_tmp->type == HC_USR_VAR)
+    if (isalpha(e[pos_cur]) || (isalnum(e[pos_cur]) && (couldbevar==1)))
     {
-      e = strreplace(e,var_tmp->name,var_tmp->value);
-      free(e_fme);
-      e_fme = e;
-    } else if (var_tmp->type == HC_USR_FUNC)
-    {
-      char e_tmp[MAX_EXPR];
-      int itmp = 0;
-      for (; itmp<MAX_EXPR; itmp++)
-	e_tmp[itmp]=0;
-      char *tmp1 = hc_plusminus(e);
-      strcpy(e_tmp,tmp1);
-      free(tmp1);
-      e = malloc(MAX_EXPR);
-      free(e_fme);
-      e_fme = e;
-      if (!e)
-	mem_error();
-      strcpy(e,e_tmp);
-      char *ffound = strstr(e,var_tmp->name);
-      if (ffound && ffound!=e)
+      if (!couldbevar)
       {
-	if (isalpha((char)(ffound - sizeof(char))[0]))
-	  ffound = NULL;
+	couldbevar = 1;
+	pos_beg = pos_cur;
       }
-      if (ffound)
+    } else {
+      if (couldbevar == 1)
       {
-	if (isalpha((char)(ffound + strlen(var_tmp->name))[0]))
-	  ffound = NULL;
-      }
-      if (ffound)
-      {
-#ifdef DBG
-	printf("User-defined function found\n");
-#endif
-	unsigned int i=0;
-	while (isalpha(ffound[i]))
-	  i++;
-	if (ffound[i]!='(')
+	char type = e[pos_cur]=='(' ? HC_USR_FUNC : HC_USR_VAR;
+	char *tmp = malloc(sizeof(char)*(pos_cur-pos_beg+1));
+	strncpy(tmp,e + sizeof(char)*pos_beg,pos_cur-pos_beg);
+	tmp[pos_cur-pos_beg]=0;
+	//if (!hc_is_predef(tmp))
+	if (!0)
 	{
-	  syntax_error2();
-	  free(e);
-	  hc_nested--;
-	  return NULL;
-	} else {
-	  i--;
-	  char *args = malloc((strlen(ffound)+1-i)*sizeof(char));
-	  strcpy(args,ffound+(sizeof(char)*i+sizeof(char)));
-#ifdef DBG
-	  printf("args - %s\n",args);
-#endif
-	  unsigned int par=1,j=1;
-	  while (par!=0)
+	  char done = 0;
+	  struct hc_ventry *var_tmp = hc_var_first;
+	  if (var_tmp->name == NULL)
+	    var_tmp = NULL;
+	  while (var_tmp && done==0)
 	  {
-	    if (args[j]==')')
-	      par--;
-	    if (args[j]=='(')
-	      par++;
-	    if (args[j]==0)
+	    if (var_tmp->type == type && strcmp(var_tmp->name,tmp)==0)
 	    {
-	      syntax_error2();
-	      free(e);
-	      free(args);
-	      hc_nested--;
-	      return NULL;
-	    }
-	    j++;
-	  }
-	  unsigned int f_expr_e = (ffound - e) + i + j + 1;
-	  args[j]=0;
-	  char *custom_f_expr = malloc((strlen(var_tmp->value)+1)*sizeof(char));
-	  if (!custom_f_expr)
-	    mem_error();
-	  strcpy(custom_f_expr,var_tmp->value);
-	  unsigned int k = 1;
-	  while (k!=-1)
-	  {
-	    char *tmp_args = malloc(strlen(args));
-	    if (!tmp_args)
-	      mem_error();
-	    strcpy(tmp_args,(char *)(args+sizeof(char)));
-	    tmp_args[strlen(tmp_args)-1]=0;
-	    char *t1 = hc_get_arg(tmp_args,k);
-	    free(tmp_args);
-#ifdef DBG
-	    printf("t1 = %s\n",t1);
-#endif
-	    if (t1)
-	    {
-	      char *t1fme = t1;
-	      char a_tmp = announce_errors;
-	      announce_errors = FALSE;
-	      t1 = hc_result_(t1);
-	      announce_errors = a_tmp;
-	      if (t1)
+	      done = 1;
+	      pos_cur = -1; // Need to restart scanning (the string will change after replacement)
+	      if (var_tmp->type == HC_USR_VAR)
 	      {
-#ifdef DBG
-		printf("t1 is now %s\n",t1);
-#endif
-		free(t1fme);
-	      } else {
-		// skip this function and go to next one
-		k = -1;
-		break;
-	      }
-	    }
-	    char *t2 = hc_get_arg(var_tmp->args,k);
-	    if (t1 && t2)
-	    {
-	      char *fme = custom_f_expr;
-	      custom_f_expr = strreplace(custom_f_expr,t2,t1);
-	      free(t1);
-	      free(t2);
-	      free(fme);
-	      k++;
-	    } else {
-	      if (t1 || t2)
-	      {
-		arg_error_custom();
-		if (t1)
-		  free(t1);
-		else
-		  free(t2);
-		free(e);
-		free(args);
-		hc_nested--;
-		return NULL;
-	      } else {
-		char *fme_cfe = custom_f_expr;
-		custom_f_expr = hc_result_(custom_f_expr);
-		free(fme_cfe);
-		if (!custom_f_expr)
-		{
-		  free(e);
-		  free(args);
-		  hc_nested--;
-		  return NULL;
-		}
-		unsigned int ffoundmine = ffound - e;
+		e = strreplace(e,var_tmp->name,var_tmp->value);
 		free(e_fme);
+		e_fme = e;
+	      } else if (var_tmp->type == HC_USR_FUNC)
+	      {
+		char e_tmp[MAX_EXPR];
+		int itmp = 0;
+		for (; itmp<MAX_EXPR; itmp++)
+		  e_tmp[itmp]=0;
+		char *tmp1 = hc_plusminus(e);
+		strcpy(e_tmp,tmp1);
+		free(tmp1);
 		e = malloc(MAX_EXPR);
-		strncpy(e,e_tmp,ffoundmine);
-		e[ffoundmine]=0; // strncpy does NOT null-terminate automatically
+		free(e_fme);
+		e_fme = e;
+		if (!e)
+		  mem_error();
+		strcpy(e,e_tmp);
+		char *ffound = strstr(e,var_tmp->name);
+		if (ffound && ffound!=e)
+		{
+		  if (isalpha((char)(ffound - sizeof(char))[0]))
+		    ffound = NULL;
+		}
+		if (ffound)
+		{
+		  if (isalpha((char)(ffound + strlen(var_tmp->name))[0]))
+		    ffound = NULL;
+		}
+		if (ffound)
+		{
 #ifdef DBG
-		printf("{1} %s\n",e);
+		  printf("User-defined function found\n");
 #endif
-		if (strlen(e_tmp)+strlen(custom_f_expr)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
-		  overflow_error();
-		strcat(e,custom_f_expr);
+		  unsigned int i=0;
+		  while (isalpha(ffound[i]))
+		    i++;
+		  if (ffound[i]!='(')
+		  {
+		    syntax_error2();
+		    free(e);
+		    hc_nested--;
+		    return NULL;
+		  } else {
+		    i--;
+		    char *args = malloc((strlen(ffound)+1-i)*sizeof(char));
+		    strcpy(args,ffound+(sizeof(char)*i+sizeof(char)));
 #ifdef DBG
-		printf("{2} %s\n",e);
+		    printf("args - %s\n",args);
 #endif
-		free(custom_f_expr);
-		strcat(e,((char *)&e_tmp)+f_expr_e); // was +1
+		    unsigned int par=1,j=1;
+		    while (par!=0)
+		    {
+		      if (args[j]==')')
+			par--;
+		      if (args[j]=='(')
+			par++;
+		      if (args[j]==0)
+		      {
+			syntax_error2();
+			free(e);
+			free(args);
+			hc_nested--;
+			return NULL;
+		      }
+		      j++;
+		    }
+		    unsigned int f_expr_e = (ffound - e) + i + j + 1;
+		    args[j]=0;
+		    char *custom_f_expr = malloc((strlen(var_tmp->value)+1)*sizeof(char));
+		    if (!custom_f_expr)
+		      mem_error();
+		    strcpy(custom_f_expr,var_tmp->value);
+		    unsigned int k = 1;
+		    while (k!=-1)
+		    {
+		      char *tmp_args = malloc(strlen(args));
+		      if (!tmp_args)
+			mem_error();
+		      strcpy(tmp_args,(char *)(args+sizeof(char)));
+		      tmp_args[strlen(tmp_args)-1]=0;
+		      char *t1 = hc_get_arg(tmp_args,k);
+		      free(tmp_args);
 #ifdef DBG
-		printf("{3} %s\n",e);
+		      printf("t1 = %s\n",t1);
 #endif
-		free(args);
-		char *rme = hc_result_(e);
-		free(e);
-		hc_nested--;
-		return rme;
+		      if (t1)
+		      {
+			char *t1fme = t1;
+			char a_tmp = announce_errors;
+			announce_errors = FALSE;
+			t1 = hc_result_(t1);
+			announce_errors = a_tmp;
+			if (t1)
+			{
+#ifdef DBG
+			  printf("t1 is now %s\n",t1);
+#endif
+			  free(t1fme);
+			} else {
+			  /*// skip this function and go to next one
+			  k = -1;
+			  break;*/
+			  printf("Something very bad happened. Oh no...\n");
+			  break;
+			}
+		      }
+		      char *t2 = hc_get_arg(var_tmp->args,k);
+		      if (t1 && t2)
+		      {
+			char *fme = custom_f_expr;
+			custom_f_expr = strreplace(custom_f_expr,t2,t1);
+			free(t1);
+			free(t2);
+			free(fme);
+			k++;
+		      } else {
+			if (t1 || t2)
+			{
+			  arg_error_custom();
+			  if (t1)
+			    free(t1);
+			  else
+			    free(t2);
+			  free(e);
+			  free(args);
+			  hc_nested--;
+			  return NULL;
+			} else {
+			  char *fme_cfe = custom_f_expr;
+			  custom_f_expr = hc_result_(custom_f_expr);
+			  free(fme_cfe);
+			  if (!custom_f_expr)
+			  {
+			    free(e);
+			    free(args);
+			    hc_nested--;
+			    return NULL;
+			  }
+			  unsigned int ffoundmine = ffound - e;
+			  free(e_fme);
+			  e = malloc(MAX_EXPR);
+			  strncpy(e,e_tmp,ffoundmine);
+			  e[ffoundmine]=0; // strncpy does NOT null-terminate automatically
+#ifdef DBG
+			  printf("{1} %s\n",e);
+#endif
+			  if (strlen(e_tmp)+strlen(custom_f_expr)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
+			    overflow_error();
+			  strcat(e,custom_f_expr);
+#ifdef DBG
+			  printf("{2} %s\n",e);
+#endif
+			  free(custom_f_expr);
+			  strcat(e,((char *)&e_tmp)+f_expr_e); // was +1
+#ifdef DBG
+			  printf("{3} %s\n",e);
+#endif
+			  free(args);
+			  char *rme = hc_result_(e);
+			  free(e);
+			  hc_nested--;
+			  return rme;
+			}
+		      }
+		    }
+		  }
+		}
 	      }
 	    }
+	    if (var_tmp->next && var_tmp->next->name)
+	      var_tmp = var_tmp->next;
+	    else
+	      var_tmp = NULL;
+	  }
+	  if (!done)
+	  {
+	    unknown_var_error(tmp,type);
 	  }
 	}
       }
+      couldbevar = 0;
     }
-    if (var_tmp->next && var_tmp->next->name)
-      var_tmp = var_tmp->next;
-    else
-      var_tmp = NULL;
+    pos_cur++;
   }
 
   // User-defined variables end

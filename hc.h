@@ -66,6 +66,7 @@
 #define undef_error() {notify_error("Function name undefined or you used an undefined variable name as an argument.\n");}
 #endif
 #ifndef HCG_E
+#define unknown_var_error(var,type) {printf("%s %s is undefined.\n",type == HC_USR_FUNC ? "Function" : "Variable",var);}
 #define varname_error() {printf("Invalid variable name.\n");return;}
 #define varname_predefined_error() {printf("You can't change a predefined variable.\n");return 0;}
 #define recursive_error() {printf("Error : recursive definition.\n");return;}
