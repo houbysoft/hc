@@ -129,6 +129,7 @@ unsigned int simple_hash(char *p)
 char *hc_i2p(char *f);
 char *hc_postfix_result(char *e);
 char hc_check(char *e);
+char hc_is_predef(char *var);
 char *hc_plusminus(char *e);
 char *hc_impmul_resolve(char *e);
 void hc_process_direction(char *d);
@@ -347,8 +348,7 @@ char *hc_result_(char *f)
 	char *tmp = malloc(sizeof(char)*(pos_cur-pos_beg+1));
 	strncpy(tmp,e + sizeof(char)*pos_beg,pos_cur-pos_beg);
 	tmp[pos_cur-pos_beg]=0;
-	//if (!hc_is_predef(tmp))
-	if (!0)
+	if (!hc_is_predef(tmp))
 	{
 	  char done = 0;
 	  struct hc_ventry *var_tmp = hc_var_first;
@@ -540,8 +540,13 @@ char *hc_result_(char *f)
 	  if (!done)
 	  {
 	    unknown_var_error(tmp,type);
+	    free(tmp);
+	    free(e);
+	    hc_nested--;
+	    return NULL;
 	  }
 	}
+	free(tmp);
       }
       couldbevar = 0;
     }
@@ -2319,4 +2324,19 @@ void hc_save_cfg()
   fprintf(fw,"zmin3d=%f\n",hc.zmin3d);
   fprintf(fw,"zmax3d=%f\n",hc.zmax3d);
   fclose(fw);
+}
+
+
+char hc_is_predef(char *var)
+{
+  unsigned int ii = 0;
+  unsigned int name_hash = simple_hash(var);
+  for (; ii < HC_FNAMES; ii++)
+  {
+    if (name_hash == simple_hash((char *)hc_fnames[ii][0]))
+    {
+      return 1;
+    }
+  }
+  return 0;
 }
