@@ -334,7 +334,7 @@ char *hc_result_(char *f)
   char couldbevar=0;
   while (e[pos_cur])
   {
-    if (isalpha(e[pos_cur]) || (isalnum(e[pos_cur]) && (couldbevar==1)))
+    if ((isalpha(e[pos_cur]) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
     {
       if (!couldbevar)
       {
@@ -342,6 +342,15 @@ char *hc_result_(char *f)
 	pos_beg = pos_cur;
       }
     } else {
+      if ((isalpha(e[pos_cur]) || (isalnum(e[pos_cur])&& (couldbevar==1)))&& e[pos_cur+1]=='\0')
+      {
+	if (!couldbevar)
+	{
+	  couldbevar = 1;
+	  pos_beg = pos_cur;
+	}
+	pos_cur++;
+      }
       if (couldbevar == 1)
       {
 	char type = e[pos_cur]=='(' ? HC_USR_FUNC : HC_USR_VAR;
@@ -403,6 +412,7 @@ char *hc_result_(char *f)
 		  {
 		    syntax_error2();
 		    free(e);
+		    free(tmp);
 		    hc_nested--;
 		    return NULL;
 		  } else {
@@ -423,6 +433,7 @@ char *hc_result_(char *f)
 		      {
 			syntax_error2();
 			free(e);
+			free(tmp);
 			free(args);
 			hc_nested--;
 			return NULL;
@@ -462,11 +473,13 @@ char *hc_result_(char *f)
 #endif
 			  free(t1fme);
 			} else {
-			  /*// skip this function and go to next one
-			  k = -1;
-			  break;*/
-			  printf("Something very bad happened. Oh no...\n");
-			  break;
+			  free(tmp);
+			  free(e);
+			  free(custom_f_expr);
+			  free(args);
+			  hc_nested--;
+			  free(t1fme);
+			  return NULL;
 			}
 		      }
 		      char *t2 = hc_get_arg(var_tmp->args,k);
@@ -488,6 +501,7 @@ char *hc_result_(char *f)
 			    free(t2);
 			  free(e);
 			  free(args);
+			  free(tmp);
 			  hc_nested--;
 			  return NULL;
 			} else {
@@ -498,6 +512,7 @@ char *hc_result_(char *f)
 			  {
 			    free(e);
 			    free(args);
+			    free(tmp);
 			    hc_nested--;
 			    return NULL;
 			  }
@@ -523,6 +538,7 @@ char *hc_result_(char *f)
 			  free(args);
 			  char *rme = hc_result_(e);
 			  free(e);
+			  free(tmp);
 			  hc_nested--;
 			  return rme;
 			}
