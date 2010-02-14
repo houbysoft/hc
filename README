@@ -10,6 +10,9 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+0.9.4:
+  - added rand() and round()
+  - rewrite of a part of the hc_result_() function; should now be faster for the most common case, and also provides "better" (==more informative) error messages to the user
 0.9.3:
   - added implied multiplication support (for example you can now type 2sin(5))
 0.9.2:

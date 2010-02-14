@@ -334,7 +334,7 @@ char *hc_result_(char *f)
   char couldbevar=0;
   while (e[pos_cur])
   {
-    if ((isalpha(e[pos_cur]) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
+    if (((isalpha(e[pos_cur]) && tolower(e[pos_cur])!='e' && tolower(e[pos_cur]!='i')) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
     {
       if (!couldbevar)
       {
@@ -342,7 +342,7 @@ char *hc_result_(char *f)
 	pos_beg = pos_cur;
       }
     } else {
-      if ((isalpha(e[pos_cur]) || (isalnum(e[pos_cur])&& (couldbevar==1)))&& e[pos_cur+1]=='\0')
+      if (((isalpha(e[pos_cur]) && tolower(e[pos_cur])!='e' && tolower(e[pos_cur]!='i')) || (isalnum(e[pos_cur])&& (couldbevar==1)))&& e[pos_cur+1]=='\0')
       {
 	if (!couldbevar)
 	{
@@ -553,7 +553,7 @@ char *hc_result_(char *f)
 	    else
 	      var_tmp = NULL;
 	  }
-	  if (!done)
+	  if (!done && strcmp(tmp,"x")!=0 && strcmp(tmp,"y")!=0)
 	  {
 	    unknown_var_error(tmp,type);
 	    free(tmp);
