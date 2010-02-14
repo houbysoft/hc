@@ -89,7 +89,7 @@
 #define notify(str) {printf(str);}
 #endif
 
-#define NAME_VERSION "Welcome to hc 0.9.3 (infix / RPN) -- http://hc.houbysoft.com/\n"
+#define NAME_VERSION "Welcome to hc 0.9.4 (infix / RPN) -- http://hc.houbysoft.com/\n"
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)
