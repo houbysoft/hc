@@ -451,6 +451,7 @@ char *hc_result_(char *f)
 		      mem_error();
 		    strcpy(custom_f_expr,var_tmp->value);
 		    unsigned int k = 1;
+		    char xybypass = 0; // bypass for variables x and y, which can be part of the expression in certain cases (ie sum(), product(), graphs...)
 		    while (k!=-1)
 		    {
 		      char *tmp_args = malloc(strlen(args));
@@ -468,7 +469,15 @@ char *hc_result_(char *f)
 			char *t1fme = t1;
 			char a_tmp = announce_errors;
 			announce_errors = FALSE;
-			t1 = hc_result_(t1);
+			if (strcmp(t1,"x")==0 || strcmp(t1,"y")==0)
+			{
+			  t1 = malloc(2);
+			  strcpy(t1,t1fme);
+			  xybypass = 1;
+			} else {
+			  t1 = hc_result_(t1);
+			  xybypass = 0;
+			}
 			announce_errors = a_tmp;
 			if (t1)
 			{
@@ -490,10 +499,13 @@ char *hc_result_(char *f)
 		      if (t1 && t2)
 		      {
 			char *fme = custom_f_expr;
-			custom_f_expr = strreplace(custom_f_expr,t2,t1);
+			if (strcmp(t1,t2)!=0)
+			{
+			  custom_f_expr = strreplace(custom_f_expr,t2,t1);
+			  free(fme);
+			}
 			free(t1);
 			free(t2);
-			free(fme);
 			k++;
 		      } else {
 			if (t1 || t2)
@@ -510,8 +522,11 @@ char *hc_result_(char *f)
 			  return NULL;
 			} else {
 			  char *fme_cfe = custom_f_expr;
-			  custom_f_expr = hc_result_(custom_f_expr);
-			  free(fme_cfe);
+			  if (!xybypass)
+			  {
+			    custom_f_expr = hc_result_(custom_f_expr);
+			    free(fme_cfe);
+			  }
 			  if (!custom_f_expr)
 			  {
 			    free(e);
