@@ -135,6 +135,7 @@ char *hc_impmul_resolve(char *e);
 void hc_process_direction(char *d);
 void hc_load_cfg();
 void hc_save_cfg();
+void hc_load(char *fname);
 
 
 M_APM hc_lans_mapm_re;
@@ -187,7 +188,10 @@ char *hc_result(char *e)
     if (isvarassign(e))
     {
       hc_varassign(e);
-      r = NULL;
+      r = malloc(1);
+      if (!r)
+	mem_error();
+      r[0]=0;
     } else {
       r = hc_result_(e);
       if (r)
@@ -419,9 +423,6 @@ char *hc_result_(char *f)
 		    i--;
 		    char *args = malloc((strlen(ffound)+1-i)*sizeof(char));
 		    strcpy(args,ffound+(sizeof(char)*i+sizeof(char)));
-#ifdef DBG
-		    printf("args - %s\n",args);
-#endif
 		    unsigned int par=1,j=1;
 		    while (par!=0)
 		    {
@@ -442,6 +443,9 @@ char *hc_result_(char *f)
 		    }
 		    unsigned int f_expr_e = (ffound - e) + i + j + 1;
 		    args[j]=0;
+#ifdef DBG
+		    printf("args - %s\n",args);
+#endif
 		    char *custom_f_expr = malloc((strlen(var_tmp->value)+1)*sizeof(char));
 		    if (!custom_f_expr)
 		      mem_error();
@@ -2119,6 +2123,9 @@ void hc_process_direction(char *d)
     hc_var_first->args = NULL;
     printf("All user-defined variables were cleared.");
     break;
+  case HASH_LOAD:
+    hc_load(&d[i+1]);
+    break;
   default:
     error_nq("Unknown command.");
     break;
@@ -2355,4 +2362,42 @@ char hc_is_predef(char *var)
     }
   }
   return 0;
+}
+
+
+void hc_load(char *fname)
+{
+  FILE *fr = fopen(fname,"r");
+  if (!fr)
+  {
+    perror("Error");
+    error_nq("Error: Cannot open file.");
+    return;
+  }
+  char *expr = malloc(sizeof(char) * MAX_EXPR + sizeof(char));
+  if (!expr)
+    mem_error();
+  memset(expr,0,MAX_EXPR+1);
+  unsigned int line = 1;
+  while (fgets(expr,MAX_EXPR+1,fr))
+  {
+    if (strcmp(expr,"\n")==0)
+      break;
+    expr[strlen(expr)-1]=0;
+    if (strlen(expr)>=MAX_EXPR)
+    {
+      overflow_error_nq();
+      break;
+    }
+    char *fme = hc_result(expr);
+    if (!fme)
+    {
+      printf("\nError occured at line %i (%s), interrupting execution.",line,expr);
+      break;
+    }
+    free(fme);
+    line++;
+  }
+  fclose(fr);
+  free(expr);
 }

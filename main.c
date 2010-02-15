@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     if (strcmp(expr,"exit")==0)
       exit(0);
     fme = hc_result(expr);
-    if (fme)
+    if (fme && strlen(fme))
     {
       printf(" %s\n",fme);
       free(fme);

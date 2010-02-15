@@ -82,6 +82,11 @@
 #define mem_error() {printf("Cannot allocate enough memory.\n");exit(5);}
 //#define range_error(str) {printf("Range error : %s\n",str);exit(6);}
 #define overflow_error() {printf("Overflow error in result string (result probably too large).\n");exit(7);}
+#ifndef HCG_E
+#define overflow_error_nq() {printf("Overflow error in result string (result probably too large).\n");}
+#else
+#define overflow_error_nq() {notify_error("Overflow error in result string (result probably too large).\n");}
+#endif
 
 #define warning(str) {printf("Warning : %s\n",str);}
 #define error_nq(str) {printf(str);}

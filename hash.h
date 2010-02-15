@@ -106,6 +106,7 @@
 #define HASH_PLDEV 20278
 #define HASH_BPN 7793
 #define HASH_3DPOINTS 26374
+#define HASH_LOAD 28416
 
 // Graph min/max configuration
 #define HASH_XMIN2D 5577
