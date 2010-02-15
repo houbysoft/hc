@@ -194,7 +194,7 @@ char *hc_result(char *e)
       r[0]=0;
     } else {
       r = hc_result_(e);
-      if (r)
+      if (r && strlen(r))
       {
 	char *tmp_num = hc_real_part(r);
 	m_apm_set_string(hc_lans_mapm_re,tmp_num);
@@ -1319,7 +1319,8 @@ char *hc_result_(char *f)
       m_apm_free(f_result_im);
       free(e);
       hc_nested--;
-      return NULL;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
       break;
 
     case HASH_GMUL:
@@ -1331,7 +1332,8 @@ char *hc_result_(char *f)
       m_apm_free(f_result_im);
       free(e);
       hc_nested--;
-      return NULL;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
       break;
 
     case HASH_GRAPH3D:
@@ -1343,7 +1345,8 @@ char *hc_result_(char *f)
       m_apm_free(f_result_im);
       free(e);
       hc_nested--;
-      return NULL;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
       break;
 
     case HASH_STATS:
@@ -1354,7 +1357,8 @@ char *hc_result_(char *f)
       m_apm_free(f_result_re);
       free(e);
       hc_nested--;
-      return NULL;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
       break;
 
    case HASH_STATS_EFF:
@@ -1365,7 +1369,8 @@ char *hc_result_(char *f)
       m_apm_free(f_result_re);
       free(e);
       hc_nested--;
-      return NULL;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
       break;
 
     case HASH_BOXPLOT:
@@ -1376,7 +1381,8 @@ char *hc_result_(char *f)
       m_apm_free(f_result_re);
       free(e);
       hc_nested--;
-      return NULL;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
       break;
 
     case HASH_BOXPLOT_EFF:
@@ -1387,7 +1393,8 @@ char *hc_result_(char *f)
       m_apm_free(f_result_re);
       free(e);
       hc_nested--;
-      return NULL;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
       break;
 
     default:
@@ -2386,7 +2393,7 @@ void hc_load(char *fname)
   if (!fr)
   {
     perror("Error");
-    error_nq("Error: Cannot open file.");
+    error_nq("Error: Cannot open file.\n");
     return;
   }
   char *expr = malloc(sizeof(char) * MAX_EXPR + sizeof(char));
@@ -2407,7 +2414,7 @@ void hc_load(char *fname)
     char *fme = hc_result(expr);
     if (!fme)
     {
-      printf("\nError occured at line %i (%s), interrupting execution.",line,expr);
+      printf("Error occured at line %i (%s), interrupting execution.\n",line,expr);
       break;
     }
     free(fme);
