@@ -411,7 +411,7 @@ char *hc_result_(char *f)
 		  printf("User-defined function found\n");
 #endif
 		  unsigned int i=0;
-		  while (isalpha(ffound[i]))
+		  while (isalnum(ffound[i]))
 		    i++;
 		  if (ffound[i]!='(')
 		  {
