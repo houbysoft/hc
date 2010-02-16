@@ -67,6 +67,7 @@
 #endif
 #ifndef HCG_E
 #define unknown_var_error(var,type) {printf("%s %s is undefined.\n",type == HC_USR_FUNC ? "Function" : "Variable",var);}
+#define load_error(line,expr) {printf("Error occured at line %i (%s), interrupting execution.\n",line,expr);}
 #define varname_error() {printf("Invalid variable name.\n");return;}
 #define varname_predefined_error() {printf("You can't change a predefined variable.\n");return 0;}
 #define recursive_error() {printf("Error : recursive definition.\n");return;}
@@ -74,6 +75,7 @@
 #define boxplot_cplx_error() {printf("Warning : Complex part of number was ignored in the boxplot.\n");}
 #else
 extern void unknown_var_error(char *var, char type);
+extern void load_error(unsigned int line, char *expr);
 #define varname_error() {notify_error("Invalid variable name.\n");return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define recursive_error() {notify_error("Error : recursive definition.\n");return;}

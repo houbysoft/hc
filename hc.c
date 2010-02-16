@@ -2415,7 +2415,7 @@ void hc_load(char *fname)
     char *fme = hc_result(expr);
     if (!fme)
     {
-      printf("Error occured at line %i (%s), interrupting execution.\n",line,expr);
+      load_error(line,expr);
       break;
     }
     free(fme);
