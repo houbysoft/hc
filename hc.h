@@ -185,6 +185,7 @@ extern char graphing_ignore_errors;
 extern const char *hc_fnames[][2];
 
 extern void hc_load_cfg();
+extern void hc_load(char *fname);
 extern char *hc_result(char *e);
 extern char *hc_result_(char *e);
 extern char *hc_plusminus(char *);
