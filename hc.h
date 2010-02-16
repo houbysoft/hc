@@ -73,6 +73,7 @@
 #define recursion_error() {printf("Error : too much recursion/nestedness. If you know what you are doing, you can bypass this with:\n \\bpn.\n");}
 #define boxplot_cplx_error() {printf("Warning : Complex part of number was ignored in the boxplot.\n");}
 #else
+extern void unknown_var_error(var,type);
 #define varname_error() {notify_error("Invalid variable name.\n");return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define recursive_error() {notify_error("Error : recursive definition.\n");return;}
