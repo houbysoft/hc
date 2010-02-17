@@ -2059,28 +2059,28 @@ void hc_process_direction(char *d)
   case HASH_RPN:
     hc.rpn = hc.rpn==TRUE ? FALSE : TRUE;
     if (hc.rpn == TRUE)
-      notify("RPN mode is now on.")
+      notify("RPN mode is now on.\n")
     else
-      notify("RPN mode is now off.");
+      notify("RPN mode is now off.\n");
     break;
   case HASH_SCI:
     hc.exp = 's';
-    notify("Exponential format is now SCI.");
+    notify("Exponential format is now SCI.\n");
     break;
   case HASH_ENG:
     hc.exp = 'e';
-    notify("Exponential format is now ENG.");
+    notify("Exponential format is now ENG.\n");
     break;
   case HASH_NORMAL:
     hc.exp = 'n';
-    notify("Exponential format is now normal.");
+    notify("Exponential format is now normal.\n");
     break;
   case HASH_BPN:
     hc.bypass_nested = hc.bypass_nested==TRUE ? FALSE : TRUE;
     if (hc.bypass_nested == TRUE)
-      notify("Bypass is now on.")
+      notify("Bypass is now on.\n")
     else
-      notify("Bypass is now off.");
+      notify("Bypass is now off.\n");
     break;
   case HASH_PRECISION:
   case HASH_PRECISION_SHORT:
@@ -2095,7 +2095,7 @@ void hc_process_direction(char *d)
       printf("Precision is limited to %i, setting to this value.",HC_MAX_PRECISION);
       hc.precision = HC_MAX_PRECISION;
     } else {*/
-      printf("Precision is now set to %i decimal places.",hc.precision);
+      printf("Precision is now set to %i decimal places.\n",hc.precision);
       //}
     break;
   case HASH_3DPOINTS:
@@ -2105,21 +2105,21 @@ void hc_process_direction(char *d)
       break;
     }
     hc.graph_points_3d = atoi(&d[i+1]);
-    printf("3D graphs will now be computed using %ix%i points.",hc.graph_points_3d,hc.graph_points_3d);
+    printf("3D graphs will now be computed using %ix%i points.\n",hc.graph_points_3d,hc.graph_points_3d);
     if (hc.graph_points_3d > HC_GP3D_FAST)
-      printf("\nWarning : your setting will probably cause the graph to render slowly. Consider lowering to the default, %ix%i points.",HC_GP3D_DEFAULT,HC_GP3D_DEFAULT);
+      printf("Warning : your setting will probably cause the graph to render slowly. Consider lowering to the default, %ix%i points.\n",HC_GP3D_DEFAULT,HC_GP3D_DEFAULT);
     break;
   case HASH_DEG:
     hc.angle = 'd';
-    printf("Angle format is now set to DEG.");
+    printf("Angle format is now set to DEG.\n");
     break;
   case HASH_RAD:
     hc.angle = 'r';
-    printf("Angle format is now set to RAD.");
+    printf("Angle format is now set to RAD.\n");
     break;
   case HASH_GRAD:
     hc.angle = 'g';
-    printf("Angle format is now set to GRAD.");
+    printf("Angle format is now set to GRAD.\n");
     break;
   case HASH_CLEAR:
     hc_var_tmp = hc_var_first;
@@ -2144,7 +2144,7 @@ void hc_process_direction(char *d)
     hc_var_first->value = NULL;
     hc_var_first->name = NULL;
     hc_var_first->args = NULL;
-    printf("All user-defined variables were cleared.");
+    printf("All user-defined variables were cleared.\n");
     break;
   case HASH_LOAD:
     hc_load(&d[i+1]);

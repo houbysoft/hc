@@ -92,7 +92,7 @@ extern void load_error(unsigned int line, char *expr);
 #endif
 
 #define warning(str) {printf("Warning : %s\n",str);}
-#define error_nq(str) {printf(str);}
+#define error_nq(str) {printf("%s\n",str);}
 #ifndef HCG
 #define notify(str) {printf(str);}
 #endif
