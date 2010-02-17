@@ -198,7 +198,7 @@ char hc_check_varname(char *e)
   unsigned int i = 0;
   while (e[i]!=0)
   {
-    if (i==0 && !isalpha(e[i]))
+    if ((i==0) && ((!isalpha(e[i])) || (tolower(e[i])=='e') || (tolower(e[i])=='i')))
       return 0;
     else
       if (!isalnum(e[i]))
