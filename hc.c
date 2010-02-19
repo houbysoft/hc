@@ -125,6 +125,7 @@ unsigned int simple_hash(char *p)
 #define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='=') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_'))
 #define isdirection(x) (x[0]=='\\')
 #define isvarassign(x) (strchr(x,'=')!=NULL)
+#define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
 
 
 char *hc_i2p(char *f);
@@ -177,14 +178,38 @@ char *hc_result(char *e)
   m_apm_trim_mem_usage();
 
   char *r=NULL;
-
-  if (isdirection(e))
+  
+  if (iscondition(e))
   {
-    hc_process_direction((char *)e+1);
-    r = malloc(1);
-    *r = 0;
-    if (!r)
-      mem_error();
+    int center_len = 2;
+    char *center = strstr(e,"==");
+	center_len = 2;
+	if (!center)
+	  center = strstr(e,"!=");
+	if (!center)
+	  center = strstr(e,">=");
+	if (!center)
+	  center = strstr(e,"<=");
+	if (!center)
+	{
+	  center = strstr(e,"<");
+	  center_len = 1;
+	}
+	if (!center)
+	{
+	  center = strstr(e,">");
+	  center_len = 1;
+	}
+	if (!center)
+	  error_nq("Cannot found condition operator.");
+	printf("Condition found, length = %i.\n",center_len);
+	char *first_part = malloc((center - e + 1)*sizeof(char));
+	strncpy(first_part, e, center - e);
+	first_part[center - e]=0;
+	printf("First part is %s\n",first_part);
+	char *second_part = malloc(strlen(center+center_len)+1);
+	strcpy(second_part, center+center_len);
+	printf("Second part is %s\n",second_part);
   } else {
     if (isvarassign(e))
     {
@@ -194,6 +219,14 @@ char *hc_result(char *e)
 	mem_error();
       r[0]=0;
     } else {
+	  if (isdirection(e))
+	  {
+		hc_process_direction((char *)e+1);
+		r = malloc(1);
+		*r = 0;
+		if (!r)
+		mem_error();
+      } else {
       r = hc_result_(e);
       if (r && strlen(r))
       {
@@ -268,6 +301,7 @@ char *hc_result(char *e)
 	}
       }
     }
+	}
   }
   
   return r;
@@ -2406,7 +2440,8 @@ void hc_load(char *fname)
   {
     if (strcmp(expr,"\n")==0)
       break;
-    expr[strlen(expr)-1]=0;
+	if (expr[strlen(expr)-1]=='\n')
+		expr[strlen(expr)-1]=0;
     if (strlen(expr)>=MAX_EXPR)
     {
       overflow_error_nq();
