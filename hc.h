@@ -131,6 +131,10 @@ extern void load_error(unsigned int line, char *expr);
 #define HC_USR_VAR 1
 #define HC_USR_FUNC 2
 
+typedef enum {
+  HC_COND_E, HC_COND_NE, HC_COND_GE, HC_COND_SE, HC_COND_S, HC_COND_G
+} HC_CONDS;
+
 typedef struct hc_config {
   char rpn;
   int precision;

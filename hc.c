@@ -183,33 +183,45 @@ char *hc_result(char *e)
   {
     int center_len = 2;
     char *center = strstr(e,"==");
-	center_len = 2;
-	if (!center)
-	  center = strstr(e,"!=");
-	if (!center)
-	  center = strstr(e,">=");
-	if (!center)
-	  center = strstr(e,"<=");
-	if (!center)
-	{
-	  center = strstr(e,"<");
-	  center_len = 1;
-	}
-	if (!center)
-	{
-	  center = strstr(e,">");
-	  center_len = 1;
-	}
-	if (!center)
-	  error_nq("Cannot found condition operator.");
-	printf("Condition found, length = %i.\n",center_len);
-	char *first_part = malloc((center - e + 1)*sizeof(char));
-	strncpy(first_part, e, center - e);
-	first_part[center - e]=0;
-	printf("First part is %s\n",first_part);
-	char *second_part = malloc(strlen(center+center_len)+1);
-	strcpy(second_part, center+center_len);
-	printf("Second part is %s\n",second_part);
+    int cond_type = HC_COND_E;
+    center_len = 2;
+    if (!center)
+    {
+      center = strstr(e,"!=");
+      cond_type = HC_COND_NE;
+    }
+    if (!center)
+    {
+      center = strstr(e,">=");
+      cond_type = HC_COND_GE;
+    }
+    if (!center)
+    {
+      center = strstr(e,"<=");
+      cond_type = HC_COND_SE;
+    }
+    if (!center)
+    {
+      center = strstr(e,"<");
+      center_len = 1;
+      cond_type = HC_COND_S;
+    }
+    if (!center)
+    {
+      center = strstr(e,">");
+      center_len = 1;
+      cond_type = HC_COND_G;
+    }
+    if (!center)
+      error_nq("Cannot found condition operator.");
+    printf("Condition found, length = %i.\n",center_len);
+    char *first_part = malloc((center - e + 1)*sizeof(char));
+    strncpy(first_part, e, center - e);
+    first_part[center - e]=0;
+    printf("First part is %s\n",first_part);
+    char *second_part = malloc(strlen(center+center_len)+1);
+    strcpy(second_part, center+center_len);
+    printf("Second part is %s\n",second_part);
   } else {
     if (isvarassign(e))
     {
