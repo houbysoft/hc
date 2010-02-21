@@ -109,8 +109,9 @@ int main(int argc, char *argv[])
     if (fme && strlen(fme))
     {
       printf(" %s\n",fme);
-      free(fme);
     }
+    if (fme)
+      free(fme);
 #ifndef WIN32
     add_history(expr);
     free(expr);

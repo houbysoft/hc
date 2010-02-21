@@ -201,11 +201,19 @@ void hc_exec_struct(char *f)
     if (cond && strcmp(cond,"0")!=0)
     {
       // execute
+      char *else_ = strstr((char *)e+sizeof(char)*(end+1),"else");
+      if (else_)
+	else_[0] = 0;
       free(hc_result((char *)e+sizeof(char)*(end+1)));
+    } else {
+      char *else_ = strstr((char *)e+sizeof(char)*(end+1),"else");
+      if (else_)
+	free(hc_result((char *)else_+sizeof(char)*4));
     }
     break;
   }
 
+  free(cond);
   free(fme);
   return;
 }
