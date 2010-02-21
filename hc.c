@@ -225,6 +225,10 @@ char *hc_result(char *e)
     free(second_part);
     if (!first_result || !second_result)
     {
+      if (first_result)
+	free(first_result);
+      if (second_result)
+	free(second_result);
       return NULL;
     }
     M_APM first_re,first_im,second_re,second_im;
