@@ -126,6 +126,7 @@ unsigned int simple_hash(char *p)
 #define isdirection(x) (x[0]=='\\')
 #define isvarassign(x) (strchr(x,'=')!=NULL)
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
+#define iscontrolstruct(x) ((strstr(x,"if ")==x))
 
 
 char *hc_i2p(char *f);
@@ -134,6 +135,7 @@ char hc_check(char *e);
 char hc_is_predef(char *var);
 char *hc_plusminus(char *e);
 char *hc_impmul_resolve(char *e);
+char *hc_condition_result(char *e);
 void hc_process_direction(char *d);
 void hc_load_cfg();
 void hc_save_cfg();
@@ -179,130 +181,17 @@ char *hc_result(char *e)
 
   char *r=NULL;
   
-  if (iscondition(e))
+  if (iscondition(e) || iscontrolstruct(e))
   {
-    int center_len = 2;
-    char *center = strstr(e,"==");
-    int cond_type = HC_COND_E;
-    center_len = 2;
-    if (!center)
+    if (iscontrolstruct(e)) // Order is important here!
     {
-      center = strstr(e,"!=");
-      cond_type = HC_COND_NE;
+      hc_exec_struct(e);
+      r = malloc(1);
+      r[0]=0;
+      return r;
+    } else {
+      return hc_condition_result(e);
     }
-    if (!center)
-    {
-      center = strstr(e,">=");
-      cond_type = HC_COND_GE;
-    }
-    if (!center)
-    {
-      center = strstr(e,"<=");
-      cond_type = HC_COND_SE;
-    }
-    if (!center)
-    {
-      center = strstr(e,"<");
-      center_len = 1;
-      cond_type = HC_COND_S;
-    }
-    if (!center)
-    {
-      center = strstr(e,">");
-      center_len = 1;
-      cond_type = HC_COND_G;
-    }
-    if (!center)
-      error_nq("Cannot found condition operator.");
-    char *first_part = malloc((center - e + 1)*sizeof(char));
-    strncpy(first_part, e, center - e);
-    first_part[center - e]=0;
-    char *first_result = hc_result_(first_part);
-    free(first_part);
-    char *second_part = malloc(strlen(center+center_len)+1);
-    strcpy(second_part, center+center_len);
-    char *second_result = hc_result_(second_part);
-    free(second_part);
-    if (!first_result || !second_result)
-    {
-      if (first_result)
-	free(first_result);
-      if (second_result)
-	free(second_result);
-      return NULL;
-    }
-    M_APM first_re,first_im,second_re,second_im;
-    first_re = m_apm_init(); first_im = m_apm_init(); second_re = m_apm_init(); second_im = m_apm_init();
-    char *tmp = hc_real_part(first_result);
-    m_apm_set_string(first_re,tmp);
-    free(tmp); tmp = hc_imag_part(first_result);
-    if (tmp)
-    {
-      m_apm_set_string(first_im,tmp);
-      free(tmp);
-    }
-    else
-      m_apm_copy(first_im,MM_Zero);
-    tmp = hc_real_part(second_result);
-    m_apm_set_string(second_re,tmp);
-    free(tmp); tmp = hc_imag_part(second_result);
-    if (tmp)
-    {
-      m_apm_set_string(second_im,tmp);
-      free(tmp);
-    }
-    else
-      m_apm_copy(second_im,MM_Zero);
-    free(first_result); free(second_result);
-    char result;
-    switch (cond_type)
-    {
-    case HC_COND_E:
-      if (m_apmc_eq(first_re,first_im,second_re,second_im))
-	result = 1;
-      else
-	result = 0;
-      break;
-
-    case HC_COND_NE:
-      if (m_apmc_eq(first_re,first_im,second_re,second_im))
-	result = 0;
-      else
-	result = 1;
-      break;
-
-    case HC_COND_GE:
-      if (m_apmc_ge(first_re,first_im,second_re,second_im))
-	result = 1;
-      else
-	result = 0;
-      break;
-
-    case HC_COND_SE:
-      if (m_apmc_le(first_re,first_im,second_re,second_im))
-	result = 1;
-      else
-	result = 0;
-      break;
-
-    case HC_COND_S:
-      if (m_apmc_lt(first_re,first_im,second_re,second_im))
-	result = 1;
-      else
-	result = 0;
-      break;
-
-    case HC_COND_G:
-      if (m_apmc_gt(first_re,first_im,second_re,second_im))
-	result = 1;
-      else
-	result = 0;
-      break;
-    }
-    m_apm_free(first_re); m_apm_free(first_im); m_apm_free(second_re); m_apm_free(second_im);
-    r = malloc(2);
-    sprintf(r,"%i",result);
-    return r;
   } else {
     if (isvarassign(e))
     {
@@ -2552,3 +2441,4 @@ void hc_load(char *fname)
   fclose(fr);
   free(expr);
 }
+

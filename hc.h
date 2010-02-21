@@ -135,6 +135,10 @@ typedef enum {
   HC_COND_E, HC_COND_NE, HC_COND_GE, HC_COND_SE, HC_COND_S, HC_COND_G
 } HC_CONDS;
 
+typedef enum {
+  HC_EXEC_IF
+} HC_EXECS;
+
 typedef struct hc_config {
   char rpn;
   int precision;
@@ -197,6 +201,8 @@ extern char *hc_result(char *e);
 extern char *hc_result_(char *e);
 extern char *hc_plusminus(char *);
 extern void hc_varassign(char *);
+extern char *hc_condition_result(char *);
+extern void hc_exec_struct(char *);
 extern char hc_check_varname(char *);
 extern unsigned int simple_hash(char *p);
 
