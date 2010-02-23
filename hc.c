@@ -126,7 +126,7 @@ unsigned int simple_hash(char *p)
 #define isdirection(x) (x[0]=='\\')
 #define isvarassign(x) (strchr(x,'=')!=NULL)
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
-#define iscontrolstruct(x) ((strstr(x,"if ")==x))
+#define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x))
 
 
 char *hc_i2p(char *f);

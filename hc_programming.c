@@ -25,6 +25,34 @@
 #include "hc.h"
 
 
+char *hc_exec_cond_result(char *e, int *end)
+{
+  if (e[0]!='(') // need a condition in parenthesis
+  {
+    syntax_error2();
+    return NULL;
+  }
+  e++;
+  int par = 1;
+  *end = 1;
+  while (par!=0 && e[*end]!='\0')
+  {
+    if (e[*end]=='(')
+      par++;
+    if (e[*end]==')')
+      par--;
+      *end += 1;
+  }
+  if (par)
+  {
+    syntax_error2();
+    return NULL;
+  }
+  e[*end-1]=0;
+  return hc_result(e);
+}
+
+
 char *hc_condition_result(char *e)
 {
   int center_len = 2;
@@ -169,35 +197,12 @@ void hc_exec_struct(char *f)
   e++;
 
   char *cond;
+  int end;
 
   switch (type)
   {
   case HC_EXEC_IF:
-    if (e[0]!='(') // need a condition in parenthesis
-    {
-      syntax_error2();
-      free(fme);
-      return;
-    }
-    e++;
-    int par = 1;
-    int end = 1;
-    while (par!=0 && e[end]!='\0')
-    {
-      if (e[end]=='(')
-	par++;
-      if (e[end]==')')
-	par--;
-      end++;
-    }
-    if (par)
-    {
-      syntax_error2();
-      free(fme);
-      return;
-    }
-    e[end-1]=0;
-    cond = hc_result(e);
+    cond = hc_exec_cond_result(e,&end);
     if (cond && strcmp(cond,"0")!=0)
     {
       // execute
@@ -210,6 +215,10 @@ void hc_exec_struct(char *f)
       if (else_)
 	free(hc_result((char *)else_+sizeof(char)*4));
     }
+    break;
+
+  case HC_EXEC_WHILE:
+    // TODO...
     break;
   }
 
