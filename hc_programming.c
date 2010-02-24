@@ -25,6 +25,18 @@
 #include "hc.h"
 
 
+void hc_result_mul(char *e)
+{
+  char *saveptr;
+  char *expr = strtok_r(e,";",&saveptr);
+  while (expr)
+  {
+    free(hc_result(expr));
+    expr = strtok_r(NULL,";",&saveptr);
+  }
+}
+
+
 char *hc_get_cond(char *e, int *end, int result)
 {
   if (e[0]!='(') // need a condition in parenthesis
@@ -244,7 +256,7 @@ void hc_exec_struct(char *f)
     if (cond && strcmp(cond,"0")!=0)
     {
       e[pos-1]=0;
-      free(hc_result((char *)e+sizeof(char)*(end+1)));
+      hc_result_mul((char *)e+sizeof(char)*(end+1));
     } else {
       char *else_ = strstr((char *)e+sizeof(char)*(pos-1),"else");
       if (else_)
@@ -253,7 +265,7 @@ void hc_exec_struct(char *f)
 	else_ = strchr(else_,'{');
 	else_ += sizeof(char);
 	strrchr(else_,'}')[0] = 0;
-	free(hc_result((char *)else_));
+	hc_result_mul((char *)else_);
       }
     }
     break;
