@@ -214,17 +214,47 @@ void hc_exec_struct(char *f)
   {
   case HC_EXEC_IF:
     cond = hc_get_cond(e,&end,1);
+    // execute
+    end++;
+    while (isspace(e[end]))
+      end++;
+    if (e[end]!='{')
+    {
+      syntax_error2();
+      free(cond);
+      free(fme);
+      return;
+    }
+    int par = 1;
+    int pos = end+1;
+    while (par && e[pos])
+      {
+	if (e[pos]=='{')
+	  par++;
+	if (e[pos]=='}')
+	  par--;
+	pos++;
+      }
+    if (par)
+    {
+      syntax_error2();
+      free(cond);
+      free(fme);
+    }
     if (cond && strcmp(cond,"0")!=0)
     {
-      // execute
-      char *else_ = strstr((char *)e+sizeof(char)*(end+1),"else");
-      if (else_)
-	else_[0] = 0;
+      e[pos-1]=0;
       free(hc_result((char *)e+sizeof(char)*(end+1)));
     } else {
-      char *else_ = strstr((char *)e+sizeof(char)*(end+1),"else");
+      char *else_ = strstr((char *)e+sizeof(char)*(pos-1),"else");
       if (else_)
-	free(hc_result((char *)else_+sizeof(char)*4));
+      {
+	else_ += sizeof(char)*strlen("else");
+	else_ = strchr(else_,'{');
+	else_ += sizeof(char);
+	strrchr(else_,'}')[0] = 0;
+	free(hc_result((char *)else_));
+      }
     }
     break;
 
