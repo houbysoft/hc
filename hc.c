@@ -190,12 +190,22 @@ char *hc_result(char *e)
       r[0]=0;
       return r;
     } else {
-      return hc_condition_result(e);
+      char *f = malloc(strlen(e)+1);
+      if (!f)
+	mem_error();
+      strcpy(f,e);
+      r = hc_condition_result(f);
+      free(f);
+      return r;
     }
   } else {
     if (isvarassign(e))
     {
-      hc_varassign(e);
+      char *f = malloc(strlen(e)+1);
+      if (!f)
+	mem_error();
+      strcpy(f,e);
+      hc_varassign(f);
       r = malloc(1);
       if (!r)
 	mem_error();

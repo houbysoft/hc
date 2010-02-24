@@ -25,7 +25,7 @@
 #include "hc.h"
 
 
-char *hc_exec_cond_result(char *e, int *end)
+char *hc_get_cond(char *e, int *end, int result)
 {
   if (e[0]!='(') // need a condition in parenthesis
   {
@@ -49,7 +49,14 @@ char *hc_exec_cond_result(char *e, int *end)
     return NULL;
   }
   e[*end-1]=0;
-  return hc_result(e);
+  if (result)
+    return hc_result(e);
+  else
+  {
+    char *tmp = malloc(strlen(e)+1);
+    strcpy(tmp,e);
+    return tmp;
+  }
 }
 
 
@@ -190,19 +197,23 @@ void hc_exec_struct(char *f)
   HC_EXECS type;
   if (strstr(e,"if ")==e)
     type = HC_EXEC_IF;
+  if (strstr(e,"while ")==e)
+    type = HC_EXEC_WHILE;
 
   // Strip the structure name now that we don't need it
   while (!isspace(e[0]))
     e++;
   e++;
 
-  char *cond;
+  char *cond = NULL;
+  char *tmp = NULL;
+  char *exec = NULL;
   int end;
 
   switch (type)
   {
   case HC_EXEC_IF:
-    cond = hc_exec_cond_result(e,&end);
+    cond = hc_get_cond(e,&end,1);
     if (cond && strcmp(cond,"0")!=0)
     {
       // execute
@@ -218,7 +229,23 @@ void hc_exec_struct(char *f)
     break;
 
   case HC_EXEC_WHILE:
-    // TODO...
+    cond = hc_get_cond(e,&end,0);
+    if (cond)
+      tmp = hc_result(cond);
+    else
+      tmp = NULL;
+    while (tmp && strcmp(tmp,"0")!=0)
+    {
+      if (!exec)
+      {
+	exec = ((char *)e+sizeof(char)*(end+1));
+      }
+      printf("exec is now %s\n",exec);
+      free(hc_result(exec));
+      free(tmp);
+      tmp = hc_result(cond);
+    }
+    free(tmp);
     break;
   }
 
