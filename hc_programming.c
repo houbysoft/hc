@@ -240,7 +240,6 @@ void hc_exec_struct(char *f)
       {
 	exec = ((char *)e+sizeof(char)*(end+1));
       }
-      printf("exec is now %s\n",exec);
       free(hc_result(exec));
       free(tmp);
       tmp = hc_result(cond);
