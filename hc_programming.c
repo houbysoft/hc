@@ -48,6 +48,34 @@ void hc_result_mul(char *e)
 }
 
 
+char hc_prep_exec_block(char *e, int *end, int *pos)
+{
+  while (isspace(e[*end]))
+    *end += 1;
+  if (e[*end]!='{')
+  {
+    syntax_error2();
+    return FALSE;
+  }
+  int par = 1;
+  *pos = *end+1;
+  while (par && e[*pos])
+  {
+    if (e[*pos]=='{')
+      par++;
+    if (e[*pos]=='}')
+      par--;
+    *pos += 1;
+  }
+  if (par)
+  {
+    syntax_error2();
+    return FALSE;
+  }
+  return TRUE;
+}
+
+
 char *hc_get_cond(char *e, int *end, int result)
 {
   if (e[0]!='(') // need a condition in parenthesis
@@ -232,38 +260,14 @@ void hc_exec_struct(char *f)
   char *tmp = NULL;
   char *exec = NULL;
   int end;
+  int pos;
 
   switch (type)
   {
   case HC_EXEC_IF:
-    cond = hc_get_cond(e,&end,1);
-    // execute
+    cond = hc_get_cond(e,&end,1); // the 1 means get its result immediately
     end++;
-    while (isspace(e[end]))
-      end++;
-    if (e[end]!='{')
-    {
-      syntax_error2();
-      free(cond);
-      free(fme);
-      return;
-    }
-    int par = 1;
-    int pos = end+1;
-    while (par && e[pos])
-      {
-	if (e[pos]=='{')
-	  par++;
-	if (e[pos]=='}')
-	  par--;
-	pos++;
-      }
-    if (par)
-    {
-      syntax_error2();
-      free(cond);
-      free(fme);
-    }
+    hc_prep_exec_block(e,&end,&pos); // prepare end and pos counters to point to a suitable position so that we can easily execute the block
     if (cond && strcmp(cond,"0")!=0)
     {
       e[pos-1]=0;
@@ -282,7 +286,8 @@ void hc_exec_struct(char *f)
     break;
 
   case HC_EXEC_WHILE:
-    cond = hc_get_cond(e,&end,0);
+    cond = hc_get_cond(e,&end,0); // the 0 means not to compute the result; we need to compute it every iteration
+    end++;
     if (cond)
       tmp = hc_result(cond);
     else
@@ -291,9 +296,11 @@ void hc_exec_struct(char *f)
     {
       if (!exec)
       {
+	hc_prep_exec_block(e,&end,&pos);
+	e[pos-1]=0;
 	exec = ((char *)e+sizeof(char)*(end+1));
       }
-      free(hc_result(exec));
+      hc_result_mul(exec);
       free(tmp);
       tmp = hc_result(cond);
     }
