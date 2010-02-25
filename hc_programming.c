@@ -29,9 +29,19 @@ void hc_result_mul(char *e)
 {
   char *saveptr;
   char *expr = strtok_r(e,";",&saveptr);
+  int pos;
   while (expr)
   {
-    free(hc_result(expr));
+    pos=0;
+    char flag=0;
+    while (expr[pos] && !flag)
+    {
+      if (!isspace(expr[pos]))
+	flag=1;
+      pos++;
+    }
+    if (flag)
+      free(hc_result(expr));
     expr = strtok_r(NULL,";",&saveptr);
   }
 }
