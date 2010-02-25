@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "hc_complex.h"
+#include "hc_functions.h"
 #include "hc.h"
 
 
@@ -41,7 +42,7 @@ void hc_result_mul(char *e)
       pos++;
     }
     if (flag)
-      free(hc_result(expr));
+      free(hc_result(strip_spaces(expr)));
     expr = strtok_r(NULL,";",&saveptr);
   }
 }

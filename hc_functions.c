@@ -1555,3 +1555,12 @@ int hc_rand(M_APM res, char *f_expr)
   }
   return SUCCESS;
 }
+
+
+char *strip_spaces(char *e)
+{
+  char *r = e;
+  while (isspace(r[0]))
+    r++;
+  return r;
+}
