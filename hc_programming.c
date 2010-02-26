@@ -49,19 +49,24 @@ void hc_result_mul(char *e)
 	  par--;
 	pos++;
       }
-      if (strstr(strip_spaces(expr+sizeof(char)*pos),"else")==strip_spaces(expr+sizeof(char)*pos))
+      if (par)
       {
-	pos += strip_spaces(expr+sizeof(char)*pos) - (expr+sizeof(char)*pos) + strlen("else");	
-      } else {
+	syntax_error2();
+	return;
+      }
+      if (strstr(strip_spaces(expr+sizeof(char)*pos),"else")!=strip_spaces(expr+sizeof(char)*pos))
+      {
 	stop = 1;
       }
     }
     if (expr[pos]==';' || stop)
     {
-      stop = 0;
+      char save=expr[pos];
       expr[pos]=0;
       free(hc_result(strip_spaces(expr)));
+      expr[pos]=save;
       expr += sizeof(char)*(pos+1);
+      stop = 0;
       pos=-1;
     }
     pos++;

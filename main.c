@@ -26,6 +26,7 @@
 #endif
 #include <string.h>
 #include "hc.h"
+#include "hc_functions.h"
 
 
 #ifndef I_HATE_TIPS
@@ -94,6 +95,14 @@ int main(int argc, char *argv[])
   {
 #ifndef WIN32
     expr = readline("> ");
+    while (!check_completeness(expr))
+    {
+      char *expr2 = readline(" . ");
+      expr = realloc(expr,strlen(expr)+strlen(expr2)+2); // +2 = space and \0
+      strcat(expr," ");
+      strcat(expr,expr2);
+      free(expr2);
+    }
 #else
     printf("> ");
     fgets(expr,MAX_EXPR+1,stdin);

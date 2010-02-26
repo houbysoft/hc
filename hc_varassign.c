@@ -45,7 +45,7 @@ void hc_varassign(char *e)
   while (isspace(var[0]))
     var+=sizeof(char);
   int i=0;
-  while (!isspace(var[i]))
+  while (!isspace(var[i]) && var[i])
     i++;
   var[i]=0;
 

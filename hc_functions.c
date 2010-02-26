@@ -1564,3 +1564,24 @@ char *strip_spaces(char *e)
     r++;
   return r;
 }
+
+
+char check_completeness(char *e)
+{
+  int par=0, par2=0, pos=0;
+  while (e[pos])
+  {
+    if (e[pos]=='(')
+      par++;
+    if (e[pos]==')')
+      par--;
+    if (e[pos]=='{')
+      par2++;
+    if (e[pos]=='}')
+      par2--;
+    pos++;
+  }
+  if (par || par2)
+    return FALSE;
+  return TRUE;
+}
