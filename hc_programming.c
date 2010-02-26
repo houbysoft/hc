@@ -120,7 +120,7 @@ char *hc_get_cond(char *e, int *end, int result)
   }
   e++;
   int par = 1;
-  *end = 1;
+  *end = 0;
   while (par!=0 && e[*end]!='\0')
   {
     if (e[*end]=='(')
@@ -302,7 +302,12 @@ void hc_exec_struct(char *f)
   case HC_EXEC_IF:
     cond = hc_get_cond(e,&end,1); // the 1 means get its result immediately
     end++;
-    hc_prep_exec_block(e,&end,&pos); // prepare end and pos counters to point to a suitable position so that we can easily execute the block
+    if (!hc_prep_exec_block(e,&end,&pos)) // prepare end and pos counters to point to a suitable position so that we can easily execute the block
+    {
+      free(fme);
+      free(cond);
+      return;
+    }
     if (cond && strcmp(cond,"0")!=0)
     {
       e[pos-1]=0;
@@ -331,7 +336,11 @@ void hc_exec_struct(char *f)
     {
       if (!exec)
       {
-	hc_prep_exec_block(e,&end,&pos);
+	if (!hc_prep_exec_block(e,&end,&pos))
+	{
+	  free(tmp); free(cond); free(fme);
+	  return;
+	}
 	e[pos-1]=0;
 	exec = ((char *)e+sizeof(char)*(end+1));
       }
