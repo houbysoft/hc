@@ -35,8 +35,11 @@ char hc_check_not_recursive(char *n, char *e);
 
 void hc_varassign(char *e)
 {
-  char *var = strtok(e,"=");
-  char *expr = strtok(NULL,"=");
+  if (!strchr(e,'='))
+    varname_error();
+  char *expr = strchr(e,'=') + sizeof(char);
+  strchr(e,'=')[0] = '\0';
+  char *var = e;
 
   if (!var || !expr)
     varname_error();

@@ -124,7 +124,7 @@ unsigned int simple_hash(char *p)
 #define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='=') || (c==',') || (c=='!') || (c=='%') || (c=='_'))
 #define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='=') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_'))
 #define isdirection(x) (x[0]=='\\')
-#define isvarassign(x) (strchr(x,'=')!=NULL)
+#define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=')
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
 #define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x))
 
@@ -136,6 +136,7 @@ char hc_is_predef(char *var);
 char *hc_plusminus(char *e);
 char *hc_impmul_resolve(char *e);
 char *hc_condition_result(char *e);
+char *hc_result_numeric(char *f);
 void hc_process_direction(char *d);
 void hc_load_cfg();
 void hc_save_cfg();
@@ -179,9 +180,19 @@ char *hc_result(char *e)
 
   m_apm_trim_mem_usage();
 
+  return hc_result_(e);
+}
+
+char *hc_result_(char *e)
+{
+  if (!e)
+    return NULL;
+  e = strip_spaces(e);
+  if (!e[0]) // empty string
+    return NULL;
   char *r=NULL;
   
-  if (iscondition(e) || iscontrolstruct(e))
+  if (iscontrolstruct(e) || (iscondition(e) && !isvarassign(e)))
   {
     if (iscontrolstruct(e)) // Order is important here!
     {
@@ -220,7 +231,7 @@ char *hc_result(char *e)
 		if (!r)
 		mem_error();
       } else {
-      r = hc_result_(e);
+      r = hc_result_numeric(e);
       if (r && strlen(r))
       {
 	char *tmp_num = hc_real_part(r);
@@ -302,7 +313,7 @@ char *hc_result(char *e)
 
 
 // do NOT call this if you want to use the hc core in your own open source project, call hc_result() instead
-char *hc_result_(char *f)
+char *hc_result_numeric(char *f)
 {
   if (!f)
     return NULL;
