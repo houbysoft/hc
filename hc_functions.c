@@ -1560,7 +1560,7 @@ int hc_rand(M_APM res, char *f_expr)
 char *strip_spaces(char *e)
 {
   char *r = e;
-  while (isspace(r[0]))
+  while (r[0] && isspace(r[0]))
     r++;
   return r;
 }

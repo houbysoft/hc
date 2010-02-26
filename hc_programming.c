@@ -65,11 +65,15 @@ void hc_result_mul(char *e)
       expr[pos]=0;
       free(hc_result(strip_spaces(expr)));
       expr[pos]=save;
-      expr += sizeof(char)*(pos+1);
+      if (expr[pos]!=0)
+	expr += sizeof(char)*(pos+1);
+      else
+	expr += sizeof(char)*(pos);
       stop = 0;
       pos=-1;
     }
-    pos++;
+    if (pos==-1 || expr[pos])
+      pos++;
   }
   if (strlen(strip_spaces(expr))!=0)
   {
