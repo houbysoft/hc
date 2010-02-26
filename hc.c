@@ -124,7 +124,7 @@ unsigned int simple_hash(char *p)
 #define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='=') || (c==',') || (c=='!') || (c=='%') || (c=='_'))
 #define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='=') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_'))
 #define isdirection(x) (x[0]=='\\')
-#define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=')
+#define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr(x,'=')-1)[0]!='<' && (strchr(x,'=')-1)[0]!='>')
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
 #define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x))
 
