@@ -206,6 +206,7 @@ char *hc_result(char *e)
 	mem_error();
       strcpy(f,e);
       hc_varassign(f);
+      free(f);
       r = malloc(1);
       if (!r)
 	mem_error();

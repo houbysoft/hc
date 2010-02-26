@@ -28,23 +28,49 @@
 
 void hc_result_mul(char *e)
 {
-  char *saveptr;
-  char *expr = strtok_r(e,";",&saveptr);
-  int pos;
-  while (expr)
+  char *expr = malloc(strlen(e)+1);
+  char *expr_orig = expr;
+  if (!expr)
+    mem_error();
+  strcpy(expr,e);
+  int pos=0;
+  char stop=0;
+  while (expr[pos]!='\0')
   {
-    pos=0;
-    char flag=0;
-    while (expr[pos] && !flag)
+    if (expr[pos]=='{')
     {
-      if (!isspace(expr[pos]))
-	flag=1;
+      int par=1;
       pos++;
+      while (par && expr[pos])
+      {
+	if (expr[pos]=='{')
+	  par++;
+	if (expr[pos]=='}')
+	  par--;
+	pos++;
+      }
+      if (strstr(strip_spaces(expr+sizeof(char)*pos),"else")==strip_spaces(expr+sizeof(char)*pos))
+      {
+	pos += strip_spaces(expr+sizeof(char)*pos) - (expr+sizeof(char)*pos) + strlen("else");	
+      } else {
+	stop = 1;
+      }
     }
-    if (flag)
+    if (expr[pos]==';' || stop)
+    {
+      stop = 0;
+      expr[pos]=0;
       free(hc_result(strip_spaces(expr)));
-    expr = strtok_r(NULL,";",&saveptr);
+      expr += sizeof(char)*(pos+1);
+      pos=-1;
+    }
+    pos++;
   }
+  if (strlen(strip_spaces(expr))!=0)
+  {
+    free(hc_result(strip_spaces(expr)));
+  }
+  free(expr_orig);
 }
 
 
