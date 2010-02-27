@@ -26,7 +26,15 @@
 #include "hc.h"
 
 
-void hc_result_mul(char *e)
+#define HC_EXEC_RESULT {if (strstr(strip_spaces(expr),"return ")!=strip_spaces(expr)) \
+			{free(hc_result(strip_spaces(expr)));}else{	\
+  char *r = hc_result(strip_spaces(expr)+strlen("return "));		\
+  free(expr_orig);							\
+  return r;								\
+    }}
+
+
+char *hc_result_mul(char *e)
 {
   char *expr = malloc(strlen(e)+1);
   char *expr_orig = expr;
@@ -52,7 +60,7 @@ void hc_result_mul(char *e)
       if (par)
       {
 	syntax_error2();
-	return;
+	return NULL;
       }
       if (strstr(strip_spaces(expr+sizeof(char)*pos),"else")!=strip_spaces(expr+sizeof(char)*pos))
       {
@@ -63,7 +71,7 @@ void hc_result_mul(char *e)
     {
       char save=expr[pos];
       expr[pos]=0;
-      free(hc_result(strip_spaces(expr)));
+      HC_EXEC_RESULT
       expr[pos]=save;
       if (expr[pos]!=0)
 	expr += sizeof(char)*(pos+1);
@@ -77,9 +85,10 @@ void hc_result_mul(char *e)
   }
   if (strlen(strip_spaces(expr))!=0)
   {
-    free(hc_result(strip_spaces(expr)));
+    HC_EXEC_RESULT
   }
   free(expr_orig);
+  return NULL;
 }
 
 
@@ -273,8 +282,9 @@ char *hc_condition_result(char *e)
 }
 
 
-void hc_exec_struct(char *f)
+char *hc_exec_struct(char *f)
 {
+  char *ret=NULL;
   char *e = malloc(strlen(f)+1);
   char *fme = e; // needed because the starting address of e gets modified
   if (!e)
@@ -306,12 +316,12 @@ void hc_exec_struct(char *f)
     {
       free(fme);
       free(cond);
-      return;
+      return NULL;
     }
     if (cond && strcmp(cond,"0")!=0)
     {
       e[pos-1]=0;
-      hc_result_mul((char *)e+sizeof(char)*(end+1));
+      ret = hc_result_mul((char *)e+sizeof(char)*(end+1));
     } else {
       char *else_ = strstr((char *)e+sizeof(char)*(pos-1),"else");
       if (else_)
@@ -320,7 +330,7 @@ void hc_exec_struct(char *f)
 	else_ = strchr(else_,'{');
 	else_ += sizeof(char);
 	strrchr(else_,'}')[0] = 0;
-	hc_result_mul((char *)else_);
+	ret = hc_result_mul((char *)else_);
       }
     }
     break;
@@ -339,12 +349,14 @@ void hc_exec_struct(char *f)
 	if (!hc_prep_exec_block(e,&end,&pos))
 	{
 	  free(tmp); free(cond); free(fme);
-	  return;
+	  return NULL;
 	}
 	e[pos-1]=0;
 	exec = ((char *)e+sizeof(char)*(end+1));
       }
-      hc_result_mul(exec);
+      ret = hc_result_mul(exec);
+      if (ret)
+	break;
       free(tmp);
       tmp = hc_result(cond);
     }
@@ -354,5 +366,5 @@ void hc_exec_struct(char *f)
 
   free(cond);
   free(fme);
-  return;
+  return ret;
 }

@@ -196,9 +196,12 @@ char *hc_result_(char *e)
   {
     if (iscontrolstruct(e)) // Order is important here!
     {
-      hc_exec_struct(e);
-      r = malloc(1);
-      r[0]=0;
+      r = hc_exec_struct(e);
+      if (!r)
+      {
+	r = malloc(1);
+	r[0]=0;
+      }
       return r;
     } else {
       char *f = malloc(strlen(e)+1);
