@@ -35,6 +35,7 @@ char hc_check_not_recursive(char *n, char *e);
 
 void hc_varassign(char *e)
 {
+  char special = 0;
   if (!strchr(e,'='))
     varname_error();
   char *expr = strchr(e,'=') + sizeof(char);
@@ -43,6 +44,12 @@ void hc_varassign(char *e)
 
   if (!var || !expr)
     varname_error();
+
+  if (var[strlen(var)-1]=='+' || var[strlen(var)-1]=='-' || var[strlen(var)-1]=='*' || var[strlen(var)-1]=='/' || var[strlen(var)-1]=='%')
+  {
+    special = var[strlen(var)-1];
+    var[strlen(var)-1] = '\0';
+  }
 
   // clean up var name
   while (isspace(var[0]))
@@ -59,6 +66,8 @@ void hc_varassign(char *e)
       varname_error();
     } else {
       // function
+      if (special)
+	var_nospecial_error();
       char *name = strtok(var,"(");
       char *args = strtok(NULL,"(");
       args[strlen(args)-1]=0;
@@ -111,6 +120,20 @@ void hc_varassign(char *e)
     char *value = hc_result_(expr);
     if (!value)
       return;
+
+    if (special) // special means that one of these has been used: += -= *= /= %=
+    {
+      char *tmp = malloc(strlen(var)+1+strlen(value)+1);
+      strcpy(tmp,var);
+      tmp[strlen(tmp)+1]='\0';
+      tmp[strlen(tmp)]=special;
+      strcat(tmp,value);
+      free(value);
+      value = hc_result_(tmp);
+      free(tmp);
+      if (!value)
+	return;
+    }
 
     struct hc_ventry *tmp = hc_var_first;
     while ((tmp->next) && (tmp->name!=NULL) && (strcmp(tmp->name,var)!=0))
