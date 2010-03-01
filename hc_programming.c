@@ -36,6 +36,8 @@
 
 char *hc_result_mul(char *e)
 {
+  if (!e)
+    return NULL;
   char *expr = malloc(strlen(e)+1);
   char *expr_orig = expr;
   if (!expr)
@@ -295,6 +297,8 @@ char *hc_exec_struct(char *f)
     type = HC_EXEC_IF;
   if (strstr(e,"while ")==e)
     type = HC_EXEC_WHILE;
+  if (strstr(e,"for ")==e)
+    type = HC_EXEC_FOR;
 
   // Strip the structure name now that we don't need it
   while (!isspace(e[0]))
@@ -362,8 +366,50 @@ char *hc_exec_struct(char *f)
     }
     free(tmp);
     break;
-  }
 
+  case HC_EXEC_FOR:
+    cond = hc_get_cond(e,&end,0); // 0 means don't compute the result; this is needed because we need to split the "condition" into the three parts
+    end++;
+    if (!cond)
+      break;
+    char *start = strtok(cond,";");
+    char *cond2 = strtok(NULL,";");
+    char *iter = strtok(NULL,";");
+    if (!iter) // start was not passed
+    {
+      iter = cond2; cond2 = start; start = NULL;
+    }
+    if (!cond2 || !strlen(strip_spaces(cond2)))
+    {
+      error_nq("Error : you need to specify at least the condition for 'for'.");
+      free(cond); free(fme);
+      return NULL;
+    }
+    free(hc_result_mul(start));
+    tmp = hc_result(cond2);
+    while (tmp && strcmp(tmp,"0")!=0)
+    {
+      if (!exec)
+      {
+	if (!hc_prep_exec_block(e,&end,&pos))
+	{
+	  free(tmp); free(cond); free(fme);
+	  return NULL;
+	}
+	e[pos-1]=0;
+	exec = ((char *)e+sizeof(char)*(end+1));
+      }
+      ret = hc_result_mul(exec);
+      if (ret)
+	break;
+      free(tmp);
+      free(hc_result_mul(iter));
+      tmp = hc_result(cond2);
+    }
+    free(tmp);
+    break;
+  }
+  
   free(cond);
   free(fme);
   return ret;

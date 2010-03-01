@@ -138,7 +138,7 @@ typedef enum {
 } HC_CONDS;
 
 typedef enum {
-  HC_EXEC_IF, HC_EXEC_WHILE
+  HC_EXEC_IF, HC_EXEC_WHILE, HC_EXEC_FOR
 } HC_EXECS;
 
 typedef struct hc_config {
