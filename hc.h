@@ -203,7 +203,6 @@ extern char *hc_result(char *e);
 extern char *hc_result_(char *e);
 extern char *hc_plusminus(char *);
 extern void hc_varassign(char *);
-extern char *hc_condition_result(char *);
 extern char *hc_exec_struct(char *);
 extern char hc_check_varname(char *);
 extern unsigned int simple_hash(char *p);

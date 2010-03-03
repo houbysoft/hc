@@ -122,10 +122,10 @@ unsigned int simple_hash(char *p)
 }
 
 
-#define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='=') || (c==',') || (c=='!') || (c=='%') || (c=='_'))
-#define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='=') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_'))
+#define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='$') || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='='))
+#define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='$') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='='))
 #define isdirection(x) (x[0]=='\\')
-#define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr(x,'=')-1)[0]!='<' && (strchr(x,'=')-1)[0]!='>')
+#define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr(x,'=')-1)[0]!='<' && (strchr(x,'=')-1)[0]!='>' && (strchr(x,'=')-1)[0]!='!')
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
 #define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x) || (strstr(x,"for")==x))
 
@@ -136,7 +136,6 @@ char hc_check(char *e);
 char hc_is_predef(char *var);
 char *hc_plusminus(char *e);
 char *hc_impmul_resolve(char *e);
-char *hc_condition_result(char *e);
 char *hc_result_numeric(char *f);
 void hc_process_direction(char *d);
 void hc_load_cfg();
@@ -193,26 +192,15 @@ char *hc_result_(char *e)
     return NULL;
   char *r=NULL;
   
-  if (iscontrolstruct(e) || (iscondition(e) && !isvarassign(e)))
+  if (iscontrolstruct(e))
   {
-    if (iscontrolstruct(e)) // Order is important here!
+    r = hc_exec_struct(e);
+    if (!r)
     {
-      r = hc_exec_struct(e);
-      if (!r)
-      {
-	r = malloc(1);
-	r[0]=0;
-      }
-      return r;
-    } else {
-      char *f = malloc(strlen(e)+1);
-      if (!f)
-	mem_error();
-      strcpy(f,e);
-      r = hc_condition_result(f);
-      free(f);
-      return r;
+      r = malloc(1);
+      r[0]=0;
     }
+    return r;
   } else {
     if (isvarassign(e))
     {
@@ -227,89 +215,89 @@ char *hc_result_(char *e)
 	mem_error();
       r[0]=0;
     } else {
-	  if (isdirection(e))
-	  {
-		hc_process_direction((char *)e+1);
-		r = malloc(1);
-		*r = 0;
-		if (!r)
-		mem_error();
-      } else {
-      r = hc_result_numeric(e);
-      if (r && strlen(r))
+      if (isdirection(e))
       {
-	char *tmp_num = hc_real_part(r);
-	m_apm_set_string(hc_lans_mapm_re,tmp_num);
-	free(tmp_num);
-	tmp_num = hc_imag_part(r);
-	if (tmp_num)
+	hc_process_direction((char *)e+1);
+	r = malloc(1);
+	*r = 0;
+	if (!r)
+	  mem_error();
+      } else {
+	r = hc_result_numeric(e);
+	if (r && strlen(r))
 	{
-	  m_apm_set_string(hc_lans_mapm_im,tmp_num);
+	  char *tmp_num = hc_real_part(r);
+	  m_apm_set_string(hc_lans_mapm_re,tmp_num);
 	  free(tmp_num);
-	}
-	char *r_re,*r_im;
-	r_re = hc_real_part(r); r_im = hc_imag_part(r);
-	free(r);
-	if (!r_im)
-	{
-	  r = r_re;
-	  int i=strlen(r)-1;
-	  while (i && r[i]=='0')
-	    r[i--]=0;
-	  if (i && r[i]=='.')
-	    r[i]=0;
-	  switch (hc.exp)
+	  tmp_num = hc_imag_part(r);
+	  if (tmp_num)
 	  {
-	  case 's':
-	    r = hc_2sci(r);
-	    break;
-
-	  case 'e':
-	    r = hc_2eng(r);
-	    break;
-
-	  default:
-	    break;
+	    m_apm_set_string(hc_lans_mapm_im,tmp_num);
+	    free(tmp_num);
 	  }
-	} else {
-	  int i=strlen(r_re)-1;
-	  while (r_re[i]=='0')
-	    r_re[i--]=0;
-	  if (r_re[i]=='.')
-	    r_re[i]=0;
-	  
-	  i = strlen(r_im)-1;
-	  while (r_im[i]=='0')
-	    r_im[i--]=0;
-	  if (r_im[i]=='.')
-	    r_im[i]=0;
-
-	  switch (hc.exp)
+	  char *r_re,*r_im;
+	  r_re = hc_real_part(r); r_im = hc_imag_part(r);
+	  free(r);
+	  if (!r_im)
 	  {
-	  case 's': // SCI
-	    r_re = hc_2sci(r_re);
-	    r_im = hc_2sci(r_im);
-	    break;
-
-	  case 'e': // ENG
-	    r_re = hc_2eng(r_re);
-	    r_im = hc_2eng(r_im);
-	    break;
-
-	  default:
-	    break;
+	    r = r_re;
+	    int i=strlen(r)-1;
+	    while (i && r[i]=='0')
+	      r[i--]=0;
+	    if (i && r[i]=='.')
+	      r[i]=0;
+	    switch (hc.exp)
+	    {
+	    case 's':
+	      r = hc_2sci(r);
+	      break;
+	      
+	    case 'e':
+	      r = hc_2eng(r);
+	      break;
+	      
+	    default:
+	      break;
+	    }
+	  } else {
+	    int i=strlen(r_re)-1;
+	    while (r_re[i]=='0')
+	      r_re[i--]=0;
+	    if (r_re[i]=='.')
+	      r_re[i]=0;
+	    
+	    i = strlen(r_im)-1;
+	    while (r_im[i]=='0')
+	      r_im[i--]=0;
+	    if (r_im[i]=='.')
+	      r_im[i]=0;
+	    
+	    switch (hc.exp)
+	    {
+	    case 's': // SCI
+	      r_re = hc_2sci(r_re);
+	      r_im = hc_2sci(r_im);
+	      break;
+	      
+	    case 'e': // ENG
+	      r_re = hc_2eng(r_re);
+	      r_im = hc_2eng(r_im);
+	      break;
+	      
+	    default:
+	      break;
+	    }
+	    
+	    r = malloc(strlen(r_re)+1+strlen(r_im)+1);
+	    // r_re i r_im \0
+	    strcpy(r,r_re);
+	    strcat(r,"i");
+	    strcat(r,r_im);
+	    free(r_re); free(r_im);
 	  }
-	  
-	  r = malloc(strlen(r_re)+1+strlen(r_im)+1);
-	  // r_re i r_im \0
-	  strcpy(r,r_re);
-	  strcat(r,"i");
-	  strcat(r,r_im);
-	  free(r_re); free(r_im);
 	}
       }
     }
-	}
   }
   
   return r;
@@ -1502,9 +1490,9 @@ char *hc_i2p(char *f)
   if (hc.rpn)
     return e;
   e[strlen(e)+1]=0;
-  e[strlen(e)]='=';
+  e[strlen(e)]='$';
   char tmp[MAX_EXPR];
-  char stack[MAX_OP_STACK];
+  char stack[MAX_OP_STACK][2];
   int sp=0;
   strcpy(tmp,e);
   memset(e,0,MAX_EXPR);
@@ -1512,7 +1500,8 @@ char *hc_i2p(char *f)
 
   char neg=0;
 
-  stack[sp++] = '=';
+  stack[sp][0] = '$';
+  stack[sp++][1] = 0;
 
   while (tmp[i]!=0)
   {
@@ -1529,17 +1518,27 @@ char *hc_i2p(char *f)
 	}
 	switch (tmp[i])
 	{
-	case '=': // terminating character
-	  while (stack[sp-1]!='=')
-	    e[j++] = stack[--sp];
+	case '$': // terminating character
+	  while (stack[sp-1][0]!='$')
+	  {
+	    e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
+	  }
 	  return e;
 	case '(':
-	  stack[sp++] = '(';
+	  stack[sp][1] = 0;
+	  stack[sp++][0] = '(';
 	  break;
 	case ')':
 	  sp--;
-	  while (stack[sp]!='(')
-	    e[j++] = stack[sp--];
+	  while (stack[sp][0]!='(')
+	  {
+	    e[j++] = stack[sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
+	    sp--;
+	  }
 	  if (neg)
 	  {
 	    e[j++] = '_';
@@ -1548,37 +1547,94 @@ char *hc_i2p(char *f)
 	  }
 	  break;
 	case '^':
-	case '!':
-	  if ((stack[sp-1]=='+')||(stack[sp-1]=='-')||(stack[sp-1]=='_')||(stack[sp-1]=='=')||(stack[sp-1]=='(')||(stack[sp-1]=='*')||(stack[sp-1]=='/')||(stack[sp-1]==PW_SIGN)||(stack[sp-1]=='%'))
+	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
 	  {
-	    stack[sp++] = tmp[i];
+	    stack[sp][0] = tmp[i];
+	    stack[sp++][1] = 0;
 	  } else {
-	    e[j++] = stack[--sp];
+	    e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
 	    i--;
+	  }
+	  break;
+	case '!':
+	  if (tmp[i+1]=='=')
+	  {
+	    // interpret as condition
+	    if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
+	    {
+	      stack[sp][0] = '!';
+	      stack[sp++][1] = '=';
+	      i++;
+	    } else {
+	      e[j++] = stack[--sp][0];
+	      if (stack[sp][1])
+		e[j++] = stack[sp][1];
+	      i--;
+	    }
+	  } else {
+	    // interpret as factorial
+	    if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
+	    {
+	      stack[sp][0] = tmp[i];
+	      stack[sp++][1] = 0;
+	    } else {
+	      e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
+	    i--;
+	    }
 	  }
 	  break;
 	case '*':
 	case '/':
 	case '%':
-	  if ((stack[sp-1]=='+')||(stack[sp-1]=='-')||(stack[sp-1]=='_')||(stack[sp-1]=='=')||(stack[sp-1]=='('))
+	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
 	  {
-	    stack[sp++] = tmp[i];
+	    stack[sp][0] = tmp[i];
+	    stack[sp++][1] = 0;
 	  } else {
-	    e[j++] = stack[--sp];
+	    e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
 	    i--;
 	  }
 	  break;
 	case '_':
 	case '+':
 	case '-':
-	    if ((stack[sp-1]!='(')&&(stack[sp-1]!='='))
-	    {
-	      e[j++] = stack[--sp];
-	      i--;
-	    } else {
-	      stack[sp++] = tmp[i];
-	    }
+	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
+	  {
+	    stack[sp][0] = tmp[i];
+	    stack[sp++][1] = 0;
+	  } else {
+	    e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
+	    i--;
+	  }
 	  break;
+	case '>':
+	case '<':
+	case '=':
+	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
+	  {
+	    stack[sp][0] = tmp[i];
+	    if (tmp[i+1]=='=')
+	    {
+	      stack[sp++][1] = '=';
+	      i++;
+	    }
+	    else
+	      stack[sp++][1] = 0;
+	  } else {
+	    e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
+	    i--;
+	  }
+	  break;  
 	}
 
       } else {
@@ -1811,7 +1867,140 @@ char *hc_postfix_result(char *e)
 	 sp -= 1;
 	 break;
        case '!':
-	 if (sp < 1)
+	 switch (e[i+1])
+	 {
+	 case '=':
+	   // interpret as condition
+	   i++;
+	   if (sp < 2)
+	   {
+	     m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	     while (first->n)
+	     {
+	       m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	     }
+	     m_apm_free(first->re);m_apm_free(first->im);free(first);
+	     syntax_error2();
+	     return NULL;
+	   }
+	   curr = curr->p; // [--sp]
+	   m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	   curr = curr->p; // [--sp]
+	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	   m_apm_set_string(curr->im,"0");
+	   if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
+	     m_apm_set_string(curr->re,"0");
+	   else
+	     m_apm_set_string(curr->re,"1");
+	   curr = curr->n;
+	   sp -= 1;
+	   break;
+	 default:
+	   // interpret as factorial
+	   if (sp < 1)
+	   {
+	     m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	     while (first->n)
+	     {
+	       m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	     }
+	     m_apm_free(first->re);m_apm_free(first->im);free(first);
+	     syntax_error2();
+	     return NULL;
+	   }
+	   curr = curr->p; // [--sp]
+	   if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
+	   {
+	     m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	     while (first->n)
+	     {
+	       m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	     }
+	     m_apm_free(first->re);m_apm_free(first->im);free(first);
+	     arg_error("! : an integer is required.");
+	     return NULL;
+	   }
+	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	   m_apm_factorial(curr->re,op1_r);
+	   m_apm_set_string(curr->im,"0");
+	   curr = curr->n; // [sp++]
+	   break;
+	 }
+	 break;
+       case '<':
+	 if (sp < 2)
+	 {
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+           while (first->n)
+           {
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	   }
+           m_apm_free(first->re);m_apm_free(first->im);free(first);
+           syntax_error2();
+           return NULL;
+	 }
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 m_apm_set_string(curr->im,"0");
+	 switch(e[++i])
+	 {
+	 case '=':
+	   if (m_apmc_le(op1_r,op1_i,op2_r,op2_i))
+	     m_apm_set_string(curr->re,"1");
+	   else
+	     m_apm_set_string(curr->re,"0");
+	   break;
+	 default:
+	   i--;
+	   if (m_apmc_lt(op1_r,op1_i,op2_r,op2_i))
+	     m_apm_set_string(curr->re,"1");
+	   else
+	     m_apm_set_string(curr->re,"0");
+	   break;
+	 }
+	 curr = curr->n;
+	 sp -= 1;
+	 break;
+       case '>':
+	 if (sp < 2)
+	 {
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+           while (first->n)
+           {
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	   }
+           m_apm_free(first->re);m_apm_free(first->im);free(first);
+           syntax_error2();
+           return NULL;
+	 }
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 m_apm_set_string(curr->im,"0");
+	 switch(e[++i])
+	 {
+	 case '=':
+	   if (m_apmc_ge(op1_r,op1_i,op2_r,op2_i))
+	     m_apm_set_string(curr->re,"1");
+	   else
+	     m_apm_set_string(curr->re,"0");
+	   break;
+	 default:
+	   i--;
+	   if (m_apmc_gt(op1_r,op1_i,op2_r,op2_i))
+	     m_apm_set_string(curr->re,"1");
+	   else
+	     m_apm_set_string(curr->re,"0");
+	   break;
+	 }
+	 curr = curr->n;
+	 sp -= 1;
+	 break;
+       case '=':
+	 if (sp < 2)
 	 {
 	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
 	   while (first->n)
@@ -1823,21 +2012,23 @@ char *hc_postfix_result(char *e)
 	   return NULL;
 	 }
 	 curr = curr->p; // [--sp]
-	 if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   arg_error("! : an integer is required.");
-	   return NULL;
-	 }
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	 curr = curr->p; // [--sp]
 	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apm_factorial(curr->re,op1_r);
 	 m_apm_set_string(curr->im,"0");
-	 curr = curr->n; // [sp++]
+	 switch(e[++i])
+	 {
+	 case '=':
+	   if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
+	     m_apm_set_string(curr->re,"1");
+	   else
+	     m_apm_set_string(curr->re,"0");
+	   break;
+	 default:
+	   break; // TODO : if this is reached something bad happened (tm)
+	 }
+	 curr = curr->n;
+	 sp -= 1;
 	 break;
        default:
 	 if (e[i]=='@')
@@ -1986,7 +2177,7 @@ char hc_check(char *e)
       }
       if (isoperator_np(e[i]))
       {
-	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')))
+	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')) && (last_was_op!='<' && e[i]!='=') && (last_was_op!='>' && e[i]!='=') && (last_was_op!='=' && e[i]!='='))
 	{
 	  return 0;
 	}
