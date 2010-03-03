@@ -122,8 +122,8 @@ unsigned int simple_hash(char *p)
 }
 
 
-#define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='$') || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='='))
-#define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='$') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='='))
+#define isoperator(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='(') || (c==')') || (c==PW_SIGN) || (c=='$') || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='=') || (c=='&') || (c=='|'))
+#define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='$') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='=') || (c=='&') || (c=='|'))
 #define isdirection(x) (x[0]=='\\')
 #define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr(x,'=')-1)[0]!='<' && (strchr(x,'=')-1)[0]!='>' && (strchr(x,'=')-1)[0]!='!')
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
@@ -1526,10 +1526,12 @@ char *hc_i2p(char *f)
 	      e[j++] = stack[sp][1];
 	  }
 	  return e;
+
 	case '(':
 	  stack[sp][1] = 0;
 	  stack[sp++][0] = '(';
 	  break;
+
 	case ')':
 	  sp--;
 	  while (stack[sp][0]!='(')
@@ -1546,8 +1548,9 @@ char *hc_i2p(char *f)
 	    neg=0;
 	  }
 	  break;
+
 	case '^':
-	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
+	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
 	  {
 	    stack[sp][0] = tmp[i];
 	    stack[sp++][1] = 0;
@@ -1558,11 +1561,12 @@ char *hc_i2p(char *f)
 	    i--;
 	  }
 	  break;
+
 	case '!':
 	  if (tmp[i+1]=='=')
 	  {
 	    // interpret as condition
-	    if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
+	    if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
 	    {
 	      stack[sp][0] = '!';
 	      stack[sp++][1] = '=';
@@ -1575,7 +1579,7 @@ char *hc_i2p(char *f)
 	    }
 	  } else {
 	    // interpret as factorial
-	    if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
+	    if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
 	    {
 	      stack[sp][0] = tmp[i];
 	      stack[sp++][1] = 0;
@@ -1587,10 +1591,11 @@ char *hc_i2p(char *f)
 	    }
 	  }
 	  break;
+
 	case '*':
 	case '/':
 	case '%':
-	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
+	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
 	  {
 	    stack[sp][0] = tmp[i];
 	    stack[sp++][1] = 0;
@@ -1601,10 +1606,11 @@ char *hc_i2p(char *f)
 	    i--;
 	  }
 	  break;
+
 	case '_':
 	case '+':
 	case '-':
-	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='='))
+	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
 	  {
 	    stack[sp][0] = tmp[i];
 	    stack[sp++][1] = 0;
@@ -1615,10 +1621,11 @@ char *hc_i2p(char *f)
 	    i--;
 	  }
 	  break;
+
 	case '>':
 	case '<':
 	case '=':
-	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
+	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
 	  {
 	    stack[sp][0] = tmp[i];
 	    if (tmp[i+1]=='=')
@@ -1634,7 +1641,26 @@ char *hc_i2p(char *f)
 	      e[j++] = stack[sp][1];
 	    i--;
 	  }
-	  break;  
+	  break;
+	  
+	case '&':
+	case '|':
+	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
+	  {
+	    stack[sp][0] = tmp[i];
+	    if (tmp[i+1]==tmp[i])
+	    {
+	      stack[sp++][1] = tmp[i+1];
+	      i++;
+	    } else
+	      stack[sp++][1] = 0;
+	  } else {
+	    e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
+	    i--;
+	  }
+	  break;
 	}
 
       } else {
@@ -1714,6 +1740,7 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
+
        case '/':
 	 if (sp < 2)
 	 {
@@ -1751,6 +1778,7 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
+
        case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
 	 if (sp >= 2)
 	 {
@@ -1784,6 +1812,7 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
+
        case '+':
 	 if (sp < 2)
 	 {
@@ -1804,6 +1833,7 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
          break;
+
        case '_':
 	 if (!isdigit(e[i+1]))
 	 {
@@ -1835,6 +1865,7 @@ char *hc_postfix_result(char *e)
 	   sp -= 1;
 	 }
          break;
+
        case PW_SIGN:
 	 if (sp < 2)
 	 {
@@ -1866,6 +1897,7 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n; // [sp++]
 	 sp -= 1;
 	 break;
+
        case '!':
 	 switch (e[i+1])
 	 {
@@ -1927,6 +1959,7 @@ char *hc_postfix_result(char *e)
 	   break;
 	 }
 	 break;
+
        case '<':
 	 if (sp < 2)
 	 {
@@ -1963,6 +1996,7 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n;
 	 sp -= 1;
 	 break;
+
        case '>':
 	 if (sp < 2)
 	 {
@@ -1999,6 +2033,7 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n;
 	 sp -= 1;
 	 break;
+
        case '=':
 	 if (sp < 2)
 	 {
@@ -2030,6 +2065,65 @@ char *hc_postfix_result(char *e)
 	 curr = curr->n;
 	 sp -= 1;
 	 break;
+
+       case '|':
+	 if (e[i+1]=='|') // both single | and double || are accepted
+	   i++;
+	 if (sp < 2)
+	 {
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	   while (first->n)
+	   {
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	   }
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
+	   syntax_error2();
+	   return NULL;
+	 }
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 m_apm_set_string(curr->im,"0");
+	 if (e[i+1]==e[i])
+	   i++;
+         if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 || m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
+	   m_apm_set_string(curr->re,"1");
+	 else
+	   m_apm_set_string(curr->re,"0");
+	 curr = curr->n;
+	 sp -= 1;
+	 break;
+	 
+       case '&':
+	 if (e[i+1]=='&') // both single & and double && are accepted
+	   i++;
+	 if (sp < 2)
+	 {
+	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	   while (first->n)
+	   {
+	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	   }
+	   m_apm_free(first->re);m_apm_free(first->im);free(first);
+	   syntax_error2();
+	   return NULL;
+	 }
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	 curr = curr->p; // [--sp]
+	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	 m_apm_set_string(curr->im,"0");
+	 if (e[i+1]==e[i])
+	   i++;
+         if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 && m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
+	   m_apm_set_string(curr->re,"1");
+	 else
+	   m_apm_set_string(curr->re,"0");
+	 curr = curr->n;
+	 sp -= 1;
+	 break;
+
        default:
 	 if (e[i]=='@')
 	   e[i] = '_';
@@ -2177,7 +2271,7 @@ char hc_check(char *e)
       }
       if (isoperator_np(e[i]))
       {
-	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')) && (last_was_op!='<' && e[i]!='=') && (last_was_op!='>' && e[i]!='=') && (last_was_op!='=' && e[i]!='='))
+	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')) && (last_was_op!='<' && e[i]!='=') && (last_was_op!='>' && e[i]!='=') && (last_was_op!='=' && e[i]!='=') && (last_was_op!='&' && e[i]!='&') && (last_was_op!='|' && e[i]!='|'))
 	{
 	  return 0;
 	}
