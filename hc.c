@@ -72,6 +72,7 @@ const char *hc_fnames[][2] = {
   {"mtoft","func"},
   {"nCr","func"},
   {"nPr","func"},
+  {"print","func"},
   {"product","func"},
   {"rand","func"},
   {"round","func"},
@@ -253,9 +254,9 @@ char *hc_result_(char *e)
 	{
 	  r = r_re;
 	  int i=strlen(r)-1;
-	  while (r[i]=='0')
+	  while (i && r[i]=='0')
 	    r[i--]=0;
-	  if (r[i]=='.')
+	  if (i && r[i]=='.')
 	    r[i]=0;
 	  switch (hc.exp)
 	  {
@@ -1350,6 +1351,11 @@ char *hc_result_numeric(char *f)
     case HASH_RAND:
       if (hc_rand(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      break;
+
+    case HASH_PRINT:
+      hc_print(f_expr);
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;} // we return as if an error occured because print should be used alone, and moreover we do not want to have any result printed if this is used directly in the default prompt
       break;
 
     case HASH_GRAPH:

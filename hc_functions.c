@@ -1557,6 +1557,45 @@ int hc_rand(M_APM res, char *f_expr)
 }
 
 
+int hc_print(char *f_expr)
+{
+  int pos = 1;
+  char *t1 = hc_get_arg(f_expr,pos);
+  char done = 0;
+  while (t1)
+  {
+    done = 1;
+    char *tmp;
+    if (!t1)
+      return FAIL;
+    if (strlen(t1)==0)
+    {
+      free(t1);
+      return FAIL;
+    } else {
+      tmp = hc_result_(t1);
+      free(t1);
+      if (!tmp)
+	return FAIL;
+      else
+      {
+	t1 = malloc(strlen(tmp)+2);
+	strcpy(t1,tmp);
+	strcat(t1," ");
+	notify(t1);
+	free(t1);
+	free(tmp);
+      }
+    }
+    t1 = hc_get_arg(f_expr,++pos);
+  }
+  notify("\n");
+  if (done)
+    return SUCCESS;
+  return FAIL;
+}
+
+
 char *strip_spaces(char *e)
 {
   char *r = e;
