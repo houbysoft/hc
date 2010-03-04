@@ -27,7 +27,7 @@
 
 
 #define HC_EXEC_RESULT {if (strstr(strip_spaces(expr),"return ")!=strip_spaces(expr)) \
-			{free(hc_result(strip_spaces(expr)));}else{	\
+    {char *tmp = hc_result(strip_spaces(expr)); if (!tmp) {error = 1;} else {free(tmp);}}else{ \
   char *r = hc_result(strip_spaces(expr)+strlen("return "));		\
   free(expr_orig);							\
   return r;								\
@@ -36,6 +36,7 @@
 
 char *hc_result_mul(char *e)
 {
+  char error = 0;
   if (!e)
     return NULL;
   char *expr = malloc(strlen(e)+1);
@@ -81,6 +82,11 @@ char *hc_result_mul(char *e)
 	expr += sizeof(char)*(pos);
       stop = 0;
       pos=-1;
+      if (error)
+      {
+	free(expr_orig);
+	return NULL;
+      }
     }
     if (pos==-1 || expr[pos])
       pos++;
@@ -88,9 +94,16 @@ char *hc_result_mul(char *e)
   if (strlen(strip_spaces(expr))!=0)
   {
     HC_EXEC_RESULT
+      if (error)
+      {
+	free(expr_orig);
+	return NULL;
+      }
   }
   free(expr_orig);
-  return NULL;
+  expr = malloc(1);
+  expr[0] = 0;
+  return expr;
 }
 
 
@@ -210,6 +223,11 @@ char *hc_exec_struct(char *f)
 	ret = hc_result_mul((char *)else_);
       }
     }
+    if (ret && !strlen(ret))
+    {
+      free(ret);
+      ret = NULL;
+    }
     break;
 
   case HC_EXEC_WHILE:
@@ -232,8 +250,13 @@ char *hc_exec_struct(char *f)
 	exec = ((char *)e+sizeof(char)*(end+1));
       }
       ret = hc_result_mul(exec);
-      if (ret)
+      if ((ret && strlen(ret)) || !ret)
 	break;
+      if (ret && !strlen(ret))
+      {
+	free(ret);
+	ret = NULL;
+      }
       free(tmp);
       tmp = hc_result(cond);
     }
@@ -273,8 +296,13 @@ char *hc_exec_struct(char *f)
 	exec = ((char *)e+sizeof(char)*(end+1));
       }
       ret = hc_result_mul(exec);
-      if (ret)
+      if ((ret && strlen(ret)) || !ret)
 	break;
+      if (ret && !strlen(ret))
+      {
+	free(ret);
+	ret = NULL;
+      }
       free(tmp);
       free(hc_result_mul(iter));
       tmp = hc_result(cond2);
