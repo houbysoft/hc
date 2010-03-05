@@ -205,7 +205,13 @@ char *hc_result_(char *e)
       }
       return r;
     } else {
-      return hc_result_mul(e);
+      if (isvarassign(e))
+      {
+	error_nq("Error : you cannot use multiple statements in a variable / function definition. This feature may be added later.");
+	return NULL;
+      } else {
+	return hc_result_mul(e);
+      }
     }
   } else {
     if (isvarassign(e))
