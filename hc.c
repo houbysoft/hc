@@ -1357,7 +1357,8 @@ char *hc_result_numeric(char *f)
 
     case HASH_PRINT:
       hc_print(f_expr);
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;} // we return as if an error occured because print should be used alone, and moreover we do not want to have any result printed if this is used directly in the default prompt
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--;
+	char *tmp = malloc(1); tmp[0]=0; return tmp;}
       break;
 
     case HASH_GRAPH:
@@ -2752,12 +2753,18 @@ void hc_load(char *fname)
   {
     if (strcmp(expr,"\n")==0)
       break;
-	if (expr[strlen(expr)-1]=='\n')
-		expr[strlen(expr)-1]=0;
+    if (expr[strlen(expr)-1]=='\n')
+      expr[strlen(expr)-1]=0;
     if (strlen(expr)>=MAX_EXPR)
     {
       overflow_error_nq();
       break;
+    }
+    while (!check_completeness(expr))
+    {
+      if (!fgets(expr+strlen(expr)*sizeof(char),MAX_EXPR + 1 - strlen(expr),fr))
+	break;
+      line++;
     }
     char *fme = hc_result(expr);
     if (!fme)
