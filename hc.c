@@ -193,15 +193,20 @@ char *hc_result_(char *e)
     return NULL;
   char *r=NULL;
   
-  if (iscontrolstruct(e))
+  if (iscontrolstruct(e) || strchr(e,';'))
   {
-    r = hc_exec_struct(e);
-    if (!r)
+    if (iscontrolstruct(e))
     {
-      r = malloc(1);
-      r[0]=0;
+      r = hc_exec_struct(e);
+      if (!r)
+      {
+	r = malloc(1);
+	r[0]=0;
+      }
+      return r;
+    } else {
+      return hc_result_mul(e);
     }
-    return r;
   } else {
     if (isvarassign(e))
     {

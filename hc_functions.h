@@ -63,6 +63,8 @@ extern char *hc_2sci(char *);
 extern char *hc_2eng(char *);
 extern char *hc_strip_0s(char *e);
 
+extern char *hc_result_mul(char *e);
+
 extern char *strip_spaces(char *e);
 extern char check_completeness(char *e);
 

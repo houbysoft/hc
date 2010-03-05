@@ -10,6 +10,10 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+1.0:
+  - added boolean/logic operators : < > <= >= == != | || & &&
+  - added a simple programming language - including if (else), for, and while control structures - for more info, type "logic" in hc or visit http://houbysoft.com/hc/logic.php
+  - added the print() function for printing inside loops, etc.
 0.9.4:
   - added \load - a direction that allows you to read in a text files with HC commands, definitions, etc. Can be used for example for storing functions that you use often, etc.
   - added rand() and round()
