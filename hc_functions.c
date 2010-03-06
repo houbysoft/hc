@@ -1277,7 +1277,7 @@ char *hc_2sci(char *n)
     r = malloc(strlen(n)+1+hc_need_space_int(exp)+1);
     if (!r)
       mem_error();
-    unsigned int i = 2, j=2;
+    unsigned int i = 1, j=2;
     while (n[i]=='0' || n[i]=='-' || n[i]=='.')
       i++;
     if (n[0]=='-')
@@ -1291,7 +1291,8 @@ char *hc_2sci(char *n)
     }
     if (n[0]=='-')
       j++;
-    i++;
+    if (n[i]!='\0')
+      i++;
     char digits = 0;
     while (n[i]!='\0')
     {
