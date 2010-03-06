@@ -1476,18 +1476,25 @@ char *hc_strip_0s(char *e)
   char *re,*im;
   re = hc_real_part(e);
   im = hc_imag_part(e);
-  int i=strlen(re)-1;
-  while (re[i]=='0')
-    re[i--]=0;
-  if (re[i]=='.')
-    re[i]=0;
+  int i;
+  if (strchr(re,'.'))
+  {
+    i = strlen(re)-1;
+    while (re[i]=='0')
+      re[i--]=0;
+    if (re[i]=='.')
+      re[i]=0;
+  }
   if (im)
   {
-    i = strlen(im)-1;
-    while (im[i]=='0')
-      im[i--]=0;
-    if (im[i]=='.')
-      im[i]=0;
+    if (strchr(im,'.'))
+    {
+      i = strlen(im)-1;
+      while (im[i]=='0')
+	im[i--]=0;
+      if (im[i]=='.')
+	im[i]=0;
+    }
   }
   i = strlen(re)+1;
   if (im)

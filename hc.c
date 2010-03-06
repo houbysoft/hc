@@ -181,7 +181,80 @@ char *hc_result(char *e)
 
   m_apm_trim_mem_usage();
 
-  return hc_result_(e);
+  char *r = hc_result_(e);
+  if (r && strlen(r))
+  {
+    char *tmp_num = hc_real_part(r);
+    m_apm_set_string(hc_lans_mapm_re,tmp_num);
+    free(tmp_num);
+    tmp_num = hc_imag_part(r);
+    if (tmp_num)
+    {
+      m_apm_set_string(hc_lans_mapm_im,tmp_num);
+      free(tmp_num);
+    }
+    char *r_re,*r_im;
+    r_re = hc_real_part(r); r_im = hc_imag_part(r);
+    free(r);
+    if (!r_im)
+    {
+      r = r_re;
+      int i=strlen(r)-1;
+      while (i && r[i]=='0')
+	r[i--]=0;
+      if (i && r[i]=='.')
+	r[i]=0;
+      switch (hc.exp)
+      {
+      case 's':
+	r = hc_2sci(r);
+	break;
+	
+      case 'e':
+	r = hc_2eng(r);
+	break;
+	
+      default:
+	break;
+      }
+    } else {
+      int i=strlen(r_re)-1;
+      while (r_re[i]=='0')
+	r_re[i--]=0;
+      if (r_re[i]=='.')
+	r_re[i]=0;
+      
+      i = strlen(r_im)-1;
+      while (r_im[i]=='0')
+	r_im[i--]=0;
+      if (r_im[i]=='.')
+	r_im[i]=0;
+      
+      switch (hc.exp)
+      {
+      case 's': // SCI
+	r_re = hc_2sci(r_re);
+	r_im = hc_2sci(r_im);
+	break;
+	
+      case 'e': // ENG
+	r_re = hc_2eng(r_re);
+	r_im = hc_2eng(r_im);
+	break;
+	
+      default:
+	break;
+      }
+      
+      r = malloc(strlen(r_re)+1+strlen(r_im)+1);
+      // r_re i r_im \0
+      strcpy(r,r_re);
+      strcat(r,"i");
+      strcat(r,r_im);
+      free(r_re); free(r_im);
+    }
+  }
+  return r;
 }
 
 char *hc_result_(char *e)
@@ -236,78 +309,6 @@ char *hc_result_(char *e)
 	  mem_error();
       } else {
 	r = hc_result_numeric(e);
-	if (r && strlen(r))
-	{
-	  char *tmp_num = hc_real_part(r);
-	  m_apm_set_string(hc_lans_mapm_re,tmp_num);
-	  free(tmp_num);
-	  tmp_num = hc_imag_part(r);
-	  if (tmp_num)
-	  {
-	    m_apm_set_string(hc_lans_mapm_im,tmp_num);
-	    free(tmp_num);
-	  }
-	  char *r_re,*r_im;
-	  r_re = hc_real_part(r); r_im = hc_imag_part(r);
-	  free(r);
-	  if (!r_im)
-	  {
-	    r = r_re;
-	    int i=strlen(r)-1;
-	    while (i && r[i]=='0')
-	      r[i--]=0;
-	    if (i && r[i]=='.')
-	      r[i]=0;
-	    switch (hc.exp)
-	    {
-	    case 's':
-	      r = hc_2sci(r);
-	      break;
-	      
-	    case 'e':
-	      r = hc_2eng(r);
-	      break;
-	      
-	    default:
-	      break;
-	    }
-	  } else {
-	    int i=strlen(r_re)-1;
-	    while (r_re[i]=='0')
-	      r_re[i--]=0;
-	    if (r_re[i]=='.')
-	      r_re[i]=0;
-	    
-	    i = strlen(r_im)-1;
-	    while (r_im[i]=='0')
-	      r_im[i--]=0;
-	    if (r_im[i]=='.')
-	      r_im[i]=0;
-	    
-	    switch (hc.exp)
-	    {
-	    case 's': // SCI
-	      r_re = hc_2sci(r_re);
-	      r_im = hc_2sci(r_im);
-	      break;
-	      
-	    case 'e': // ENG
-	      r_re = hc_2eng(r_re);
-	      r_im = hc_2eng(r_im);
-	      break;
-	      
-	    default:
-	      break;
-	    }
-	    
-	    r = malloc(strlen(r_re)+1+strlen(r_im)+1);
-	    // r_re i r_im \0
-	    strcpy(r,r_re);
-	    strcat(r,"i");
-	    strcat(r,r_im);
-	    free(r_re); free(r_im);
-	  }
-	}
       }
     }
   }
