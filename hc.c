@@ -302,7 +302,12 @@ char *hc_result_(char *e)
     } else {
       if (isdirection(e))
       {
-	hc_process_direction((char *)e+1);
+	char *f = malloc(strlen(e)+1);
+	if (!f)
+	  mem_error();
+	strcpy(f,e);
+	hc_process_direction((char *)f+1);
+	free(f);
 	r = malloc(1);
 	*r = 0;
 	if (!r)
