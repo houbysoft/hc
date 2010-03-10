@@ -268,6 +268,11 @@ char *hc_exec_struct(char *f)
     end++;
     if (!cond)
       break;
+    if (!strchr(cond,';') || !strchr(strchr(cond,';')+sizeof(char),';'))
+    {
+      syntax_error2();
+      break;
+    }
     char *start = strtok(cond,";");
     char *cond2 = strtok(NULL,";");
     char *iter = strtok(NULL,";");

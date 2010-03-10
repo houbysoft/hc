@@ -2202,9 +2202,9 @@ char *hc_postfix_result(char *e)
      curr = curr->p;
 
      char *result_re,*result_im;
-     result_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->re,'.',0,0);
+     result_re = m_apm_to_fixpt_stringexp(hc.precision,curr->re,'.',0,0);
      if (m_apm_compare(curr->im,MM_Zero)!=0)
-       result_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,curr->im,'.',0,0);
+       result_im = m_apm_to_fixpt_stringexp(hc.precision,curr->im,'.',0,0);
      else
        result_im = NULL;
      m_apm_free(op1_r);m_apm_free(op1_i);
