@@ -1565,6 +1565,44 @@ int hc_rand(M_APM res, char *f_expr)
 }
 
 
+int hc_read(M_APM re, M_APM im, char *f_expr)
+{
+  char *str = _cur_var_name_!=NULL ? malloc(strlen("Enter ")+strlen(_cur_var_name_)+strlen(" : ")+1) : malloc(strlen("Enter expression : ")+1);
+  if (!str)
+    mem_error();
+  if (_cur_var_name_)
+  {
+    strcpy(str,"Enter ");
+	strcat(str,_cur_var_name_);
+	strcat(str," : ");
+  } else {
+    strcpy(str,"Enter expression : ");
+  }
+  char *res = prompt(str);
+  free(str);
+  if (!res)
+    return FAIL;
+  char *tmp = hc_result_(res);
+  if (!tmp)
+    return FAIL;
+  free(res);
+  res = tmp;
+  char *r_re = hc_real_part(res);
+  char *r_im = hc_imag_part(res);
+  m_apm_set_string(re,r_re);
+  free(r_re);
+  if (r_im)
+  {
+    m_apm_set_string(im,r_im);
+	free(r_im);
+  } else {
+    m_apm_set_string(im,"0");
+  }
+  free(res);
+  return SUCCESS;
+}
+
+
 int hc_print(char *f_expr)
 {
   int pos = 1;

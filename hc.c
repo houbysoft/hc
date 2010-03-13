@@ -75,6 +75,7 @@ const char *hc_fnames[][2] = {
   {"print","func"},
   {"product","func"},
   {"rand","func"},
+  {"read","func"},
   {"round","func"},
   {"sin","func"},
   {"sinh","func"},
@@ -157,6 +158,7 @@ char *hc_result(char *e)
 {
   announce_errors = TRUE; // This variable is used so that syntax errors etc. are not announced multiple times if multiple errors are detected
   hc_nested = 0; // This is set to prevent infinite recursion
+  _cur_var_name_ = NULL; // Used by the function reading input from the user
 
   static char init=0;
   if (!init)
@@ -1371,6 +1373,11 @@ char *hc_result_numeric(char *f)
       hc_print(f_expr);
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--;
 	char *tmp = malloc(1); tmp[0]=0; return tmp;}
+      break;
+
+	case HASH_READ:
+	  if (hc_read(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_GRAPH:

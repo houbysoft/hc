@@ -20,6 +20,7 @@
 #define HC_H
 #include <math.h>
 #include <m_apm.h>
+#include <readline/readline.h>
 #include "m_apmc.h"
 //#define NDEBUG
 //#include <assert.h>
@@ -29,7 +30,7 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_FNAMES 75
+#define HC_FNAMES 76
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128
@@ -97,6 +98,7 @@ extern void load_error(unsigned int line, char *expr);
 #define error_nq(str) {printf("%s\n",str);}
 #ifndef HCG
 #define notify(str) {printf(str);}
+#define prompt(str) readline(str)
 #endif
 
 #define NAME_VERSION "Welcome to hc 1.0 (infix / RPN) -- http://hc.houbysoft.com/\n"
@@ -196,6 +198,7 @@ extern struct hc_ventry *hc_var_first;
 extern char announce_errors;
 extern char graphing_ignore_errors;
 extern const char *hc_fnames[][2];
+extern char *_cur_var_name_;
 
 extern void hc_load_cfg();
 extern void hc_load(char *fname);
