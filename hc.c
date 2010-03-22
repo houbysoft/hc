@@ -68,6 +68,7 @@ const char *hc_fnames[][2] = {
   {"log10","func"},
   {"mitokm","func"},
   {"mltofloz","func"},
+  {"mmass","func"},
   {"mod","func"},
   {"mtoft","func"},
   {"nCr","func"},
@@ -387,8 +388,20 @@ char *hc_result_numeric(char *f)
 
   int pos_cur=0,pos_beg;
   char couldbevar=0;
+  char ignore = FALSE;
   while (e[pos_cur])
   {
+    if (e[pos_cur]=='\"')
+    {
+      ignore = ignore == FALSE ? TRUE : FALSE;
+      pos_cur++;
+      continue;
+    }
+    if (ignore)
+    {
+      pos_cur++;
+      continue;
+    }
     if (((isalpha(e[pos_cur]) && tolower(e[pos_cur])!='e' && tolower(e[pos_cur]!='i')) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
     {
       if (!couldbevar)
@@ -1375,8 +1388,8 @@ char *hc_result_numeric(char *f)
 	char *tmp = malloc(1); tmp[0]=0; return tmp;}
       break;
 
-	case HASH_READ:
-	  if (hc_read(f_result_re,f_result_im,f_expr) == FAIL)
+    case HASH_READ:
+      if (hc_read(f_result_re,f_result_im,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
@@ -1465,6 +1478,11 @@ char *hc_result_numeric(char *f)
       hc_nested--;
       e = malloc(1); if (!e) mem_error(); strcpy(e,"");
       return e;
+      break;
+
+    case HASH_MMASS:
+      if (hc_mmass(f_result_re,f_expr)==FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     default:
@@ -2255,22 +2273,6 @@ char *hc_postfix_result(char *e)
 // return 0 if e contains a (detected) syntax error
 char hc_check(char *e)
 {
-  /*int i = 0;
-  int par = 0;
-  while (e[i])
-  {
-    if (e[i]=='(')
-      par++;
-    if (e[i]==')')
-      par--;
-    if ((e[i]=='.') && (i!=0) && (!isoperator(e[i-1])) && (!isdigit(e[i-1])))
-      return 0;
-    i++;
-  }
-
-  if (par)
-    return 0;
-  */
   if (hc.rpn)
   {
     char *tmp = strchr(e,'(');
@@ -2288,8 +2290,18 @@ char hc_check(char *e)
     char last_was_int=0;
     char first=0;
     int left_par=0,right_par=0;
+    char ignore=FALSE;
     for (i=0;i<strlen(e);i++)
     {
+      if (e[i]=='\"')
+      {
+	ignore = ignore == FALSE ? TRUE : FALSE;
+	continue;
+      }
+
+      if (ignore)
+	continue;
+      
       if (!isspace(e[i]) && (first==0))
       {
 	if ((isoperator_np(e[i])) && (e[i]!='-') && (e[i]!='_'))
@@ -2320,7 +2332,7 @@ char hc_check(char *e)
 	  last_was_op = 0;
 	  if (first)
 	    first = 2;
-          if (last_was_int && isalpha(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')
+	  if (last_was_int && isalpha(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')
 	  {
 	    return 0;
 	  }
@@ -2330,7 +2342,7 @@ char hc_check(char *e)
 	left_par++;
       if (e[i]==')')
 	right_par++;
-
+      
       if (isalpha(e[i]))
 	last_was_char = 1;
       else

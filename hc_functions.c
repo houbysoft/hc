@@ -149,6 +149,18 @@ char *strreplace(char *in, char *old, char *new)
 	}
       }
     }
+    char *p_tmp = in;
+    int inquotes = FALSE;
+    while (p_tmp != p)
+    {
+      if (p_tmp[0]=='\"')
+      {
+	inquotes = inquotes == FALSE ? TRUE : FALSE;
+      }
+      p_tmp++;
+    }
+    if (inquotes)
+      dorpl = FALSE;
 
     if (dorpl)
     {
@@ -1187,6 +1199,60 @@ int hc_totient(M_APM result, char *e)
 
 
 
+int hc_mmass(M_APM result, char *e)
+{
+  if (!(e = get_string(e)))
+    arg_error("mmass() : argument has to be a string.");
+
+  char element[3];
+  char count[32];
+  double element_aw;
+  double res = 0;
+  int i=0;
+
+  for (; i<strlen(e); i++)
+  {
+    if (isupper(e[i]))
+    {
+      element[0] = e[i];
+      if (islower(e[i+1]))
+      {
+	element[1] = e[++i];
+	element[2] = '\0';
+      } else {
+	element[1] = '\0';
+      }
+      element_aw = hc_get_element_info(element,ATOMIC_WEIGHT);
+      if (!element_aw)
+      {
+	free(e);
+	return FAIL;
+      }
+      int tmp=0;
+      count[0]=0;
+      while (isdigit(e[i+1]) && tmp < 32)
+	count[tmp++] = e[++i];
+      if (tmp>=32)
+      {
+	arg_error("mmass() : integer too big, please use a lower value.");
+	free(e);
+	return FAIL;
+      }
+      if (strlen(count))
+	tmp = atoi(count);
+      else
+	tmp = 1;
+      res += element_aw * tmp;
+    }
+  }
+
+  free(e);
+  m_apm_set_double(result,res);
+  return SUCCESS;
+}
+
+
+
 void hc_from_rad(M_APM result)
 {
   if (hc.angle=='r')
@@ -1669,4 +1735,16 @@ char check_completeness(char *e)
   if (par || par2)
     return FALSE;
   return TRUE;
+}
+
+
+
+char *get_string(char *e)
+{
+  if (!is_string(e))
+    return NULL;
+  char *r = malloc(strlen(e)-2+1);
+  strncpy(r,(char *)(e+sizeof(char)),strlen(e+sizeof(char))-1);
+  r[strlen(e+sizeof(char))-1] = '\0';
+  return r;
 }

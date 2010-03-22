@@ -92,6 +92,9 @@
 #define HASH_FTTOM 5784
 #define HASH_MTOFT 17719
 
+// Chemistry
+#define HASH_MMASS 6053
+
 // directions / config file
 #define HASH_RPN 23169
 #define HASH_PRECISION 20878

@@ -17,6 +17,7 @@
 
 
 #include <m_apm.h>
+#include "hc_chemistry.h"
 
 #ifndef HC_FUNCTIONS_H
 #define HC_FUNCTIONS_H
@@ -49,6 +50,7 @@ extern int hc_m2ft(M_APM, char *);
 extern int hc_rand(M_APM, char *);
 extern int hc_read(M_APM, M_APM, char *);
 extern int hc_print(char *);
+extern int hc_mmass(M_APM, char *);
 
 extern void hc_from_rad(M_APM);
 extern void hc_to_rad(M_APM);
@@ -68,5 +70,6 @@ extern char *hc_result_mul(char *e);
 
 extern char *strip_spaces(char *e);
 extern char check_completeness(char *e);
+extern char *get_string(char *);
 
 #endif
