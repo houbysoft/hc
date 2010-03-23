@@ -1613,17 +1613,19 @@ int hc_rand(M_APM res, char *f_expr)
 
 int hc_read(M_APM re, M_APM im, char *f_expr)
 {
-  char *str = _cur_var_name_!=NULL ? malloc(strlen("Enter ")+strlen(_cur_var_name_)+strlen(" : ")+1) : malloc(strlen("Enter expression : ")+1);
-  if (!str)
-    mem_error();
-  if (_cur_var_name_)
+  char *str=NULL;
+  if (f_expr && strlen(f_expr) && is_string(f_expr))
   {
-    strcpy(str,"Enter ");
-	strcat(str,_cur_var_name_);
-	strcat(str," : ");
+    str = get_string(f_expr);
+    if (!str)
+      mem_error();    
   } else {
+    str = malloc(strlen("Enter expression : ")+1);
+    if (!str)
+      mem_error();
     strcpy(str,"Enter expression : ");
   }
+
   char *res = prompt(str);
   free(str);
   if (!res)

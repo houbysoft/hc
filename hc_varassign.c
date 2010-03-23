@@ -31,7 +31,6 @@ struct hc_ventry *hc_var_first;
 char hc_check_funcname(char *e);
 char hc_check_varname(char *e);
 char hc_check_not_recursive(char *n, char *e);
-char *_cur_var_name_ = NULL;
 
 
 void hc_varassign(char *e)
@@ -41,7 +40,7 @@ void hc_varassign(char *e)
     varname_error();
   char *expr = strchr(e,'=') + sizeof(char);
   strchr(e,'=')[0] = '\0';
-  char *var = _cur_var_name_ = e;
+  char *var = e;
 
   if (!var || !expr)
     varname_error();

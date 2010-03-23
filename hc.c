@@ -159,7 +159,6 @@ char *hc_result(char *e)
 {
   announce_errors = TRUE; // This variable is used so that syntax errors etc. are not announced multiple times if multiple errors are detected
   hc_nested = 0; // This is set to prevent infinite recursion
-  _cur_var_name_ = NULL; // Used by the function reading input from the user
 
   static char init=0;
   if (!init)
