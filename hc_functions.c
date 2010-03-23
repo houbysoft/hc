@@ -1204,45 +1204,25 @@ int hc_mmass(M_APM result, char *e)
   if (!(e = get_string(e)))
     arg_error("mmass() : argument has to be a string.");
 
-  char element[3];
-  char count[32];
-  double element_aw;
+  if (!check_completeness(e))
+  {
+    free(e);
+    arg_error("mmass() : syntax error.");
+  }
+
+
   double res = 0;
   int i=0;
 
   for (; i<strlen(e); i++)
   {
+    if (e[i]=='(')
+    {
+      res += hc_mmass_par(e, &i);
+    }
     if (isupper(e[i]))
     {
-      element[0] = e[i];
-      if (islower(e[i+1]))
-      {
-	element[1] = e[++i];
-	element[2] = '\0';
-      } else {
-	element[1] = '\0';
-      }
-      element_aw = hc_get_element_info(element,ATOMIC_WEIGHT);
-      if (!element_aw)
-      {
-	free(e);
-	return FAIL;
-      }
-      int tmp=0;
-      count[0]=0;
-      while (isdigit(e[i+1]) && tmp < 32)
-	count[tmp++] = e[++i];
-      if (tmp>=32)
-      {
-	arg_error("mmass() : integer too big, please use a lower value.");
-	free(e);
-	return FAIL;
-      }
-      if (strlen(count))
-	tmp = atoi(count);
-      else
-	tmp = 1;
-      res += element_aw * tmp;
+      res += hc_mmass_el(e, &i);
     }
   }
 
