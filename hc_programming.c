@@ -93,6 +93,7 @@ char *hc_result_mul(char *e)
   }
   if (strlen(strip_spaces(expr))!=0)
   {
+    notify("Warning : you should end your command with ';'.\n");
     HC_EXEC_RESULT
       if (error)
       {
@@ -286,7 +287,7 @@ char *hc_exec_struct(char *f)
       free(cond); free(fme);
       return NULL;
     }
-    free(hc_result_mul(start));
+    free(hc_result(start));
     tmp = hc_result(cond2);
     while (tmp && strcmp(tmp,"0")!=0)
     {
@@ -309,7 +310,7 @@ char *hc_exec_struct(char *f)
 	ret = NULL;
       }
       free(tmp);
-      free(hc_result_mul(iter));
+      free(hc_result(iter));
       tmp = hc_result(cond2);
     }
     free(tmp);

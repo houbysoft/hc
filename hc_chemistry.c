@@ -393,7 +393,6 @@ double hc_mmass_el(char *e, int *i)
   element_aw = hc_get_element_info(element,ATOMIC_WEIGHT);
   if (!element_aw)
   {
-    free(e);
     return 0;
   }
   int tmp=0;
@@ -403,7 +402,6 @@ double hc_mmass_el(char *e, int *i)
   count[tmp]=0;
   if (tmp>=32)
   {
-    free(e);
     arg_error("mmass() : integer too big, please use a lower value.");
   }
   if (strlen(count))
@@ -437,7 +435,6 @@ double hc_mmass_par(char *e, int *i)
     count[tmp++] = e[++*i];
   if (tmp>=32)
   {
-    free(e);
     arg_error("mmass() : integer too big, please use a lower value.");
   }
   count[tmp]=0;

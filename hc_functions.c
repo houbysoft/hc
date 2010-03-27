@@ -1212,17 +1212,30 @@ int hc_mmass(M_APM result, char *e)
 
 
   double res = 0;
+  double tmp = 0;
   int i=0;
 
   for (; i<strlen(e); i++)
   {
     if (e[i]=='(')
     {
-      res += hc_mmass_par(e, &i);
+      tmp = hc_mmass_par(e, &i);
+      if (!tmp)
+      {
+	free(e);
+	return FAIL;
+      }
+      res += tmp;
     }
     if (isupper(e[i]))
     {
-      res += hc_mmass_el(e, &i);
+      tmp = hc_mmass_el(e, &i);
+      if (!tmp)
+      {
+	free(e);
+	return FAIL;
+      }
+      res += tmp;
     }
   }
 
