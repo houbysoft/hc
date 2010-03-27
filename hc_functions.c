@@ -160,7 +160,9 @@ char *strreplace(char *in, char *old, char *new)
       p_tmp++;
     }
     if (inquotes)
+    {
       dorpl = FALSE;
+    }
 
     if (dorpl)
     {
@@ -222,16 +224,23 @@ char *hc_get_arg(char *e, int pos)
   int i=0;
   int par=0;
   int p=0;
-  //int e_len = strlen(e);
   char *tmp = malloc((strlen(e)+1)*sizeof(char));
   if (!tmp)
     mem_error();
   strcpy(tmp,e);
   char *last_pointer = tmp;
   char *result = NULL;
+  char ignore = FALSE;
 
-  while (tmp[i]!=0)
+  for (; tmp[i]!=0; i++)
   {
+    if (tmp[i]=='\"')
+    {
+      ignore = ignore == FALSE ? TRUE : FALSE;
+      continue;
+    }
+    if (ignore)
+      continue;
     if (tmp[i]=='(')
       par++;
     if (tmp[i]==')')
@@ -257,7 +266,6 @@ char *hc_get_arg(char *e, int pos)
 	last_pointer = tmp + sizeof(char)*i + sizeof(char);
       }
     }
-    i++;
   }
   if (p+1==pos)
   {
@@ -1718,8 +1726,16 @@ char *strip_spaces(char *e)
 char check_completeness(char *e)
 {
   int par=0, par2=0, pos=0;
-  while (e[pos])
+  char ignore=FALSE;
+  for (; e[pos]!='\0'; pos++)
   {
+    if (e[pos]=='\"')
+    {
+      ignore = ignore == FALSE ? TRUE : FALSE;
+      continue;
+    }
+    if (ignore)
+      continue;
     if (e[pos]=='(')
       par++;
     if (e[pos]==')')
@@ -1728,7 +1744,6 @@ char check_completeness(char *e)
       par2++;
     if (e[pos]=='}')
       par2--;
-    pos++;
   }
   if (par || par2)
     return FALSE;

@@ -735,10 +735,18 @@ char *hc_result_numeric(char *f)
   strcpy(e,e_tmp);
   int i,j,k;
   int left_par=0,right_par=0,f_expr_s=0,f_expr_e=0;
+  ignore = FALSE;
 
   // Find & replace functions with their results
   for (i=0;i<MAX_EXPR;i++)
   {
+    if (e[i]=='\"')
+    {
+      ignore = ignore == FALSE ? TRUE : FALSE;
+      continue;
+    }
+    if (ignore)
+      continue;
     if (e[i]==0)
     {
       i = MAX_EXPR;
@@ -800,9 +808,17 @@ char *hc_result_numeric(char *f)
     right_par = 0;
     f_expr_e = 0;
     j-=1;
+    ignore = FALSE;
     while ((left_par != right_par) || (left_par==0))
     {
       j++;
+      if (e[j]=='\"')
+      {
+	ignore = ignore == FALSE ? TRUE : FALSE;
+	continue;
+      }
+      if (ignore)
+	continue;
       if (e[j]=='(')
       {
 	left_par++;
@@ -2299,7 +2315,10 @@ char hc_check(char *e)
       }
 
       if (ignore)
+      {
+	last_was_op = '\"';
 	continue;
+      }
       
       if (!isspace(e[i]) && (first==0))
       {
@@ -2316,7 +2335,7 @@ char hc_check(char *e)
       }
       if (isoperator_np(e[i]))
       {
-	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')) && (last_was_op!='<' && e[i]!='=') && (last_was_op!='>' && e[i]!='=') && (last_was_op!='=' && e[i]!='=') && (last_was_op!='&' && e[i]!='&') && (last_was_op!='|' && e[i]!='|'))
+	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')) && (last_was_op!='<' && e[i]!='=') && (last_was_op!='>' && e[i]!='=') && (last_was_op!='=' && e[i]!='=') && (last_was_op!='&' && e[i]!='&') && (last_was_op!='|' && e[i]!='|') && (last_was_op!='\"' && e[i]!=','))
 	{
 	  return 0;
 	}
@@ -2353,7 +2372,9 @@ char hc_check(char *e)
     }
     
     if (left_par != right_par)
+    {
       return 0;
+    }
     
     if (first == 1)
       return 0;
