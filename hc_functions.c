@@ -1680,7 +1680,10 @@ int hc_print(char *f_expr)
       free(t1);
       return FAIL;
     } else {
-      tmp = hc_result_(t1);
+      if (is_string(t1))
+	tmp = get_string(t1);
+      else
+	tmp = hc_result_(t1);
       free(t1);
       if (!tmp)
 	return FAIL;
