@@ -83,9 +83,13 @@ int main(int argc, char *argv[])
   while (42)
   {
     expr = readline("> ");
+    if (!expr)
+      exit(1);
     while (!check_completeness(expr))
     {
       char *expr2 = readline(" . ");
+      if (!expr2)
+	exit(1);
       expr = realloc(expr,strlen(expr)+strlen(expr2)+2); // +2 = space and \0
       strcat(expr," ");
       strcat(expr,expr2);

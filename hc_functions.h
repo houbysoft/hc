@@ -69,6 +69,7 @@ extern char *hc_strip_0s(char *e);
 extern char *hc_result_mul(char *e);
 
 extern char *strip_spaces(char *e);
+extern char last_char(char *e);
 extern char check_completeness(char *e);
 extern char *get_string(char *);
 

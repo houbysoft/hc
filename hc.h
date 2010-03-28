@@ -100,7 +100,7 @@ extern void load_error(unsigned int line, char *expr);
 #define notify(str) {printf(str);}
 #define prompt(str) readline(str)
 #endif
-#define is_string(x) (x[0]=='\"' && x[strlen(x)-1]=='\"')
+#define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
 
 #define NAME_VERSION "Welcome to hc 1.0 (infix / RPN) -- http://hc.houbysoft.com/\n"
 

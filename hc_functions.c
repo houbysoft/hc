@@ -1723,6 +1723,17 @@ char *strip_spaces(char *e)
 }
 
 
+char last_char(char *e)
+{
+  char *r = e + strlen(e) - 1;
+  if (r <= e)
+    return e[0];
+  while (r > e && isspace(r[0]))
+    r--;
+  return r[0];
+}
+
+
 char check_completeness(char *e)
 {
   int par=0, par2=0, pos=0;
@@ -1756,8 +1767,11 @@ char *get_string(char *e)
 {
   if (!is_string(e))
     return NULL;
+  e = strip_spaces(e);
   char *r = malloc(strlen(e)-2+1);
   strncpy(r,(char *)(e+sizeof(char)),strlen(e+sizeof(char))-1);
   r[strlen(e+sizeof(char))-1] = '\0';
+  strrchr(r,'\"')[0] = '\0';
+  r = realloc(r,strlen(r)+1);
   return r;
 }
