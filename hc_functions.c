@@ -1771,7 +1771,8 @@ char *get_string(char *e)
   char *r = malloc(strlen(e)-2+1);
   strncpy(r,(char *)(e+sizeof(char)),strlen(e+sizeof(char))-1);
   r[strlen(e+sizeof(char))-1] = '\0';
-  strrchr(r,'\"')[0] = '\0';
+  if (strrchr(r,'\"'))
+    strrchr(r,'\"')[0] = '\0';
   r = realloc(r,strlen(r)+1);
   return r;
 }
