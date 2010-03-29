@@ -1756,7 +1756,7 @@ char check_completeness(char *e)
     if (e[pos]=='}')
       par2--;
   }
-  if (par || par2)
+  if (par>0 || par2>0)
     return FALSE;
   return TRUE;
 }
