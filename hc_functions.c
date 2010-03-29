@@ -1672,9 +1672,31 @@ int hc_input(M_APM re, M_APM im, char *f_expr)
 }
 
 
-int hc_print(char *f_expr)
+int hc_output(int mode, char *f_expr)
 {
-  int pos = 1;
+  FILE *fw=NULL;
+  int pos;
+  if (mode==PRINT)
+    pos = 1;
+  else
+  {
+    char *fname = hc_get_arg(f_expr,1);
+    if (!is_string(fname))
+    {
+      free(fname);
+      arg_error("write() : first argument must be a string containing a valid filename.");
+    }
+    char *tmp = get_string(fname); 
+    free(fname);
+    fw = fopen(tmp,"a");
+    free(tmp);
+    if (!fw)
+    {
+      error_nq("write() : Error, can't open file for writing!\n");
+      return FAIL;
+    }
+    pos = 2;
+  }
   char *t1 = hc_get_arg(f_expr,pos);
   char done = 0;
   while (t1)
@@ -1682,10 +1704,16 @@ int hc_print(char *f_expr)
     done = 1;
     char *tmp;
     if (!t1)
+    {
+      if (mode==WRITE)
+	fclose(fw);
       return FAIL;
+    }
     if (strlen(t1)==0)
     {
       free(t1);
+      if (mode==WRITE)
+	fclose(fw);
       return FAIL;
     } else {
       if (is_string(t1))
@@ -1694,20 +1722,31 @@ int hc_print(char *f_expr)
 	tmp = hc_result_(t1);
       free(t1);
       if (!tmp)
-	return FAIL;
-      else
       {
+	if (mode==WRITE)
+	  fclose(fw);
+	return FAIL;
+      } else {
 	t1 = malloc(strlen(tmp)+2);
 	strcpy(t1,tmp);
 	strcat(t1," ");
-	notify(t1);
+	if (mode==PRINT)
+	  notify(t1);
+	else
+	  fwrite(t1,sizeof(char),strlen(t1),fw);
 	free(t1);
 	free(tmp);
       }
     }
     t1 = hc_get_arg(f_expr,++pos);
   }
-  notify("\n");
+  if (mode==PRINT)
+    notify("\n");
+  else
+  {
+    fprintf(fw,"\n");
+    fclose(fw);
+  }
   if (done)
     return SUCCESS;
   return FAIL;

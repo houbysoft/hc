@@ -87,6 +87,7 @@ const char *hc_fnames[][2] = {
   {"tan","func"},
   {"tanh","func"},
   {"totient","func"},
+  {"write","func"},
   // CONSTANTS
   {"pi","cnst"},
   {"c","cnst"},
@@ -1398,7 +1399,13 @@ char *hc_result_numeric(char *f)
       break;
 
     case HASH_PRINT:
-      hc_print(f_expr);
+      hc_output(PRINT, f_expr);
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--;
+	char *tmp = malloc(1); tmp[0]=0; return tmp;}
+      break;
+
+    case HASH_WRITE:
+      hc_output(WRITE, f_expr);
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--;
 	char *tmp = malloc(1); tmp[0]=0; return tmp;}
       break;
@@ -2457,7 +2464,7 @@ void hc_process_direction(char *d)
   case HASH_RPN:
     hc.rpn = hc.rpn==TRUE ? FALSE : TRUE;
     if (hc.rpn == TRUE)
-      notify("RPN mode is now on.\n")
+      notify("RPN mode is now on.\n");
     else
       notify("RPN mode is now off.\n");
     break;
@@ -2476,7 +2483,7 @@ void hc_process_direction(char *d)
   case HASH_BPN:
     hc.bypass_nested = hc.bypass_nested==TRUE ? FALSE : TRUE;
     if (hc.bypass_nested == TRUE)
-      notify("Bypass is now on.\n")
+      notify("Bypass is now on.\n");
     else
       notify("Bypass is now off.\n");
     break;

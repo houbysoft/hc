@@ -30,7 +30,7 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_FNAMES 77
+#define HC_FNAMES 78
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128
@@ -97,7 +97,7 @@ extern void load_error(unsigned int line, char *expr);
 #define warning(str) {printf("Warning : %s\n",str);}
 #define error_nq(str) {printf("%s\n",str);}
 #ifndef HCG
-#define notify(str) {printf(str);}
+#define notify(str) printf(str)
 #define prompt(str) readline(str)
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')

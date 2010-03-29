@@ -74,6 +74,7 @@
 #define HASH_RAND 14177
 
 #define HASH_PRINT 24172
+#define HASH_WRITE 11366
 #define HASH_INPUT 14896
 
 // Conversions
