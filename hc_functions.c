@@ -1632,7 +1632,7 @@ int hc_rand(M_APM res, char *f_expr)
 }
 
 
-int hc_read(M_APM re, M_APM im, char *f_expr)
+int hc_input(M_APM re, M_APM im, char *f_expr)
 {
   char *str=NULL;
   if (f_expr && strlen(f_expr) && is_string(f_expr))

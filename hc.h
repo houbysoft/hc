@@ -69,7 +69,7 @@
 #ifndef HCG_E
 #define unknown_var_error(var,type) {printf("%s %s is undefined.\n",type == HC_USR_FUNC ? "Function" : "Variable",var);}
 #define load_error(line,expr) {printf("Error occured at line %i (%s), interrupting execution.\n",line,expr);}
-#define varname_error() {printf("Invalid variable name (variables must start with a letter other than e or i, and must contain only letters and numbers).\n");return;}
+#define varname_error() {printf("Invalid variable name (variables must contain only letters and numbers, and may not be 'e' or 'i', which are used for exponents and complex numbers respectively).\n");return;}
 #define varname_predefined_error() {printf("You can't change a predefined variable.\n");return 0;}
 #define var_nospecial_error() {printf("You cannot use +=, -=, *= or /= with this type of variable.\n");return;}
 #define recursive_error() {printf("Error : recursive definition.\n");return;}
@@ -78,7 +78,7 @@
 #else
 extern void unknown_var_error(char *var, char type);
 extern void load_error(unsigned int line, char *expr);
-#define varname_error() {notify_error("Invalid variable name (variables must start with a letter other than e or i, and must contain only letters and numbers).\n");return;}
+#define varname_error() {notify_error("Invalid variable name (variables must contain only letters and numbers, and may not be 'e' or 'i', which are used for exponents and complex numbers respectively).\n");return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define var_nospecial_error() {notify_error("You cannot use +=, -=, *= or /= with this type of variable.\n");return;}
 #define recursive_error() {notify_error("Error : recursive definition.\n");return;}

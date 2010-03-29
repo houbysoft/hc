@@ -60,6 +60,7 @@ const char *hc_fnames[][2] = {
   {"gmul","func"},
   {"graph3","func"},
   {"inchtocm","func"},
+  {"input","func"},
   {"kmtomi","func"},
   {"ktoc","func"},
   {"ktof","func"},
@@ -76,7 +77,6 @@ const char *hc_fnames[][2] = {
   {"print","func"},
   {"product","func"},
   {"rand","func"},
-  {"read","func"},
   {"round","func"},
   {"sin","func"},
   {"sinh","func"},
@@ -401,7 +401,7 @@ char *hc_result_numeric(char *f)
       pos_cur++;
       continue;
     }
-    if (((isalpha(e[pos_cur]) && tolower(e[pos_cur])!='e' && tolower(e[pos_cur]!='i')) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
+    if (((isalpha(e[pos_cur]) && (tolower(e[pos_cur])!='e' || (isalpha(e[pos_cur+1]))) && (tolower(e[pos_cur]!='i') || (isalpha(e[pos_cur+1])))) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
     {
       if (!couldbevar)
       {
@@ -754,7 +754,7 @@ char *hc_result_numeric(char *f)
     }
     if (isalpha(e[i]) && (isalpha(e[i+1]) || e[i+1]=='(' || e[i+1]==0))
       break;
-    if (isalpha(e[i]) && tolower(e[i])!='i' && tolower(e[i])!='e' && (isdigit(e[i+1])))
+    if (isalpha(e[i]) && (tolower(e[i])!='i' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (tolower(e[i])!='e' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (isdigit(e[i+1])))
       break;
   }
 
@@ -1403,8 +1403,8 @@ char *hc_result_numeric(char *f)
 	char *tmp = malloc(1); tmp[0]=0; return tmp;}
       break;
 
-    case HASH_READ:
-      if (hc_read(f_result_re,f_result_im,f_expr) == FAIL)
+    case HASH_INPUT:
+      if (hc_input(f_result_re,f_result_im,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 

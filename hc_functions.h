@@ -48,7 +48,7 @@ extern int hc_cm2inch(M_APM, char *);
 extern int hc_ft2m(M_APM, char *);
 extern int hc_m2ft(M_APM, char *);
 extern int hc_rand(M_APM, char *);
-extern int hc_read(M_APM, M_APM, char *);
+extern int hc_input(M_APM, M_APM, char *);
 extern int hc_print(char *);
 extern int hc_mmass(M_APM, char *);
 
