@@ -117,6 +117,9 @@ const char *hc_fnames[][2] = {
 };
 
 
+unsigned int hc_hashes[HC_FNAMES];
+
+
 unsigned int simple_hash(char *p)
 {
   unsigned int h = 0;
@@ -179,6 +182,7 @@ char *hc_result(char *e)
     hc_var_first->name = NULL;
     hc_var_first->args = NULL;
     m_apmc_init();
+    memset(hc_hashes,0,HC_FNAMES * sizeof(unsigned int));
     init = 1;
   }
 
@@ -2764,11 +2768,13 @@ void hc_save_cfg()
 
 char hc_is_predef(char *var)
 {
-  unsigned int ii = 0;
+  unsigned int i = 0;
   unsigned int name_hash = simple_hash(var);
-  for (; ii < HC_FNAMES; ii++)
+  for (; i < HC_FNAMES; i++)
   {
-    if (name_hash == simple_hash((char *)hc_fnames[ii][0]))
+    if (hc_hashes[i]==0)
+      hc_hashes[i] = simple_hash((char *)hc_fnames[i][0]);
+    if (name_hash == hc_hashes[i])
     {
       return 1;
     }
