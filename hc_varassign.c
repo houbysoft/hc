@@ -117,9 +117,17 @@ void hc_varassign(char *e)
   } else {
 
     // variable
-    char *value = hc_result_(expr);
-    if (!value)
-      return;
+    char *value = NULL;
+    if (is_string(expr))
+    {
+      if (special)
+	var_nospecial_error();
+      value = strdup(expr);
+    } else {
+      value = hc_result_(expr);
+      if (!value)
+	return;
+    }
 
     if (special) // special means that one of these has been used: += -= *= /= %=
     {

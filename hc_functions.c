@@ -106,13 +106,19 @@ char *strreplace(char *in, char *old, char *new)
 #ifdef DBG
   printf("strreplace received %s\n",in);
 #endif
-  char *tnew = malloc(strlen(new)+3);
-  if (!tnew)
-    mem_error();
-  strcpy(tnew,"(");
-  strcat(tnew,new);
-  strcat(tnew,")");
-  new = tnew;
+  char *tnew=NULL;
+  if (!is_string(new))
+  {
+    tnew = malloc(strlen(new)+3);
+    if (!tnew)
+      mem_error();
+    strcpy(tnew,"(");
+    strcat(tnew,new);
+    strcat(tnew,")");
+    new = tnew;
+  } else {
+    new = tnew = strdup(new);
+  }
   char *p = strstr(in,old);
   char *result;
   if (!p)
