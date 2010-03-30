@@ -41,10 +41,9 @@ char *strreplace_(char *in, char *old, char *new)
   char *result;
   if (!p)
   {
-    result = malloc(sizeof(char) * (strlen(in) + 1));
+    result = strdup(in);
     if (!result)
       mem_error();
-    strcpy(result,in);
     return result;
   } else {
 
@@ -123,104 +122,85 @@ char *strreplace(char *in, char *old, char *new)
   char *result;
   if (!p)
   {
-    result = malloc(sizeof(char) * (strlen(in) + 1));
+    result = strdup(in);
     if (!result)
       mem_error();
-    strcpy(result,in);
     free(tnew);
     return result;
   } else {
-    char dorpl = FALSE;
-    if (p!=in && p!=(in+strlen(in)-1))
+    while (p)
     {
-      if ((!isalnum((int)(p-sizeof(char))[0])) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
+      char dorpl = FALSE;
+      if (p!=in && p!=(in+strlen(in)-1))
       {
-	dorpl = TRUE;
-      }
-    } else {
-      if ((p!=in) && (!isalnum((int)(p-sizeof(char))[0])))
-      {
-	dorpl = TRUE;
+	if ((!isalnum((int)(p-sizeof(char))[0])) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
+	{
+	  dorpl = TRUE;
+	}
       } else {
-	if ((p!=(in+strlen(in)-1)) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
+	if ((p!=in) && (!isalnum((int)(p-sizeof(char))[0])))
 	{
 	  dorpl = TRUE;
 	} else {
-	  if (p==in && p==(in+strlen(in)-1))
+	  if ((p!=(in+strlen(in)-1)) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
 	  {
 	    dorpl = TRUE;
 	  } else {
-	    dorpl = FALSE;
+	    if (p==in && p==(in+strlen(in)-1))
+	    {
+	      dorpl = TRUE;
+	    } else {
+	      dorpl = FALSE;
+	    }
 	  }
 	}
       }
-    }
-    char *p_tmp = in;
-    int inquotes = FALSE;
-    while (p_tmp != p)
-    {
-      if (p_tmp[0]=='\"')
+      char *p_tmp = in;
+      int inquotes = FALSE;
+      while (p_tmp != p)
       {
-	inquotes = inquotes == FALSE ? TRUE : FALSE;
+	if (p_tmp[0]=='\"')
+	{
+	  inquotes = inquotes == FALSE ? TRUE : FALSE;
+	}
+	p_tmp++;
       }
-      p_tmp++;
-    }
-    if (inquotes)
-    {
-      dorpl = FALSE;
-    }
-
-    if (dorpl)
-    {
-      result = malloc(sizeof(char) * (strlen(in)+1-strlen(old)+strlen(new)));
-      if (!result)
-	mem_error();
-      memset(result,0,strlen(in)+1-strlen(old)+strlen(new));
-      strncpy(result,in,p-in);
-      strcat(result,new);
-      p+= strlen(old);
-      strcat(result,p);
-      char *tmp=malloc(2);
-      strcpy(tmp,"#");
-      while (strstr(result,old)!=NULL && strcmp(tmp,result)!=0)
+      if (inquotes)
       {
-        if (tmp)
-          free(tmp);
-	tmp = result;
-	result = strreplace(result,old,new);
+	dorpl = FALSE;
       }
-      free(tmp);
-      free(tnew);
-      return result;
-    } else {
-      int result_malloc = sizeof(char)*(strlen(in)-strlen(p+1)+1);
-      result = malloc(result_malloc);
-      if (!result)
-	mem_error();
-      strncpy(result,in,(strlen(in)-strlen(p+1)));
-      result[(strlen(in)-strlen(p+1))]=0;
-      char *ptr = in+sizeof(char)*strlen(in)-strlen(p+1);
-      while (isalpha((char)(ptr-sizeof(char))[0]) && isalpha(ptr[0]))
+      
+      if (dorpl)
       {
-	char apme[2];
-	apme[0] = ptr[0];
-	apme[1] = 0;
-	result = realloc(result,++result_malloc);
-	strcat(result,apme);
-	ptr++;
+	result = malloc(sizeof(char) * (strlen(in)+1-strlen(old)+strlen(new)));
+	if (!result)
+	  mem_error();
+	memset(result,0,strlen(in)+1-strlen(old)+strlen(new));
+	strncpy(result,in,p-in);
+	strcat(result,new);
+	p+= strlen(old);
+	strcat(result,p);
+	char *tmp=malloc(2);
+	strcpy(tmp,"#");
+	while (strstr(result,old)!=NULL && strcmp(tmp,result)!=0)
+	{
+	  if (tmp)
+	    free(tmp);
+	  tmp = result;
+	  result = strreplace(result,old,new);
+	}
+	free(tmp);
+	free(tnew);
+	return result;
+      } else {
+	p = strstr(p+sizeof(char), old);
       }
-      //char *cat = strreplace(in+sizeof(char)*(strlen(in)-strlen(p+1)),old,new);
-      char *cat = strreplace(ptr,old,new);
-      char *tmp = malloc(sizeof(char) * (strlen(cat)+strlen(result)+1));
-      if (!tmp)
-	mem_error();
-      strcpy(tmp,result);
-      strcat(tmp,cat);
-      free(result);
-      free(cat);
-      free(tnew);
-      return tmp;
     }
+    result = strdup(in);
+    if (!result)
+      mem_error();
+    free(tnew);
+    return result;
   }
 }
 
