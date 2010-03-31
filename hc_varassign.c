@@ -93,10 +93,6 @@ void hc_varassign(char *e)
       }
       
       tmp->type = HC_USR_FUNC;
-      tmp->args = malloc((strlen(args)+1) * sizeof(char));
-      if (!tmp->args)
-	mem_error();
-      strcpy(tmp->args,args);
       if ((tmp->name==NULL) || (strcmp(tmp->name,name)!=0))
       {
 	// new function name
@@ -107,11 +103,14 @@ void hc_varassign(char *e)
       } else {
 	// function name already defined, just changing expression
 	free(tmp->value);
+	free(tmp->args);
       }
-      tmp->value = malloc((strlen(expr)+1) * sizeof(char));
+      tmp->args = strdup(args);
+      if (!tmp->args)
+	mem_error();
+      tmp->value = strdup(expr);
       if (!tmp->value)
 	mem_error();
-      strcpy(tmp->value,expr);
     }
 
   } else {
@@ -216,17 +215,12 @@ char hc_check_funcname(char *f)
 
 char hc_check_varname(char *e)
 {
-  unsigned int ii = 0;
-  unsigned int name_hash = simple_hash(e);
-  for (; ii < HC_FNAMES; ii++)
+  if (hc_is_predef(e))
   {
-    if (name_hash == simple_hash((char *)hc_fnames[ii][0]))
-    {
-      if (!graphing_ignore_errors)
-        varname_predefined_error()
-      else
-	return 0;
-    }
+    if (!graphing_ignore_errors)
+      varname_predefined_error()
+    else
+      return 0;
   }
 
   unsigned int i = 0;

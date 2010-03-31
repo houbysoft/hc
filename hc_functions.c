@@ -1798,3 +1798,21 @@ char *get_string(char *e)
   r = realloc(r,strlen(r)+1);
   return r;
 }
+
+
+
+char *strchr_outofblock(char *e, char c)
+{
+  int par=0;
+  while (e[0])
+  {
+    if (e[0]=='{')
+      par++;
+    if (e[0]=='}')
+      par--;
+    if (par==0 && e[0]==c)
+      return e;
+    e++;
+  }
+  return NULL;
+}

@@ -309,7 +309,7 @@ char *hc_result_(char *e)
     return NULL;
   char *r=NULL;
   
-  if (iscontrolstruct(e) || strchr(e,';'))
+  if (iscontrolstruct(e) || (strchr(e,';') && !(isvarassign(e))))
   {
     if (iscontrolstruct(e))
     {
@@ -321,27 +321,26 @@ char *hc_result_(char *e)
       }
       return r;
     } else {
-      if (isvarassign(e))
-      {
-	error_nq("Error : you cannot use multiple statements in a variable / function definition. This feature may be added later.");
-	return NULL;
-      } else {
-	return hc_result_mul(e);
-      }
+      return hc_result_mul(e);
     }
   } else {
     if (isvarassign(e))
     {
-      char *f = malloc(strlen(e)+1);
-      if (!f)
-	mem_error();
-      strcpy(f,e);
-      hc_varassign(f);
-      free(f);
-      r = malloc(1);
-      if (!r)
-	mem_error();
-      r[0]=0;
+      if (strchr_outofblock(e,';'))
+	return hc_result_mul(e);
+      else
+      {
+	char *f = malloc(strlen(e)+1);
+	if (!f)
+	  mem_error();
+	strcpy(f,e);
+	hc_varassign(f);
+	free(f);
+	r = malloc(1);
+	if (!r)
+	  mem_error();
+	r[0]=0;
+      }
     } else {
       if (isdirection(e))
       {

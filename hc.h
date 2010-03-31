@@ -210,5 +210,6 @@ extern void hc_varassign(char *);
 extern char *hc_exec_struct(char *);
 extern char hc_check_varname(char *);
 extern unsigned int simple_hash(char *p);
+extern char hc_is_predef(char *var);
 
 #endif
