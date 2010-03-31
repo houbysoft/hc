@@ -105,6 +105,15 @@ char *strreplace(char *in, char *old, char *new)
 #ifdef DBG
   printf("strreplace received %s\n",in);
 #endif
+  char *p = strstr(in,old);
+  char *result;
+  if (!p)
+  {
+    result = strdup(in);
+    if (!result)
+      mem_error();
+    return result;
+  }
   char *tnew=NULL;
   if (!is_string(new))
   {
@@ -118,90 +127,79 @@ char *strreplace(char *in, char *old, char *new)
   } else {
     new = tnew = strdup(new);
   }
-  char *p = strstr(in,old);
-  char *result;
-  if (!p)
+  while (p)
   {
-    result = strdup(in);
-    if (!result)
-      mem_error();
-    free(tnew);
-    return result;
-  } else {
-    while (p)
+    char dorpl = FALSE;
+    if (p!=in && p!=(in+strlen(in)-1))
     {
-      char dorpl = FALSE;
-      if (p!=in && p!=(in+strlen(in)-1))
+      if ((!isalnum((int)(p-sizeof(char))[0])) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
       {
-	if ((!isalnum((int)(p-sizeof(char))[0])) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
-	{
-	  dorpl = TRUE;
-	}
+	dorpl = TRUE;
+      }
+    } else {
+      if ((p!=in) && (!isalnum((int)(p-sizeof(char))[0])))
+      {
+	dorpl = TRUE;
       } else {
-	if ((p!=in) && (!isalnum((int)(p-sizeof(char))[0])))
+	if ((p!=(in+strlen(in)-1)) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
 	{
 	  dorpl = TRUE;
 	} else {
-	  if ((p!=(in+strlen(in)-1)) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
+	  if (p==in && p==(in+strlen(in)-1))
 	  {
 	    dorpl = TRUE;
 	  } else {
-	    if (p==in && p==(in+strlen(in)-1))
-	    {
-	      dorpl = TRUE;
-	    } else {
-	      dorpl = FALSE;
-	    }
+	    dorpl = FALSE;
 	  }
 	}
       }
-      char *p_tmp = in;
-      int inquotes = FALSE;
-      while (p_tmp != p)
-      {
-	if (p_tmp[0]=='\"')
-	{
-	  inquotes = inquotes == FALSE ? TRUE : FALSE;
-	}
-	p_tmp++;
-      }
-      if (inquotes)
-      {
-	dorpl = FALSE;
-      }
-      
-      if (dorpl)
-      {
-	result = malloc(sizeof(char) * (strlen(in)+1-strlen(old)+strlen(new)));
-	if (!result)
-	  mem_error();
-	memset(result,0,strlen(in)+1-strlen(old)+strlen(new));
-	strncpy(result,in,p-in);
-	strcat(result,new);
-	p+= strlen(old);
-	strcat(result,p);
-	char *tmp=malloc(2);
-	strcpy(tmp,"#");
-	while (strstr(result,old)!=NULL && strcmp(tmp,result)!=0)
-	{
-	  if (tmp)
-	    free(tmp);
-	  tmp = result;
-	  result = strreplace(result,old,new);
-	}
-	free(tmp);
-	free(tnew);
-	return result;
-      } else {
-	p = strstr(p+sizeof(char), old);
-      }
     }
-    result = strdup(in);
-    if (!result)
-      mem_error();
-    free(tnew);
-    return result;
+    char *p_tmp = in;
+    int inquotes = FALSE;
+    while (p_tmp != p)
+    {
+      if (p_tmp[0]=='\"')
+      {
+	inquotes = inquotes == FALSE ? TRUE : FALSE;
+      }
+      p_tmp++;
+    }
+    if (inquotes)
+    {
+      dorpl = FALSE;
+    }
+    
+    if (dorpl)
+    {
+      result = malloc(sizeof(char) * (strlen(in)+1-strlen(old)+strlen(new)));
+      if (!result)
+	mem_error();
+      memset(result,0,strlen(in)+1-strlen(old)+strlen(new));
+      strncpy(result,in,p-in);
+      strcat(result,new);
+      p+= strlen(old);
+      strcat(result,p);
+      char *tmp=malloc(2);
+      strcpy(tmp,"#");
+      while (strstr(result,old)!=NULL && strcmp(tmp,result)!=0)
+      {
+	if (tmp)
+	  free(tmp);
+	tmp = result;
+	result = strreplace(result,old,new);
+      }
+      free(tmp);
+      free(tnew);
+      return result;
+    } else {
+      p = strstr(p+sizeof(char), old);
+    }
   }
+  result = strdup(in);
+  if (!result)
+    mem_error();
+  free(tnew);
+  return result;
 }
 
 
@@ -210,10 +208,9 @@ char *hc_get_arg(char *e, int pos)
   int i=0;
   int par=0;
   int p=0;
-  char *tmp = malloc((strlen(e)+1)*sizeof(char));
+  char *tmp = strdup(e);
   if (!tmp)
     mem_error();
-  strcpy(tmp,e);
   char *last_pointer = tmp;
   char *result = NULL;
   char ignore = FALSE;
@@ -239,10 +236,9 @@ char *hc_get_arg(char *e, int pos)
       {
 	if (last_pointer!=tmp)
 	{
-	  result = malloc(sizeof(char) * (strlen(last_pointer)+1));
+	  result = strdup(last_pointer);
 	  if (!result)
 	    mem_error();
-	  strcpy(result,last_pointer);
 	  free(tmp);
 	  return result;
 	} else {
@@ -255,10 +251,9 @@ char *hc_get_arg(char *e, int pos)
   }
   if (p+1==pos)
   {
-    result = malloc(sizeof(char) * (strlen(last_pointer)+1));
+    result = strdup(last_pointer);
     if (!result)
       mem_error();
-    strcpy(result,last_pointer);
     free(tmp);
     return result;
   } else {
@@ -511,13 +506,14 @@ int hc_sum(M_APM result_re, M_APM result_im, char *e)
     arg_error("sum() : bounds need to be integers.");
 
   char *tmp_expr = malloc(sizeof(char) *(strlen(arg1)+1));
-  char *tmp_i_str = malloc(sizeof(char) * (sizeof(int)*8+1));
+  char *tmp_i_str = NULL;
   char *tmp_fme;
   char *tmp_res;
 
   while (m_apm_compare(min,max)!=1)
   {
     memset(tmp_expr,0,strlen(arg1)+1);
+    free(tmp_i_str);
     tmp_i_str = m_apm_to_fixpt_stringexp(-1,min,'.',0,0);
     strcpy(tmp_expr,arg1);
     tmp_fme = strreplace(tmp_expr,"x",tmp_i_str);
@@ -590,7 +586,7 @@ int hc_product(M_APM result_re, M_APM result_im, char *e)
     arg_error("product() : bounds need to be integers.");
 
   char *tmp_expr = malloc(sizeof(char) *(strlen(arg1)+1));
-  char *tmp_i_str = malloc(sizeof(char) * (sizeof(int)*8+1));
+  char *tmp_i_str = NULL;
   char *tmp_fme;
   char *tmp_res;
   char init = 0;
@@ -598,6 +594,7 @@ int hc_product(M_APM result_re, M_APM result_im, char *e)
   while (m_apm_compare(min,max)!=1)
   {
     memset(tmp_expr,0,strlen(arg1)+1);
+    free(tmp_i_str);
     tmp_i_str = m_apm_to_fixpt_stringexp(-1,min,'.',0,0);
     strcpy(tmp_expr,arg1);
     tmp_fme = strreplace(tmp_expr,"x",tmp_i_str);

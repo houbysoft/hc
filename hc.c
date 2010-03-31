@@ -383,14 +383,11 @@ char *hc_result_numeric(char *f)
   printf("hc_nested = %i\n",hc_nested);
 #endif
 
-  char *e = malloc(strlen(f)+1);
+  char *e = strdup(f);
   if (!e)
     mem_error();
-  strcpy(e,f);
-  char *e_fme = e;
 
-  e = hc_impmul_resolve(e);
-  e_fme = e;
+  char *e_fme = e = hc_impmul_resolve(e);
 
   // Constants
   // Pi
