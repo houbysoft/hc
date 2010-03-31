@@ -12,7 +12,7 @@
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          */
 /*     GNU General Public License for more details.                           */
 /*                                                                            */
-/*     You should have received a copy of the GNU General Public License      */
+/*     You should have received a copy of the GNU General Public License     */
 /*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
 
 #include <stdio.h>
@@ -59,6 +59,11 @@ char *hc_cmd_generator(const char *text, int state);
 
 int main(int argc, char *argv[])
 {
+  if (argc==2)
+  {
+    hc_load(argv[1]);
+    return 0;
+  }
 #ifdef WIN32
   atexit(exit_fn);
 #endif

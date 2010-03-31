@@ -96,10 +96,9 @@ void hc_varassign(char *e)
       if ((tmp->name==NULL) || (strcmp(tmp->name,name)!=0))
       {
 	// new function name
-	tmp->name = malloc((strlen(name)+1) * sizeof(char));
+	tmp->name = strdup(name);
 	if (!tmp->name)
 	  mem_error();
-	strcpy(tmp->name,name);
       } else {
 	// function name already defined, just changing expression
 	free(tmp->value);
