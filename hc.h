@@ -96,13 +96,13 @@ extern void load_error(unsigned int line, char *expr);
 
 #define warning(str) {printf("Warning : %s\n",str);}
 #define error_nq(str) {printf("%s\n",str);}
-#ifndef HCG
+#if !defined(HCG) && !defined(HCG_E)
 #define notify(str) printf(str)
 #define prompt(str) readline(str)
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
 
-#define NAME_VERSION "Welcome to hc 1.0 (infix / RPN) -- http://hc.houbysoft.com/\n"
+#define NAME_VERSION "Welcome to hc 1.1 (infix / RPN) -- http://hc.houbysoft.com/\n"
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)

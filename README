@@ -10,6 +10,13 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+1.1:
+  - added basic string support and the function mmass() which expects a string as its first argument, a valid molecule, and returns its molar mass
+  - added input(), a function to request user input mainly in programs
+  - added write(), a function that behaves like print(), but writes to a file, which needs to be specified as its first argument
+  - print() and write() can now also print strings
+  - added possibility to pass a filename to hc (CLI only) which will then be executed
+  - some fixes and optimizations
 1.0:
   - added boolean/logic operators : < > <= >= == != | || & &&
   - added a simple programming language - including if (else), for, and while control structures - for more info, type "logic" in hc or visit http://houbysoft.com/hc/logic.php
@@ -160,6 +167,7 @@ Constants are stored with 128 decimal places.
     graph3(x+y,-10,10,-10,10,-20,20)
     Note: as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional
 - inchtocm(x) - converts x, which has to be in inches, to cm
+- input([str]) - shows an inut dialog using either a standard prompt or str, if specified
 - kmtomi(x) - converts x, which has to be in km, to miles
 - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius
 - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit
@@ -168,10 +176,12 @@ Constants are stored with 128 decimal places.
 - log10(x) - common logarithm
 - mitokm(x) - converts x, which has to be in miles, to km
 - mltofloz(x) - converts x, which has to be in ml, to US fluid ounces
+- mmass(molecule) - returns the molar mass of the molecule specified (use standard notation without using subscripts, such as H2O or Ca(OH)2)
 - mod(x,y) - modulus (you can also use the C-style '%' notation)
 - mtoft(x) - converts x, which has to be in m, to feet
 - nCr(n,k) - binomial coefficient (combinatorics)
 - nPr(n,k) - number of permutations (combinatorics)
+- print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)
 - product(expr,low,high) - expression can contain 'x', which
   	     will be incremented from low to high inclusive, for example:
 	     > product(x^2,1,5)
@@ -190,6 +200,7 @@ Constants are stored with 128 decimal places.
 - tan(x) - tangent of x
 - tanh(x) - hyperbolic tangent of x
 - totient(x) - Euler's totient function
+- write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname
 - Constants:
   - answer - The Answer
   - c - speed of light

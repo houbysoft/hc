@@ -93,7 +93,7 @@ char *hc_result_mul(char *e)
   }
   if (strlen(strip_spaces(expr))!=0)
   {
-    notify("Warning : you should end your command with ';'.\n");
+    warning("Warning : you should end your command with ';'.\n");
     HC_EXEC_RESULT
       if (error)
       {
