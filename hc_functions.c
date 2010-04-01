@@ -1126,8 +1126,6 @@ int hc_totient(M_APM result, char *e)
   }
 
   j = m_apm_init();
-  copy_tmp = m_apm_init();
-  copy_tmp2 = m_apm_init();
 
   if (m_apm_compare(i,MM_One)==0)
   {
@@ -1135,7 +1133,9 @@ int hc_totient(M_APM result, char *e)
     m_apm_free(i); m_apm_free(j);
     return SUCCESS;
   }
-  
+
+  copy_tmp = m_apm_init();
+  copy_tmp2 = m_apm_init(); 
   m_apm_copy(result,i);
 
   /* Check for divisibility by every prime number below the square root. */
@@ -1657,26 +1657,42 @@ int hc_input(M_APM re, M_APM im, char *f_expr)
 
 int hc_output(int mode, char *f_expr)
 {
-  FILE *fw=NULL;
+  static FILE *fw=NULL;
+  static char *fname=NULL;
   int pos;
   if (mode==PRINT)
+  {
     pos = 1;
+    if (fw)
+      fclose(fw);
+    fw = NULL;
+    free(fname);
+    fname = NULL;
+  }
   else
   {
-    char *fname = hc_get_arg(f_expr,1);
-    if (!is_string(fname))
+    char *fname_tmp = hc_get_arg(f_expr,1);
+    if (!is_string(fname_tmp))
     {
-      free(fname);
+      free(fname_tmp);
       arg_error("write() : first argument must be a string containing a valid filename.");
     }
-    char *tmp = get_string(fname); 
-    free(fname);
-    fw = fopen(tmp,"a");
-    free(tmp);
-    if (!fw)
+    char *tmp = get_string(fname_tmp); 
+    free(fname_tmp);
+    if (fname && strcmp(tmp,fname)==0)
     {
-      error_nq("write() : Error, can't open file for writing!\n");
-      return FAIL;
+      free(tmp); // no need to do anything, just reuse the old file descriptor
+    } else {
+      if (fw)
+	fclose(fw);
+      fw = fopen(tmp,"a");
+      free(fname);
+      fname = tmp;
+      if (!fw)
+      {
+	error_nq("write() : Error, can't open file for writing!\n");
+	return FAIL;
+      }
     }
     pos = 2;
   }
@@ -1688,15 +1704,11 @@ int hc_output(int mode, char *f_expr)
     char *tmp;
     if (!t1)
     {
-      if (mode==WRITE)
-	fclose(fw);
       return FAIL;
     }
     if (strlen(t1)==0)
     {
       free(t1);
-      if (mode==WRITE)
-	fclose(fw);
       return FAIL;
     } else {
       if (is_string(t1))
@@ -1706,8 +1718,6 @@ int hc_output(int mode, char *f_expr)
       free(t1);
       if (!tmp)
       {
-	if (mode==WRITE)
-	  fclose(fw);
 	return FAIL;
       } else {
 	t1 = malloc(strlen(tmp)+2);
@@ -1728,7 +1738,6 @@ int hc_output(int mode, char *f_expr)
   else
   {
     fprintf(fw,"\n");
-    fclose(fw);
   }
   if (done)
     return SUCCESS;

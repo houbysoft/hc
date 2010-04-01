@@ -147,6 +147,7 @@ char *hc_result_numeric(char *f);
 void hc_process_direction(char *d);
 void hc_load_cfg();
 void hc_save_cfg();
+void hc_cleanup();
 void hc_load(char *fname);
 
 
@@ -167,7 +168,7 @@ char *hc_result(char *e)
   static char init=0;
   if (!init)
   {
-    atexit(hc_save_cfg);
+    atexit(hc_cleanup);
     hc_load_cfg();
     hc_lans_mapm_re = m_apm_init();
     hc_lans_mapm_im = m_apm_init();
@@ -2759,6 +2760,13 @@ void hc_save_cfg()
   fprintf(fw,"zmin3d=%f\n",hc.zmin3d);
   fprintf(fw,"zmax3d=%f\n",hc.zmax3d);
   fclose(fw);
+}
+
+
+void hc_cleanup()
+{
+  hc_output(PRINT,""); // make it close file descriptors (if any)
+  hc_save_cfg();
 }
 
 
