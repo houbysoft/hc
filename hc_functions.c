@@ -1696,6 +1696,9 @@ int hc_output(int mode, char *f_expr)
     }
     pos = 2;
   }
+  char *printme = malloc(1);
+  printme[0] = '\0';
+  int alloc = 0;
   char *t1 = hc_get_arg(f_expr,pos);
   char done = 0;
   while (t1)
@@ -1704,11 +1707,13 @@ int hc_output(int mode, char *f_expr)
     char *tmp;
     if (!t1)
     {
+      free(printme);
       return FAIL;
     }
     if (strlen(t1)==0)
     {
       free(t1);
+      free(printme);
       return FAIL;
     } else {
       if (is_string(t1))
@@ -1718,15 +1723,15 @@ int hc_output(int mode, char *f_expr)
       free(t1);
       if (!tmp)
       {
+	free(printme);
 	return FAIL;
       } else {
 	t1 = malloc(strlen(tmp)+2);
 	strcpy(t1,tmp);
 	strcat(t1," ");
-	if (mode==PRINT)
-	  notify(t1);
-	else
-	  fwrite(t1,sizeof(char),strlen(t1),fw);
+	alloc += strlen(t1) + 1;
+	printme = realloc(printme,alloc);
+	strcat(printme,t1);
 	free(t1);
 	free(tmp);
       }
@@ -1734,8 +1739,17 @@ int hc_output(int mode, char *f_expr)
     t1 = hc_get_arg(f_expr,++pos);
   }
   if (mode==PRINT)
+    notify(printme);
+  else
+    fwrite(printme,sizeof(char),strlen(printme),fw);
+  free(printme);
+#if !defined(HCG) && !defined(HCG_E)
+  if (mode==PRINT)
     notify("\n");
   else
+#else
+  if (mode!=PRINT)
+#endif
   {
     fprintf(fw,"\n");
   }
