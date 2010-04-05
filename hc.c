@@ -1749,561 +1749,775 @@ char *hc_postfix_result(char *e)
 #ifdef DBG
   printf("hc_postfix_result received %s\n",e);
 #endif
-  //char *result = malloc(MAX_EXPR);
-  //if (!result)
-  //mem_error();
-     struct hc_stack_element *first;
-     struct hc_stack_element *curr;
-     first = malloc(sizeof(struct hc_stack_element));
-     first->re = m_apm_init();
-     first->im = m_apm_init();
-     first->str = NULL;
-     first->p = NULL;
-     first->n = malloc(sizeof(struct hc_stack_element));
-     first->n->p = first;
-     first->n->re = m_apm_init();
-     first->n->im = m_apm_init();
-     first->n->str = NULL;
-     first->n->n = NULL;
+  struct hc_stack_element *first;
+  struct hc_stack_element *curr;
+  first = malloc(sizeof(struct hc_stack_element));
+  first->re = m_apm_init();
+  first->im = m_apm_init();
+  first->str = NULL;
+  first->p = NULL;
+  first->n = malloc(sizeof(struct hc_stack_element));
+  first->n->p = first;
+  first->n->re = m_apm_init();
+  first->n->im = m_apm_init();
+  first->n->str = NULL;
+  first->n->n = NULL;
+  
+  curr = first;
+  int sp = 0;
+  
+  M_APM op1_r,op1_i,op2_r,op2_i;
+  
+  char tmp_num[MAX_DOUBLE_STRING];
+  int i=0,j=0;
+  
+  op1_r = m_apm_init();
+  op1_i = m_apm_init();
+  op2_r = m_apm_init();
+  op2_i = m_apm_init();
 
-     curr = first;
-     int sp = 0;
-
-     //M_APM stack[MAX_DOUBLE_STACK];
-     M_APM op1_r,op1_i,op2_r,op2_i;
-
-     char tmp_num[MAX_DOUBLE_STRING];
-     int i=0,j=0;
-
-     //for (;i<MAX_DOUBLE_STACK;i++)
-     //  stack[i] = m_apm_init();
-     op1_r = m_apm_init();
-     op1_i = m_apm_init();
-     op2_r = m_apm_init();
-     op2_i = m_apm_init();
-
-     i = 0;
-
-     while (e[i]!=0)
-     {
-       if (!isspace(e[i]))
-       switch (e[i])
-       {
-       case '*':
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
-	   return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
-	 curr = curr->n; // [sp++]
-	 sp -= 1;
-         break;
-
-       case '/':
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
-	   return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 if (m_apm_sign(op2_r)==0 && m_apm_sign(op2_i)==0)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   d0_error();
-	   return NULL;
-	 }
-	 if (m_apm_compare(op1_i,MM_Zero)==0 && m_apm_compare(op2_i,MM_Zero)==0)
-	 {
-	   m_apm_set_string(curr->im,"0");
-	   m_apm_divide(curr->re,HC_DEC_PLACES,op1_r,op2_r);
-	 } else {
-	   m_apmc_divide(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
-	 }
-	 curr = curr->n; // [sp++]
-	 sp -= 1;
-         break;
-
-       case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
-	 if (sp >= 2)
-	 {
-	   curr = curr->p; // [--sp]
-	   m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	   curr = curr->p; // [--sp]
-	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 } else {
-	   m_apm_set_string(op1_i,"1"); m_apm_set_string(op2_i,"1");
-	 }
-	 if (sp < 2 || m_apm_compare(op1_i,MM_Zero)!=0 || m_apm_compare(op2_i,MM_Zero)!=0)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   if (sp < 2)
-	   {
-	     syntax_error2();
-	   } else {
-	     arg_error("% : real arguments are required.");
-	   }
-	   return NULL;
-	 }
-	 M_APM tmp = m_apm_init();
-	 m_apm_integer_div_rem(tmp,curr->re,op1_r,op2_r);
-	 m_apm_set_string(curr->im,"0");
-	 m_apm_free(tmp);
-	 curr = curr->n; // [sp++]
-	 sp -= 1;
-         break;
-
-       case '+':
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
-	   return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apmc_add(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
-	 curr = curr->n; // [sp++]
-	 sp -= 1;
-         break;
-
-       case '_':
-	 if (!isdigit(e[i+1]))
-	 {
-	   curr = curr->p;
-	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	   m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
-	   curr = curr->n;
-	   break;
-	 } else {
-	   e[i] = '@';
-	   i--;
-	   break;
-	 }
-       case '-':
-	 if (sp < 2)
-	 {
-	   curr = curr->p; // [--sp]
-	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	   m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
-	   curr = curr->n; // [sp++]
-	   // no need to modify sp here
-	 } else {
-	   curr = curr->p; // [--sp]
-	   m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	   curr = curr->p; // [--sp]
-	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	   m_apmc_subtract(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
-	   curr = curr->n; // [sp++]
-	   sp -= 1;
-	 }
-         break;
-
-       case PW_SIGN:
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
-	   return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op2_r,MM_Two)==0)
-	 {
-	   m_apmc_sqr(curr->re,curr->im,op1_r,op1_i);
-	 } else {
-	   if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op1_i,MM_Zero)==0)
-	   {
-	     m_apm_set_string(curr->im,"0");
-	     m_apm_pow(curr->re,HC_DEC_PLACES,op1_r,op2_r);
-	   } else {
-	     m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
-	   }
-	 }
-	 curr = curr->n; // [sp++]
-	 sp -= 1;
-	 break;
-
-       case '!':
-	 switch (e[i+1])
-	 {
-	 case '=':
-	   // interpret as condition
-	   i++;
-	   if (sp < 2)
-	   {
-	     m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	     while (first->n)
-	     {
-	       m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	     }
-	     m_apm_free(first->re);m_apm_free(first->im);free(first);
-	     syntax_error2();
-	     return NULL;
-	   }
-	   curr = curr->p; // [--sp]
-	   m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	   curr = curr->p; // [--sp]
-	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	   m_apm_set_string(curr->im,"0");
-	   if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
-	     m_apm_set_string(curr->re,"0");
-	   else
-	     m_apm_set_string(curr->re,"1");
-	   curr = curr->n;
-	   sp -= 1;
-	   break;
-	 default:
-	   // interpret as factorial
-	   if (sp < 1)
-	   {
-	     m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	     while (first->n)
-	     {
-	       m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	     }
-	     m_apm_free(first->re);m_apm_free(first->im);free(first);
-	     syntax_error2();
-	     return NULL;
-	   }
-	   curr = curr->p; // [--sp]
-	   if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
-	   {
-	     m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	     while (first->n)
-	     {
-	       m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	     }
-	     m_apm_free(first->re);m_apm_free(first->im);free(first);
-	     arg_error("! : an integer is required.");
-	     return NULL;
-	   }
-	   m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	   m_apm_factorial(curr->re,op1_r);
-	   m_apm_set_string(curr->im,"0");
-	   curr = curr->n; // [sp++]
-	   break;
-	 }
-	 break;
-
-       case '<':
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-           while (first->n)
-           {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-           m_apm_free(first->re);m_apm_free(first->im);free(first);
+  i = 0;
+  
+  while (e[i]!=0)
+  {
+    if (!isspace(e[i]))
+      switch (e[i])
+      {
+      case '*':
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+	curr = curr->n; // [sp++]
+	sp -= 1;
+	break;
+	
+      case '/':
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("/ accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("/ accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	if (m_apm_sign(op2_r)==0 && m_apm_sign(op2_i)==0)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  d0_error();
+	  return NULL;
+	}
+	if (m_apm_compare(op1_i,MM_Zero)==0 && m_apm_compare(op2_i,MM_Zero)==0)
+	{
+	  m_apm_set_string(curr->im,"0");
+	  m_apm_divide(curr->re,HC_DEC_PLACES,op1_r,op2_r);
+	} else {
+	  m_apmc_divide(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	}
+	curr = curr->n; // [sp++]
+	sp -= 1;
+	break;
+	
+      case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
+	if (sp >= 2)
+	{
+	  curr = curr->p; // [--sp]
+	  if (curr->type != HC_VAR_NUM)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    type_error("% accepts only numbers");
+	    return NULL;
+	  }
+	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	  curr = curr->p; // [--sp]
+	  if (curr->type != HC_VAR_NUM)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    type_error("% accepts only numbers");
+	    return NULL;
+	  }
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	} else {
+	  m_apm_set_string(op1_i,"1"); m_apm_set_string(op2_i,"1");
+	}
+	if (sp < 2 || m_apm_compare(op1_i,MM_Zero)!=0 || m_apm_compare(op2_i,MM_Zero)!=0)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  if (sp < 2)
+	  {
+	    syntax_error2();
+	  } else {
+	    arg_error("% : real arguments are required.");
+	  }
+	  return NULL;
+	}
+	M_APM tmp = m_apm_init();
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("% accepts only numbers");
+	  return NULL;
+	}
+	m_apm_integer_div_rem(tmp,curr->re,op1_r,op2_r);
+	m_apm_set_string(curr->im,"0");
+	m_apm_free(tmp);
+	curr = curr->n; // [sp++]
+	sp -= 1;
+	break;
+	
+      case '+':
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	m_apmc_add(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+	curr = curr->n; // [sp++]
+	sp -= 1;
+	break;
+	
+      case '_':
+	if (!isdigit(e[i+1]))
+	{
+	  curr = curr->p;
+	  if (curr->type != HC_VAR_NUM)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    type_error("- accepts only numbers");
+	    return NULL;
+	  }
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	  m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
+	  curr = curr->n;
+	  break;
+	} else {
+	  e[i] = '@';
+	  i--;
+	  break;
+	}
+      case '-':
+	if (sp < 2)
+	{
+	  curr = curr->p; // [--sp]
+	  if (curr->type != HC_VAR_NUM)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    type_error("- accepts only numbers");
+	    return NULL;
+	  }
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	  m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
+	  curr = curr->n; // [sp++]
+	  // no need to modify sp here
+	} else {
+	  curr = curr->p; // [--sp]
+	  if (curr->type != HC_VAR_NUM)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    type_error("- accepts only numbers");
+	    return NULL;
+	  }
+	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	  curr = curr->p; // [--sp]
+	  if (curr->type != HC_VAR_NUM)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    type_error("- accepts only numbers");
+	    return NULL;
+	  }
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	  m_apmc_subtract(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+	  curr = curr->n; // [sp++]
+	  sp -= 1;
+	}
+	break;
+	
+      case PW_SIGN:
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("^ accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("^ accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op2_r,MM_Two)==0)
+	{
+	  m_apmc_sqr(curr->re,curr->im,op1_r,op1_i);
+	} else {
+	  if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op1_i,MM_Zero)==0)
+	  {
+	    m_apm_set_string(curr->im,"0");
+	    m_apm_pow(curr->re,HC_DEC_PLACES,op1_r,op2_r);
+	  } else {
+	    m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+	  }
+	}
+	curr = curr->n; // [sp++]
+	sp -= 1;
+	break;
+	
+      case '!':
+	switch (e[i+1])
+	{
+	case '=':
+	  // interpret as condition
+	  i++;
+	  if (sp < 2)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first);
+	    syntax_error2();
+	    return NULL;
+	  }
+	  curr = curr->p; // [--sp]
+	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	  curr = curr->p; // [--sp]
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	  m_apm_set_string(curr->im,"0");
+	  if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
+	    m_apm_set_string(curr->re,"0");
+	  else
+	    m_apm_set_string(curr->re,"1");
+	  curr = curr->n;
+	  sp -= 1;
+	  break;
+	default:
+	  // interpret as factorial
+	  if (sp < 1)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first);
+	    syntax_error2();
+	    return NULL;
+	  }
+	  curr = curr->p; // [--sp]
+	  if (curr->type != HC_VAR_NUM)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    type_error("! accepts only numbers");
+	    return NULL;
+	  }
+	  if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first);
+	    arg_error("! : an integer is required.");
+	    return NULL;
+	  }
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	  m_apm_factorial(curr->re,op1_r);
+	  m_apm_set_string(curr->im,"0");
+	  curr = curr->n; // [sp++]
+	  break;
+	}
+	break;
+	
+      case '<':
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("</<= accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("</<= accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	m_apm_set_string(curr->im,"0");
+	switch(e[++i])
+	{
+	case '=':
+	  if (m_apmc_le(op1_r,op1_i,op2_r,op2_i))
+	    m_apm_set_string(curr->re,"1");
+	  else
+	    m_apm_set_string(curr->re,"0");
+	  break;
+	default:
+	  i--;
+	  if (m_apmc_lt(op1_r,op1_i,op2_r,op2_i))
+	    m_apm_set_string(curr->re,"1");
+	  else
+	    m_apm_set_string(curr->re,"0");
+	  break;
+	}
+	curr = curr->n;
+	sp -= 1;
+	break;
+	
+      case '>':
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first);
            syntax_error2();
            return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apm_set_string(curr->im,"0");
-	 switch(e[++i])
-	 {
-	 case '=':
-	   if (m_apmc_le(op1_r,op1_i,op2_r,op2_i))
-	     m_apm_set_string(curr->re,"1");
-	   else
-	     m_apm_set_string(curr->re,"0");
-	   break;
-	 default:
-	   i--;
-	   if (m_apmc_lt(op1_r,op1_i,op2_r,op2_i))
-	     m_apm_set_string(curr->re,"1");
-	   else
-	     m_apm_set_string(curr->re,"0");
-	   break;
-	 }
-	 curr = curr->n;
-	 sp -= 1;
-	 break;
-
-       case '>':
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-           while (first->n)
-           {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-           m_apm_free(first->re);m_apm_free(first->im);free(first);
-           syntax_error2();
-           return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apm_set_string(curr->im,"0");
-	 switch(e[++i])
-	 {
-	 case '=':
-	   if (m_apmc_ge(op1_r,op1_i,op2_r,op2_i))
-	     m_apm_set_string(curr->re,"1");
-	   else
-	     m_apm_set_string(curr->re,"0");
-	   break;
-	 default:
-	   i--;
-	   if (m_apmc_gt(op1_r,op1_i,op2_r,op2_i))
-	     m_apm_set_string(curr->re,"1");
-	   else
-	     m_apm_set_string(curr->re,"0");
-	   break;
-	 }
-	 curr = curr->n;
-	 sp -= 1;
-	 break;
-
-       case '=':
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
+	}
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	   type_error(">/>= accepts only numbers");
 	   return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apm_set_string(curr->im,"0");
-	 switch(e[++i])
-	 {
-	 case '=':
-	   if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
-	     m_apm_set_string(curr->re,"1");
-	   else
-	     m_apm_set_string(curr->re,"0");
-	   break;
-	 default:
-	   break; // TODO : if this is reached something bad happened (tm)
-	 }
-	 curr = curr->n;
-	 sp -= 1;
-	 break;
-
-       case '|':
-	 if (e[i+1]=='|') // both single | and double || are accepted
-	   i++;
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
-	   return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apm_set_string(curr->im,"0");
-	 if (e[i+1]==e[i])
-	   i++;
-         if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 || m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
-	   m_apm_set_string(curr->re,"1");
-	 else
-	   m_apm_set_string(curr->re,"0");
-	 curr = curr->n;
-	 sp -= 1;
-	 break;
-	 
-       case '&':
-	 if (e[i+1]=='&') // both single & and double && are accepted
-	   i++;
-	 if (sp < 2)
-	 {
-	   m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-	   while (first->n)
-	   {
-	     m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	   }
-	   m_apm_free(first->re);m_apm_free(first->im);free(first);
-	   syntax_error2();
-	   return NULL;
-	 }
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	 curr = curr->p; // [--sp]
-	 m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	 m_apm_set_string(curr->im,"0");
-	 if (e[i+1]==e[i])
-	   i++;
-         if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 && m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
-	   m_apm_set_string(curr->re,"1");
-	 else
-	   m_apm_set_string(curr->re,"0");
-	 curr = curr->n;
-	 sp -= 1;
-	 break;
-
-       default:
-	 if (e[i]=='@')
-	   e[i] = '_';
-         j = 0;
-	 char type;
-	 if (e[i]!='\"')
-	 {
-	   type = HC_VAR_NUM;
-	   while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
-	   {
-	     tmp_num[j++] = e[i++];
-	   }
-	 } else {
-	   type = HC_VAR_STR;
-	   tmp_num[j++] = e[i++];
-	   while (e[i]!='\"')
-	     tmp_num[j++] = e[i++];
-	   tmp_num[j++] = e[i++];
-	 }
-         i--;
-         tmp_num[j]=0;
-	 curr->type = type;
-	 if (curr->type == HC_VAR_NUM)
-	 {
-	   char *tmp_num2;
-	   tmp_num2 = hc_real_part(tmp_num);
-	   if (tmp_num2[0]=='_')
-	     tmp_num2[0] = '-';
-	   m_apm_set_string(curr->re,tmp_num2); // set real part
-	   free(tmp_num2);
-	   tmp_num2 = hc_imag_part(tmp_num);
-	   if (tmp_num2)
-	   {
-	     if (tmp_num2[0]=='_')
-	       tmp_num2[0] = '-';
-	     m_apm_set_string(curr->im,tmp_num2); // set imaginary part
-	     free(tmp_num2);
-	   } else {
-	     m_apm_set_string(curr->im,"0"); // set null imaginary part
-	   }
-	 } else if (curr->type == HC_VAR_STR)
-	 {
-	   curr->str = strdup(tmp_num);
-	 }
-	 if (curr->n == NULL)
-	 {
-	   curr->n = malloc(sizeof(struct hc_stack_element));
-	   curr->n->re = m_apm_init();
-	   curr->n->im = m_apm_init();
-	   curr->n->str = NULL;
-	   curr->n->n = NULL;
-	 }
-	 curr->n->p = curr;
-	 curr = curr->n;
-	 sp++; // only used for syntax checking
-         break;
-       }
-       i++;
-     }
-
-     if (sp!=1)
-     {
-       m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
-       while (first->n)
-       {
-	 m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-       }
-       m_apm_free(first->re);m_apm_free(first->im);free(first);
-       syntax_error2();
-       return NULL;
-     }
-     
-     curr = curr->p;
-
-     char *result_std=NULL,*result_im=NULL;
-     
-     if (curr->type == HC_VAR_NUM)
-     {
-       result_std = m_apm_to_fixpt_stringexp(hc.precision,curr->re,'.',0,0);
-       if (m_apm_compare(curr->im,MM_Zero)!=0)
-	 result_im = m_apm_to_fixpt_stringexp(hc.precision,curr->im,'.',0,0);
-       m_apm_free(op1_r);m_apm_free(op1_i);
-       m_apm_free(op2_r);m_apm_free(op2_i);
-     } else {
-       result_std = strdup(curr->str);
-     }
-
-     while (first->n)
-     {
-       m_apm_free(first->re);m_apm_free(first->im);
-       free(first->str);
-       first = first->n;
-       free(first->p);
-     }
-
-     m_apm_free(first->re);m_apm_free(first->im);
-     free(first->str);
-     free(first);
-
-     if (!result_im)
-       return result_std;
-     else
-     {
-       char *result_cplx = malloc(strlen(result_std)+1+strlen(result_im)+1);
-       strcpy(result_cplx,result_std);
-       strcat(result_cplx,"i");
-       strcat(result_cplx,result_im);
-       free(result_std);
-       free(result_im);
-       return result_cplx;
-     }
+	}
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error(">/>= accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	m_apm_set_string(curr->im,"0");
+	switch(e[++i])
+	{
+	case '=':
+	  if (m_apmc_ge(op1_r,op1_i,op2_r,op2_i))
+	    m_apm_set_string(curr->re,"1");
+	  else
+	    m_apm_set_string(curr->re,"0");
+	  break;
+	default:
+	  i--;
+	  if (m_apmc_gt(op1_r,op1_i,op2_r,op2_i))
+	    m_apm_set_string(curr->re,"1");
+	  else
+	    m_apm_set_string(curr->re,"0");
+	  break;
+	}
+	curr = curr->n;
+	sp -= 1;
+	break;
+	
+      case '=':
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	m_apm_set_string(curr->im,"0");
+	switch(e[++i])
+	{
+	case '=':
+	  if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
+	    m_apm_set_string(curr->re,"1");
+	  else
+	    m_apm_set_string(curr->re,"0");
+	  break;
+	default:
+	  break; // TODO : if this is reached something bad happened (tm)
+	}
+	curr = curr->n;
+	sp -= 1;
+	break;
+	
+      case '|':
+	if (e[i+1]=='|') // both single | and double || are accepted
+	  i++;
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("|| accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("|| accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	m_apm_set_string(curr->im,"0");
+	if (e[i+1]==e[i])
+	  i++;
+	if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 || m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
+	  m_apm_set_string(curr->re,"1");
+	else
+	  m_apm_set_string(curr->re,"0");
+	curr = curr->n;
+	sp -= 1;
+	break;
+	
+      case '&':
+	if (e[i+1]=='&') // both single & and double && are accepted
+	  i++;
+	if (sp < 2)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  syntax_error2();
+	  return NULL;
+	}
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("&& accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	curr = curr->p; // [--sp]
+	if (curr->type != HC_VAR_NUM)
+	{
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("&& accepts only numbers");
+	  return NULL;
+	}
+	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	m_apm_set_string(curr->im,"0");
+	if (e[i+1]==e[i])
+	  i++;
+	if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 && m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
+	  m_apm_set_string(curr->re,"1");
+	else
+	  m_apm_set_string(curr->re,"0");
+	curr = curr->n;
+	sp -= 1;
+	break;
+	
+      default:
+	if (e[i]=='@')
+	  e[i] = '_';
+	j = 0;
+	char type;
+	if (e[i]!='\"')
+	{
+	  type = HC_VAR_NUM;
+	  while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
+	  {
+	    tmp_num[j++] = e[i++];
+	  }
+	} else {
+	  type = HC_VAR_STR;
+	  tmp_num[j++] = e[i++];
+	  while (e[i]!='\"')
+	    tmp_num[j++] = e[i++];
+	  tmp_num[j++] = e[i++];
+	}
+	i--;
+	tmp_num[j]=0;
+	curr->type = type;
+	if (curr->type == HC_VAR_NUM)
+	{
+	  char *tmp_num2;
+	  tmp_num2 = hc_real_part(tmp_num);
+	  if (tmp_num2[0]=='_')
+	    tmp_num2[0] = '-';
+	  m_apm_set_string(curr->re,tmp_num2); // set real part
+	  free(tmp_num2);
+	  tmp_num2 = hc_imag_part(tmp_num);
+	  if (tmp_num2)
+	  {
+	    if (tmp_num2[0]=='_')
+	      tmp_num2[0] = '-';
+	    m_apm_set_string(curr->im,tmp_num2); // set imaginary part
+	    free(tmp_num2);
+	  } else {
+	    m_apm_set_string(curr->im,"0"); // set null imaginary part
+	  }
+	} else if (curr->type == HC_VAR_STR)
+	{
+	  curr->str = strdup(tmp_num);
+	}
+	if (curr->n == NULL)
+	{
+	  curr->n = malloc(sizeof(struct hc_stack_element));
+	  curr->n->re = m_apm_init();
+	  curr->n->im = m_apm_init();
+	  curr->n->str = NULL;
+	  curr->n->n = NULL;
+	}
+	curr->n->p = curr;
+	curr = curr->n;
+	sp++; // only used for syntax checking
+	break;
+      }
+    i++;
+  }
+  
+  if (sp!=1)
+  {
+    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+    while (first->n)
+    {
+      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
+    }
+    m_apm_free(first->re);m_apm_free(first->im);free(first);
+    syntax_error2();
+    return NULL;
+  }
+  
+  curr = curr->p;
+  
+  char *result_std=NULL,*result_im=NULL;
+  
+  if (curr->type == HC_VAR_NUM)
+  {
+    result_std = m_apm_to_fixpt_stringexp(hc.precision,curr->re,'.',0,0);
+    if (m_apm_compare(curr->im,MM_Zero)!=0)
+      result_im = m_apm_to_fixpt_stringexp(hc.precision,curr->im,'.',0,0);
+    m_apm_free(op1_r);m_apm_free(op1_i);
+    m_apm_free(op2_r);m_apm_free(op2_i);
+  } else {
+    result_std = strdup(curr->str);
+  }
+  
+  while (first->n)
+  {
+    m_apm_free(first->re);m_apm_free(first->im);
+    free(first->str);
+    first = first->n;
+    free(first->p);
+  }
+  
+  m_apm_free(first->re);m_apm_free(first->im);
+  free(first->str);
+  free(first);
+  
+  if (!result_im)
+    return result_std;
+  else
+  {
+    char *result_cplx = malloc(strlen(result_std)+1+strlen(result_im)+1);
+    strcpy(result_cplx,result_std);
+    strcat(result_cplx,"i");
+    strcat(result_cplx,result_im);
+    free(result_std);
+    free(result_im);
+    return result_cplx;
+  }
 }
 
 

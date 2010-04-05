@@ -75,6 +75,7 @@
 #define recursive_error() {printf("Error : recursive definition.\n");return;}
 #define recursion_error() {printf("Error : too much recursion/nestedness. If you know what you are doing, you can bypass this with:\n \\bpn.\n");}
 #define boxplot_cplx_error() {printf("Warning : Complex part of number was ignored in the boxplot.\n");}
+#define type_error(str) printf("Type error : %s\n",str)
 #else
 extern void unknown_var_error(char *var, char type);
 extern void load_error(unsigned int line, char *expr);
