@@ -152,7 +152,7 @@ char *hc_get_cond(char *e, int *end, int result)
       par++;
     if (e[*end]==')')
       par--;
-      *end += 1;
+    *end += 1;
   }
   if (par)
   {

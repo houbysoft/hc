@@ -1723,8 +1723,16 @@ char *hc_i2p(char *f)
 	}
 
       } else {
-	while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
+	if (tmp[i]!='\"')
+	{
+	  while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
+	    e[j++] = tmp[i++];
+	} else {
 	  e[j++] = tmp[i++];
+	  while (tmp[i]!='\"')
+	    e[j++] = tmp[i++];
+	  e[j++] = tmp[i++];
+	}
 	e[j++] = ' ';
 	i--;
       }
@@ -2303,6 +2311,10 @@ char hc_check(char *e)
       if (e[i]=='\"')
       {
 	ignore = ignore == FALSE ? TRUE : FALSE;
+	if (!first)
+	  first = 1;
+	else if (first==1)
+	  first = 2;
 	continue;
       }
 
@@ -2369,7 +2381,9 @@ char hc_check(char *e)
     }
     
     if (first == 1)
+    {
       return 0;
+    }
     
     return 1;
   }
