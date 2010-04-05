@@ -143,7 +143,7 @@ char hc_check(char *e);
 char hc_is_predef(char *var);
 char *hc_plusminus(char *e);
 char *hc_impmul_resolve(char *e);
-char *hc_result_numeric(char *f);
+char *hc_result_normal(char *f);
 void hc_process_direction(char *d);
 void hc_load_cfg();
 void hc_save_cfg();
@@ -226,7 +226,7 @@ char *hc_result(char *e)
   }
 
   char *r = hc_result_(e);
-  if (r && strlen(r))
+  if (r && strlen(r) && !is_string(e))
   {
     char *tmp_num = hc_real_part(r);
     m_apm_set_string(hc_lans_mapm_re,tmp_num);
@@ -356,7 +356,7 @@ char *hc_result_(char *e)
 	if (!r)
 	  mem_error();
       } else {
-	r = hc_result_numeric(e);
+	r = hc_result_normal(e);
       }
     }
   }
@@ -366,7 +366,7 @@ char *hc_result_(char *e)
 
 
 // do NOT call this if you want to use the hc core in your own open source project, call hc_result() instead
-char *hc_result_numeric(char *f)
+char *hc_result_normal(char *f)
 {
   if (!f)
     return NULL;
@@ -1757,11 +1757,13 @@ char *hc_postfix_result(char *e)
      first = malloc(sizeof(struct hc_stack_element));
      first->re = m_apm_init();
      first->im = m_apm_init();
+     first->str = NULL;
      first->p = NULL;
      first->n = malloc(sizeof(struct hc_stack_element));
      first->n->p = first;
      first->n->re = m_apm_init();
      first->n->im = m_apm_init();
+     first->n->str = NULL;
      first->n->n = NULL;
 
      curr = first;
@@ -2195,33 +2197,52 @@ char *hc_postfix_result(char *e)
 	 if (e[i]=='@')
 	   e[i] = '_';
          j = 0;
-         while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
-         {
-           tmp_num[j++] = e[i++];
-         }
+	 char type;
+	 if (e[i]!='\"')
+	 {
+	   type = HC_VAR_NUM;
+	   while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
+	   {
+	     tmp_num[j++] = e[i++];
+	   }
+	 } else {
+	   type = HC_VAR_STR;
+	   tmp_num[j++] = e[i++];
+	   while (e[i]!='\"')
+	     tmp_num[j++] = e[i++];
+	   tmp_num[j++] = e[i++];
+	 }
          i--;
          tmp_num[j]=0;
-	 char *tmp_num2;
-	 tmp_num2 = hc_real_part(tmp_num);
-	 if (tmp_num2[0]=='_')
-	   tmp_num2[0] = '-';
-	 m_apm_set_string(curr->re,tmp_num2); // set real part
-	 free(tmp_num2);
-	 tmp_num2 = hc_imag_part(tmp_num);
-	 if (tmp_num2)
+	 curr->type = type;
+	 if (curr->type == HC_VAR_NUM)
 	 {
+	   char *tmp_num2;
+	   tmp_num2 = hc_real_part(tmp_num);
 	   if (tmp_num2[0]=='_')
 	     tmp_num2[0] = '-';
-	   m_apm_set_string(curr->im,tmp_num2); // set imaginary part
+	   m_apm_set_string(curr->re,tmp_num2); // set real part
 	   free(tmp_num2);
-	 } else {
-	   m_apm_set_string(curr->im,"0"); // set null imaginary part
+	   tmp_num2 = hc_imag_part(tmp_num);
+	   if (tmp_num2)
+	   {
+	     if (tmp_num2[0]=='_')
+	       tmp_num2[0] = '-';
+	     m_apm_set_string(curr->im,tmp_num2); // set imaginary part
+	     free(tmp_num2);
+	   } else {
+	     m_apm_set_string(curr->im,"0"); // set null imaginary part
+	   }
+	 } else if (curr->type == HC_VAR_STR)
+	 {
+	   curr->str = strdup(tmp_num);
 	 }
 	 if (curr->n == NULL)
 	 {
 	   curr->n = malloc(sizeof(struct hc_stack_element));
 	   curr->n->re = m_apm_init();
 	   curr->n->im = m_apm_init();
+	   curr->n->str = NULL;
 	   curr->n->n = NULL;
 	 }
 	 curr->n->p = curr;
@@ -2246,39 +2267,40 @@ char *hc_postfix_result(char *e)
      
      curr = curr->p;
 
-     char *result_re,*result_im;
-     result_re = m_apm_to_fixpt_stringexp(hc.precision,curr->re,'.',0,0);
-     if (m_apm_compare(curr->im,MM_Zero)!=0)
-       result_im = m_apm_to_fixpt_stringexp(hc.precision,curr->im,'.',0,0);
-     else
-       result_im = NULL;
-     m_apm_free(op1_r);m_apm_free(op1_i);
-     m_apm_free(op2_r);m_apm_free(op2_i);
+     char *result_std=NULL,*result_im=NULL;
+     
+     if (curr->type == HC_VAR_NUM)
+     {
+       result_std = m_apm_to_fixpt_stringexp(hc.precision,curr->re,'.',0,0);
+       if (m_apm_compare(curr->im,MM_Zero)!=0)
+	 result_im = m_apm_to_fixpt_stringexp(hc.precision,curr->im,'.',0,0);
+       m_apm_free(op1_r);m_apm_free(op1_i);
+       m_apm_free(op2_r);m_apm_free(op2_i);
+     } else {
+       result_std = strdup(curr->str);
+     }
 
      while (first->n)
      {
        m_apm_free(first->re);m_apm_free(first->im);
+       free(first->str);
        first = first->n;
        free(first->p);
      }
 
      m_apm_free(first->re);m_apm_free(first->im);
+     free(first->str);
      free(first);
 
      if (!result_im)
-       return result_re;
+       return result_std;
      else
      {
-       char *result_cplx = malloc(strlen(result_re)+1+strlen(result_im)+1);
-                           // re i im \0
-       /*       if (result_re[0]=='-')
-		result_re[0] = '_';*/
-       strcpy(result_cplx,result_re);
+       char *result_cplx = malloc(strlen(result_std)+1+strlen(result_im)+1);
+       strcpy(result_cplx,result_std);
        strcat(result_cplx,"i");
-       /*       if (result_re[0]=='_')
-		result_re[0] = '-';*/
        strcat(result_cplx,result_im);
-       free(result_re);
+       free(result_std);
        free(result_im);
        return result_cplx;
      }

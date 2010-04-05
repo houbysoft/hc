@@ -136,6 +136,9 @@ extern void load_error(unsigned int line, char *expr);
 #define HC_USR_VAR 1
 #define HC_USR_FUNC 2
 
+#define HC_VAR_NUM 1
+#define HC_VAR_STR 2
+
 typedef enum {
   HC_COND_E, HC_COND_NE, HC_COND_GE, HC_COND_SE, HC_COND_S, HC_COND_G
 } HC_CONDS;
@@ -171,8 +174,10 @@ typedef struct hc_config {
 
 typedef struct hc_stack_element {
   struct hc_stack_element *p;
-  M_APM re; // real part of the number
-  M_APM im; // imaginary part of the number
+  char type; // type of element
+  M_APM re; // real part of the number (if element is a number)
+  M_APM im; // imaginary part of the number (if element is a number)
+  char *str; // string (if element is a string)
   struct hc_stack_element *n;
 } hc_stack_element_;
 
