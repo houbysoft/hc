@@ -1192,8 +1192,14 @@ int hc_totient(M_APM result, char *e)
 
 int hc_mmass(M_APM result, char *e)
 {
-  if (!(e = get_string(e)))
+  char *tmp_e = hc_result_(e);
+  if (!tmp_e || !(e = get_string(tmp_e)))
+  {
+    free(tmp_e);
     arg_error("mmass() : argument has to be a string.");
+  }
+
+  free(tmp_e);
 
   if (!check_completeness(e))
   {

@@ -1767,6 +1767,9 @@ char *hc_postfix_result(char *e)
   int sp = 0;
   
   M_APM op1_r,op1_i,op2_r,op2_i;
+  char *op1_str=NULL,*op2_str=NULL;
+
+  char op1_type,op2_type;
   
   char tmp_num[MAX_DOUBLE_STRING];
   int i=0,j=0;
@@ -1786,7 +1789,7 @@ char *hc_postfix_result(char *e)
       case '*':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1807,7 +1810,7 @@ char *hc_postfix_result(char *e)
       case '/':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1819,7 +1822,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1832,7 +1835,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1844,7 +1847,7 @@ char *hc_postfix_result(char *e)
 	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
 	if (m_apm_sign(op2_r)==0 && m_apm_sign(op2_i)==0)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1870,7 +1873,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1883,7 +1886,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1898,7 +1901,7 @@ char *hc_postfix_result(char *e)
 	}
 	if (sp < 2 || m_apm_compare(op1_i,MM_Zero)!=0 || m_apm_compare(op2_i,MM_Zero)!=0)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1915,7 +1918,7 @@ char *hc_postfix_result(char *e)
 	M_APM tmp = m_apm_init();
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1934,7 +1937,7 @@ char *hc_postfix_result(char *e)
       case '+':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1944,10 +1947,48 @@ char *hc_postfix_result(char *e)
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
-	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	op2_type = curr->type;
+	if (op2_type == HC_VAR_NUM)
+	{
+	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	} else if (op2_type == HC_VAR_STR)
+	{
+	  op2_str = get_string(curr->str);
+	}
 	curr = curr->p; // [--sp]
-	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	m_apmc_add(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+	op1_type = curr->type;
+	if (op1_type == HC_VAR_NUM)
+	{
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	} else {
+	  op1_str = get_string(curr->str);
+	}
+	if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
+	{
+	  curr->type = HC_VAR_NUM;
+	  m_apmc_add(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+	} else if (op1_type == HC_VAR_STR && op2_type == HC_VAR_STR)
+	{
+	  curr->type = HC_VAR_STR;
+	  free(curr->str);
+	  free(curr->n->str);
+	  curr->n->str = NULL;
+	  curr->str = malloc(1+strlen(op1_str)+strlen(op2_str)+2);
+	  if (!curr->str)
+	    mem_error();
+	  sprintf(curr->str,"\"%s%s\"",op1_str,op2_str);
+	  free(op1_str); op1_str = NULL;
+	  free(op2_str); op2_str = NULL;
+	} else {
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("+ accepts either two numbers or two strings");
+	  return NULL;
+	}
 	curr = curr->n; // [sp++]
 	sp -= 1;
 	break;
@@ -1958,7 +1999,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p;
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1982,7 +2023,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -1999,7 +2040,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2012,7 +2053,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2031,7 +2072,7 @@ char *hc_postfix_result(char *e)
       case PW_SIGN:
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2043,7 +2084,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2056,7 +2097,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2090,7 +2131,7 @@ char *hc_postfix_result(char *e)
 	  i++;
 	  if (sp < 2)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
@@ -2115,7 +2156,7 @@ char *hc_postfix_result(char *e)
 	  // interpret as factorial
 	  if (sp < 1)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
@@ -2127,7 +2168,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2138,7 +2179,7 @@ char *hc_postfix_result(char *e)
 	  }
 	  if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
@@ -2158,7 +2199,7 @@ char *hc_postfix_result(char *e)
       case '<':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
@@ -2170,7 +2211,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2183,7 +2224,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2217,7 +2258,7 @@ char *hc_postfix_result(char *e)
       case '>':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
@@ -2229,7 +2270,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2242,7 +2283,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2276,7 +2317,7 @@ char *hc_postfix_result(char *e)
       case '=':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2310,7 +2351,7 @@ char *hc_postfix_result(char *e)
 	  i++;
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2322,7 +2363,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2335,7 +2376,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2361,7 +2402,7 @@ char *hc_postfix_result(char *e)
 	  i++;
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2373,7 +2414,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2386,7 +2427,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
 	  {
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
@@ -2469,7 +2510,7 @@ char *hc_postfix_result(char *e)
   
   if (sp!=1)
   {
-    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);
+    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
     while (first->n)
     {
       m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
@@ -2488,12 +2529,13 @@ char *hc_postfix_result(char *e)
     result_std = m_apm_to_fixpt_stringexp(hc.precision,curr->re,'.',0,0);
     if (m_apm_compare(curr->im,MM_Zero)!=0)
       result_im = m_apm_to_fixpt_stringexp(hc.precision,curr->im,'.',0,0);
-    m_apm_free(op1_r);m_apm_free(op1_i);
-    m_apm_free(op2_r);m_apm_free(op2_i);
   } else {
     result_std = strdup(curr->str);
   }
   
+  m_apm_free(op1_r);m_apm_free(op1_i);
+  m_apm_free(op2_r);m_apm_free(op2_i);
+
   while (first->n)
   {
     m_apm_free(first->re);m_apm_free(first->im);
