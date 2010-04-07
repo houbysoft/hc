@@ -226,7 +226,7 @@ char *hc_result(char *e)
   }
 
   char *r = hc_result_(e);
-  if (r && strlen(r) && !is_string(e))
+  if (r && strlen(r) && !is_string(r))
   {
     char *tmp_num = hc_real_part(r);
     m_apm_set_string(hc_lans_mapm_re,tmp_num);
@@ -1799,10 +1799,44 @@ char *hc_postfix_result(char *e)
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
-	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	op2_type = curr->type;
+	if (op2_type == HC_VAR_NUM)
+	{
+	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	} else if (op2_type == HC_VAR_STR)
+	{
+	  op2_str = get_string(curr->str);
+	}
 	curr = curr->p; // [--sp]
-	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+	op1_type = curr->type;
+	if (op1_type == HC_VAR_NUM)
+	{
+	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	} else if (op1_type == HC_VAR_STR)
+	{
+	  op1_str = get_string(curr->str);
+	}	
+	if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
+	{
+	  m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+	} else if ((op1_type == HC_VAR_NUM && m_apm_compare(op1_i,MM_Zero)==0 && m_apm_is_integer(op1_r) && op2_type == HC_VAR_STR) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_NUM && m_apm_compare(op2_i,MM_Zero)==0 && m_apm_is_integer(op2_r)))
+	{
+	  curr->type = HC_VAR_STR;
+	  free(curr->str); free(curr->n->str);
+	  curr->n->str = NULL;
+	  curr->str = str_multiply(op1_type == HC_VAR_STR ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
+	  free(op1_str); op1_str = NULL;
+	  free(op2_str); op2_str = NULL;
+	} else {
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  type_error("* accepts either numbers, or an integer and a string");
+	  return NULL;	  
+	}
 	curr = curr->n; // [sp++]
 	sp -= 1;
 	break;
@@ -2547,7 +2581,7 @@ char *hc_postfix_result(char *e)
   m_apm_free(first->re);m_apm_free(first->im);
   free(first->str);
   free(first);
-  
+
   if (!result_im)
     return result_std;
   else

@@ -1845,3 +1845,32 @@ char *strchr_outofblock(char *e, char c)
   }
   return NULL;
 }
+
+
+
+char *str_multiply(char *str, M_APM n)
+{
+  M_APM i = m_apm_init();
+  M_APM i2 = m_apm_init();
+  m_apm_copy(i,MM_Zero);
+  char *r = malloc(2);
+  if (!r)
+    mem_error();
+  strcpy(r,"\"");
+  int alloc = 2;
+  while (m_apm_compare(i,n)!=0)
+  {
+    alloc += strlen(str);
+    r = realloc(r,alloc);
+    if (!r)
+      mem_error();
+    strcat(r,str);
+    m_apm_copy(i2,i);
+    m_apm_add(i,i2,MM_One);
+  }
+  m_apm_free(i);
+  m_apm_free(i2);
+  r = realloc(r,alloc+1);
+  strcat(r,"\"");
+  return r;
+}
