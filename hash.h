@@ -96,6 +96,10 @@
 // Chemistry
 #define HASH_MMASS 6053
 
+// Type conversions
+#define HASH_STR 24258
+#define HASH_NUM 19479
+
 // directions / config file
 #define HASH_RPN 23169
 #define HASH_PRECISION 20878

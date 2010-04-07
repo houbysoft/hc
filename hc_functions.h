@@ -68,6 +68,9 @@ extern char *hc_2sci(char *);
 extern char *hc_2eng(char *);
 extern char *hc_strip_0s(char *e);
 
+extern char *hc_2str(char *);
+extern int hc_2num(M_APM, M_APM, char *);
+
 extern char *hc_result_mul(char *e);
 
 extern char *str_multiply(char *, M_APM);

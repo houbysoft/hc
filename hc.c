@@ -74,6 +74,7 @@ const char *hc_fnames[][2] = {
   {"mtoft","func"},
   {"nCr","func"},
   {"nPr","func"},
+  {"num","func"},
   {"print","func"},
   {"product","func"},
   {"rand","func"},
@@ -83,6 +84,7 @@ const char *hc_fnames[][2] = {
   {"sqrt","func"},
   {"stats","func"},
   {"statsf","func"},
+  {"str","func"},
   {"sum","func"},
   {"tan","func"},
   {"tanh","func"},
@@ -768,6 +770,8 @@ char *hc_result_normal(char *f)
   } else {
     M_APM f_result_re = m_apm_init();
     M_APM f_result_im = m_apm_init();
+    char *f_result_str = NULL;
+    char f_result_type = HC_VAR_NUM;
     // we need to replace a function with its result
     // e[i] points to the start of the function
     j = i;
@@ -1283,6 +1287,17 @@ char *hc_result_normal(char *f)
       m_apmc_root(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im,3,3);
       break;
 
+    case HASH_STR:
+      if ((f_result_str = hc_2str(f_expr)) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      f_result_type = HC_VAR_STR;
+      break;
+
+    case HASH_NUM:
+      if (hc_2num(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      break;
+
     case HASH_MOD:
       if (hc_modulus(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
@@ -1506,23 +1521,30 @@ char *hc_result_normal(char *f)
     
     strncpy(e,e_tmp,i);
     e[i]=0;
-    char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
-    if (f_result_tmp_re[0]=='-')
-      f_result_tmp_re[0] = '_';
-    char *f_result_tmp_im,*f_result_tmp;
-    if (m_apm_compare(f_result_im,MM_Zero)!=0)
+    char *f_result_tmp = NULL;
+    if (f_result_type == HC_VAR_NUM)
     {
-      f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
-      if (f_result_tmp_im[0]=='-')
-	f_result_tmp_im[0] = '_';
-      f_result_tmp = malloc(strlen(f_result_tmp_re)+1+strlen(f_result_tmp_im)+1);
-                     // re i im \0
-      strcpy(f_result_tmp,f_result_tmp_re);
-      strcat(f_result_tmp,"i");
-      strcat(f_result_tmp,f_result_tmp_im);
-      free(f_result_tmp_re); free(f_result_tmp_im);
-    } else {
-      f_result_tmp = f_result_tmp_re;
+      char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
+      if (f_result_tmp_re[0]=='-')
+	f_result_tmp_re[0] = '_';
+      char *f_result_tmp_im;
+      if (m_apm_compare(f_result_im,MM_Zero)!=0)
+      {
+	f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
+	if (f_result_tmp_im[0]=='-')
+	  f_result_tmp_im[0] = '_';
+	f_result_tmp = malloc(strlen(f_result_tmp_re)+1+strlen(f_result_tmp_im)+1);
+	// re i im \0
+	strcpy(f_result_tmp,f_result_tmp_re);
+	strcat(f_result_tmp,"i");
+	strcat(f_result_tmp,f_result_tmp_im);
+	free(f_result_tmp_re); free(f_result_tmp_im);
+      } else {
+	f_result_tmp = f_result_tmp_re;
+      }
+    } else if (f_result_type == HC_VAR_STR)
+    {
+      f_result_tmp = f_result_str;
     }
     if (strlen(e_tmp)+strlen(f_result_tmp)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
       overflow_error();

@@ -1874,3 +1874,56 @@ char *str_multiply(char *str, M_APM n)
   strcat(r,"\"");
   return r;
 }
+
+
+
+char *hc_2str(char *e)
+{
+  e = hc_result_(e);
+  if (!e)
+    return FAIL;
+  if (is_string(e))
+    return e;
+  else
+  {
+    char *r = hc_strip_0s(e);
+    free(e);
+    e = malloc(strlen(r)+3);
+    if (!e)
+      mem_error();
+    sprintf(e,"\"%s\"",r);
+    free(r);
+    return e;
+  }
+}
+
+
+
+int hc_2num(M_APM re, M_APM im, char *e)
+{
+  e = hc_result_(e);
+  if (!e)
+    return FAIL;
+  char *r_re = NULL;
+  char *r_im = NULL;
+  if (is_string(e))
+  {
+    char *tmp = get_string(e);
+    free(e);
+    r_re = hc_real_part(tmp);
+    r_im = hc_imag_part(tmp);
+    free(tmp);
+  } else {
+    r_re = hc_real_part(e);
+    r_im = hc_imag_part(e);
+    free(e);
+  }
+  m_apm_set_string(re,r_re);
+  if (r_im)
+    m_apm_set_string(im,r_im);
+  else
+    m_apm_copy(im,MM_Zero);
+  free(r_re);
+  free(r_im);
+  return SUCCESS;
+}
