@@ -46,8 +46,25 @@ char *hc_result_mul(char *e)
   strcpy(expr,e);
   int pos=0;
   char stop=0;
+  int in_par=0;
+  char ignore=FALSE;
   while (expr[pos]!='\0')
   {
+    if (expr[pos]=='\"')
+    {
+      ignore = ignore == TRUE ? FALSE : TRUE;
+      pos++;
+      continue;
+    }
+    if (ignore)
+    {
+      pos++;
+      continue;
+    }
+    if (expr[pos]=='(')
+      in_par++;
+    if (expr[pos]==')')
+      in_par--;
     if (expr[pos]=='{')
     {
       int par=1;
@@ -70,7 +87,7 @@ char *hc_result_mul(char *e)
 	stop = 1;
       }
     }
-    if (expr[pos]==';' || stop)
+    if ((expr[pos]==';' && !in_par) || stop)
     {
       char save=expr[pos];
       expr[pos]=0;
