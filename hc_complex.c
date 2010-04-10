@@ -32,8 +32,7 @@ char *hc_real_part(char *num)
     strncpy(ret,num,strlen(num)-strlen(ipos));
     ret[strlen(num)-strlen(ipos)]='\0';
   } else {
-    ret = malloc(strlen(num)+1);
-    strcpy(ret,num);
+    ret = strdup(num);
   }
   return ret;
 }

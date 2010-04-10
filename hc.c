@@ -333,10 +333,9 @@ char *hc_result_(char *e)
 	return hc_result_mul(e);
       else
       {
-	char *f = malloc(strlen(e)+1);
+	char *f = strdup(e);
 	if (!f)
 	  mem_error();
-	strcpy(f,e);
 	hc_varassign(f);
 	free(f);
 	r = malloc(1);
@@ -347,10 +346,9 @@ char *hc_result_(char *e)
     } else {
       if (isdirection(e))
       {
-	char *f = malloc(strlen(e)+1);
+	char *f = strdup(e);
 	if (!f)
 	  mem_error();
-	strcpy(f,e);
 	hc_process_direction((char *)f+1);
 	free(f);
 	r = malloc(1);
@@ -553,10 +551,9 @@ char *hc_result_normal(char *f)
 #ifdef DBG
 		      printf("args - %s\n",args);
 #endif
-		      char *custom_f_expr = malloc((strlen(var_tmp->value)+1)*sizeof(char));
+		      char *custom_f_expr = strdup(var_tmp->value);
 		      if (!custom_f_expr)
 			mem_error();
-		      strcpy(custom_f_expr,var_tmp->value);
 		      unsigned int k = 1;
 		      char xybypass = 0; // bypass for variables x and y, which can be part of the expression in certain cases (ie sum(), product(), graphs...)
 		      while (k!=-1)

@@ -26,9 +26,9 @@
 #include "hc.h"
 
 
-#define HC_EXEC_RESULT {if (strstr(strip_spaces(expr),"return ")!=strip_spaces(expr)) \
-    {char *tmp = hc_result_(strip_spaces(expr)); if (!tmp) {error = 1;} else {free(tmp);}}else{ \
-  char *r = hc_result_(strip_spaces(expr)+strlen("return "));		\
+#define HC_EXEC_RESULT {char *expr_stripped = strip_spaces(expr); if (strstr(expr_stripped,"return ")!=expr_stripped) \
+    {char *tmp = hc_result_(expr_stripped); if (!tmp) {error = 1;} else {free(tmp);}}else{ \
+  char *r = hc_result_(expr_stripped+strlen("return "));		\
   free(expr_orig);							\
   return r;								\
     }}

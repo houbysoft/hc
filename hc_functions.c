@@ -1677,7 +1677,9 @@ int hc_output(int mode, char *f_expr)
   }
   else
   {
-    char *fname_tmp = hc_get_arg(f_expr,1);
+    char *fname_tmp_ = hc_get_arg(f_expr,1);
+    char *fname_tmp = hc_result_(fname_tmp_);
+    free(fname_tmp_);
     if (!is_string(fname_tmp))
     {
       free(fname_tmp);
@@ -1705,7 +1707,9 @@ int hc_output(int mode, char *f_expr)
   char *printme = malloc(1);
   printme[0] = '\0';
   int alloc = 0;
-  char *t1 = hc_get_arg(f_expr,pos);
+  char *t1_tmp = hc_get_arg(f_expr,pos);
+  char *t1 = hc_result_(t1_tmp);
+  free(t1_tmp);
   char done = 0;
   while (t1)
   {
@@ -1723,10 +1727,12 @@ int hc_output(int mode, char *f_expr)
       return FAIL;
     } else {
       if (is_string(t1))
+      {
 	tmp = get_string(t1);
-      else
-	tmp = hc_result_(t1);
-      free(t1);
+	free(t1);
+      } else {
+	tmp = t1;
+      }
       if (!tmp)
       {
 	free(printme);
@@ -1742,7 +1748,9 @@ int hc_output(int mode, char *f_expr)
 	free(tmp);
       }
     }
-    t1 = hc_get_arg(f_expr,++pos);
+    t1_tmp = hc_get_arg(f_expr,++pos);
+    t1 = hc_result_(t1_tmp);
+    free(t1_tmp);
   }
   if (mode==PRINT)
     notify(printme);
