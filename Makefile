@@ -4,7 +4,7 @@
 
 # additional options to pass to gcc when compiling
 #COPT=-DDBG -g -lefence -Wall
-COPT=-Wall -g
+COPT=-Wall
 #COPT=-DI_HATE_TIPS -Wall
 
 
@@ -44,8 +44,4 @@ hc_graph.o: hc_graph.c
 hc_complex.o: hc_complex.c
 	gcc ${COPT} -c hc_complex.c
 
-clean:
-	rm hc&
-	rm *.o&
-	rm *~&
-	rm *.png&
+

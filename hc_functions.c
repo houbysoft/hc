@@ -1753,7 +1753,10 @@ int hc_output(int mode, char *f_expr)
     free(t1_tmp);
   }
   if (mode==PRINT)
-    notify(printme);
+  {
+    if (strlen(printme))
+      notify(printme);
+  }
   else
     fwrite(printme,sizeof(char),strlen(printme),fw);
   free(printme);
