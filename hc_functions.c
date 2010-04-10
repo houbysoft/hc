@@ -1927,3 +1927,15 @@ int hc_2num(M_APM re, M_APM im, char *e)
   free(r_im);
   return SUCCESS;
 }
+
+
+char contains_char(char *str)
+{
+  int i = 0;
+  for (; str[i]!='\0'; i++)
+  {
+    if (isalpha(str[i]))
+      return TRUE;
+  }
+  return FALSE;
+}

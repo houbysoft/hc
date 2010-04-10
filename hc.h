@@ -103,7 +103,7 @@ extern void load_error(unsigned int line, char *expr);
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
 
-#define NAME_VERSION "Welcome to hc 1.1 (infix / RPN) -- http://hc.houbysoft.com/\n"
+#define NAME_VERSION "Welcome to hc 1.2 (infix / RPN) -- http://hc.houbysoft.com/\n"
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)

@@ -10,6 +10,11 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+1.2:
+  - extended string support; now it is possible to concatenate strings simply using the '+' operator, and multiply strings and integers using the '*' operator
+  - added str() and num() functions for conversion between numbers and strings
+  - a few optimizations
+  - fixed a bug with nested for loops
 1.1:
   - added basic string support and the function mmass() which expects a string as its first argument, a valid molecule, and returns its molar mass
   - added input(), a function to request user input mainly in programs
@@ -181,6 +186,7 @@ Constants are stored with 128 decimal places.
 - mtoft(x) - converts x, which has to be in m, to feet
 - nCr(n,k) - binomial coefficient (combinatorics)
 - nPr(n,k) - number of permutations (combinatorics)
+- num(str) - returns a number representation of the number in the string str
 - print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)
 - product(expr,low,high) - expression can contain 'x', which
   	     will be incremented from low to high inclusive, for example:
@@ -193,6 +199,7 @@ Constants are stored with 128 decimal places.
 - sqrt(x) - returns the square root of x
 - stats(v1,v2,...,vn) - show stats info of v1...vn
 - statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency
+- str(expr) - returns a string representation of expr
 - sum(expr,low,high) - expression can contain 'x', which will
              be incremented from low to high inclusive, for example:
 	     > sum(x^2,1,5)

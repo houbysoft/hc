@@ -61,6 +61,8 @@ extern char *strreplace(char *in, char *old, char *new);
 extern char *strreplace_(char *in, char *old, char *new); // same as strreplace, but does not include any measures against replacing inside variables etc. (ie. raw string replace)
 extern char *hc_get_arg(char *e, int pos);
 extern int hc_need_space_int(int i);
+extern void is_zero_free();
+extern char contains_char(char *);
 
 extern char hc_stats(char *e, char g, char ef);
 

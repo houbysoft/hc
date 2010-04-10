@@ -27,11 +27,18 @@
 
 
 #define HC_EXEC_RESULT {if (strstr(strip_spaces(expr),"return ")!=strip_spaces(expr)) \
-    {char *tmp = hc_result(strip_spaces(expr)); if (!tmp) {error = 1;} else {free(tmp);}}else{ \
-  char *r = hc_result(strip_spaces(expr)+strlen("return "));		\
+    {char *tmp = hc_result_(strip_spaces(expr)); if (!tmp) {error = 1;} else {free(tmp);}}else{ \
+  char *r = hc_result_(strip_spaces(expr)+strlen("return "));		\
   free(expr_orig);							\
   return r;								\
     }}
+
+
+M_APM iz_test;
+char iz_init = 0;
+
+
+char is_zero(char *str);
 
 
 char *hc_result_mul(char *e)
@@ -39,11 +46,10 @@ char *hc_result_mul(char *e)
   char error = 0;
   if (!e)
     return NULL;
-  char *expr = malloc(strlen(e)+1);
+  char *expr = strdup(e);
   char *expr_orig = expr;
   if (!expr)
     mem_error();
-  strcpy(expr,e);
   int pos=0;
   char stop=0;
   int in_par=0;
@@ -178,11 +184,10 @@ char *hc_get_cond(char *e, int *end, int result)
   }
   e[*end-1]=0;
   if (result)
-    return hc_result(e);
+    return hc_result_(e);
   else
   {
-    char *tmp = malloc(strlen(e)+1);
-    strcpy(tmp,e);
+    char *tmp = strdup(e);
     return tmp;
   }
 }
@@ -191,11 +196,10 @@ char *hc_get_cond(char *e, int *end, int result)
 char *hc_exec_struct(char *f)
 {
   char *ret=NULL;
-  char *e = malloc(strlen(f)+1);
+  char *e = strdup(f);
   char *fme = e; // needed because the starting address of e gets modified
   if (!e)
     mem_error();
-  strcpy(e,f);
   HC_EXECS type;
   if (strstr(e,"if ")==e)
     type = HC_EXEC_IF;
@@ -226,7 +230,7 @@ char *hc_exec_struct(char *f)
       free(cond);
       return NULL;
     }
-    if (cond && strcmp(cond,"0")!=0)
+    if (cond && !is_zero(cond))
     {
       e[pos-1]=0;
       ret = hc_result_mul((char *)e+sizeof(char)*(end+1));
@@ -252,10 +256,10 @@ char *hc_exec_struct(char *f)
     cond = hc_get_cond(e,&end,0); // the 0 means not to compute the result; we need to compute it every iteration
     end++;
     if (cond)
-      tmp = hc_result(cond);
+      tmp = hc_result_(cond);
     else
       tmp = NULL;
-    while (tmp && strcmp(tmp,"0")!=0)
+    while (tmp && !is_zero(tmp))
     {
       if (!exec)
       {
@@ -276,7 +280,7 @@ char *hc_exec_struct(char *f)
 	ret = NULL;
       }
       free(tmp);
-      tmp = hc_result(cond);
+      tmp = hc_result_(cond);
     }
     free(tmp);
     break;
@@ -304,9 +308,9 @@ char *hc_exec_struct(char *f)
       free(cond); free(fme);
       return NULL;
     }
-    free(hc_result(start));
-    tmp = hc_result(cond2);
-    while (tmp && strcmp(tmp,"0")!=0)
+    free(hc_result_(start));
+    tmp = hc_result_(cond2);
+    while (tmp && !is_zero(tmp))
     {
       if (!exec)
       {
@@ -327,8 +331,8 @@ char *hc_exec_struct(char *f)
 	ret = NULL;
       }
       free(tmp);
-      free(hc_result(iter));
-      tmp = hc_result(cond2);
+      free(hc_result_(iter));
+      tmp = hc_result_(cond2);
     }
     free(tmp);
     break;
@@ -337,4 +341,31 @@ char *hc_exec_struct(char *f)
   free(cond);
   free(fme);
   return ret;
+}
+
+
+char is_zero(char *str)
+{
+  if (!iz_init)
+  {
+    iz_test = m_apm_init();
+    iz_init = 1;
+  }
+  m_apm_set_string(iz_test,str);
+  if (m_apm_compare(iz_test,MM_Zero)==0)
+  {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+
+void is_zero_free()
+{
+  if (iz_init)
+  {
+    m_apm_free(iz_test);
+    iz_init = 0;
+  }
 }

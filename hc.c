@@ -193,7 +193,7 @@ char *hc_result(char *e)
 
   if (strcmp(e,"help")==0)
   {
-    printf("Welcome to HC!\nTo calculate an expression, simply enter it on the command-line in infix notation (RPN is also available, to enable it, type \\rpn) and press enter (available operators : + - * / % ^ ! < > <= >= == != &[&] (boolean and) |[|] (boolean or)). To get more information about boolean/logic operators and control structures (programming), type \"logic\".\nTo use a constant, simply type its name with english characters - for example pi. For more info type \"constants\".\nHC also supports complex numbers, type \"complex\" for more info.\nTo draw a graph, use the graph() function (gmul() for multiple functions on one graph) or the graph3() function; see below for more info.\nYou can also use a few functions; the list of them is below:\n - ans() - Will be replaced by the result of the last entered expression\n - abs(x) - absolute value of x\n - acos(x) - arc cosine of x\n - asin(x) arc sine of x\n - atan(x) - arc tangent of x\n - boxplot(v1,v2,...,vn) - draw a boxplot of v1...vn\n - boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency\n - cbrt(x) - returns the cube root of x (you could also use x^(1/3))\n - ceil(x) - returns x rounded to the nearest integer upwards\n - cmtoinch(x) - converts x, which has to be in cm, to inches\n - cos(x) - cosine of x\n - cosh(x) - hyperbolic cosine of x\n - ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit\n - ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin\n - exp(x) - exponential function\n - factorial(x) - factorial of x (you can also use the '!' notation)\n - fibo(x) - returns the xth term of the Fibonacci sequence\n - floor(x) - returns x rounded to the nearest integer downwards\n - floztoml(x) - converts x, which has to be in US fluid ounces, to ml\n - ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius\n - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin\n - fttom(x) - converts x, which has to be in feet, to meters\n - gcd(x,y) - finds the greatest common divisor of x and y\n - gmul(expr_1, expr_2, ..., expr_n) - similar to graph, but can draw an arbitrary number of functions on one graph (note : to set xmin, etc., make a call to graph() first)\n - graph(expr[,xmin,xmax,ymin,ymax]) - draw a graph (generate a PNG file if in command-line), example syntax:\n     graph(x^2,-10,10,-100,100)\n    Note: the xmin, xmax, ymin and ymax arguments are optional; if not provided, the last will be used (ie after a call of the example, graph(something) would use -10, 10, -100 and 100\n - graph3(expr[,xmin,xmax,ymin,ymax,zmin,zmax]) - draw a 3D graph (generate a PNG file if in command-line), example syntax:\n     graph3(x+y,-10,10,-10,10,-20,20)\n    Note: as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional\n - inchtocm(x) - converts x, which has to be in inches, to cm\n - input([str]) - shows an inut dialog using either a standard prompt or str, if specified\n - kmtomi(x) - converts x, which has to be in km, to miles\n - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius\n - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit\n - lcm(x,y) - finds the least common multiple of x and y\n - ln(x) - natural logarithm\n - log10(x) - common logarithm\n - mitokm(x) - converts x, which has to be in miles, to km\n - mltofloz(x) - converts x, which has to be in ml, to US fluid ounces\n - mmass(molecule) - returns the molar mass of the molecule specified (use standard notation without using subscripts, such as H2O or Ca(OH)2)\n - mod(x,y) - modulus (you can also use the C-style '%%' notation)\n - mtoft(x) - converts x, which has to be in m, to feet\n - nCr(n,k) - binomial coefficient (combinatorics)\n - nPr(n,k) - number of permutations (combinatorics)\n - print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)\n - product(expr,low,high) - returns the product of expr with x from low to high inclusive (WARNING : As of now, other variable names will be ignored)\n - rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[\n - round(x) - round x to the nearest integer (for .5 cases, away from zero)\n - sin(x) - sine of x\n - sinh(x) - hyperbolic sine of x\n - sqrt(x) - returns the square root of x\n - stats(v1,v2,...,vn) - show stats info of v1...vn\n - statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency\n - sum(expr,low,high) - same as product, except the result is summation, not multiplication\n - tan(x) - tangent of x\n - tanh(x) - hyperbolic tangent of x\n - totient(x) - Euler's totient function\n - write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname\nYou can also use these directions/configuration commands:\n - \\p PRECISION - change current precision to PRECISION decimal places\n - \\rpn - change modes (RPN / infix)\n - \\sci, \\eng, \\normal - switch between scientific, engineering, and normal exponentials formats for output\n - \\deg, \\rad, \\grad - switch between DEG, RAD, and GRAD modes for angles\n - \\clear - clear all user-defined variables and functions\n - \\3dpoints SIDE - setup the 3D graphing function to compute a square of SIDE^2 points\n - \\load FILE - load and execute lines in FILE. You can use this for example to define functions you use often etc. (Note : you do not need to use this to load other configuration - it is saved automatically)\nTo get a list of only the converter functions, type \"conversions\".\nTo read the license and credits, type \"credits\".\nTo exit The HoubySoft Calculator, just type \"exit\" in the prompt (you can also use CTRL+C on systems that support it, but configuration will not be saved if you do that).\n");
+    printf("Welcome to HC!\nTo calculate an expression, simply enter it on the command-line in infix notation (RPN is also available, to enable it, type \\rpn) and press enter (available operators : + - * / % ^ ! < > <= >= == != &[&] (boolean and) |[|] (boolean or)). To get more information about boolean/logic operators and control structures (programming), type \"logic\".\nTo use a constant, simply type its name with english characters - for example pi. For more info type \"constants\".\nHC also supports complex numbers, type \"complex\" for more info.\nTo draw a graph, use the graph() function (gmul() for multiple functions on one graph) or the graph3() function; see below for more info.\nYou can also use a few functions; the list of them is below:\n - ans() - Will be replaced by the result of the last entered expression\n - abs(x) - absolute value of x\n - acos(x) - arc cosine of x\n - asin(x) arc sine of x\n - atan(x) - arc tangent of x\n - boxplot(v1,v2,...,vn) - draw a boxplot of v1...vn\n - boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency\n - cbrt(x) - returns the cube root of x (you could also use x^(1/3))\n - ceil(x) - returns x rounded to the nearest integer upwards\n - cmtoinch(x) - converts x, which has to be in cm, to inches\n - cos(x) - cosine of x\n - cosh(x) - hyperbolic cosine of x\n - ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit\n - ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin\n - exp(x) - exponential function\n - factorial(x) - factorial of x (you can also use the '!' notation)\n - fibo(x) - returns the xth term of the Fibonacci sequence\n - floor(x) - returns x rounded to the nearest integer downwards\n - floztoml(x) - converts x, which has to be in US fluid ounces, to ml\n - ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius\n - ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin\n - fttom(x) - converts x, which has to be in feet, to meters\n - gcd(x,y) - finds the greatest common divisor of x and y\n - gmul(expr_1, expr_2, ..., expr_n) - similar to graph, but can draw an arbitrary number of functions on one graph (note : to set xmin, etc., make a call to graph() first)\n - graph(expr[,xmin,xmax,ymin,ymax]) - draw a graph (generate a PNG file if in command-line), example syntax:\n     graph(x^2,-10,10,-100,100)\n    Note: the xmin, xmax, ymin and ymax arguments are optional; if not provided, the last will be used (ie after a call of the example, graph(something) would use -10, 10, -100 and 100\n - graph3(expr[,xmin,xmax,ymin,ymax,zmin,zmax]) - draw a 3D graph (generate a PNG file if in command-line), example syntax:\n     graph3(x+y,-10,10,-10,10,-20,20)\n    Note: as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional\n - inchtocm(x) - converts x, which has to be in inches, to cm\n - input([str]) - shows an inut dialog using either a standard prompt or str, if specified\n - kmtomi(x) - converts x, which has to be in km, to miles\n - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius\n - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit\n - lcm(x,y) - finds the least common multiple of x and y\n - ln(x) - natural logarithm\n - log10(x) - common logarithm\n - mitokm(x) - converts x, which has to be in miles, to km\n - mltofloz(x) - converts x, which has to be in ml, to US fluid ounces\n - mmass(molecule) - returns the molar mass of the molecule specified (use standard notation without using subscripts, such as H2O or Ca(OH)2)\n - mod(x,y) - modulus (you can also use the C-style '%%' notation)\n - mtoft(x) - converts x, which has to be in m, to feet\n - nCr(n,k) - binomial coefficient (combinatorics)\n - nPr(n,k) - number of permutations (combinatorics)\n - num(str) - returns a number representation of the number in the string str\n - print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)\n - product(expr,low,high) - returns the product of expr with x from low to high inclusive (WARNING : As of now, other variable names will be ignored)\n - rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[\n - round(x) - round x to the nearest integer (for .5 cases, away from zero)\n - sin(x) - sine of x\n - sinh(x) - hyperbolic sine of x\n - sqrt(x) - returns the square root of x\n - stats(v1,v2,...,vn) - show stats info of v1...vn\n - statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency\n - str(expr) - returns a string representation of expr\n - sum(expr,low,high) - same as product, except the result is summation, not multiplication\n - tan(x) - tangent of x\n - tanh(x) - hyperbolic tangent of x\n - totient(x) - Euler's totient function\n - write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname\nYou can also use these directions/configuration commands:\n - \\p PRECISION - change current precision to PRECISION decimal places\n - \\rpn - change modes (RPN / infix)\n - \\sci, \\eng, \\normal - switch between scientific, engineering, and normal exponentials formats for output\n - \\deg, \\rad, \\grad - switch between DEG, RAD, and GRAD modes for angles\n - \\clear - clear all user-defined variables and functions\n - \\3dpoints SIDE - setup the 3D graphing function to compute a square of SIDE^2 points\n - \\load FILE - load and execute lines in FILE. You can use this for example to define functions you use often etc. (Note : you do not need to use this to load other configuration - it is saved automatically)\nTo get a list of only the converter functions, type \"conversions\".\nTo read the license and credits, type \"credits\".\nTo exit The HoubySoft Calculator, just type \"exit\" in the prompt (you can also use CTRL+C on systems that support it, but configuration will not be saved if you do that).\n");
     return NULL;
   }
 
@@ -390,308 +390,315 @@ char *hc_result_normal(char *f)
     mem_error();
 
   char *e_fme = e = hc_impmul_resolve(e);
-
-  // Constants
-  // Pi
-  e = strreplace(e,"pi","3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384461");
-  free(e_fme);
-  e_fme = e;
-
-  // Speed of Light
-  e = strreplace(e,"c","299792458");
-  free(e_fme);
-  e_fme = e;
-
-  // e
-  e = strreplace(e,"e","2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174136");
-  free(e_fme);
-  e_fme = e;
-
-  // phi
-  e = strreplace(e,"phi"," 1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475408807538689175212663386");
-  free(e_fme);
-  e_fme = e;
-
-  // g - Gravitational acceleration (std value)
-  e = strreplace(e,"g","9.80655");
-  free(e_fme);
-  e_fme = e;
-
-  // answer - h2g2!
-  e = strreplace(e,"answer","42");
-  free(e_fme);
-  e_fme = e;
-
-  // Constants end
-  // User-defined variables
-
-  int pos_cur=0,pos_beg;
-  char couldbevar=0;
   char ignore = FALSE;
-  while (e[pos_cur])
+  char can_skip = FALSE;
+
+  if (contains_char(e))
   {
-    if (e[pos_cur]=='\"')
+    // Constants
+    // Pi
+    e = strreplace(e,"pi","3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384461");
+    free(e_fme);
+    e_fme = e;
+    
+    // Speed of Light
+    e = strreplace(e,"c","299792458");
+    free(e_fme);
+    e_fme = e;
+    
+    // e
+    e = strreplace(e,"e","2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174136");
+    free(e_fme);
+    e_fme = e;
+    
+    // phi
+    e = strreplace(e,"phi"," 1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475408807538689175212663386");
+    free(e_fme);
+    e_fme = e;
+    
+    // g - Gravitational acceleration (std value)
+    e = strreplace(e,"g","9.80655");
+    free(e_fme);
+    e_fme = e;
+    
+    // answer - h2g2!
+    e = strreplace(e,"answer","42");
+    free(e_fme);
+    e_fme = e;
+    
+    // Constants end
+    // User-defined variables
+    
+    int pos_cur=0,pos_beg;
+    char couldbevar=0;
+    ignore = FALSE;
+    while (e[pos_cur])
     {
-      ignore = ignore == FALSE ? TRUE : FALSE;
-      pos_cur++;
-      continue;
-    }
-    if (ignore)
-    {
-      pos_cur++;
-      continue;
-    }
-    if (((isalpha(e[pos_cur]) && (tolower(e[pos_cur])!='e' || (isalpha(e[pos_cur+1]))) && (tolower(e[pos_cur]!='i') || (isalpha(e[pos_cur+1])))) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
-    {
-      if (!couldbevar)
+      if (e[pos_cur]=='\"')
       {
-	couldbevar = 1;
-	pos_beg = pos_cur;
+	ignore = ignore == FALSE ? TRUE : FALSE;
+	pos_cur++;
+	continue;
       }
-    } else {
-      if (((isalpha(e[pos_cur]) && tolower(e[pos_cur])!='e' && tolower(e[pos_cur]!='i')) || (isalnum(e[pos_cur])&& (couldbevar==1)))&& e[pos_cur+1]=='\0')
+      if (ignore)
+      {
+	pos_cur++;
+	continue;
+      }
+      if (((isalpha(e[pos_cur]) && (tolower(e[pos_cur])!='e' || (isalpha(e[pos_cur+1]))) && (tolower(e[pos_cur]!='i') || (isalpha(e[pos_cur+1])))) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
       {
 	if (!couldbevar)
 	{
 	  couldbevar = 1;
 	  pos_beg = pos_cur;
 	}
-	pos_cur++;
-      }
-      if (couldbevar == 1)
-      {
-	char type = e[pos_cur]=='(' ? HC_USR_FUNC : HC_USR_VAR;
-	char *tmp = malloc(sizeof(char)*(pos_cur-pos_beg+1));
-	strncpy(tmp,e + sizeof(char)*pos_beg,pos_cur-pos_beg);
-	tmp[pos_cur-pos_beg]=0;
-	if (!hc_is_predef(tmp))
+      } else {
+	if (((isalpha(e[pos_cur]) && tolower(e[pos_cur])!='e' && tolower(e[pos_cur]!='i')) || (isalnum(e[pos_cur])&& (couldbevar==1)))&& e[pos_cur+1]=='\0')
 	{
-	  char done = 0;
-	  struct hc_ventry *var_tmp = hc_var_first;
-	  if (var_tmp->name == NULL)
-	    var_tmp = NULL;
-	  while (var_tmp && done==0)
+	  if (!couldbevar)
 	  {
-	    if (var_tmp->type == type && strcmp(var_tmp->name,tmp)==0)
+	    couldbevar = 1;
+	    pos_beg = pos_cur;
+	  }
+	  pos_cur++;
+	}
+	if (couldbevar == 1)
+	{
+	  char type = e[pos_cur]=='(' ? HC_USR_FUNC : HC_USR_VAR;
+	  char *tmp = malloc(sizeof(char)*(pos_cur-pos_beg+1));
+	  strncpy(tmp,e + sizeof(char)*pos_beg,pos_cur-pos_beg);
+	  tmp[pos_cur-pos_beg]=0;
+	  if (!hc_is_predef(tmp))
+	  {
+	    char done = 0;
+	    struct hc_ventry *var_tmp = hc_var_first;
+	    if (var_tmp->name == NULL)
+	      var_tmp = NULL;
+	    while (var_tmp && done==0)
 	    {
-	      done = 1;
-	      pos_cur = -1; // Need to restart scanning (the string will change after replacement)
-	      if (var_tmp->type == HC_USR_VAR)
+	      if (var_tmp->type == type && strcmp(var_tmp->name,tmp)==0)
 	      {
-		e = strreplace(e,var_tmp->name,var_tmp->value);
-		free(e_fme);
-		e_fme = e;
-	      } else if (var_tmp->type == HC_USR_FUNC)
-	      {
-		char e_tmp[MAX_EXPR];
-		int itmp = 0;
-		for (; itmp<MAX_EXPR; itmp++)
-		  e_tmp[itmp]=0;
-		char *tmp1 = hc_plusminus(e);
-		strcpy(e_tmp,tmp1);
-		free(tmp1);
-		e = malloc(MAX_EXPR);
-		free(e_fme);
-		e_fme = e;
-		if (!e)
-		  mem_error();
-		strcpy(e,e_tmp);
-		char *ffound = strstr(e,var_tmp->name);
-		if (ffound && ffound!=e)
+		done = 1;
+		pos_cur = -1; // Need to restart scanning (the string will change after replacement)
+		if (var_tmp->type == HC_USR_VAR)
 		{
-		  if (isalpha((char)(ffound - sizeof(char))[0]))
-		    ffound = NULL;
-		}
-		if (ffound)
+		  e = strreplace(e,var_tmp->name,var_tmp->value);
+		  free(e_fme);
+		  e_fme = e;
+		} else if (var_tmp->type == HC_USR_FUNC)
 		{
-		  if (isalpha((char)(ffound + strlen(var_tmp->name))[0]))
-		    ffound = NULL;
-		}
-		if (ffound)
-		{
-#ifdef DBG
-		  printf("User-defined function found\n");
-#endif
-		  unsigned int i=0;
-		  while (isalnum(ffound[i]))
-		    i++;
-		  if (ffound[i]!='(')
+		  char e_tmp[MAX_EXPR];
+		  int itmp = 0;
+		  for (; itmp<MAX_EXPR; itmp++)
+		    e_tmp[itmp]=0;
+		  char *tmp1 = hc_plusminus(e);
+		  strcpy(e_tmp,tmp1);
+		  free(tmp1);
+		  e = malloc(MAX_EXPR);
+		  free(e_fme);
+		  e_fme = e;
+		  if (!e)
+		    mem_error();
+		  strcpy(e,e_tmp);
+		  char *ffound = strstr(e,var_tmp->name);
+		  if (ffound && ffound!=e)
 		  {
-		    syntax_error2();
-		    free(e);
-		    free(tmp);
-		    hc_nested--;
-		    return NULL;
-		  } else {
-		    i--;
-		    char *args = malloc((strlen(ffound)+1-i)*sizeof(char));
-		    strcpy(args,ffound+(sizeof(char)*i+sizeof(char)));
-		    unsigned int par=1,j=1;
-		    while (par!=0)
-		    {
-		      if (args[j]==')')
-			par--;
-		      if (args[j]=='(')
-			par++;
-		      if (args[j]==0)
-		      {
-			syntax_error2();
-			free(e);
-			free(tmp);
-			free(args);
-			hc_nested--;
-			return NULL;
-		      }
-		      j++;
-		    }
-		    unsigned int f_expr_e = (ffound - e) + i + j + 1;
-		    args[j]=0;
+		    if (isalpha((char)(ffound - sizeof(char))[0]))
+		      ffound = NULL;
+		  }
+		  if (ffound)
+		  {
+		    if (isalpha((char)(ffound + strlen(var_tmp->name))[0]))
+		      ffound = NULL;
+		  }
+		  if (ffound)
+		  {
 #ifdef DBG
-		    printf("args - %s\n",args);
+		    printf("User-defined function found\n");
 #endif
-		    char *custom_f_expr = malloc((strlen(var_tmp->value)+1)*sizeof(char));
-		    if (!custom_f_expr)
-		      mem_error();
-		    strcpy(custom_f_expr,var_tmp->value);
-		    unsigned int k = 1;
-		    char xybypass = 0; // bypass for variables x and y, which can be part of the expression in certain cases (ie sum(), product(), graphs...)
-		    while (k!=-1)
+		    unsigned int i=0;
+		    while (isalnum(ffound[i]))
+		      i++;
+		    if (ffound[i]!='(')
 		    {
-		      char *tmp_args = malloc(strlen(args));
-		      if (!tmp_args)
-			mem_error();
-		      strcpy(tmp_args,(char *)(args+sizeof(char)));
-		      tmp_args[strlen(tmp_args)-1]=0;
-		      char *t1 = hc_get_arg(tmp_args,k);
-		      free(tmp_args);
-#ifdef DBG
-		      printf("t1 = %s\n",t1);
-#endif
-		      if (t1)
+		      syntax_error2();
+		      free(e);
+		      free(tmp);
+		      hc_nested--;
+		      return NULL;
+		    } else {
+		      i--;
+		      char *args = malloc((strlen(ffound)+1-i)*sizeof(char));
+		      strcpy(args,ffound+(sizeof(char)*i+sizeof(char)));
+		      unsigned int par=1,j=1;
+		      while (par!=0)
 		      {
-			char *t1fme = t1;
-			char a_tmp = announce_errors;
-			announce_errors = FALSE;
-			if (strcmp(t1,"x")==0 || strcmp(t1,"y")==0)
+			if (args[j]==')')
+			  par--;
+			if (args[j]=='(')
+			  par++;
+			if (args[j]==0)
 			{
-			  t1 = malloc(2);
-			  strcpy(t1,t1fme);
-			  xybypass = 1;
-			} else {
-			  t1 = hc_result_(t1);
-			  xybypass = 0;
+			  syntax_error2();
+			  free(e);
+			  free(tmp);
+			  free(args);
+			  hc_nested--;
+			  return NULL;
 			}
-			announce_errors = a_tmp;
+			j++;
+		      }
+		      unsigned int f_expr_e = (ffound - e) + i + j + 1;
+		      args[j]=0;
+#ifdef DBG
+		      printf("args - %s\n",args);
+#endif
+		      char *custom_f_expr = malloc((strlen(var_tmp->value)+1)*sizeof(char));
+		      if (!custom_f_expr)
+			mem_error();
+		      strcpy(custom_f_expr,var_tmp->value);
+		      unsigned int k = 1;
+		      char xybypass = 0; // bypass for variables x and y, which can be part of the expression in certain cases (ie sum(), product(), graphs...)
+		      while (k!=-1)
+		      {
+			char *tmp_args = malloc(strlen(args));
+			if (!tmp_args)
+			  mem_error();
+			strcpy(tmp_args,(char *)(args+sizeof(char)));
+			tmp_args[strlen(tmp_args)-1]=0;
+			char *t1 = hc_get_arg(tmp_args,k);
+			free(tmp_args);
+#ifdef DBG
+			printf("t1 = %s\n",t1);
+#endif
 			if (t1)
 			{
-#ifdef DBG
-			  printf("t1 is now %s\n",t1);
-#endif
-			  free(t1fme);
-			} else {
-			  free(tmp);
-			  free(e);
-			  free(custom_f_expr);
-			  free(args);
-			  hc_nested--;
-			  free(t1fme);
-			  return NULL;
-			}
-		      }
-		      char *t2 = hc_get_arg(var_tmp->args,k);
-		      if (t1 && t2)
-		      {
-			char *fme = custom_f_expr;
-			if (strcmp(t1,t2)!=0)
-			{
-			  custom_f_expr = strreplace(custom_f_expr,t2,t1);
-			  free(fme);
-			}
-			free(t1);
-			free(t2);
-			k++;
-		      } else {
-			if (t1 || t2)
-			{
-			  arg_error_custom();
-			  if (t1)
-			    free(t1);
-			  else
-			    free(t2);
-			  free(e);
-			  free(args);
-			  free(tmp);
-			  hc_nested--;
-			  return NULL;
-			} else {
-			  char *fme_cfe = custom_f_expr;
-			  if (!xybypass)
+			  char *t1fme = t1;
+			  char a_tmp = announce_errors;
+			  announce_errors = FALSE;
+			  if (strcmp(t1,"x")==0 || strcmp(t1,"y")==0)
 			  {
-			    custom_f_expr = hc_result_(custom_f_expr);
-			    free(fme_cfe);
+			    t1 = malloc(2);
+			    strcpy(t1,t1fme);
+			    xybypass = 1;
+			  } else {
+			    t1 = hc_result_(t1);
+			    xybypass = 0;
 			  }
-			  if (!custom_f_expr)
+			  announce_errors = a_tmp;
+			  if (t1)
 			  {
+#ifdef DBG
+			    printf("t1 is now %s\n",t1);
+#endif
+			    free(t1fme);
+			  } else {
+			    free(tmp);
+			    free(e);
+			    free(custom_f_expr);
+			    free(args);
+			    hc_nested--;
+			    free(t1fme);
+			    return NULL;
+			  }
+			}
+			char *t2 = hc_get_arg(var_tmp->args,k);
+			if (t1 && t2)
+			{
+			  char *fme = custom_f_expr;
+			  if (strcmp(t1,t2)!=0)
+			  {
+			    custom_f_expr = strreplace(custom_f_expr,t2,t1);
+			    free(fme);
+			  }
+			  free(t1);
+			  free(t2);
+			  k++;
+			} else {
+			  if (t1 || t2)
+			  {
+			    arg_error_custom();
+			    if (t1)
+			      free(t1);
+			    else
+			      free(t2);
 			    free(e);
 			    free(args);
 			    free(tmp);
 			    hc_nested--;
 			    return NULL;
+			  } else {
+			    char *fme_cfe = custom_f_expr;
+			    if (!xybypass)
+			    {
+			      custom_f_expr = hc_result_(custom_f_expr);
+			      free(fme_cfe);
+			    }
+			    if (!custom_f_expr)
+			    {
+			      free(e);
+			      free(args);
+			      free(tmp);
+			      hc_nested--;
+			      return NULL;
+			    }
+			    unsigned int ffoundmine = ffound - e;
+			    free(e_fme);
+			    e = malloc(MAX_EXPR);
+			    strncpy(e,e_tmp,ffoundmine);
+			    e[ffoundmine]=0; // strncpy does NOT null-terminate automatically
+#ifdef DBG
+			    printf("{1} %s\n",e);
+#endif
+			    if (strlen(e_tmp)+strlen(custom_f_expr)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
+			      overflow_error();
+			    strcat(e,custom_f_expr);
+#ifdef DBG
+			    printf("{2} %s\n",e);
+#endif
+			    free(custom_f_expr);
+			    strcat(e,((char *)&e_tmp)+f_expr_e); // was +1
+#ifdef DBG
+			    printf("{3} %s\n",e);
+#endif
+			    free(args);
+			    char *rme = hc_result_(e);
+			    free(e);
+			    free(tmp);
+			    hc_nested--;
+			    return rme;
 			  }
-			  unsigned int ffoundmine = ffound - e;
-			  free(e_fme);
-			  e = malloc(MAX_EXPR);
-			  strncpy(e,e_tmp,ffoundmine);
-			  e[ffoundmine]=0; // strncpy does NOT null-terminate automatically
-#ifdef DBG
-			  printf("{1} %s\n",e);
-#endif
-			  if (strlen(e_tmp)+strlen(custom_f_expr)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
-			    overflow_error();
-			  strcat(e,custom_f_expr);
-#ifdef DBG
-			  printf("{2} %s\n",e);
-#endif
-			  free(custom_f_expr);
-			  strcat(e,((char *)&e_tmp)+f_expr_e); // was +1
-#ifdef DBG
-			  printf("{3} %s\n",e);
-#endif
-			  free(args);
-			  char *rme = hc_result_(e);
-			  free(e);
-			  free(tmp);
-			  hc_nested--;
-			  return rme;
 			}
 		      }
 		    }
 		  }
 		}
 	      }
+	      if (var_tmp->next && var_tmp->next->name)
+		var_tmp = var_tmp->next;
+	      else
+		var_tmp = NULL;
 	    }
-	    if (var_tmp->next && var_tmp->next->name)
-	      var_tmp = var_tmp->next;
-	    else
-	      var_tmp = NULL;
+	    if (!done && strcmp(tmp,"x")!=0 && strcmp(tmp,"y")!=0)
+	    {
+	      unknown_var_error(tmp,type);
+	      free(tmp);
+	      free(e);
+	      hc_nested--;
+	      return NULL;
+	    }
 	  }
-	  if (!done && strcmp(tmp,"x")!=0 && strcmp(tmp,"y")!=0)
-	  {
-	    unknown_var_error(tmp,type);
-	    free(tmp);
-	    free(e);
-	    hc_nested--;
-	    return NULL;
-	  }
+	  free(tmp);
 	}
-	free(tmp);
+	couldbevar = 0;
       }
-      couldbevar = 0;
+      pos_cur++;
     }
-    pos_cur++;
+    
+    // User-defined variables end
+  } else {
+    can_skip = TRUE;
   }
-
-  // User-defined variables end
 
   e = malloc(MAX_EXPR);
   if (!e)
@@ -725,6 +732,8 @@ char *hc_result_normal(char *f)
   int left_par=0,right_par=0,f_expr_s=0,f_expr_e=0;
   ignore = FALSE;
 
+  if (!can_skip)
+  {
   // Find & replace functions with their results
   for (i=0;i<MAX_EXPR;i++)
   {
@@ -745,10 +754,10 @@ char *hc_result_normal(char *f)
     if (isalpha(e[i]) && (tolower(e[i])!='i' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (tolower(e[i])!='e' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (isdigit(e[i+1])))
       break;
   }
+  }
 
-  
 
-  if (i >= MAX_EXPR)
+  if (can_skip || i >= MAX_EXPR)
   {
     // all functions were replaced, go go go power rangers (&xkcd)
     char *fme;
@@ -3114,6 +3123,7 @@ void hc_save_cfg()
 void hc_cleanup()
 {
   hc_output(PRINT,""); // make it close file descriptors (if any)
+  is_zero_free(); // free is_zero()'s M_APM if allocated
   hc_save_cfg();
 }
 
@@ -3178,4 +3188,3 @@ void hc_load(char *fname)
   fclose(fr);
   free(expr);
 }
-
