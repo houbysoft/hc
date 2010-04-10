@@ -737,28 +737,28 @@ char *hc_result_normal(char *f)
 
   if (!can_skip)
   {
-  // Find & replace functions with their results
-  for (i=0;i<MAX_EXPR;i++)
-  {
-    if (e[i]=='\"')
+    // Find & replace functions with their results
+    for (i=0;i<MAX_EXPR;i++)
     {
-      ignore = ignore == FALSE ? TRUE : FALSE;
-      continue;
+      if (e[i]=='\"')
+      {
+	ignore = ignore == FALSE ? TRUE : FALSE;
+	continue;
+      }
+      if (ignore)
+	continue;
+      if (e[i]==0)
+      {
+	i = MAX_EXPR;
+	break;
+      }
+      if (isalpha(e[i]) && (isalpha(e[i+1]) || e[i+1]=='(' || e[i+1]==0))
+	break;
+      if (isalpha(e[i]) && (tolower(e[i])!='i' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (tolower(e[i])!='e' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (isdigit(e[i+1])))
+	break;
     }
-    if (ignore)
-      continue;
-    if (e[i]==0)
-    {
-      i = MAX_EXPR;
-      break;
-    }
-    if (isalpha(e[i]) && (isalpha(e[i+1]) || e[i+1]=='(' || e[i+1]==0))
-      break;
-    if (isalpha(e[i]) && (tolower(e[i])!='i' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (tolower(e[i])!='e' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (isdigit(e[i+1])))
-      break;
   }
-  }
-
+  
 
   if (can_skip || i >= MAX_EXPR)
   {
