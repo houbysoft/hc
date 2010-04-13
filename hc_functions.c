@@ -1729,10 +1729,10 @@ int hc_output(int mode, char *f_expr)
       if (is_string(t1))
       {
 	tmp = get_string(t1);
-	free(t1);
       } else {
-	tmp = t1;
+	tmp = hc_strip_0s(t1);
       }
+      free(t1);
       if (!tmp)
       {
 	free(printme);
