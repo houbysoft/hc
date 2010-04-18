@@ -103,6 +103,7 @@ extern void type_error(char *expr);
 #define prompt(str) readline(str)
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
+#define is_vector(x) (strip_spaces(x)[0]=='[' && last_char(x)==']')
 
 #define NAME_VERSION "Welcome to hc 1.2 (infix / RPN) -- http://hc.houbysoft.com/\n"
 
@@ -140,6 +141,7 @@ extern void type_error(char *expr);
 
 #define HC_VAR_NUM 1
 #define HC_VAR_STR 2
+#define HC_VAR_VEC 3
 
 typedef enum {
   HC_COND_E, HC_COND_NE, HC_COND_GE, HC_COND_SE, HC_COND_S, HC_COND_G

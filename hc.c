@@ -228,7 +228,7 @@ char *hc_result(char *e)
   }
 
   char *r = hc_result_(e);
-  if (r && strlen(r) && !is_string(r))
+  if (r && strlen(r) && !is_string(r) && !is_vector(r))
   {
     char *tmp_num = hc_real_part(r);
     m_apm_set_string(hc_lans_mapm_re,tmp_num);
@@ -1754,15 +1754,35 @@ char *hc_i2p(char *f)
 	}
 
       } else {
-	if (tmp[i]!='\"')
+	if (isdigit(tmp[i]) || tmp[i]=='.')
 	{
 	  while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
 	    e[j++] = tmp[i++];
-	} else {
+	} else if (tmp[i]=='\"') {
 	  e[j++] = tmp[i++];
 	  while (tmp[i]!='\"')
 	    e[j++] = tmp[i++];
 	  e[j++] = tmp[i++];
+	} else if (tmp[i]=='[') {
+	  unsigned int pct = 1;
+	  unsigned int orig_j = j;
+	  e[j++] = tmp[i++];
+	  while (pct!=0)
+	  {
+	    if (tmp[i]=='[')
+	      pct++;
+	    if (tmp[i]==']')
+	      pct--;
+	    e[j++] = tmp[i++];
+	  }
+	  /*if (tmp[i]=='[') // index
+	  {
+	    j = orig_j;
+	    char *tmp = hc_array_get_pos();
+	    strcpy((char *)(e+j)[0],tmp);
+	    j += strlen(tmp);
+	    free(tmp);
+	    }*/
 	}
 	e[j++] = ' ';
 	i--;
@@ -2518,19 +2538,40 @@ char *hc_postfix_result(char *e)
 	  e[i] = '_';
 	j = 0;
 	char type;
-	if (e[i]!='\"')
+	if (isdigit(e[i]) || e[i]=='.')
 	{
 	  type = HC_VAR_NUM;
 	  while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
 	  {
 	    tmp_num[j++] = e[i++];
 	  }
-	} else {
+	} else if (e[i]=='\"') {
 	  type = HC_VAR_STR;
 	  tmp_num[j++] = e[i++];
 	  while (e[i]!='\"')
 	    tmp_num[j++] = e[i++];
 	  tmp_num[j++] = e[i++];
+	} else if (e[i]=='[') {
+	  type = HC_VAR_VEC;
+	  unsigned int pct = 1;
+	  unsigned int orig_j = j;
+	  tmp_num[j++] = e[i++];
+	  while (pct!=0)
+	  {
+	    if (e[i]=='[')
+	      pct++;
+	    if (e[i]==']')
+	      pct--;
+	    tmp_num[j++] = e[i++];
+	  }
+	  /*if (e[i]=='[') // index
+	  {
+	    j = orig_j;
+	    char *tmp_val = hc_array_get_pos();
+	    strcpy((char *)(tmp_num+j)[0],tmp_val);
+	    j += strlen(tmp_num);
+	    free(tmp_val);
+	    }*/
 	}
 	i--;
 	tmp_num[j]=0;
@@ -2554,6 +2595,9 @@ char *hc_postfix_result(char *e)
 	    m_apm_set_string(curr->im,"0"); // set null imaginary part
 	  }
 	} else if (curr->type == HC_VAR_STR)
+	{
+	  curr->str = strdup(tmp_num);
+	} else if (curr->type == HC_VAR_VEC)
 	{
 	  curr->str = strdup(tmp_num);
 	}
@@ -2676,7 +2720,7 @@ char hc_check(char *e)
 	  first = 1;
 	}
       }
-      if ((!isalnum(e[i])) && (!isoperator(e[i])) && (e[i]!='^') && (e[i]!='.') && !isspace(e[i]) && (e[i]!=',') && (e[i]!='x') && (e[i]!='_'))
+      if ((!isalnum(e[i])) && (!isoperator(e[i])) && (e[i]!='^') && (e[i]!='.') && !isspace(e[i]) && (e[i]!=',') && (e[i]!='x') && (e[i]!='_') && (e[i]!='[') && (e[i]!=']'))
       {
 	return 0;
       }
