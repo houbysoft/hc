@@ -2691,7 +2691,8 @@ char hc_check(char *e)
     char last_was_char=0;
     char last_was_int=0;
     char first=0;
-    int left_par=0,right_par=0;
+    int par=0;
+    int sq_par=0;
     char ignore=FALSE;
     for (i=0;i<strlen(e);i++)
     {
@@ -2748,9 +2749,14 @@ char hc_check(char *e)
 	}
       }
       if (e[i]=='(')
-	left_par++;
+	par++;
       if (e[i]==')')
-	right_par++;
+	par--;
+
+      if (e[i]=='[')
+	sq_par++;
+      if (e[i]==']')
+	sq_par--;
       
       if (isalpha(e[i]))
 	last_was_char = 1;
@@ -2762,7 +2768,7 @@ char hc_check(char *e)
 	last_was_int = 0;
     }
     
-    if (left_par != right_par)
+    if (par != 0 || sq_par != 0)
     {
       return 0;
     }
