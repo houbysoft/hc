@@ -20,6 +20,7 @@
 #define HC_H
 #include <math.h>
 #include <m_apm.h>
+#include <stdio.h> // for readline
 #include <readline/readline.h>
 #include "m_apmc.h"
 //#define NDEBUG

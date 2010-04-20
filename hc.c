@@ -28,6 +28,7 @@
 #include "hash.h"
 #include "hc_graph.h"
 #include "hc_complex.h"
+#include "hc_list.h"
 #define NHASH 29989 // use a large prime number
 #define MULT 31
 
@@ -1764,25 +1765,19 @@ char *hc_i2p(char *f)
 	    e[j++] = tmp[i++];
 	  e[j++] = tmp[i++];
 	} else if (tmp[i]=='[') {
-	  unsigned int pct = 1;
-	  unsigned int orig_j = j;
-	  e[j++] = tmp[i++];
-	  while (pct!=0)
+	  while (tmp[i]=='[')
 	  {
-	    if (tmp[i]=='[')
-	      pct++;
-	    if (tmp[i]==']')
-	      pct--;
+	    unsigned int pct = 1;
 	    e[j++] = tmp[i++];
+	    while (pct!=0)
+	    {
+	      if (tmp[i]=='[')
+		pct++;
+	      if (tmp[i]==']')
+		pct--;
+	      e[j++] = tmp[i++];
+	    }
 	  }
-	  /*if (tmp[i]=='[') // index
-	  {
-	    j = orig_j;
-	    char *tmp = hc_array_get_pos();
-	    strcpy((char *)(e+j)[0],tmp);
-	    j += strlen(tmp);
-	    free(tmp);
-	    }*/
 	}
 	e[j++] = ' ';
 	i--;
@@ -2554,7 +2549,6 @@ char *hc_postfix_result(char *e)
 	} else if (e[i]=='[') {
 	  type = HC_VAR_VEC;
 	  unsigned int pct = 1;
-	  unsigned int orig_j = j;
 	  tmp_num[j++] = e[i++];
 	  while (pct!=0)
 	  {
@@ -2564,14 +2558,21 @@ char *hc_postfix_result(char *e)
 	      pct--;
 	    tmp_num[j++] = e[i++];
 	  }
-	  /*if (e[i]=='[') // index
+	  while (e[i]=='[') // index
 	  {
-	    j = orig_j;
-	    char *tmp_val = hc_array_get_pos();
-	    strcpy((char *)(tmp_num+j)[0],tmp_val);
-	    j += strlen(tmp_num);
-	    free(tmp_val);
-	    }*/
+	    tmp_num[j]=0;
+	    if (!hc_list_get((char *)&tmp_num,&type,e,&i))
+	    {
+	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	      while (first->n)
+	      {
+		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	      }
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      return NULL;
+	    }
+	    j = strlen(tmp_num);
+	  }
 	}
 	i--;
 	tmp_num[j]=0;
