@@ -207,6 +207,7 @@ char *hc_get_arg(char *e, int pos)
 {
   int i=0;
   int par=0;
+  int sq_par=0;
   int p=0;
   char *tmp = strdup(e);
   if (!tmp)
@@ -228,7 +229,11 @@ char *hc_get_arg(char *e, int pos)
       par++;
     if (tmp[i]==')')
       par--;
-    if ((tmp[i]==',')&&(par==0))
+    if (tmp[i]=='[')
+      sq_par++;
+    if (tmp[i]==']')
+      sq_par--;
+    if ((tmp[i]==',')&&(par==0)&&(sq_par==0))
     {
       p++;
       tmp[i]=0;

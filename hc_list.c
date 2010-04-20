@@ -16,12 +16,42 @@
 /*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
 
 
+#include <stdlib.h>
 #include "hc.h"
+#include "hc_functions.h"
 #include "hc_list.h"
 
 
 // returns 0 on error
 char hc_list_get(char *data, char *type, char *scan, int *i)
 {
-  return 0; // TODO!
+  // scan[*i] points at the '[' of the beginning of the index
+  *i += 1;
+  char tmp_idx[MAX_DOUBLE_STRING];
+  int j=0;
+  while (scan[*i]!=']')
+  {
+    if (!isdigit(scan[*i]))
+      return 0; // only integer indexes are accepted
+    tmp_idx[j++] = scan[*i];
+    *i += 1;
+  }
+  *i += 1;
+  tmp_idx[j] = 0;
+  data[strlen(data)-1] = '\0'; // delete the last ']'
+  char *res = hc_get_arg((char *)(data + 1), atoi(tmp_idx) + 1);
+  if (!res)
+    return 0;
+
+  if (is_string(res))
+    *type = HC_VAR_STR;
+  else if (is_vector(res))
+    *type = HC_VAR_VEC;
+  else
+    *type = HC_VAR_NUM;
+
+  strcpy(data, res);
+  free(res);
+
+  return 1;
 }
