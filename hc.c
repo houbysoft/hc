@@ -1852,6 +1852,9 @@ char *hc_postfix_result(char *e)
 	} else if (op2_type == HC_VAR_STR)
 	{
 	  op2_str = get_string(curr->str);
+	} else if (op2_type == HC_VAR_VEC)
+	{
+	  op2_str = strdup(curr->str);
 	}
 	curr = curr->p; // [--sp]
 	op1_type = curr->type;
@@ -1861,7 +1864,10 @@ char *hc_postfix_result(char *e)
 	} else if (op1_type == HC_VAR_STR)
 	{
 	  op1_str = get_string(curr->str);
-	}	
+	} else if (op1_type == HC_VAR_VEC)
+	{
+	  op1_str = strdup(curr->str);
+	}
 	if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
 	{
 	  m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
@@ -1873,6 +1879,13 @@ char *hc_postfix_result(char *e)
 	  curr->str = str_multiply(op1_type == HC_VAR_STR ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
+	} else if ((op1_type == HC_VAR_NUM && m_apm_compare(op1_i,MM_Zero)==0 && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_NUM && m_apm_compare(op2_i,MM_Zero)==0 && op1_type == HC_VAR_VEC)) {
+	  curr->type = HC_VAR_VEC;
+	  free(curr->str); free(curr->n->str);
+	  curr->n->str = NULL;
+	  curr->str = list_multiply(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
+	  free(op1_str); op1_str = NULL;
+	  free(op2_str); op2_str = NULL;
 	} else {
 	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	  while (first->n)
@@ -1880,7 +1893,7 @@ char *hc_postfix_result(char *e)
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
 	  }
 	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
-	  type_error("* accepts either numbers, or an integer and a string");
+	  type_error("* accepts either numbers, an integer and a string, a vector and a real number");
 	  return NULL;	  
 	}
 	curr = curr->n; // [sp++]
