@@ -77,10 +77,12 @@
 #define recursion_error() {printf("Error : too much recursion/nestedness. If you know what you are doing, you can bypass this with:\n \\bpn.\n");}
 #define boxplot_cplx_error() {printf("Warning : Complex part of number was ignored in the boxplot.\n");}
 #define type_error(str) printf("Type error : %s\n",str)
+#define dim_error() printf("Dimension error.\n")
 #else
 extern void unknown_var_error(char *var, char type);
 extern void load_error(unsigned int line, char *expr);
 extern void type_error(char *expr);
+#define dim_error() notify_error("Dimension error.\n")
 #define varname_error() {notify_error("Invalid variable name (variables must contain only letters and numbers, and may not be 'e' or 'i', which are used for exponents and complex numbers respectively).\n");return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define var_nospecial_error() {notify_error("You cannot use +=, -=, *= or /= with this type of variable.\n");return;}

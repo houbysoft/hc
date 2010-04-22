@@ -34,7 +34,6 @@ char hc_list_get(char *data, char *type, char *scan, int *i)
     if (!isdigit(scan[*i]))
     {
       arg_error("only integer indexes are accepted.");
-      return 0;
     }
     tmp_idx[j++] = scan[*i];
     *i += 1;
@@ -46,7 +45,6 @@ char hc_list_get(char *data, char *type, char *scan, int *i)
   if (!res)
   {
     arg_error("index out of range.");
-    return 0;
   }
 
   if (is_string(res))
@@ -96,5 +94,52 @@ char *list_multiply(char *list, M_APM n)
 
   free(n_str);
   res[strlen(res)-1] = ']';
+  return res;
+}
+
+
+char *list_add(char *l1, char *l2)
+{
+  l1++; l2++;
+  l1[strlen(l1)-1]='\0'; l2[strlen(l2)-1]='\0';
+  char *res = malloc(2);
+  if (!res)
+    mem_error();
+  strcpy(res,"[");
+  long idx = 1;
+  char *curarg1 = hc_get_arg(l1,idx);
+  char *curarg2 = hc_get_arg(l2,idx);
+  while (curarg1 && curarg2)
+  {
+    char *tmp = malloc(strlen(curarg1)+1+strlen(curarg2)+1);    
+    if (!tmp)
+      mem_error();
+    sprintf(tmp,"%s+%s",curarg1,curarg2);
+    char *tmp_r = hc_result_(tmp);
+    free(tmp);
+    if (!tmp_r)
+    {
+      free(curarg1); free(curarg2);
+      free(res);
+      return NULL;
+    }
+    res = realloc(res,strlen(res)+strlen(tmp_r)+2);
+    strcat(res,tmp_r);
+    strcat(res,",");
+    free(tmp_r);
+    free(curarg1);
+    free(curarg2);
+    curarg1 = hc_get_arg(l1,++idx);
+    curarg2 = hc_get_arg(l2,idx);
+  }
+
+  res[strlen(res)-1] = ']';
+
+  if (curarg1 || curarg2)
+  {
+    dim_error();
+    return NULL;
+  }
+
   return res;
 }

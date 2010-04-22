@@ -2047,14 +2047,19 @@ char *hc_postfix_result(char *e)
 	} else if (op2_type == HC_VAR_STR)
 	{
 	  op2_str = get_string(curr->str);
+	} else if (op2_type == HC_VAR_VEC)
+	{
+	  op2_str = strdup(curr->str);
 	}
 	curr = curr->p; // [--sp]
 	op1_type = curr->type;
 	if (op1_type == HC_VAR_NUM)
 	{
 	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	} else {
+	} else if (op1_type == HC_VAR_STR) {
 	  op1_str = get_string(curr->str);
+	} else if (op1_type == HC_VAR_VEC) {
+	  op1_str = strdup(curr->str);
 	}
 	if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
 	{
@@ -2070,6 +2075,23 @@ char *hc_postfix_result(char *e)
 	  if (!curr->str)
 	    mem_error();
 	  sprintf(curr->str,"\"%s%s\"",op1_str,op2_str);
+	  free(op1_str); op1_str = NULL;
+	  free(op2_str); op2_str = NULL;
+	} else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_VEC) {
+	  curr->type = HC_VAR_VEC;
+	  free(curr->str);
+	  free(curr->n->str);
+	  curr->n->str = NULL;
+	  if (!(curr->str = list_add(op1_str, op2_str)))
+	  {
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    return NULL;
+	  }
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
 	} else {
