@@ -107,6 +107,7 @@ extern void type_error(char *expr);
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
 #define is_vector(x) (strip_spaces(x)[0]=='[' && last_char(x)==']')
+#define is_num(x) (!is_string(x) && !is_vector(x))
 
 #define NAME_VERSION "Welcome to hc 1.2 (infix / RPN) -- http://hc.houbysoft.com/\n"
 

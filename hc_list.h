@@ -20,7 +20,7 @@
 #define HC_LIST_H
 
 extern char hc_list_get(char *data, char *type, char *scan, int *i);
-extern char *list_multiply(char *str, M_APM n);
-extern char *list_add(char *l1, char *l2);
+extern char *list_multiply(char *str, M_APM n_r, M_APM n_i);
+extern char *list_add_sub(char *l1, char *l2, char mode);
 
 #endif

@@ -61,11 +61,18 @@ char hc_list_get(char *data, char *type, char *scan, int *i)
 }
 
 
-char *list_multiply(char *list, M_APM n)
+char *list_multiply(char *list, M_APM n_r, M_APM n_i)
 {
   list++; // skip the initial '['; this assumes valid data is sent in
   list[strlen(list)-1] = '\0';
-  char *n_str = m_apm_to_fixpt_stringexp(0, n, '.', 0, 0); // only integers
+  char *n_str_r = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, n_r, '.', 0, 0);
+  char *n_str_i = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, n_i, '.', 0, 0);
+  char *n_str = malloc(strlen(n_str_r)+1+strlen(n_str_i)+1);
+  if (!n_str)
+    mem_error();
+  sprintf(n_str,"%si%s",n_str_r,n_str_i);
+  free(n_str_r);
+  free(n_str_i);
   char *res = malloc(2);
   if (!res)
     mem_error();
@@ -98,7 +105,7 @@ char *list_multiply(char *list, M_APM n)
 }
 
 
-char *list_add(char *l1, char *l2)
+char *list_add_sub(char *l1, char *l2, char mode)
 {
   l1++; l2++;
   l1[strlen(l1)-1]='\0'; l2[strlen(l2)-1]='\0';
@@ -111,10 +118,10 @@ char *list_add(char *l1, char *l2)
   char *curarg2 = hc_get_arg(l2,idx);
   while (curarg1 && curarg2)
   {
-    char *tmp = malloc(strlen(curarg1)+1+strlen(curarg2)+1);    
+    char *tmp = malloc(strlen(curarg1)+1+strlen(curarg2)+1);
     if (!tmp)
       mem_error();
-    sprintf(tmp,"%s+%s",curarg1,curarg2);
+    sprintf(tmp,"%s%c%s",curarg1,mode,curarg2);
     char *tmp_r = hc_result_(tmp);
     free(tmp);
     if (!tmp_r)
@@ -137,6 +144,7 @@ char *list_add(char *l1, char *l2)
 
   if (curarg1 || curarg2)
   {
+    free(curarg1); free(curarg2); free(res);
     dim_error();
     return NULL;
   }

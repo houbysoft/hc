@@ -300,6 +300,31 @@ char *hc_result(char *e)
       strcat(r,r_im);
       free(r_re); free(r_im);
     }
+  } else if (r && strlen(r) && is_vector(r)) {
+    r[strlen(r)-1] = '\0';
+    char *r_new = malloc(2);
+    if (!r_new)
+      mem_error();
+    strcpy(r_new,"[");
+    long idx = 1;
+    char *curarg = hc_get_arg((char *)(r + sizeof(char)),idx);
+    while (curarg)
+    {
+      if (is_num(curarg))
+      {
+	char *tmp = curarg;
+	curarg = hc_strip_0s(curarg);
+	free(tmp);
+      }
+      r_new = realloc(r_new, strlen(r_new)+1+strlen(curarg)+1);
+      strcat(r_new,curarg);
+      strcat(r_new,",");
+      free(curarg);
+      curarg = hc_get_arg((char *)(r + sizeof(char)),++idx);
+    }
+    r_new[strlen(r_new)-1] = ']';
+    free(r);
+    r = r_new;
   }
   return r;
 }
@@ -1755,7 +1780,7 @@ char *hc_i2p(char *f)
 	}
 
       } else {
-	if (isdigit(tmp[i]) || tmp[i]=='.')
+	if (isdigit(tmp[i]) || tmp[i]=='.' || tmp[i]=='_')
 	{
 	  while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
 	    e[j++] = tmp[i++];
@@ -1879,11 +1904,11 @@ char *hc_postfix_result(char *e)
 	  curr->str = str_multiply(op1_type == HC_VAR_STR ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
-	} else if ((op1_type == HC_VAR_NUM && m_apm_compare(op1_i,MM_Zero)==0 && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_NUM && m_apm_compare(op2_i,MM_Zero)==0 && op1_type == HC_VAR_VEC)) {
+	} else if ((op1_type == HC_VAR_NUM && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_NUM && op1_type == HC_VAR_VEC)) {
 	  curr->type = HC_VAR_VEC;
 	  free(curr->str); free(curr->n->str);
 	  curr->n->str = NULL;
-	  curr->str = list_multiply(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
+	  curr->str = list_multiply(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i);
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
 	} else {
@@ -1893,7 +1918,7 @@ char *hc_postfix_result(char *e)
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
 	  }
 	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
-	  type_error("* accepts either numbers, an integer and a string, a vector and a real number");
+	  type_error("* accepts either numbers, an integer and a string, or a vector and a number");
 	  return NULL;	  
 	}
 	curr = curr->n; // [sp++]
@@ -2082,7 +2107,7 @@ char *hc_postfix_result(char *e)
 	  free(curr->str);
 	  free(curr->n->str);
 	  curr->n->str = NULL;
-	  if (!(curr->str = list_add(op1_str, op2_str)))
+	  if (!(curr->str = list_add_sub(op1_str, op2_str, '+')))
 	  {
 	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
@@ -2101,7 +2126,7 @@ char *hc_postfix_result(char *e)
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
 	  }
 	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
-	  type_error("+ accepts either two numbers or two strings");
+	  type_error("+ accepts either two numbers, two strings or two vectors");
 	  return NULL;
 	}
 	curr = curr->n; // [sp++]
@@ -2144,7 +2169,7 @@ char *hc_postfix_result(char *e)
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
 	    }
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
-	    type_error("- accepts only numbers");
+	    type_error("- accepts only two numbers or two vectors");
 	    return NULL;
 	  }
 	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
@@ -2174,7 +2199,7 @@ char *hc_postfix_result(char *e)
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
 	    }
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
-	    type_error("- accepts only numbers");
+	    type_error("- accepts only two numbers or two vectors");
 	    return NULL;
 	  }
 	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
@@ -2568,7 +2593,7 @@ char *hc_postfix_result(char *e)
 	  e[i] = '_';
 	j = 0;
 	char type;
-	if (isdigit(e[i]) || e[i]=='.')
+	if (isdigit(e[i]) || e[i]=='.' || e[i]=='_')
 	{
 	  type = HC_VAR_NUM;
 	  while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
