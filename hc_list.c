@@ -78,6 +78,7 @@ char *list_neg(char *list)
     char *curres = hc_result_(curtmp);
     if (!curres)
     {
+      free(curtmp); free(curarg); free(res);
       return NULL;
     }
     res = realloc(res,strlen(curres)+strlen(res)+2);
