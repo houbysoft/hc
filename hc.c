@@ -2136,19 +2136,34 @@ char *hc_postfix_result(char *e)
 	if (!isdigit(e[i+1]))
 	{
 	  curr = curr->p;
-	  if (curr->type != HC_VAR_NUM)
+	  if (curr->type == HC_VAR_NUM)
 	  {
+	    m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	    m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
+	  } else if (curr->type == HC_VAR_VEC) {
+	    char *tmp = curr->str;
+	    curr->str = list_neg(curr->str);
+	    free(tmp);
+	    if (!curr->str)
+	    {
+	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	      while (first->n)
+	      {
+		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	      }
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      return NULL;
+	    }
+	  } else {
 	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
 	    while (first->n)
 	    {
 	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
 	    }
 	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
-	    type_error("- accepts only numbers");
+	    type_error("- accepts only numbers or vectors");
 	    return NULL;
 	  }
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	  m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
 	  curr = curr->n;
 	  break;
 	} else {
@@ -2634,6 +2649,9 @@ char *hc_postfix_result(char *e)
 	      pct--;
 	    tmp_num[j++] = e[i++];
 	  }
+	  tmp_num[j]=0;
+	  list_simplify((char *)&tmp_num);
+	  j = strlen(tmp_num);
 	  while (e[i]=='[') // index
 	  {
 	    tmp_num[j]=0;

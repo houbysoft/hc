@@ -61,6 +61,36 @@ char hc_list_get(char *data, char *type, char *scan, int *i)
 }
 
 
+char *list_neg(char *list)
+{
+  list++;
+  list[strlen(list)-1] = '\0';
+  char *res = malloc(2);
+  strcpy(res,"[");
+  long idx = 1;
+  char *curarg = hc_get_arg(list,idx);
+  while (curarg)
+  {
+    char *curtmp = malloc(2+strlen(curarg)+2);
+    if (!curtmp)
+      mem_error();
+    sprintf(curtmp,"-(%s)",curarg);
+    char *curres = hc_result_(curtmp);
+    if (!curres)
+    {
+      return NULL;
+    }
+    res = realloc(res,strlen(curres)+strlen(res)+2);
+    strcat(res,curres);
+    strcat(res,",");
+    free(curres); free(curtmp); free(curarg);
+    curarg = hc_get_arg(list,++idx);
+  }
+  res[strlen(res)-1] = ']';
+  return res;
+}
+
+
 char *list_multiply(char *list, M_APM n_r, M_APM n_i)
 {
   list++; // skip the initial '['; this assumes valid data is sent in
@@ -150,4 +180,29 @@ char *list_add_sub(char *l1, char *l2, char mode)
   }
 
   return res;
+}
+
+
+void list_simplify(char *list)
+{
+  char *old = strdup((char *)(list+1));
+  if (!old)
+    mem_error();
+  old[strlen(old)-1] = '\0';
+  strcpy(list,"[");
+  long idx = 1;
+  char *curarg = hc_get_arg(old,idx);
+  while (curarg)
+  {
+    char *curres = hc_result_(curarg);
+    if (!curres)
+      return;
+    strcat(list,curres);
+    strcat(list,",");
+    free(curarg);
+    free(curres);
+    curarg = hc_get_arg(old,++idx);
+  }
+  list[strlen(list)-1] = ']';
+  free(old);
 }
