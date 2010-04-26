@@ -115,7 +115,7 @@ char *strreplace(char *in, char *old, char *new)
     return result;
   }
   char *tnew=NULL;
-  if (!is_string(new))
+  if (!is_string(new) && !is_vector(new))
   {
     tnew = malloc(strlen(new)+3);
     if (!tnew)
