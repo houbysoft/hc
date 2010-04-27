@@ -3,8 +3,8 @@
 # HC is provided under the GNU GPLv3 License
 
 # additional options to pass to gcc when compiling
-COPT=-DDBG -g -lefence -Wall
-#COPT=-Wall
+#COPT=-DDBG -g -lefence -Wall
+COPT=-Wall
 #COPT=-DI_HATE_TIPS -Wall
 
 
