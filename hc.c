@@ -105,6 +105,11 @@ const char *hc_fnames[][2] = {
   {"conversions","cmd"},
   {"logic","cmd"},
   {"i","sys"},
+  {"if","sys"},
+  {"else","sys"},
+  {"for","sys"},
+  {"while","sys"},
+  {"return","sys"},
   // DIRECTIONS/CONFIG (for tab-complete)
   {"\\p","dir"},
   {"\\rpn","dir"},
@@ -338,7 +343,7 @@ char *hc_result_(char *e)
     return NULL;
   char *r=NULL;
   
-  if (iscontrolstruct(e) || (strchr(e,';') && !(isvarassign(e))))
+  if (iscontrolstruct(e) || (strchr_outofblock(e,';') && !(isvarassign(e))))
   {
     if (iscontrolstruct(e))
     {
@@ -2816,8 +2821,9 @@ char hc_check(char *e)
 	  first = 1;
 	}
       }
-      if ((!isalnum(e[i])) && (!isoperator(e[i])) && (e[i]!='^') && (e[i]!='.') && !isspace(e[i]) && (e[i]!=',') && (e[i]!='x') && (e[i]!='_') && (e[i]!='[') && (e[i]!=']'))
+      if ((!isalnum(e[i])) && (!isoperator(e[i])) && (e[i]!='^') && (e[i]!='.') && !isspace(e[i]) && (e[i]!=',') && (e[i]!='x') && (e[i]!='_') && (e[i]!='[') && (e[i]!=']') && (e[i]!='{') && (e[i]!='}') && (e[i]!=';'))
       {
+	
 	return 0;
       }
       if (isoperator_np(e[i]))
