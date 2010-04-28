@@ -92,7 +92,7 @@ char *list_neg(char *list)
 }
 
 
-char *list_multiply(char *list, M_APM n_r, M_APM n_i)
+char *list_mul_div(char *list, M_APM n_r, M_APM n_i, char mode)
 {
   list++; // skip the initial '['; this assumes valid data is sent in
   list[strlen(list)-1] = '\0';
@@ -115,10 +115,16 @@ char *list_multiply(char *list, M_APM n_r, M_APM n_i)
     char *tmp = malloc(strlen(curarg)+1+strlen(n_str)+1);
     if (!tmp)
       mem_error();
-    sprintf(tmp,"%s*%s",curarg,n_str);
+    sprintf(tmp,"%s%c%s",curarg,mode,n_str);
     char *tmp_r = hc_result_(tmp);
     if (!tmp_r)
-      return NULL; // TODO. multiplying by an integer should always work for all types, though
+    {
+      free(tmp);
+      free(res);
+      free(curarg);
+      free(n_str);
+      return NULL;
+    }
     free(tmp);
     res = realloc(res, strlen(res)+strlen(tmp_r)+2);
     if (!res)
@@ -197,7 +203,11 @@ void list_simplify(char *list)
   {
     char *curres = hc_result_(curarg);
     if (!curres)
+    {
+      free(old);
+      free(curarg);
       return;
+    }
     strcat(list,curres);
     strcat(list,",");
     free(curarg);
