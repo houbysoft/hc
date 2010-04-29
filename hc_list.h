@@ -23,6 +23,7 @@ extern char hc_list_get(char *data, char *type, char *scan, int *i);
 extern char *list_mul_div(char *str, M_APM n_r, M_APM n_i, char mode);
 extern char *list_add_sub(char *l1, char *l2, char mode);
 extern char *list_neg(char *list);
+extern char *list_clean(char *list);
 extern void list_simplify(char *list);
 
 #endif

@@ -24,6 +24,7 @@
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_complex.h"
+#include "hc_list.h"
 
 
 double hc_strtod(const char *e, char *unused)
@@ -1622,6 +1623,70 @@ int hc_rand(M_APM res, char *f_expr)
   } else {
     m_apm_get_random(res);
   }
+  return SUCCESS;
+}
+
+
+int hc_dotp(M_APM re, M_APM im, char *f_expr)
+{
+  char *v1_orig = hc_get_arg(f_expr,1);
+  char *v2_orig = hc_get_arg(f_expr,2);
+  if (!v1_orig || !v2_orig || !is_vector(v1_orig) || !is_vector(v2_orig))
+  {
+    free(v1_orig); free(v2_orig);
+    arg_error("dotp() needs 2 arguments (v1, v2).");
+  }
+  char *v1 = list_clean(v1_orig);
+  char *v2 = list_clean(v2_orig);
+
+  long idx = 1;
+  char *curarg1 = hc_get_arg(v1,idx);
+  char *curarg2 = hc_get_arg(v2,idx);
+  char *res = malloc(1);
+  res[0] = '\0';
+  while (curarg1 && curarg2)
+  {
+    char *tmp = malloc(strlen(res)+1+strlen(curarg1)+1+strlen(curarg2)+1);
+    if (!tmp)
+      mem_error();
+    if (strlen(res))
+      sprintf(tmp,"%s+%s*%s",res,curarg1,curarg2);
+    else
+      sprintf(tmp,"%s*%s",curarg1,curarg2);
+    char *tmpres = hc_result_(tmp);
+    if (!tmpres)
+    {
+      free(tmp); free(res); free(curarg1); free(curarg2); free(v1_orig); free(v2_orig);
+      return FAIL;
+    }
+    free(tmp);
+    free(res);
+    res = tmpres;
+    free(curarg1);
+    free(curarg2);
+    curarg1 = hc_get_arg(v1,++idx);
+    curarg2 = hc_get_arg(v2,idx);
+  }
+
+  free(v1_orig);
+  free(v2_orig);
+
+  if (curarg1 || curarg2)
+  {
+    free(curarg1); free(curarg2); free(res);
+    arg_error("dotp() : vectors must be of equal length.");
+  }
+
+  char *res_re = hc_real_part(res);
+  char *res_im = hc_imag_part(res);
+  m_apm_set_string(re,res_re);
+  if (res_im)
+    m_apm_set_string(im,res_im);
+
+  free(res);
+  free(res_re);
+  free(res_im);
+
   return SUCCESS;
 }
 

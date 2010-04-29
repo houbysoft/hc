@@ -53,6 +53,7 @@ extern int hc_input(M_APM, M_APM, char *);
 #define WRITE 1
 extern int hc_output(int, char *);
 extern int hc_mmass(M_APM, char *);
+extern int hc_dotp(M_APM, M_APM, char *);
 
 extern void hc_from_rad(M_APM);
 extern void hc_to_rad(M_APM);

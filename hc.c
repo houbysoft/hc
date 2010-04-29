@@ -48,6 +48,7 @@ const char *hc_fnames[][2] = {
   {"cosh","func"},
   {"ctof","func"},
   {"ctok","func"},
+  {"dotp","func"},
   {"exp","func"},
   {"factorial","func"},
   {"fibo","func"},
@@ -1325,6 +1326,11 @@ char *hc_result_normal(char *f)
 	m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_root(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im,3,3);
+      break;
+
+    case HASH_DOTP: // dot/scalar product
+      if (hc_dotp(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
     case HASH_STR:

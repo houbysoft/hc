@@ -217,3 +217,13 @@ void list_simplify(char *list)
   list[strlen(list)-1] = ']';
   free(old);
 }
+
+
+char *list_clean(char *list)
+{
+  char *r = strip_spaces(list) + 1;
+  while (r[strlen(r)-1]!=']')
+    r[strlen(r)-1] = '\0';
+  r[strlen(r)-1] = '\0';
+  return r;
+}

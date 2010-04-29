@@ -96,6 +96,10 @@
 // Chemistry
 #define HASH_MMASS 6053
 
+// Vectors
+#define HASH_CROSSP 17821
+#define HASH_DOTP 612
+
 // Type conversions
 #define HASH_STR 24258
 #define HASH_NUM 19479
