@@ -732,15 +732,6 @@ char *hc_result_normal(char *f)
   free(e_fme);
   e_fme = e;
 
-  /*
-    Obsolete
-  if (strcmp(e,HC_INF)==0)
-  {
-    hc_nested--;
-    return e;
-  }
-  */
-
   if (!hc_check(e))
   {
     syntax_error2();

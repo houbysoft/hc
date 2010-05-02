@@ -117,7 +117,6 @@ extern void type_error(char *expr);
 #define MAX_DOUBLE_STRING MAX_EXPR // To make the routines to check overflows work properly, do not change this (but you can change MAX_EXPR, obviously)
 #define MAX_OP_STACK (MAX_EXPR / 2)
 //#define MAX_DOUBLE_STACK MAX_EXPR
-#define HC_INF "inf"
 #define HC_DEC_PLACES (hc.precision*2)
 #define HC_GP3D_DEFAULT 25
 #define HC_GP3D_FAST 250
