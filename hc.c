@@ -784,6 +784,12 @@ char *hc_result_normal(char *f)
     printf("[1] %s\n",e);
 #endif
     e = fme = hc_i2p(e);
+    if (!e)
+    {
+      free(e_fme);
+      hc_nested--;
+      return NULL;
+    }
 #ifdef DBG
     printf("[2] %s\n",e);
 #endif
@@ -1801,6 +1807,10 @@ char *hc_i2p(char *f)
 	      e[j++] = tmp[i++];
 	    }
 	  }
+	} else {
+	  syntax_error2();
+	  free(e);
+	  return NULL;
 	}
 	e[j++] = ' ';
 	i--;
@@ -2697,6 +2707,15 @@ char *hc_postfix_result(char *e)
 	    }
 	    j = strlen(tmp_num);
 	  }
+	} else {
+	  syntax_error2();
+	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	  while (first->n)
+	  {
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	  }
+	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  return NULL;
 	}
 	i--;
 	tmp_num[j]=0;
