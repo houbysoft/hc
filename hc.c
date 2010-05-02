@@ -237,18 +237,14 @@ char *hc_result(char *e)
   char *r = hc_result_(e);
   if (r && strlen(r) && !is_string(r) && !is_vector(r))
   {
-    char *tmp_num = hc_real_part(r);
-    m_apm_set_string(hc_lans_mapm_re,tmp_num);
-    free(tmp_num);
-    tmp_num = hc_imag_part(r);
-    if (tmp_num)
-    {
-      m_apm_set_string(hc_lans_mapm_im,tmp_num);
-      free(tmp_num);
-    }
-    char *r_re,*r_im;
-    r_re = hc_real_part(r); r_im = hc_imag_part(r);
+    char *r_re = hc_real_part(r);
+    char *r_im = hc_imag_part(r);
     free(r);
+    m_apm_set_string(hc_lans_mapm_re,r_re);
+    if (r_im)
+    {
+      m_apm_set_string(hc_lans_mapm_im,r_im);
+    }
     if (!r_im)
     {
       r = r_re;
