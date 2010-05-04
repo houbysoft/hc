@@ -108,6 +108,7 @@ void hc_varassign(char *e)
       if (!tmp->args)
 	mem_error();
       tmp->value = strdup(expr);
+      tmp->value = hc_impmul_resolve(tmp->value);
       if (!tmp->value)
 	mem_error();
     }

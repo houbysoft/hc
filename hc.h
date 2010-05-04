@@ -218,6 +218,7 @@ extern void hc_load(char *fname);
 extern char *hc_result(char *e);
 extern char *hc_result_(char *e);
 extern char *hc_plusminus(char *);
+extern char *hc_impmul_resolve(char *);
 extern void hc_varassign(char *);
 extern char *hc_exec_struct(char *);
 extern char hc_check_varname(char *);
