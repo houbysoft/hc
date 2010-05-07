@@ -29,6 +29,7 @@
 
 #define HC_GRAPH_POINTS 100
 #define HC_GRAPH_POINTS_3D (hc.graph_points_3d)
+#define HC_GRAPH_POINTS_SF 25
 
 
 // Taken from example 11, to setup the color palette for 3D graphs
@@ -517,6 +518,164 @@ char hc_graph3d(char *e)
   free(a_x);
   free(a_y);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)
+  {
+    free(a[i]);
+    free(a_hasval[i]);
+  }
+  free(a);
+
+#ifdef HCG
+#ifndef WIN32
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#endif
+#endif
+  
+  return SUCCESS; 
+}
+
+
+char hc_graph_slpfld(char *e)
+{
+  char *func_expr,*t1,*t2,*t3,*t4,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax;
+  func_expr = hc_get_arg(e,1);
+  t1 = hc_get_arg(e,2);
+  t2 = hc_get_arg(e,3);
+  t3 = hc_get_arg(e,4);
+  t4 = hc_get_arg(e,5);
+  arg_xmin = hc_result_(t1);
+  arg_xmax = hc_result_(t2);
+  arg_ymin = hc_result_(t3);
+  arg_ymax = hc_result_(t4);
+  free(t1); free(t2); free(t3); free(t4);
+  double xmin,xmax,ymin,ymax;
+
+  if (!func_expr)
+    arg_error("slpfld() needs at least one argument (expr).");
+
+  if (!arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
+  {
+    if (arg_xmin || arg_xmax || arg_ymin || arg_ymax)
+      notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
+    xmin = hc.xminsf;
+    xmax = hc.xmaxsf;
+    ymin = hc.yminsf;
+    ymax = hc.ymaxsf;
+  } else {
+    hc.xminsf = xmin = strtod(arg_xmin,NULL);
+    hc.xmaxsf = xmax = strtod(arg_xmax,NULL);
+    hc.yminsf = ymin = strtod(arg_ymin,NULL);
+    hc.ymaxsf = ymax = strtod(arg_ymax,NULL);
+  }
+
+  unsigned int i = 0;
+  PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS_SF);
+  char **a_hasval = malloc(sizeof(char *)*HC_GRAPH_POINTS_SF);
+  for (i=0; i<HC_GRAPH_POINTS_SF; i++)
+  {
+    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_SF);
+    a_hasval[i] = malloc(sizeof(char)*HC_GRAPH_POINTS_SF);
+  }
+  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_SF);
+  PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_SF);
+  double r_x = ((xmax-xmin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)));
+  double r_y = ((ymax-ymin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)));
+  double stepx = (5*r_x) / 2;
+  double stepy = (5*r_y) / 2;
+  double curx = xmin + (3*((xmax-xmin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)))) / 2;
+  double cury = ymin + (3*((ymax-ymin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)))) / 2;
+
+  graphing_ignore_errors = TRUE;
+  unsigned int ii = 0;
+  for (i=0; i<HC_GRAPH_POINTS_SF; i++,curx+=stepx)
+  {
+    cury = ymin;
+    for (ii=0; ii<HC_GRAPH_POINTS_SF; ii++,cury+=stepy)
+    {
+      char tmp_curx[256],tmp_cury[256];
+      sprintf(tmp_curx,"%f",curx);
+      sprintf(tmp_cury,"%f",cury);
+      a_x[i] = strtod(tmp_curx,NULL);
+      a_y[ii] = strtod(tmp_cury,NULL);
+      char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
+      char *tmp_expr2 = strreplace(tmp_expr,"y",tmp_cury);
+      free(tmp_expr);
+      tmp_expr = tmp_expr2;
+      char *tmp_2 = hc_result_(tmp_expr);
+      char *tmp_3 = NULL;
+      if (tmp_2)
+	tmp_3 = hc_imag_part(tmp_2);
+      if (!tmp_3 && tmp_2)
+      {
+	a[i][ii] = strtod(tmp_2,NULL);
+	if (errno==ERANGE)
+	{
+	  a_hasval[i][ii] = 'n';
+	} else {
+	  a_hasval[i][ii] = 'y';
+	}
+      } else {
+	a_hasval[i][ii] = 'n';
+      }
+      free(tmp_expr);
+      if (tmp_2)
+	free(tmp_2);
+      if (tmp_3)
+	free(tmp_3);
+    }
+  }
+  graphing_ignore_errors = FALSE;
+
+#ifndef HCG
+  if (!hc.plplot_dev_override)
+#ifndef WIN32
+    plsdev("pngcairo");
+#else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
+  plsdev("pngcairo");
+  plsfnam("tmp-graph.png");
+#else
+  plsdev("wingcc");
+#endif
+#endif
+  plinit();
+  plcol0(15);
+  plenv(xmin,xmax,ymin,ymax,0,1);
+  char *graph_top_label = malloc(strlen("HoubySoft Calculator - Slope Field - dy/dx = ")+strlen(func_expr)+1);
+  if (!graph_top_label)
+    mem_error();
+  strcpy(graph_top_label,"HoubySoft Calculator - Slope Field - dy/dx = ");
+  strcat(graph_top_label,func_expr);
+  plcol0(15);
+  pllab("x","y",graph_top_label);
+  plcol0(1);
+
+  for (i=0; i<HC_GRAPH_POINTS_SF; i++)
+  {
+    for (ii=0; ii<HC_GRAPH_POINTS_SF; ii++)
+    {
+      pljoin(a_x[i] + sqrt((pow(r_x,2))/(1 + (pow(a[i][ii],2)))),a_y[ii] + a[i][ii] * sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_x[i] - sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_y[ii] - a[i][ii] * sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))));
+    }
+  }
+
+  plend();
+
+  free(graph_top_label);
+  free(func_expr);
+  if (arg_xmin)
+    free(arg_xmin);
+  if (arg_ymin)
+    free(arg_ymin);
+  if (arg_xmax)
+    free(arg_xmax);
+  if (arg_ymax)
+    free(arg_ymax);
+  free(a_x);
+  free(a_y);
+  for (i=0; i<HC_GRAPH_POINTS_SF; i++)
   {
     free(a[i]);
     free(a_hasval[i]);

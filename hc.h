@@ -31,7 +31,7 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_FNAMES 86
+#define HC_FNAMES 87
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128
@@ -177,6 +177,10 @@ typedef struct hc_config {
   double ymax3d;
   double zmin3d;
   double zmax3d;
+  double xminsf;
+  double xmaxsf;
+  double yminsf;
+  double ymaxsf;
 } hc_config_;
 
 typedef struct hc_stack_element {

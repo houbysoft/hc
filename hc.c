@@ -83,6 +83,7 @@ const char *hc_fnames[][2] = {
   {"round","func"},
   {"sin","func"},
   {"sinh","func"},
+  {"slpfld","func"},
   {"sqrt","func"},
   {"stats","func"},
   {"statsf","func"},
@@ -1482,6 +1483,19 @@ char *hc_result_normal(char *f)
 
     case HASH_GRAPH3D:
       hc_graph3d(f_expr);
+      announce_errors = FALSE;
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_re);
+      m_apm_free(f_result_im);
+      free(e);
+      hc_nested--;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
+      break;
+
+    case HASH_SLPFLD:
+      hc_graph_slpfld(f_expr);
       announce_errors = FALSE;
       m_apm_free(tmp_num_re);
       m_apm_free(tmp_num_im);
@@ -3158,8 +3172,8 @@ void hc_load_cfg()
   FILE *fr = fopen(HC_CFG_FILE,"r");
   hc.angle = 'r';
   hc.graph_points_3d = HC_GP3D_DEFAULT;
-  hc.xmin2d = hc.ymin2d = hc.xmin3d = hc.ymin3d = hc.zmin3d = -10;
-  hc.xmax2d = hc.ymax2d = hc.xmax3d = hc.ymax3d = hc.zmax3d = 10;
+  hc.xmin2d = hc.ymin2d = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xminsf = hc.yminsf = -10;
+  hc.xmax2d = hc.ymax2d = hc.xmax3d = hc.ymax3d = hc.zmax3d = hc.xmaxsf = hc.ymaxsf = 10;
   if (!fr)
   {
     hc.rpn = FALSE;
@@ -3272,6 +3286,18 @@ void hc_load_cfg()
       case HASH_ZMAX3D:
 	hc.zmax3d = strtod(&buffer[i+1],NULL);
 	break;
+      case HASH_XMINSF:
+	hc.xminsf = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_XMAXSF:
+	hc.xmaxsf = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMINSF:
+	hc.yminsf = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMAXSF:
+	hc.ymaxsf = strtod(&buffer[i+1],NULL);
+	break;
       }
     }
     free(buffer);
@@ -3311,6 +3337,10 @@ void hc_save_cfg()
   fprintf(fw,"ymax3d=%f\n",hc.ymax3d);
   fprintf(fw,"zmin3d=%f\n",hc.zmin3d);
   fprintf(fw,"zmax3d=%f\n",hc.zmax3d);
+  fprintf(fw,"xminsf=%f\n",hc.xminsf);
+  fprintf(fw,"xmaxsf=%f\n",hc.xmaxsf);
+  fprintf(fw,"yminsf=%f\n",hc.yminsf);
+  fprintf(fw,"ymaxsf=%f\n",hc.ymaxsf);
   fclose(fw);
 }
 
