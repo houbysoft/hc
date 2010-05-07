@@ -657,7 +657,8 @@ char hc_graph_slpfld(char *e)
   {
     for (ii=0; ii<HC_GRAPH_POINTS_SF; ii++)
     {
-      pljoin(a_x[i] + sqrt((pow(r_x,2))/(1 + (pow(a[i][ii],2)))),a_y[ii] + a[i][ii] * sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_x[i] - sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_y[ii] - a[i][ii] * sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))));
+      if (a_hasval[i][ii]=='y')
+	pljoin(a_x[i] + sqrt((pow(r_x,2))/(1 + (pow(a[i][ii],2)))),a_y[ii] + a[i][ii] * sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_x[i] - sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_y[ii] - a[i][ii] * sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))));
     }
   }
 
