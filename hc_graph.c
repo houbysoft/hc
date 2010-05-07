@@ -582,14 +582,14 @@ char hc_graph_slpfld(char *e)
   double r_y = ((ymax-ymin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)));
   double stepx = (5*r_x) / 2;
   double stepy = (5*r_y) / 2;
-  double curx = xmin + (3*((xmax-xmin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)))) / 2;
-  double cury = ymin + (3*((ymax-ymin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)))) / 2;
+  double curx = xmin + (3*r_x)/2;
+  double cury = ymin + (3*r_y)/2;
 
   graphing_ignore_errors = TRUE;
   unsigned int ii = 0;
   for (i=0; i<HC_GRAPH_POINTS_SF; i++,curx+=stepx)
   {
-    cury = ymin;
+    cury = ymin + (3*r_y)/2;
     for (ii=0; ii<HC_GRAPH_POINTS_SF; ii++,cury+=stepy)
     {
       char tmp_curx[256],tmp_cury[256];
