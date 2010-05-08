@@ -46,6 +46,7 @@ const char *hc_fnames[][2] = {
   {"cmtoinch","func"},
   {"cos","func"},
   {"cosh","func"},
+  {"crossp","func"},
   {"ctof","func"},
   {"ctok","func"},
   {"dotp","func"},
@@ -1327,6 +1328,12 @@ char *hc_result_normal(char *f)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
       break;
 
+    case HASH_CROSSP: // cross product
+      if ((f_result_str = hc_crossp(f_expr)) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      f_result_type = HC_VAR_VEC;
+      break;
+
     case HASH_STR:
       if ((f_result_str = hc_2str(f_expr)) == NULL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
@@ -1595,7 +1602,7 @@ char *hc_result_normal(char *f)
       } else {
 	f_result_tmp = f_result_tmp_re;
       }
-    } else if (f_result_type == HC_VAR_STR)
+    } else if (f_result_type == HC_VAR_STR || f_result_type == HC_VAR_VEC)
     {
       f_result_tmp = f_result_str;
     }

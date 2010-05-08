@@ -1691,6 +1691,58 @@ int hc_dotp(M_APM re, M_APM im, char *f_expr)
 }
 
 
+char *hc_crossp(char *f_expr)
+{
+  char *v1_orig = hc_get_arg(f_expr,1);
+  char *v2_orig = hc_get_arg(f_expr,2);
+  if (!v1_orig || !v2_orig || !is_vector(v1_orig) || !is_vector(v2_orig))
+  {
+    free(v1_orig); free(v2_orig);
+    arg_error("crossp() needs two 2-dimensional or 3-dimensional vectors as arguments.");
+  }
+  char *v1 = list_clean(v1_orig);
+  char *v2 = list_clean(v2_orig);
+
+  char *v1x = hc_get_arg(v1,1);
+  char *v1y = hc_get_arg(v1,2);
+  char *v1z = hc_get_arg(v1,3);
+  char *v1tmp = hc_get_arg(v1,4);
+
+  char *v2x = hc_get_arg(v2,1);
+  char *v2y = hc_get_arg(v2,2);
+  char *v2z = hc_get_arg(v2,3);
+  char *v2tmp = hc_get_arg(v2,4);
+
+  free(v1_orig); free(v2_orig);
+
+  if (!v1x || !v2x || !v1y || !v2y || v1tmp || v2tmp || (v2z == NULL && v1z != NULL) || (v1z == NULL && v2z != NULL))
+  {
+    free(v1x); free(v1y); free(v1z); free(v1tmp); free(v2x); free(v2y); free(v2z); free(v2tmp);
+    arg_error("crossp() needs two 2-dimensional or 3-dimensional vectors as arguments.");
+  }
+
+  unsigned int alloc = strlen("[*-*,*-*,*-*]")+2*strlen(v1x)+2*strlen(v2x)+2*strlen(v1y)+2*strlen(v2y)+1;
+  if (v1z)
+    alloc+=2*strlen(v1z) + 2*strlen(v2z);
+  char *r = malloc(alloc);
+  if (!r)
+    mem_error();
+
+  if (v1z)
+  {
+    // 3-dimensional vectors
+    sprintf(r,"[%s*%s-%s*%s,%s*%s-%s*%s,%s*%s-%s*%s]",v1y,v2z,v1z,v2y,v1z,v2x,v1x,v2z,v1x,v2y,v1y,v2x);
+  } else {
+    // 2-dimensional vectors
+    sprintf(r,"[0,0,%s*%s-%s*%s]",v1x,v2y,v1y,v2x);
+  }
+
+  free(v1x); free(v1y); free(v1z); free(v2x); free(v2y); free(v2z);
+
+  return r;
+}
+
+
 int hc_input(M_APM re, M_APM im, char *f_expr)
 {
   char *str=NULL;
