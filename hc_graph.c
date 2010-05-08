@@ -30,6 +30,7 @@
 #define HC_GRAPH_POINTS 100
 #define HC_GRAPH_POINTS_3D (hc.graph_points_3d)
 #define HC_GRAPH_POINTS_SF 25
+#define HC_GRAPH_PEQ_T_STEP (hc.peqstep)
 
 
 // Taken from example 11, to setup the color palette for 3D graphs
@@ -691,4 +692,137 @@ char hc_graph_slpfld(char *e)
 #endif
   
   return SUCCESS; 
+}
+
+
+char hc_graph_peq(char *e)
+{
+  char *func_exprx,*func_expry,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax;
+  func_exprx = hc_get_arg(e,1);
+  func_expry = hc_get_arg(e,2);
+  t1 = hc_get_arg(e,3);
+  t2 = hc_get_arg(e,4);
+  t3 = hc_get_arg(e,5);
+  t4 = hc_get_arg(e,6);
+  t5 = hc_get_arg(e,7);
+  t6 = hc_get_arg(e,8);
+  arg_tmin = hc_result_(t1);
+  arg_tmax = hc_result_(t2);
+  arg_xmin = hc_result_(t3);
+  arg_xmax = hc_result_(t4);
+  arg_ymin = hc_result_(t5);
+  arg_ymax = hc_result_(t6);
+  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6);
+  double tmin,tmax,xmin,xmax,ymin,ymax;
+
+  if (!func_exprx || !func_expry)
+  {
+    free(func_exprx); free(func_expry);
+    arg_error("graphpeq() needs at least two arguments (expr_x,expr_y).");
+  }
+  if (!arg_tmin || !arg_tmax || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
+  {
+    if (arg_xmin || arg_xmax || arg_ymin || arg_ymax || arg_tmin || arg_tmax)
+      notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
+    xmin = hc.xminpeq;
+    xmax = hc.xmaxpeq;
+    ymin = hc.yminpeq;
+    ymax = hc.ymaxpeq;
+    tmin = hc.tminpeq;
+    tmax = hc.tmaxpeq;
+  } else {
+    hc.xminpeq = xmin = strtod(arg_xmin,NULL);
+    hc.xmaxpeq = xmax = strtod(arg_xmax,NULL);
+    hc.yminpeq = ymin = strtod(arg_ymin,NULL);
+    hc.ymaxpeq = ymax = strtod(arg_ymax,NULL);
+    hc.tminpeq = tmin = strtod(arg_tmin,NULL);
+    hc.tmaxpeq = tmax = strtod(arg_tmax,NULL);
+  }
+
+#ifndef HCG
+  if (!hc.plplot_dev_override)
+#ifndef WIN32
+    plsdev("pngcairo");
+#else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
+  plsdev("pngcairo");
+  plsfnam("tmp-graph.png");
+#else
+  plsdev("wingcc");
+#endif
+#endif
+  plinit();
+  plcol0(15);
+  plenv(xmin,xmax,ymin,ymax,0,1);
+  char *graph_top_label = malloc(strlen("HoubySoft Calculator - Parametric Function - x = , y = ")+strlen(func_exprx)+strlen(func_expry)+1);
+  if (!graph_top_label)
+    mem_error();
+  strcpy(graph_top_label,"HoubySoft Calculator - Parametric Function - x = ");
+  strcat(graph_top_label,func_exprx);
+  strcat(graph_top_label,", y = ");
+  strcat(graph_top_label,func_expry);
+  plcol0(15);
+  pllab("x","y",graph_top_label);
+  plcol0(1);
+
+  double stept = HC_GRAPH_PEQ_T_STEP;
+  double curt = tmin;
+  graphing_ignore_errors = TRUE;
+  PLFLT x1,x2,y1,y2;
+  char discont = 1;
+  for (; curt <= tmax; curt+=stept)
+  {
+    char tmp_curt[256];
+    sprintf(tmp_curt,"%f",curt);
+    char *tmp_exprx = strreplace(func_exprx,"t",tmp_curt);
+    char *tmp_expry = strreplace(func_expry,"t",tmp_curt);
+    char *tmp_x = hc_result_(tmp_exprx);
+    char *tmp_y = hc_result_(tmp_expry);
+    char *tmp_xi = hc_imag_part(tmp_x);
+    char *tmp_yi = hc_imag_part(tmp_y);
+    if (tmp_xi || tmp_yi)
+    {
+      free(tmp_xi); free(tmp_yi);
+      discont = 1;
+    } else {
+      if (discont)
+      {
+	x1 = strtod(tmp_x,NULL);
+	y1 = strtod(tmp_y,NULL);
+	discont = 0;
+      } else {
+	x2 = strtod(tmp_x,NULL);
+	y2 = strtod(tmp_y,NULL);
+	pljoin(x1,y1,x2,y2);
+	x1 = x2;
+	y1 = y2;
+      }
+    }
+    free(tmp_exprx); free(tmp_expry);
+    free(tmp_x); free(tmp_y);
+  }
+
+  graphing_ignore_errors = FALSE;
+  plend();
+
+  free(graph_top_label);
+  free(func_exprx); free(func_expry);
+  free(arg_xmin);
+  free(arg_ymin);
+  free(arg_xmax);
+  free(arg_ymax);
+  free(arg_tmin);
+  free(arg_tmax);
+
+#ifdef HCG
+#ifndef WIN32
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#endif
+#endif
+
+  return SUCCESS;
 }

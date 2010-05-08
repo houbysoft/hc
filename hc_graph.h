@@ -23,5 +23,6 @@ extern char hc_graph(char *e);
 extern char hc_graph_n(char *e);
 extern char hc_graph3d(char *e);
 extern char hc_graph_slpfld(char *e);
+extern char hc_graph_peq(char *e);
 
 #endif

@@ -60,6 +60,7 @@ const char *hc_fnames[][2] = {
   {"fttom","func"},
   {"gcd","func"},
   {"graph","func"},
+  {"graphpeq","func"},
   {"gmul","func"},
   {"graph3","func"},
   {"inchtocm","func"},
@@ -603,7 +604,7 @@ char *hc_result_normal(char *f)
 			  char *t1fme = t1;
 			  char a_tmp = announce_errors;
 			  announce_errors = FALSE;
-			  if (strcmp(t1,"x")==0 || strcmp(t1,"y")==0)
+			  if (strcmp(t1,"x")==0 || strcmp(t1,"y")==0 || strcmp(t1,"t")==0)
 			  {
 			    t1 = malloc(2);
 			    strcpy(t1,t1fme);
@@ -706,7 +707,7 @@ char *hc_result_normal(char *f)
 	      else
 		var_tmp = NULL;
 	    }
-	    if (!done && strcmp(tmp,"x")!=0 && strcmp(tmp,"y")!=0)
+	    if (!done && strcmp(tmp,"x")!=0 && strcmp(tmp,"y")!=0 && strcmp(tmp,"t")!=0)
 	    {
 	      unknown_var_error(tmp,type);
 	      free(tmp);
@@ -1503,6 +1504,19 @@ char *hc_result_normal(char *f)
 
     case HASH_SLPFLD:
       hc_graph_slpfld(f_expr);
+      announce_errors = FALSE;
+      m_apm_free(tmp_num_re);
+      m_apm_free(tmp_num_im);
+      m_apm_free(f_result_re);
+      m_apm_free(f_result_im);
+      free(e);
+      hc_nested--;
+      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
+      return e;
+      break;
+
+    case HASH_GRAPHPEQ:
+      hc_graph_peq(f_expr);
       announce_errors = FALSE;
       m_apm_free(tmp_num_re);
       m_apm_free(tmp_num_im);
@@ -3179,8 +3193,11 @@ void hc_load_cfg()
   FILE *fr = fopen(HC_CFG_FILE,"r");
   hc.angle = 'r';
   hc.graph_points_3d = HC_GP3D_DEFAULT;
-  hc.xmin2d = hc.ymin2d = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xminsf = hc.yminsf = -10;
-  hc.xmax2d = hc.ymax2d = hc.xmax3d = hc.ymax3d = hc.zmax3d = hc.xmaxsf = hc.ymaxsf = 10;
+  hc.peqstep = HC_PEQSTEP_DEFAULT;
+  hc.xmin2d = hc.ymin2d = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xminsf = hc.yminsf = hc.xminpeq = hc.yminpeq = -10;
+  hc.xmax2d = hc.ymax2d = hc.xmax3d = hc.ymax3d = hc.zmax3d = hc.xmaxsf = hc.ymaxsf = hc.xmaxpeq = hc.ymaxpeq = 10;
+  hc.tminpeq = 0;
+  hc.tmaxpeq = 2 * 3.1415926535897932384626433832795028841971693993751058209749445923;
   if (!fr)
   {
     hc.rpn = FALSE;
@@ -3305,6 +3322,27 @@ void hc_load_cfg()
       case HASH_YMAXSF:
 	hc.ymaxsf = strtod(&buffer[i+1],NULL);
 	break;
+      case HASH_TMINPEQ:
+	hc.tminpeq = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_TMAXPEQ:
+	hc.tmaxpeq = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_XMINPEQ:
+	hc.xminpeq = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_XMAXPEQ:
+	hc.xmaxpeq = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMINPEQ:
+	hc.yminpeq = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_YMAXPEQ:
+	hc.ymaxpeq = strtod(&buffer[i+1],NULL);
+	break;
+      case HASH_PEQSTEP:
+	hc.peqstep = strtod(&buffer[i+1],NULL);
+	break;
       }
     }
     free(buffer);
@@ -3334,6 +3372,7 @@ void hc_save_cfg()
   fprintf(fw,"angle=%c\n",hc.angle);
   fprintf(fw,"expf=%c\n",hc.exp);
   fprintf(fw,"3dpoints=%i\n",hc.graph_points_3d);
+  fprintf(fw,"peqstep=%f\n",hc.peqstep);
   fprintf(fw,"xmin2d=%f\n",hc.xmin2d);
   fprintf(fw,"xmax2d=%f\n",hc.xmax2d);
   fprintf(fw,"ymin2d=%f\n",hc.ymin2d);
@@ -3348,6 +3387,12 @@ void hc_save_cfg()
   fprintf(fw,"xmaxsf=%f\n",hc.xmaxsf);
   fprintf(fw,"yminsf=%f\n",hc.yminsf);
   fprintf(fw,"ymaxsf=%f\n",hc.ymaxsf);
+  fprintf(fw,"tminpeq=%f\n",hc.tminpeq);
+  fprintf(fw,"tmaxpeq=%f\n",hc.tmaxpeq);
+  fprintf(fw,"xminpeq=%f\n",hc.xminpeq);
+  fprintf(fw,"xmaxpeq=%f\n",hc.xmaxpeq);
+  fprintf(fw,"yminpeq=%f\n",hc.yminpeq);
+  fprintf(fw,"ymaxpeq=%f\n",hc.ymaxpeq);
   fclose(fw);
 }
 

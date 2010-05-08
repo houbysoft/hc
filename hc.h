@@ -31,7 +31,7 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_FNAMES 88
+#define HC_FNAMES 89
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128
@@ -120,6 +120,7 @@ extern void type_error(char *expr);
 #define HC_DEC_PLACES (hc.precision*2)
 #define HC_GP3D_DEFAULT 25
 #define HC_GP3D_FAST 250
+#define HC_PEQSTEP_DEFAULT 0.02
 
 #define PW_SIGN '^'
 
@@ -167,6 +168,7 @@ typedef struct hc_config {
   int graph_width;
   int graph_height;
   unsigned int graph_points_3d;
+  double peqstep;
   double xmin2d;
   double xmax2d;
   double ymin2d;
@@ -181,6 +183,12 @@ typedef struct hc_config {
   double xmaxsf;
   double yminsf;
   double ymaxsf;
+  double tminpeq;
+  double tmaxpeq;
+  double xminpeq;
+  double xmaxpeq;
+  double yminpeq;
+  double ymaxpeq;
 } hc_config_;
 
 typedef struct hc_stack_element {
