@@ -196,6 +196,7 @@ Constants are stored with 128 decimal places.
 - round(x) - round x to the nearest integer (for .5 cases, away from zero)
 - sin(x) - sine of x
 - sinh(x) - hyperbolic sine of x
+- slpfld(expr[,xmin,xmax,ymin,ymax]) - draw a slope field of dy/dx = expr
 - sqrt(x) - returns the square root of x
 - stats(v1,v2,...,vn) - show stats info of v1...vn
 - statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency
