@@ -125,6 +125,7 @@ const char *hc_fnames[][2] = {
   {"\\grad","dir"},
   {"\\clear","dir"},
   {"\\load","dir"},
+  {"\\tstep","dir"},
   {"\\3dpoints","dir"}
 };
 
@@ -3085,6 +3086,15 @@ void hc_process_direction(char *d)
     printf("3D graphs will now be computed using %ix%i points.\n",hc.graph_points_3d,hc.graph_points_3d);
     if (hc.graph_points_3d > HC_GP3D_FAST)
       printf("Warning : your setting will probably cause the graph to render slowly. Consider lowering to the default, %ix%i points.\n",HC_GP3D_DEFAULT,HC_GP3D_DEFAULT);
+    break;
+  case HASH_TSTEP:
+    if (strtod(&d[i+1],NULL) <= 0.001)
+    {
+      printf("Please specify a real number larger than 0.001.\n");
+    } else {
+      hc.peqstep = strtod(&d[i+1],NULL);
+      printf("t-step for parametric equations is now set to %f.\n",hc.peqstep);
+    }
     break;
   case HASH_DEG:
     hc.angle = 'd';
