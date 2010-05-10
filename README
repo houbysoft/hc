@@ -153,8 +153,10 @@ Constants are stored with 128 decimal places.
 - cmtoinch(x) - converts x, which has to be in cm, to inches
 - cos(x) - cosine of x
 - cosh(x) - hyperbolic cosine of x
+- crossp(v1,v2) - return the vector cross product of v1 X v2
 - ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit
 - ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin
+- dotp(v1,v2) - return the vector dot product of v1 . v2
 - exp(x) - exponential function
 - factorial(x) - factorial of x (you can also use the '!' notation)
 - fibo(x) - return the xth term of the Fibonacci sequence
@@ -171,6 +173,7 @@ Constants are stored with 128 decimal places.
 - graph3(expr[,xmin,xmax,ymin,ymax,zmin,zmax]) - draw a 3D graph (generate a PNG file if in command-line), example syntax:
     graph3(x+y,-10,10,-10,10,-20,20)
     Note: as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional
+- graphpeq(expr_x,expr_y[,tmin,tmax,xmin,xmax,ymin,ymax]) - draw the parametric equation modeled by expr_x and expr_y (use t as the variable)
 - inchtocm(x) - converts x, which has to be in inches, to cm
 - input([str]) - shows an inut dialog using either a standard prompt or str, if specified
 - kmtomi(x) - converts x, which has to be in km, to miles
