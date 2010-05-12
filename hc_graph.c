@@ -27,7 +27,7 @@
 #include "hc_complex.h"
 
 
-#define HC_GRAPH_POINTS 100
+#define HC_GRAPH_POINTS 300
 #define HC_GRAPH_POINTS_3D (hc.graph_points_3d)
 #define HC_GRAPH_POINTS_SF 25
 #define HC_GRAPH_PEQ_T_STEP (hc.peqstep)
@@ -91,42 +91,10 @@ char hc_graph(char *e)
     hc.ymax2d = ymax = strtod(arg_ymax,NULL);
   }
 
-  unsigned int i = 0;
-  PLFLT *a= malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
-  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
-  char *a_hasval = malloc(sizeof(char)*HC_GRAPH_POINTS);
-  double step = fabs(xmax-xmin) / (HC_GRAPH_POINTS - 1);
+  double step = (xmax-xmin) / (HC_GRAPH_POINTS - 1);
   double curx = xmin;
-
-  graphing_ignore_errors = TRUE;
-  for (; i<HC_GRAPH_POINTS; i++,curx+=step)
-  {
-    char tmp_curx[256];
-    sprintf(tmp_curx,"%f",curx);
-    a_x[i] = strtod(tmp_curx,NULL);
-    char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
-    char *tmp_2 = hc_result_(tmp_expr);
-    char *tmp_3 = NULL;
-    if (tmp_2)
-      tmp_3 = hc_imag_part(tmp_2);
-    if (!tmp_3 && tmp_2)
-    {
-      a_hasval[i] = 'y';
-      a[i] = strtod(tmp_2,NULL);
-    } else {
-      if (i!=0)
-	a[i] = a[i-1];
-      else
-	a[i] = 0;
-      a_hasval[i] = 'n';
-    }
-    free(tmp_expr);
-    if (tmp_2)
-      free(tmp_2);
-    if (tmp_3)
-      free(tmp_3);
-  }
-  graphing_ignore_errors = FALSE;
+  char discont = 1;
+  PLFLT x1,x2,y1,y2;
 
 #ifndef HCG
   if (!hc.plplot_dev_override)
@@ -153,11 +121,41 @@ char hc_graph(char *e)
   strcat(graph_top_label,func_expr);
   pllab("x","y",graph_top_label);
   plcol0(1);
-  for (i=0; i<HC_GRAPH_POINTS-1; i++)
+
+  graphing_ignore_errors = TRUE;
+  for (; curx<=xmax; curx+=step)
   {
-    if (a_hasval[i]=='y' && a_hasval[i+1]=='y') // discontinuity check
-      pljoin(a_x[i],a[i],a_x[i+1],a[i+1]);
+    char tmp_curx[256];
+    sprintf(tmp_curx,"%f",curx);
+    char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
+    char *tmp_2 = hc_result_(tmp_expr);
+    char *tmp_3 = NULL;
+    if (tmp_2)
+      tmp_3 = hc_imag_part(tmp_2);
+    if (!tmp_3 && tmp_2 && strlen(tmp_2) && strtod(tmp_2,NULL)>=xmin && strtod(tmp_2,NULL)<=xmax)
+    {
+      if (discont)
+      {
+	x1 = curx;
+	y1 = strtod(tmp_2,NULL);
+	discont = 0;
+      } else {
+	x2 = curx;
+	y2 = strtod(tmp_2,NULL);
+	pljoin(x1,y1,x2,y2);
+	x1 = x2;
+	y1 = y2;
+      }
+    } else {
+      discont = 1;
+    }
+    free(tmp_expr);
+    if (tmp_2)
+      free(tmp_2);
+    if (tmp_3)
+      free(tmp_3);
   }
+  graphing_ignore_errors = FALSE;
   plend();
 
   free(graph_top_label);
@@ -170,9 +168,6 @@ char hc_graph(char *e)
     free(arg_ymin);
   if (arg_ymax)
     free(arg_ymax);
-  free(a_x);
-  free(a);
-  free(a_hasval);
 
 #ifdef HCG
 #ifndef WIN32
