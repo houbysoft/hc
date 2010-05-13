@@ -202,56 +202,15 @@ char hc_graph_n(char *e)
   double ymin = hc.ymin2d;
   double ymax = hc.ymax2d;
 
-  unsigned int i = 0;
-  PLFLT **a= malloc(sizeof(PLFLT *)*j);
-  PLFLT **a_x = malloc(sizeof(PLFLT *)*j);
-  char **a_hasval = malloc(sizeof(char *)*j);
-  for (i=0; i<j; i++)
-  {
-    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
-    a_x[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS);
-    a_hasval[i] = malloc(sizeof(char)*HC_GRAPH_POINTS);
-  }
-  double step = fabs(xmax-xmin) / (HC_GRAPH_POINTS - 1);
+  double step = (xmax-xmin) / (HC_GRAPH_POINTS - 1);
   double curx = xmin;
 
   graphing_ignore_errors = TRUE;
 
   unsigned int k=j;
+  PLFLT x1,y1,x2,y2;
+  char discont = 1;
 
-  for (j=0; j<k; j++)
-  {
-    curx = xmin;
-    for (i=0; i<HC_GRAPH_POINTS; i++,curx+=step)
-    {
-      char tmp_curx[256];
-      sprintf(tmp_curx,"%f",curx);
-      a_x[j][i] = strtod(tmp_curx,NULL);
-      char *tmp_expr = strreplace(func_expr[j],"x",tmp_curx);
-      char *tmp_2 = hc_result_(tmp_expr);
-      char *tmp_3 = NULL;
-      if (tmp_2)
-	tmp_3 = hc_imag_part(tmp_2);
-      if (!tmp_3 && tmp_2)
-      {
-	a_hasval[j][i] = 'y';
-	a[j][i] = strtod(tmp_2,NULL);
-      } else {
-	if (i!=0)
-	  a[j][i] = a[j][i-1];
-	else
-	  a[j][i] = 0;
-	a_hasval[j][i] = 'n';
-      }
-      free(tmp_expr);
-      if (tmp_2)
-	free(tmp_2);
-      if (tmp_3)
-	free(tmp_3);
-    }
-  }
-  graphing_ignore_errors = FALSE;
-  
 #ifndef HCG
   if (!hc.plplot_dev_override)
 #ifndef WIN32
@@ -290,30 +249,56 @@ char hc_graph_n(char *e)
   pllab("x","y",lbl);
   free(lbl);
   int color=1;
+
   for (j=0; j<k; j++)
   {
+    curx = xmin;
+    discont = 1;
     plcol0(color);
     color++;
     if (color==15) // 15 is white, 0 is black, 1 is red, details on page 131/153 of plplot-5.9.5.pdf (get it on plplot.sf.net)
       color = 1;
-    for (i=0; i<HC_GRAPH_POINTS-1; i++)
+    for (; curx<=xmax; curx+=step)
     {
-      if (a_hasval[j][i]=='y' && a_hasval[j][i+1]=='y') // discontinuity check
-	pljoin(a_x[j][i],a[j][i],a_x[j][i+1],a[j][i+1]);
+      char tmp_curx[256];
+      sprintf(tmp_curx,"%f",curx);
+      char *tmp_expr = strreplace(func_expr[j],"x",tmp_curx);
+      char *tmp_2 = hc_result_(tmp_expr);
+      char *tmp_3 = NULL;
+      if (tmp_2)
+	tmp_3 = hc_imag_part(tmp_2);
+      if (!tmp_3 && tmp_2 && strlen(tmp_2) && strtod(tmp_2,NULL)>=xmin && strtod(tmp_2,NULL)<=xmax)
+      {
+	if (discont)
+	{
+	  x1 = curx;
+	  y1 = strtod(tmp_2,NULL);
+	  discont = 0;
+	} else {
+	  x2 = curx;
+	  y2 = strtod(tmp_2,NULL);
+	  pljoin(x1,y1,x2,y2);
+	  x1 = x2;
+	  y1 = y2;
+	}
+      } else {
+	discont = 1;
+      }
+      free(tmp_expr);
+      if (tmp_2)
+	free(tmp_2);
+      if (tmp_3)
+	free(tmp_3);
     }
   }
+  graphing_ignore_errors = FALSE;
+
   plend();
 
   for (j=0; j<k; j++)
   {
-    free(a_x[j]);
-    free(a[j]);
-    free(a_hasval[j]);
     free(func_expr[j]);
   }
-  free(a_x);
-  free(a);
-  free(a_hasval);
   free(func_expr);
     
 #ifdef HCG
