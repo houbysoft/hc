@@ -763,7 +763,7 @@ char hc_graph_peq(char *e)
     char *tmp_y = hc_result_(tmp_expry);
     char *tmp_xi = hc_imag_part(tmp_x);
     char *tmp_yi = hc_imag_part(tmp_y);
-    if (tmp_xi || tmp_yi)
+    if (tmp_xi || tmp_yi || !tmp_x || !tmp_y)
     {
       free(tmp_xi); free(tmp_yi);
       discont = 1;

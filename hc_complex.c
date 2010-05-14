@@ -24,6 +24,8 @@
 
 char *hc_real_part(char *num)
 {
+  if (!num)
+    return NULL;
   char *ipos = strchr(num,'i');
   char *ret;
   if (ipos)
@@ -40,6 +42,8 @@ char *hc_real_part(char *num)
 
 char *hc_imag_part(char *num)
 {
+  if (!num)
+    return NULL;
   char *ipos = strchr(num,'i');
   if (ipos)
   {
