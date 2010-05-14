@@ -91,7 +91,7 @@ char hc_graph(char *e)
     hc.ymax2d = ymax = strtod(arg_ymax,NULL);
   }
 
-  double step = (xmax-xmin) / (HC_GRAPH_POINTS - 1);
+  double step = (xmax-xmin) / HC_GRAPH_POINTS;
   double curx = xmin;
   char discont = 1;
   PLFLT x1,x2,y1,y2;
@@ -132,7 +132,7 @@ char hc_graph(char *e)
     char *tmp_3 = NULL;
     if (tmp_2)
       tmp_3 = hc_imag_part(tmp_2);
-    if (!tmp_3 && tmp_2 && strlen(tmp_2) && strtod(tmp_2,NULL)>=xmin && strtod(tmp_2,NULL)<=xmax)
+    if (!tmp_3 && tmp_2 && strlen(tmp_2))
     {
       if (discont)
       {
@@ -202,7 +202,7 @@ char hc_graph_n(char *e)
   double ymin = hc.ymin2d;
   double ymax = hc.ymax2d;
 
-  double step = (xmax-xmin) / (HC_GRAPH_POINTS - 1);
+  double step = (xmax-xmin) / HC_GRAPH_POINTS;
   double curx = xmin;
 
   graphing_ignore_errors = TRUE;
@@ -267,7 +267,7 @@ char hc_graph_n(char *e)
       char *tmp_3 = NULL;
       if (tmp_2)
 	tmp_3 = hc_imag_part(tmp_2);
-      if (!tmp_3 && tmp_2 && strlen(tmp_2) && strtod(tmp_2,NULL)>=xmin && strtod(tmp_2,NULL)<=xmax)
+      if (!tmp_3 && tmp_2 && strlen(tmp_2))
       {
 	if (discont)
 	{
