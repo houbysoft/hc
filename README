@@ -10,6 +10,12 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+2.0:
+  - added vectors; they can be used with normal operators where appropriate, and can also be used with functions crossP() and dotP().
+    example usage : crossp([1,2,3],[4,5,6])
+  - added graphpeq() to draw parametric equations
+  - added slpfld() to draw slope fields
+  - a few bugfixes and optimizations
 1.2:
   - extended string support; now it is possible to concatenate strings simply using the '+' operator, and multiply strings and integers using the '*' operator
   - added str() and num() functions for conversion between numbers and strings

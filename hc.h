@@ -109,7 +109,7 @@ extern void type_error(char *expr);
 #define is_vector(x) (strip_spaces(x)[0]=='[' && last_char(x)==']')
 #define is_num(x) (!is_string(x) && !is_vector(x))
 
-#define NAME_VERSION "Welcome to hc 1.2 (infix / RPN) -- http://hc.houbysoft.com/\n"
+#define NAME_VERSION "Welcome to hc 2.0 (infix / RPN) -- http://hc.houbysoft.com/\n"
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)
