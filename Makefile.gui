@@ -15,8 +15,8 @@ hcg: cleanup gui_main.o gui_utils.o hc_functions.o hc_varassign.o hc.o hc_graph.
 cleanup: hc.make.gui
 
 hc.make.gui:
-	rm *.o
-	rm hc.make.cli
+	rm -f *.o
+	rm -f hc.make.cli
 	touch hc.make.gui
 
 hc_stats.o: hc_stats.c

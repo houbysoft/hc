@@ -17,8 +17,8 @@ hc: cleanup main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_
 cleanup: hc.make.cli
 
 hc.make.cli:
-	rm *.o
-	rm hc.make.gui
+	rm -f *.o
+	rm -f hc.make.gui
 	touch hc.make.cli
 
 m_apmc.o: m_apmc.c
