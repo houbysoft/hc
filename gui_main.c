@@ -132,6 +132,14 @@ int main(int argc, char *argv[])
     menu_append(GTK_MENU (subm_combinatorics), "nPr(n,k) - number of permutations", G_CALLBACK (entry_append), "nPr(");
     gtk_menu_append(GTK_MENU (subm_fns), subm_mit_combinatorics);
 
+    // Functions/Vectors submenu
+    GtkWidget *subm_vect = gtk_menu_new();
+    GtkWidget *subm_mit_vect = gtk_menu_item_new_with_label("Vectors");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM (subm_mit_vect), subm_vect);
+    menu_append(GTK_MENU (subm_vect), "crossP(v1,v2) - return the vector cross product of v1 X v2", G_CALLBACK (entry_append), "crossP(");
+    menu_append(GTK_MENU (subm_vect), "dotP(v1,v2) - return the vector dot product of v1 . v2", G_CALLBACK (entry_append), "dotP(");
+    gtk_menu_append(GTK_MENU (subm_fns), subm_mit_vect);
+
     // Functions/Trigonometry submenu
     GtkWidget *subm_trig = gtk_menu_new();
     GtkWidget *subm_mit_trig = gtk_menu_item_new_with_label("Trigonometry");
@@ -203,6 +211,8 @@ int main(int argc, char *argv[])
     menu_append(GTK_MENU (subm_graph), "graph(expr[, xmin, xmax, ymin, ymax]) - draw a graph", G_CALLBACK (entry_append), "graph(");
     menu_append(GTK_MENU (subm_graph), "gmul(expr_1, expr_2, ..., expr_n) - draw multiple functions on one graph", G_CALLBACK (entry_append), "gmul(");
     menu_append(GTK_MENU (subm_graph), "graph3(expr[, xmin, xmax, ymin, ymax, zmin, zmax]) - draw a 3D graph", G_CALLBACK (entry_append), "graph3(");
+    menu_append(GTK_MENU (subm_graph), "graphpeq(expr_x,expr_y[,tmin,tmax,xmin,xmax,ymin,ymax]) - draw the parametric equation modeled by expr_x and expr_y (use t as the variable)", G_CALLBACK (entry_append), "graphpeq(");
+    menu_append(GTK_MENU (subm_graph), "slpfld(expr[,xmin,xmax,ymin,ymax]) - draw a slope field of dy/dx = expr", G_CALLBACK (entry_append), "slpfld(");
 
 	// Stats submenu
 	menu_append(GTK_MENU (subm_stats), "stats(v1,v2,...,vn) - show stats info of v1...vn", G_CALLBACK (entry_append), "stats(");
