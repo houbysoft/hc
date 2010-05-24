@@ -1743,6 +1743,28 @@ char *hc_crossp(char *f_expr)
 }
 
 
+char *hc_cat(char *f_expr)
+{
+  char *v1_orig = hc_get_arg(f_expr,1);
+  char *v2_orig = hc_get_arg(f_expr,2);
+  if (!v1_orig || !v2_orig || !is_vector(v1_orig) || !is_vector(v2_orig))
+  {
+    free(v1_orig); free(v2_orig);
+    arg_error("cat() needs two vector arguments.");
+  }
+  char *v1 = list_clean(v1_orig);
+  char *v2 = list_clean(v2_orig);
+
+  char *r = malloc(strlen(v1)+strlen(v2)+4);
+  if (!r)
+    mem_error();
+  sprintf(r,"[%s,%s]",v1,v2);
+
+  free(v1_orig); free(v2_orig);
+  return r;
+}
+
+
 int hc_input(M_APM re, M_APM im, char *f_expr)
 {
   char *str=NULL;

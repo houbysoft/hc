@@ -41,6 +41,7 @@ const char *hc_fnames[][2] = {
   {"atan","func"},
   {"boxplot","func"},
   {"boxplotf","func"},
+  {"cat","func"},
   {"cbrt","func"},
   {"ceil","func"},
   {"cmtoinch","func"},
@@ -1462,6 +1463,12 @@ char *hc_result_normal(char *f)
     case HASH_INPUT:
       if (hc_input(f_result_re,f_result_im,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      break;
+
+    case HASH_CAT:
+      if ((f_result_str = hc_cat(f_expr)) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
+      f_result_type = HC_VAR_VEC;
       break;
 
     case HASH_GRAPH:

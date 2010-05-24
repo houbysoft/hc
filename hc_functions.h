@@ -55,6 +55,7 @@ extern int hc_output(int, char *);
 extern int hc_mmass(M_APM, char *);
 extern int hc_dotp(M_APM, M_APM, char *);
 extern char *hc_crossp(char *);
+extern char *hc_cat(char *);
 
 extern void hc_from_rad(M_APM);
 extern void hc_to_rad(M_APM);
