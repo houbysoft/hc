@@ -2094,3 +2094,17 @@ char contains_char(char *str)
   }
   return FALSE;
 }
+
+
+char is_num(char *str)
+{
+  unsigned int i = 0;
+  for (; i < strlen(str); i++)
+  {
+    if (!isdigit(str[i]) && str[i]!='.' && tolower(str[i])!='e' && tolower(str[i])!='i' && str[i]!='+' && str[i]!='-')
+    {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}

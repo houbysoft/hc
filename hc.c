@@ -240,7 +240,7 @@ char *hc_result(char *e)
   }
 
   char *r = hc_result_(e);
-  if (r && strlen(r) && !is_string(r) && !is_vector(r))
+  if (r && strlen(r) && is_num(r))
   {
     char *r_re = hc_real_part(r);
     char *r_im = hc_imag_part(r);
@@ -332,6 +332,10 @@ char *hc_result(char *e)
     r_new[strlen(r_new)-1] = ']';
     free(r);
     r = r_new;
+  } else if (r && strlen(r)) {
+    free(r);
+    syntax_error2();
+    return NULL;
   }
   return r;
 }
