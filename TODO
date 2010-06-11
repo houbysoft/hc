@@ -1,6 +1,5 @@
 TODO list
 =========
-- implement lists / vectors
 - remove hc_check() and rewrite other functions to 
 perform syntax checking themselves
 
