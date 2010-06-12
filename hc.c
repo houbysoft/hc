@@ -332,6 +332,8 @@ char *hc_result(char *e)
     r_new[strlen(r_new)-1] = ']';
     free(r);
     r = r_new;
+  } else if (r && strlen(r) && is_string(r)) {
+    return r;
   } else if (r && strlen(r)) {
     free(r);
     syntax_error2();
