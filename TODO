@@ -1,5 +1,3 @@
 TODO list
 =========
-- remove hc_check() and rewrite other functions to 
-perform syntax checking themselves
-
+- [DONE, MAY NEED MORE TESTING] remove hc_check() and rewrite other functions to perform syntax checking themselves

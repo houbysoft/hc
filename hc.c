@@ -743,14 +743,6 @@ char *hc_result_normal(char *f)
   free(e_fme);
   e_fme = e;
 
-  if (!hc_check(e))
-  {
-    syntax_error2();
-    free(e);
-    hc_nested--;
-    return NULL;
-  }
-
   char f_name[MAX_F_NAME];
   char f_expr[MAX_F_TMP];
   char e_tmp[MAX_EXPR];
@@ -1835,8 +1827,56 @@ char *hc_i2p(char *f)
       } else {
 	if (isdigit(tmp[i]) || tmp[i]=='.' || tmp[i]=='_')
 	{
+	  char tmpsts = 0;
+	  int tmpe = 1;
+	  int tmpi = 1;
+	  /*
+	    tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
+
+	    States
+	    ------
+	    0 : at the beginning of the scan, or after an 'e', or after an 'i'
+	    1 : after a number, allowing for a decimal point
+	    2 : after a number or a decimal point, not allowing for a decimal point
+	    3 : after a negative sign
+	   */
 	  while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
+	  {
+	    if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
+	    {
+	      syntax_error2();
+	      free(e);
+	      return NULL;
+	    }
+	    if (tolower(tmp[i]) == 'e')
+	    {
+	      tmpsts = 0;
+	      tmpe--;
+	    } else if (tolower(tmp[i]) == 'i')
+	    {
+	      tmpsts = 0;
+	      tmpi--;
+	      tmpe = 1;
+	    } else if (isdigit(tmp[i]))
+	    {
+	      if (tmpsts == 0 || tmpsts == 3)
+		tmpsts = 1;
+	      // nothing needs to be done otherwise
+	    } else if (tmp[i]=='.')
+	    {
+	      tmpsts = 2;
+	    } else if (tmp[i]=='_' || tmp[i]=='-')
+	    {
+	      tmpsts = 3;
+	    }
+	    if (tmpe < 0 || tmpi < 0)
+	    {
+	      syntax_error2();
+	      free(e);
+	      return NULL;
+	    }
 	    e[j++] = tmp[i++];
+	  }
 	} else if (tmp[i]=='\"') {
 	  e[j++] = tmp[i++];
 	  while (tmp[i]!='\"')
@@ -2716,8 +2756,57 @@ char *hc_postfix_result(char *e)
 	if (isdigit(e[i]) || e[i]=='.' || e[i]=='_')
 	{
 	  type = HC_VAR_NUM;
-	  while (!isspace(e[i]) && (!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_') && e[i])
+	  char tmpsts = 0;
+	  int tmpe = 1;
+	  int tmpi = 1;
+	  /*
+	    tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
+
+	    States
+	    ------
+	    0 : at the beginning of the scan, or after an 'e', or after an 'i'
+	    1 : after a number, allowing for a decimal point
+	    2 : after a number or a decimal point, not allowing for a decimal point
+	    3 : after a negative sign
+	   */
+	  while ((!isspace(e[i]))&&(!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_')&& e[i])
 	  {
+            if (hc.rpn) // otherwise, this has already been checked by hc_i2p()
+            {
+	    if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')))
+	    {
+	      syntax_error2();
+	      free(e);
+	      return NULL;
+	    }
+	    if (tolower(e[i]) == 'e')
+	    {
+	      tmpsts = 0;
+	      tmpe--;
+	    } else if (tolower(e[i]) == 'i')
+	    {
+	      tmpsts = 0;
+	      tmpi--;
+	      tmpe = 1;
+	    } else if (isdigit(e[i]))
+	    {
+	      if (tmpsts == 0 || tmpsts == 3)
+		tmpsts = 1;
+	      // nothing needs to be done otherwise
+	    } else if (e[i]=='.')
+	    {
+	      tmpsts = 2;
+	    } else if (e[i]=='_' || e[i]=='-')
+	    {
+	      tmpsts = 3;
+	    }
+	    if (tmpe < 0 || tmpi < 0)
+	    {
+	      syntax_error2();
+	      free(e);
+	      return NULL;
+	    }
+            }
 	    tmp_num[j++] = e[i++];
 	  }
 	} else if (e[i]=='\"') {
@@ -2865,117 +2954,6 @@ char *hc_postfix_result(char *e)
 }
 
 
-// return 0 if e contains a (detected) syntax error
-char hc_check(char *e)
-{
-  if (hc.rpn)
-  {
-    char *tmp = strchr(e,'(');
-    while (tmp)
-    {
-      if (!isalpha((int)*(tmp-sizeof(char))))
-	return 0;
-      tmp = strchr(tmp+sizeof(char),'(');
-    }
-    return 1;
-  } else {
-    int i;
-    char last_was_op=0;
-    char last_was_char=0;
-    char last_was_int=0;
-    char first=0;
-    int par=0;
-    int sq_par=0;
-    char ignore=FALSE;
-    for (i=0;i<strlen(e);i++)
-    {
-      if (e[i]=='\"')
-      {
-	ignore = ignore == FALSE ? TRUE : FALSE;
-	if (!first)
-	  first = 1;
-	else if (first==1)
-	  first = 2;
-	continue;
-      }
-
-      if (ignore)
-      {
-	last_was_op = '\"';
-	continue;
-      }
-      
-      if (!isspace(e[i]) && (first==0))
-      {
-	if ((isoperator_np(e[i])) && (e[i]!='-') && (e[i]!='_'))
-	{
-	  return 0;
-	} else {
-	  first = 1;
-	}
-      }
-      if ((!isalnum(e[i])) && (!isoperator(e[i])) && (e[i]!='^') && (e[i]!='.') && !isspace(e[i]) && (e[i]!=',') && (e[i]!='x') && (e[i]!='_') && (e[i]!='[') && (e[i]!=']') && (e[i]!='{') && (e[i]!='}') && (e[i]!=';'))
-      {
-	
-	return 0;
-      }
-      if (isoperator_np(e[i]))
-      {
-	if ((last_was_op) && (last_was_op!='!') && ((last_was_op!='+')&&(e[i]!='-')&&(e[i]!='_')) && (last_was_op!='<' && e[i]!='=') && (last_was_op!='>' && e[i]!='=') && (last_was_op!='=' && e[i]!='=') && (last_was_op!='&' && e[i]!='&') && (last_was_op!='|' && e[i]!='|') && (last_was_op!='\"' && e[i]!=','))
-	{
-	  return 0;
-	}
-	if ((last_was_op=='+') && (e[i]=='+'))
-	{
-	  return 0;
-	}
-	last_was_op = e[i];
-      } else {
-	if (!isspace(e[i]))
-	{
-	  last_was_op = 0;
-	  if (first)
-	    first = 2;
-	  if (last_was_int && isalpha(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')
-	  {
-	    return 0;
-	  }
-	}
-      }
-      if (e[i]=='(')
-	par++;
-      if (e[i]==')')
-	par--;
-
-      if (e[i]=='[')
-	sq_par++;
-      if (e[i]==']')
-	sq_par--;
-      
-      if (isalpha(e[i]))
-	last_was_char = 1;
-      else
-	last_was_char = 0;
-      if (isdigit(e[i]) || e[i]=='.')
-	last_was_int = 1;
-      else
-	last_was_int = 0;
-    }
-    
-    if (par != 0 || sq_par != 0)
-    {
-      return 0;
-    }
-    
-    if (first == 1)
-    {
-      return 0;
-    }
-    
-    return 1;
-  }
-}
-
 
 char *hc_plusminus(char *f)
 {
@@ -2986,6 +2964,8 @@ char *hc_plusminus(char *f)
   //  1) If minus occurs first on input, prepend a 0
   //  2) If + & - appear next to each other, figure out the resulting number
   f = strreplace_(f,"i-","i_");
+  if (hc.rpn)
+    f = strreplace_(f," -"," _");
   char *e = malloc(MAX_EXPR);
   if (!e)
     mem_error();
