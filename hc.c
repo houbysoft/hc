@@ -240,7 +240,10 @@ char *hc_result(char *e)
   }
 
   char *r = hc_result_(e);
-  if (r && strlen(r) && is_num(r))
+  if (!r || !strlen(r))
+  {
+    return r;
+  } else if (is_num(r))
   {
     char *r_re = hc_real_part(r);
     char *r_im = hc_imag_part(r);
@@ -307,7 +310,7 @@ char *hc_result(char *e)
       strcat(r,r_im);
       free(r_re); free(r_im);
     }
-  } else if (r && strlen(r) && is_vector(r)) {
+  } else if (is_vector(r)) {
     r[strlen(r)-1] = '\0';
     char *r_new = malloc(2);
     if (!r_new)
@@ -332,9 +335,9 @@ char *hc_result(char *e)
     r_new[strlen(r_new)-1] = ']';
     free(r);
     r = r_new;
-  } else if (r && strlen(r) && is_string(r)) {
+  } else if (is_string(r)) {
     return r;
-  } else if (r && strlen(r)) {
+  } else {
     free(r);
     syntax_error2();
     return NULL;
@@ -3431,7 +3434,7 @@ void hc_load(char *fname)
   if (!fr)
   {
     perror("Error");
-    error_nq("Error: Cannot open file.\n");
+    error_nq("Error: Cannot open file.");
     return;
   }
   char *expr = malloc(sizeof(char) * MAX_EXPR + sizeof(char));
