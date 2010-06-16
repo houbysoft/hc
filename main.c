@@ -19,6 +19,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdlib.h>
+#include <unistd.h>
 #ifndef I_HATE_TIPS
 #include <time.h>
 #endif
@@ -59,11 +60,38 @@ char *hc_cmd_generator(const char *text, int state);
 
 int main(int argc, char *argv[])
 {
-  if (argc==2)
+  char c;
+  char err=0;
+  char *eval = NULL;
+  while ((c = getopt(argc, argv, "e:"))!=-1)
+    switch (c)
+    {
+    case 'e':
+      eval = optarg;
+      break;
+    default:
+      err++;
+    }
+
+  if (err || (eval && argv[optind]!=NULL) || (!eval && (argc!=2 && argc!=1)))
   {
-    hc_load(argv[1]);
-    return 0;
+    printf("%s\nUsage:\n%s [FILE] [-e EXPRESSION]\n - use either FILE to load FILE into HC and execute it\n - OR use -e EXPRESSION to directly compute EXPRESSION and exit\n - OR pass no arguments to launch the default CLI interface and have access to more help and options.\n",eval ? "Invalid arguments (did you enclose the expression to calculate in quotes?)." : "Invalid arguments.",argv[0]);
+    exit(1);
   }
+
+  if (eval)
+  {
+    hc.announce = FALSE;
+    printf("%s",hc_result(eval));
+    return 0;
+  } else if (argv[optind]!=NULL) {
+    hc.announce = FALSE;
+    hc_load(argv[optind]);
+    return 0;
+  } else {
+    hc.announce = TRUE;
+  }
+
 #ifdef WIN32
   atexit(exit_fn);
 #endif

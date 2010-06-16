@@ -3355,11 +3355,10 @@ void hc_load_cfg()
     fclose(fr);
   }
 
-  static char announce = TRUE;
-  if (announce == TRUE)
+  if (hc.announce == TRUE)
   {
     printf("Configuration :\n Angle format = %s | RPN mode = %s | Precision = %i | EXP format = %s\n",hc.angle=='r' ? "RAD" : hc.angle=='d' ? "DEG" : "GRAD",hc.rpn==0 ? "off" : "on",hc.precision,hc.exp=='s' ? "SCI" : hc.exp=='e' ? "ENG" : "NORMAL");
-    announce = FALSE;
+    hc.announce = FALSE;
   }
 }
 

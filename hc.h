@@ -156,6 +156,7 @@ typedef enum {
 } HC_EXECS;
 
 typedef struct hc_config {
+  char announce; // used when command line options are supplied to supress configuration notice
   char rpn;
   int precision;
   char output_format;
