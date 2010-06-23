@@ -1,3 +1,5 @@
 TODO list
 =========
 - [DONE, MAY NEED MORE TESTING] remove hc_check() and rewrite other functions to perform syntax checking themselves
+- add binary and hex input/output formats
+- replace variables in hc_postfix_result() only?
