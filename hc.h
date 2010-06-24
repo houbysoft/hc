@@ -102,7 +102,7 @@ extern void type_error(char *expr);
 #define warning(str) {printf("Warning : %s\n",str);}
 #define error_nq(str) {printf("%s\n",str);}
 #if !defined(HCG) && !defined(HCG_E)
-#define notify(str) printf(str)
+#define notify(str) printf("%s",str)
 #define prompt(str) readline(str)
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
