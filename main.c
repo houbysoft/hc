@@ -173,10 +173,10 @@ char *hc_cmd_generator(const char *text, int state)
   char isfunc;
 
   /* Return the next name which partially matches from the command list. */
-  while (list_index < HC_FNAMES)
+  while (list_index < HC_NAMES)
   {
-    name = (char *)hc_fnames[list_index][0];
-    if (strcmp((char *)hc_fnames[list_index][1],"func")==0)
+    name = (char *)hc_names[list_index][0];
+    if (strcmp((char *)hc_names[list_index][1],"func")==0)
       isfunc = 1;
     else
       isfunc = 0;

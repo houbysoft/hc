@@ -33,7 +33,7 @@
 #define MULT 31
 
 
-const char *hc_fnames[][2] = {
+const char *hc_names[][2] = {
   {"ans","func"},
   {"abs","func"},
   {"acos","func"},
@@ -97,12 +97,12 @@ const char *hc_fnames[][2] = {
   {"totient","func"},
   {"write","func"},
   // CONSTANTS
-  {"pi","cnst"},
-  {"c","cnst"},
-  {"e","cnst"},
-  {"phi","cnst"},
-  {"g","cnst"},
-  {"answer","cnst"},
+  {"pi","cnst:3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384461"},
+  {"c","cnst:299792458"},
+  {"e","cnst:2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174136"},
+  {"phi","cnst:1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475408807538689175212663386"},
+  {"g","cnst:9.80655"},
+  {"answer","cnst:42"},
   // OTHERS
   {"help","cmd"},
   {"credits","cmd"},
@@ -131,7 +131,7 @@ const char *hc_fnames[][2] = {
 };
 
 
-unsigned int hc_hashes[HC_FNAMES];
+unsigned int hc_hashes[HC_NAMES];
 
 
 unsigned int simple_hash(char *p)
@@ -197,7 +197,7 @@ char *hc_result(char *e)
     hc_var_first->name = NULL;
     hc_var_first->args = NULL;
     m_apmc_init();
-    memset(hc_hashes,0,HC_FNAMES * sizeof(unsigned int));
+    memset(hc_hashes,0,HC_NAMES * sizeof(unsigned int));
     init = 1;
   }
 
@@ -429,1224 +429,44 @@ char *hc_result_normal(char *f)
   if (!e)
     mem_error();
 
-  char *e_fme = e = hc_impmul_resolve(e);
-  char ignore = FALSE;
-  char can_skip = FALSE;
-
-  if (contains_char(e))
-  {
-    // Constants
-    // Pi
-    e = strreplace(e,"pi","3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384461");
-    free(e_fme);
-    e_fme = e;
-    
-    // Speed of Light
-    e = strreplace(e,"c","299792458");
-    free(e_fme);
-    e_fme = e;
-    
-    // e
-    e = strreplace(e,"e","2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174136");
-    free(e_fme);
-    e_fme = e;
-    
-    // phi
-    e = strreplace(e,"phi"," 1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475408807538689175212663386");
-    free(e_fme);
-    e_fme = e;
-    
-    // g - Gravitational acceleration (std value)
-    e = strreplace(e,"g","9.80655");
-    free(e_fme);
-    e_fme = e;
-    
-    // answer - h2g2!
-    e = strreplace(e,"answer","42");
-    free(e_fme);
-    e_fme = e;
-    
-    // Constants end
-    // User-defined variables
-    
-    int pos_cur=0,pos_beg;
-    char couldbevar=0;
-    ignore = FALSE;
-    while (e[pos_cur])
-    {
-      if (e[pos_cur]=='\"')
-      {
-	ignore = ignore == FALSE ? TRUE : FALSE;
-	pos_cur++;
-	continue;
-      }
-      if (ignore)
-      {
-	pos_cur++;
-	continue;
-      }
-      if (((isalpha(e[pos_cur]) && (tolower(e[pos_cur])!='e' || (isalpha(e[pos_cur+1]))) && (tolower(e[pos_cur]!='i') || (isalpha(e[pos_cur+1])))) || (isalnum(e[pos_cur]) && (couldbevar==1))) && e[pos_cur+1]!='\0')
-      {
-	if (!couldbevar)
-	{
-	  couldbevar = 1;
-	  pos_beg = pos_cur;
-	}
-      } else {
-	if (((isalpha(e[pos_cur]) && tolower(e[pos_cur])!='e' && tolower(e[pos_cur]!='i')) || (isalnum(e[pos_cur])&& (couldbevar==1)))&& e[pos_cur+1]=='\0')
-	{
-	  if (!couldbevar)
-	  {
-	    couldbevar = 1;
-	    pos_beg = pos_cur;
-	  }
-	  pos_cur++;
-	}
-	if (couldbevar == 1)
-	{
-	  char type = e[pos_cur]=='(' ? HC_USR_FUNC : HC_USR_VAR;
-	  char *tmp = malloc(sizeof(char)*(pos_cur-pos_beg+1));
-	  strncpy(tmp,e + sizeof(char)*pos_beg,pos_cur-pos_beg);
-	  tmp[pos_cur-pos_beg]=0;
-	  if (!hc_is_predef(tmp))
-	  {
-	    char done = 0;
-	    struct hc_ventry *var_tmp = hc_var_first;
-	    if (var_tmp->name == NULL)
-	      var_tmp = NULL;
-	    while (var_tmp && done==0)
-	    {
-	      if (var_tmp->type == type && strcmp(var_tmp->name,tmp)==0)
-	      {
-		done = 1;
-		pos_cur = -1; // Need to restart scanning (the string will change after replacement)
-		if (var_tmp->type == HC_USR_VAR)
-		{
-		  e = strreplace(e,var_tmp->name,var_tmp->value);
-		  free(e_fme);
-		  e_fme = e;
-		} else if (var_tmp->type == HC_USR_FUNC)
-		{
-		  char e_tmp[MAX_EXPR];
-		  int itmp = 0;
-		  for (; itmp<MAX_EXPR; itmp++)
-		    e_tmp[itmp]=0;
-		  char *tmp1 = hc_plusminus(e);
-		  strcpy(e_tmp,tmp1);
-		  free(tmp1);
-		  e = malloc(MAX_EXPR);
-		  free(e_fme);
-		  e_fme = e;
-		  if (!e)
-		    mem_error();
-		  strcpy(e,e_tmp);
-		  char *ffound = strstr(e,var_tmp->name);
-		  if (ffound && ffound!=e)
-		  {
-		    if (isalpha((char)(ffound - sizeof(char))[0]))
-		      ffound = NULL;
-		  }
-		  if (ffound)
-		  {
-		    if (isalpha((char)(ffound + strlen(var_tmp->name))[0]))
-		      ffound = NULL;
-		  }
-		  if (ffound)
-		  {
-#ifdef DBG
-		    printf("User-defined function found\n");
-#endif
-		    unsigned int i=0;
-		    while (isalnum(ffound[i]))
-		      i++;
-		    if (ffound[i]!='(')
-		    {
-		      syntax_error2();
-		      free(e);
-		      free(tmp);
-		      hc_nested--;
-		      return NULL;
-		    } else {
-		      i--;
-		      char *args = malloc((strlen(ffound)+1-i)*sizeof(char));
-		      strcpy(args,ffound+(sizeof(char)*i+sizeof(char)));
-		      unsigned int par=1,j=1;
-		      while (par!=0)
-		      {
-			if (args[j]==')')
-			  par--;
-			if (args[j]=='(')
-			  par++;
-			if (args[j]==0)
-			{
-			  syntax_error2();
-			  free(e);
-			  free(tmp);
-			  free(args);
-			  hc_nested--;
-			  return NULL;
-			}
-			j++;
-		      }
-		      unsigned int f_expr_e = (ffound - e) + i + j + 1;
-		      args[j]=0;
-#ifdef DBG
-		      printf("args - %s\n",args);
-#endif
-		      char *custom_f_expr = strdup(var_tmp->value);
-		      if (!custom_f_expr)
-			mem_error();
-		      unsigned int k = 1;
-		      char xybypass = 0; // bypass for variables x and y, which can be part of the expression in certain cases (ie sum(), product(), graphs...)
-		      while (k!=-1)
-		      {
-			char *tmp_args = malloc(strlen(args));
-			if (!tmp_args)
-			  mem_error();
-			strcpy(tmp_args,(char *)(args+sizeof(char)));
-			tmp_args[strlen(tmp_args)-1]=0;
-			char *t1 = hc_get_arg(tmp_args,k);
-			free(tmp_args);
-#ifdef DBG
-			printf("t1 = %s\n",t1);
-#endif
-			if (t1)
-			{
-			  char *t1fme = t1;
-			  char a_tmp = announce_errors;
-			  announce_errors = FALSE;
-			  if (strcmp(t1,"x")==0 || strcmp(t1,"y")==0 || strcmp(t1,"t")==0)
-			  {
-			    t1 = malloc(2);
-			    strcpy(t1,t1fme);
-			    xybypass = 1;
-			  } else {
-			    t1 = hc_result_(t1);
-			    xybypass = 0;
-			  }
-			  announce_errors = a_tmp;
-			  if (t1)
-			  {
-#ifdef DBG
-			    printf("t1 is now %s\n",t1);
-#endif
-			    free(t1fme);
-			  } else {
-			    free(tmp);
-			    free(e);
-			    free(custom_f_expr);
-			    free(args);
-			    hc_nested--;
-			    free(t1fme);
-			    return NULL;
-			  }
-			}
-			char *t2 = hc_get_arg(var_tmp->args,k);
-			if (t1 && t2)
-			{
-			  char *fme = custom_f_expr;
-			  if (strcmp(t1,t2)!=0)
-			  {
-			    custom_f_expr = strreplace(custom_f_expr,t2,t1);
-			    free(fme);
-			  }
-			  free(t1);
-			  free(t2);
-			  k++;
-			} else {
-			  if (t1 || t2)
-			  {
-			    arg_error_custom();
-			    if (t1)
-			      free(t1);
-			    else
-			      free(t2);
-			    free(e);
-			    free(args);
-			    free(tmp);
-			    hc_nested--;
-			    return NULL;
-			  } else {
-			    char *fme_cfe = custom_f_expr;
-			    if (!xybypass)
-			    {
-			      custom_f_expr = hc_result_(custom_f_expr);
-			      free(fme_cfe);
-			    }
-			    if (!custom_f_expr)
-			    {
-			      free(e);
-			      free(args);
-			      free(tmp);
-			      hc_nested--;
-			      return NULL;
-			    }
-			    unsigned int ffoundmine = ffound - e;
-			    free(e_fme);
-			    e = malloc(MAX_EXPR);
-			    strncpy(e,e_tmp,ffoundmine);
-			    e[ffoundmine]=0; // strncpy does NOT null-terminate automatically
-#ifdef DBG
-			    printf("{1} %s\n",e);
-#endif
-			    if (strlen(e_tmp)+strlen(custom_f_expr)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
-			      overflow_error();
-			    strcat(e,custom_f_expr);
-#ifdef DBG
-			    printf("{2} %s\n",e);
-#endif
-			    free(custom_f_expr);
-			    strcat(e,((char *)&e_tmp)+f_expr_e); // was +1
-#ifdef DBG
-			    printf("{3} %s\n",e);
-#endif
-			    free(args);
-			    char *rme = hc_result_(e);
-			    free(e);
-			    free(tmp);
-			    hc_nested--;
-			    return rme;
-			  }
-			}
-		      }
-		    }
-		  }
-		}
-	      }
-	      if (var_tmp->next && var_tmp->next->name)
-		var_tmp = var_tmp->next;
-	      else
-		var_tmp = NULL;
-	    }
-	    if (!done && strcmp(tmp,"x")!=0 && strcmp(tmp,"y")!=0 && strcmp(tmp,"t")!=0)
-	    {
-	      unknown_var_error(tmp,type);
-	      free(tmp);
-	      free(e);
-	      hc_nested--;
-	      return NULL;
-	    }
-	  }
-	  free(tmp);
-	}
-	couldbevar = 0;
-      }
-      pos_cur++;
-    }
-    
-    // User-defined variables end
-  } else {
-    can_skip = TRUE;
-  }
-
-  e = malloc(MAX_EXPR);
-  if (!e)
-    mem_error();
-  strcpy(e,e_fme);
+  char *e_fme = hc_impmul_resolve(e);
+  e = hc_plusminus(e_fme);
   free(e_fme);
   e_fme = e;
 
-  char f_name[MAX_F_NAME];
-  char f_expr[MAX_F_TMP];
-  char e_tmp[MAX_EXPR];
-  char *tmp1 = hc_plusminus(e);
-  strcpy(e_tmp,tmp1);
-  free(tmp1);
-  strcpy(e,e_tmp);
-  int i,j,k;
-  int left_par=0,right_par=0,f_expr_s=0,f_expr_e=0;
-  ignore = FALSE;
+  char *fme;
 
-  if (!can_skip)
+#ifdef DBG
+  printf("[1] %s\n",e);
+#endif
+  e = fme = hc_i2p(e);
+  if (!e)
   {
-    // Find & replace functions with their results
-    for (i=0;i<MAX_EXPR;i++)
-    {
-      if (e[i]=='\"')
-      {
-	ignore = ignore == FALSE ? TRUE : FALSE;
-	continue;
-      }
-      if (ignore)
-	continue;
-      if (e[i]==0)
-      {
-	i = MAX_EXPR;
-	break;
-      }
-      if (isalpha(e[i]) && (isalpha(e[i+1]) || e[i+1]=='(' || e[i+1]==0))
-	break;
-      if (isalpha(e[i]) && (tolower(e[i])!='i' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (tolower(e[i])!='e' || (tolower(e[i])=='i' && isalpha(e[i+1]))) && (isdigit(e[i+1])))
-	break;
-    }
-  }
-  
-
-  if (can_skip || i >= MAX_EXPR)
-  {
-    // all functions were replaced, go go go power rangers (&xkcd)
-    char *fme;
-#ifdef DBG
-    printf("[1] %s\n",e);
-#endif
-    e = fme = hc_i2p(e);
-    if (!e)
-    {
-      free(e_fme);
-      hc_nested--;
-      return NULL;
-    }
-#ifdef DBG
-    printf("[2] %s\n",e);
-#endif
-    e = hc_postfix_result(e);
-#ifdef DBG
-    printf("[3] %s\n",e);
-#endif
-    free(fme);
     free(e_fme);
     hc_nested--;
-    return e;
-  } else {
-    M_APM f_result_re = m_apm_init();
-    M_APM f_result_im = m_apm_init();
-    char *f_result_str = NULL;
-    char f_result_type = HC_VAR_NUM;
-    // we need to replace a function with its result
-    // e[i] points to the start of the function
-    j = i;
-    k = 0;
-    while (e[j]!='(')
-    {
-      f_name[k++] = e[j];
-      if (k >= MAX_F_NAME)
-      {
-	m_apm_free(f_result_re);m_apm_free(f_result_im);
-	free(e);
-	syntax_error2();
-	hc_nested--;
-	return NULL;
-      }
-      j++;
-    }
-    f_name[k] = '\0';
-    // f_name contains the name of the function
-
-    // get the expression to be processed by the function, e[j] points to first '('
-    f_expr_s = j+1;
-    left_par = 0;
-    right_par = 0;
-    f_expr_e = 0;
-    j-=1;
-    ignore = FALSE;
-    while ((left_par != right_par) || (left_par==0))
-    {
-      j++;
-      if (e[j]=='\"')
-      {
-	ignore = ignore == FALSE ? TRUE : FALSE;
-	continue;
-      }
-      if (ignore)
-	continue;
-      if (e[j]=='(')
-      {
-	left_par++;
-      } else if (e[j]==')')
-      {
-	right_par++;
-      }
-    }
-    f_expr_e = j;
-    strncpy(f_expr,e + sizeof(char)*f_expr_s,f_expr_e - f_expr_s);
-    f_expr[f_expr_e - f_expr_s] = 0;
-    
-    char *fme;
-    M_APM tmp_num_re = m_apm_init();
-    M_APM tmp_num_im = m_apm_init();
-    char *tmp_ri; // tmp for real/imaginary parts of the number
-
-    switch (simple_hash(f_name))
-    {
-    case HASH_ABS:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-	m_apm_set_string(f_result_im,"0");
-	m_apmc_abs(f_result_re,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      } else {
-	m_apm_set_string(f_result_im,"0");
-	m_apm_absolute_value(f_result_re,tmp_num_re);
-      }
-      break;
-
-    case HASH_FLOOR:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(f_result_im,"0");
-      }
-      m_apmc_floor(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
-      break;
-
-    case HASH_CEIL:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(f_result_im,"0");
-      }
-      m_apmc_ceil(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
-      break;
-
-    case HASH_ROUND:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(f_result_im,"0");
-      }
-      m_apmc_round(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
-      break;
-
-    case HASH_ANS:
-      m_apm_copy(f_result_re,hc_lans_mapm_re);
-      m_apm_copy(f_result_im,hc_lans_mapm_im);
-      break;
-
-    case HASH_ACOS:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("acos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-	hc_from_rad(f_result_re);
-      }
-      break;
-      
-    case HASH_ASIN:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("asin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-	hc_from_rad(f_result_re);
-      }
-      break;
-
-    case HASH_ATAN:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("atan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-	hc_from_rad(f_result_re);
-      }
-      break;
-
-    case HASH_COS:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("cos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-	hc_to_rad(tmp_num_re);
-        m_apmc_cos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      }
-      break;
-
-    case HASH_EXP:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_exp(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      break;
-
-    case HASH_FACTORIAL:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      if (!m_apm_is_integer(tmp_num_re) || m_apm_compare(tmp_num_im,MM_Zero)!=0)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); arg_error("factorial() : an integer is required."); hc_nested--; return NULL;}
-      m_apm_factorial(f_result_re,tmp_num_re);
-      m_apm_set_string(f_result_im,"0");
-      break;
-
-    case HASH_GCD:
-      if (hc_gcd(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_LCM:
-      if (hc_lcm(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_LN:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_log(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      break;
-
-    case HASH_LOG10:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_log10(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      break;
-
-    case HASH_SIN:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("sin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-	hc_to_rad(tmp_num_re);
-        m_apmc_sin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      }
-      break;
-
-    case HASH_TAN:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("tan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-	hc_to_rad(tmp_num_re);
-        m_apmc_tan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      }
-      break;
-
-    case HASH_SUM:
-      if (hc_sum(f_result_re,f_result_im,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_PRODUCT:
-      if (hc_product(f_result_re,f_result_im,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_COSH:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("cosh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-        m_apmc_cosh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      }
-      break;
-
-    case HASH_SINH:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("sinh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-        m_apmc_sinh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      }
-      break;
-
-    case HASH_TANH:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
-      {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	free(e);
-	hc_nested--;
-	arg_error("tanh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
-      } else {
-        m_apmc_tanh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      }
-      break;
-
-    case HASH_SQRT:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_sqrt(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
-      break;
-
-    case HASH_CBRT:
-      fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-            tmp_ri = hc_real_part(fme);
-      m_apm_set_string(tmp_num_re,tmp_ri);
-      free(tmp_ri);
-      tmp_ri = hc_imag_part(fme);
-      free(fme);
-      if (tmp_ri)
-      {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-      } else {
-	m_apm_set_string(tmp_num_im,"0");
-      }
-      m_apmc_root(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im,3,3);
-      break;
-
-    case HASH_DOTP: // dot/scalar product
-      if (hc_dotp(f_result_re,f_result_im,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_CROSSP: // cross product
-      if ((f_result_str = hc_crossp(f_expr)) == NULL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      f_result_type = HC_VAR_VEC;
-      break;
-
-    case HASH_STR:
-      if ((f_result_str = hc_2str(f_expr)) == NULL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      f_result_type = HC_VAR_STR;
-      break;
-
-    case HASH_NUM:
-      if (hc_2num(f_result_re,f_result_im,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_MOD:
-      if (hc_modulus(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_FIBO:
-      if (hc_fibo(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_TOTIENT:
-      if (hc_totient(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_CTOF:
-      if (hc_c2f(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_FTOC:
-      if (hc_f2c(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_CTOK:
-      if (hc_c2k(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_KTOC:
-      if (hc_k2c(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_FTOK:
-      if (hc_f2k(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_KTOF:
-      if (hc_k2f(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_MITOKM:
-      if (hc_mi2km(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_KMTOMI:
-      if (hc_km2mi(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_MLTOFLOZ:
-      if (hc_ml2floz(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_FLOZTOML:
-      if (hc_floz2ml(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_INCHTOCM:
-      if (hc_inch2cm(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_CMTOINCH:
-      if (hc_cm2inch(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_FTTOM:
-      if (hc_ft2m(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_MTOFT:
-      if (hc_m2ft(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_NCR:
-      if (hc_binomc(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_NPR:
-      if (hc_permutations(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_RAND:
-      if (hc_rand(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_PRINT:
-      hc_output(PRINT, f_expr);
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--;
-	char *tmp = malloc(1); tmp[0]=0; return tmp;}
-      break;
-
-    case HASH_WRITE:
-      hc_output(WRITE, f_expr);
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--;
-	char *tmp = malloc(1); tmp[0]=0; return tmp;}
-      break;
-
-    case HASH_INPUT:
-      if (hc_input(f_result_re,f_result_im,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    case HASH_CAT:
-      if ((f_result_str = hc_cat(f_expr)) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      f_result_type = HC_VAR_VEC;
-      break;
-
-    case HASH_GRAPH:
-      hc_graph(f_expr);
-      announce_errors = FALSE;
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_re);
-      m_apm_free(f_result_im);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_GMUL:
-      hc_graph_n(f_expr);
-      announce_errors = FALSE;
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_re);
-      m_apm_free(f_result_im);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_GRAPH3D:
-      hc_graph3d(f_expr);
-      announce_errors = FALSE;
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_re);
-      m_apm_free(f_result_im);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_SLPFLD:
-      hc_graph_slpfld(f_expr);
-      announce_errors = FALSE;
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_re);
-      m_apm_free(f_result_im);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_GRAPHPEQ:
-      hc_graph_peq(f_expr);
-      announce_errors = FALSE;
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_re);
-      m_apm_free(f_result_im);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_STATS:
-      hc_stats(f_expr, FALSE, FALSE);
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_im);
-      m_apm_free(f_result_re);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-   case HASH_STATS_EFF:
-      hc_stats(f_expr, FALSE, TRUE);
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_im);
-      m_apm_free(f_result_re);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_BOXPLOT:
-      hc_stats(f_expr, TRUE, FALSE);
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_im);
-      m_apm_free(f_result_re);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_BOXPLOT_EFF:
-      hc_stats(f_expr, TRUE, TRUE);
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_im);
-      m_apm_free(f_result_re);
-      free(e);
-      hc_nested--;
-      e = malloc(1); if (!e) mem_error(); strcpy(e,"");
-      return e;
-      break;
-
-    case HASH_MMASS:
-      if (hc_mmass(f_result_re,f_expr)==FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); free(e); hc_nested--; return NULL;}
-      break;
-
-    default:
-      m_apm_free(tmp_num_re);
-      m_apm_free(tmp_num_im);
-      m_apm_free(f_result_re);
-      m_apm_free(f_result_im);
-      free(e);
-      undef_error();
-      hc_nested--;
-      return NULL;
-    }
-
-    
-    strncpy(e,e_tmp,i);
-    e[i]=0;
-    char *f_result_tmp = NULL;
-    if (f_result_type == HC_VAR_NUM)
-    {
-      char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
-      if (f_result_tmp_re[0]=='-')
-	f_result_tmp_re[0] = '_';
-      char *f_result_tmp_im;
-      if (m_apm_compare(f_result_im,MM_Zero)!=0)
-      {
-	f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
-	if (f_result_tmp_im[0]=='-')
-	  f_result_tmp_im[0] = '_';
-	f_result_tmp = malloc(strlen(f_result_tmp_re)+1+strlen(f_result_tmp_im)+1);
-	// re i im \0
-	strcpy(f_result_tmp,f_result_tmp_re);
-	strcat(f_result_tmp,"i");
-	strcat(f_result_tmp,f_result_tmp_im);
-	free(f_result_tmp_re); free(f_result_tmp_im);
-      } else {
-	f_result_tmp = f_result_tmp_re;
-      }
-    } else if (f_result_type == HC_VAR_STR || f_result_type == HC_VAR_VEC)
-    {
-      f_result_tmp = f_result_str;
-    }
-    if (strlen(e_tmp)+strlen(f_result_tmp)+strlen(((char *)&e_tmp)+f_expr_e+1)+1>MAX_EXPR)
-      overflow_error();
-    //m_apm_to_string(f_result_tmp,HC_DEC_PLACES,f_result);
-    strcat(e,f_result_tmp);
-    free(f_result_tmp);
-    strcat(e,((char *)&e_tmp)+f_expr_e+1);
-    char *rme = hc_result_(e);
-    free(e_fme);
-    m_apm_free(f_result_re); m_apm_free(f_result_im);
-    m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-    hc_nested--;
-    return rme;
+    return NULL;
   }
+#ifdef DBG
+  printf("[2] %s\n",e);
+#endif
+  e = hc_postfix_result(e);
+#ifdef DBG
+  printf("[3] %s\n",e);
+#endif
+  free(fme);
+  free(e_fme);
+  hc_nested--;
+  return e;
 }
 
 
 char *hc_i2p(char *f)
 {
+  if (strlen(f) >= MAX_EXPR)
+  {
+    overflow_error_nq();
+    return NULL;
+  }
   char *e = malloc(MAX_EXPR*sizeof(char));
   if (!e)
     mem_error();
@@ -1900,9 +720,45 @@ char *hc_i2p(char *f)
 	    }
 	  }
 	} else {
-	  syntax_error2();
-	  free(e);
-	  return NULL;
+	  if (!isalpha(tmp[i]))
+	  {
+	    syntax_error2();
+	    free(e);
+	    return NULL;
+	  }
+	  while (isalpha(tmp[i]) || isdigit(tmp[i])) // the first to be checked can't be a digit since that would be caught above
+	  {
+	    e[j++] = tmp[i++];
+	  }
+	  if (tmp[i]=='(') // function
+	  {
+	    e[j++] = tmp[i];
+	    int par = 1;
+	    char ignore = FALSE;
+	    while (par!=0 && tmp[i]!='$' && tmp[i])
+	    {
+	      e[j++] = tmp[++i];
+	      if (tmp[i]=='\"')
+	      {
+		ignore = ignore == FALSE ? TRUE : FALSE;
+		continue;
+	      }
+	      if (ignore)
+		continue;
+	      if (tmp[i]=='(')
+		par++;
+	      else if (tmp[i]==')')
+		par--;
+	    }
+	    if (par != 0)
+	    {
+	      syntax_error2();
+	      free(e);
+	      return NULL;
+	    } else {
+	      i++; // skip the last ')'
+	    }
+	  }
 	}
 	e[j++] = ' ';
 	i--;
@@ -2849,14 +1705,88 @@ char *hc_postfix_result(char *e)
 	    j = strlen(tmp_num);
 	  }
 	} else {
-	  syntax_error2();
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
+	  if (!isalpha(e[i]))
 	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    syntax_error2();
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    return NULL;
 	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
-	  return NULL;
+	  char *v_name = malloc(MAX_V_NAME * sizeof(char));
+	  char *f_expr = malloc(MAX_F_TMP * sizeof(char));
+	  if (!v_name || !f_expr)
+	    mem_error();
+	  f_expr[0] = '\0';
+	  int ti = 0;
+	  while ((isalpha(e[i]) || isdigit(e[i])) && (ti < MAX_V_NAME - 1)) // the first to be checked can't be a digit since that would be caught above
+	  {
+	    v_name[ti++] = e[i++];
+	  }
+	  v_name[ti] = '\0';
+	  if (isalpha(e[i]))
+	  {
+	    syntax_error2();
+	    free(v_name); free(f_expr);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    return NULL;
+	  } else if (e[i] == '(') { // function
+	    f_expr[0] = e[i];
+	    ti = 1;
+	    char ignore = FALSE;
+	    int par = 1;
+	    while (par!=0 && e[i])
+	    {
+	      f_expr[ti++] = e[++i];
+	      if (e[i]=='\"')
+	      {
+		ignore = ignore == FALSE ? TRUE : FALSE;
+		continue;
+	      }
+	      if (ignore)
+		continue;
+	      if (e[i]=='(')
+		par++;
+	      else if (e[i]==')')
+		par--;
+	    }
+	    if (par == 0)
+	    {
+	      f_expr[ti] = '\0';
+	      i++; // skip the last ')'
+	    } else {
+	      syntax_error2();
+	      free(v_name); free(f_expr);
+	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	      while (first->n)
+	      {
+		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	      }
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      return NULL;
+	    }
+	  }
+	  if (!hc_value((char *)&tmp_num, &type, v_name, f_expr))
+	  {
+	    free(v_name); free(f_expr);
+	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	    while (first->n)
+	    {
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	    }
+	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    return NULL;
+	  }
+	  free(v_name); free(f_expr);
+	  j = strlen(tmp_num);
 	}
 	i--;
 	tmp_num[j]=0;
@@ -2883,6 +1813,9 @@ char *hc_postfix_result(char *e)
 	{
 	  curr->str = strdup(tmp_num);
 	} else if (curr->type == HC_VAR_VEC)
+	{
+	  curr->str = strdup(tmp_num);
+	} else if (curr->type == HC_VAR_EMPTY)
 	{
 	  curr->str = strdup(tmp_num);
 	}
@@ -3414,10 +2347,10 @@ char hc_is_predef(char *var)
 {
   unsigned int i = 0;
   unsigned int name_hash = simple_hash(var);
-  for (; i < HC_FNAMES; i++)
+  for (; i < HC_NAMES; i++)
   {
     if (hc_hashes[i]==0)
-      hc_hashes[i] = simple_hash((char *)hc_fnames[i][0]);
+      hc_hashes[i] = simple_hash((char *)hc_names[i][0]);
     if (name_hash == hc_hashes[i])
     {
       return 1;

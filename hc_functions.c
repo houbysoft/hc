@@ -40,7 +40,7 @@ char *strreplace_(char *in, char *old, char *new)
 #endif
   char *p = strstr(in,old);
   char *result;
-  if (!p)
+  if (!p || strcmp(old,new)==0)
   {
     result = strdup(in);
     if (!result)
@@ -108,7 +108,7 @@ char *strreplace(char *in, char *old, char *new)
 #endif
   char *p = strstr(in,old);
   char *result;
-  if (!p)
+  if (!p || strcmp(old,new)==0)
   {
     result = strdup(in);
     if (!result)

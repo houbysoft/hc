@@ -25,6 +25,8 @@
 #include "hc.h"
 #include "hc_functions.h"
 #include "hash.h"
+#include "hc_complex.h"
+#include "hc_graph.h"
 
 
 struct hc_ventry *hc_var_first;
@@ -234,7 +236,10 @@ char hc_check_varname(char *e)
     i++;
   }
 
-  return 1;
+  if (i >= 64)
+    return 0;
+  else
+    return 1;
 }
 
 
@@ -252,4 +257,798 @@ char hc_check_not_recursive(char *n, char *e)
     found++;
   }
   return 1;
+}
+
+
+char hc_value(char *result, char *type, char *v_name, char *f_expr)
+{
+  unsigned int v_hash = simple_hash(v_name);
+
+  if (!strlen(f_expr)) // variable
+  {
+    unsigned int i = HC_NAMES_CNST_START;
+    for (; i <= HC_NAMES_CNST_STOP; i++) // check built-in constants
+    {
+      if (hc_hashes[i]==0)
+	hc_hashes[i] = simple_hash((char *)hc_names[i][0]);
+      if (v_hash == hc_hashes[i])
+      {
+	*type = HC_VAR_NUM; // all hc constants are numbers
+	strcpy(result,(char *)hc_names[i][1] + strlen("cnst:") * sizeof(char));
+	return 1;
+      }
+    }
+
+    struct hc_ventry *var_tmp = hc_var_first;
+    while (var_tmp && var_tmp->name)
+    {
+      if (var_tmp->type == HC_USR_VAR && strcmp(var_tmp->name,v_name) == 0)
+      {
+	strcpy(result,var_tmp->value);
+	if (is_num(result))
+	  *type = HC_VAR_NUM;
+	else if (is_string(result))
+	  *type = HC_VAR_STR;
+	else if (is_vector(result))
+	  *type = HC_VAR_VEC;
+	else {
+	  notify("Invalid variable type. This is most likely a bug, please report it.\n");
+	  return 0;
+	}
+	return 1;
+      }
+      var_tmp = var_tmp->next;
+    }
+
+    unknown_var_error(v_name, HC_USR_VAR);
+    return 0;
+
+  } else { // function
+
+    f_expr++; // skip first ')'
+    f_expr[strlen(f_expr)-1] = '\0'; // delete last ')'
+
+    M_APM f_result_re = m_apm_init();
+    M_APM f_result_im = m_apm_init();
+    M_APM tmp_num_re = m_apm_init();
+    M_APM tmp_num_im = m_apm_init();
+    char *f_result_str = NULL;
+    char *fme;
+    char *tmp_ri;
+    char success = TRUE;
+    *type = HC_VAR_NUM; // you are a number until proven otherwise
+
+    switch (v_hash)
+    {
+    case HASH_ABS:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+	m_apm_set_string(f_result_im,"0");
+	m_apmc_abs(f_result_re,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      } else {
+	m_apm_set_string(f_result_im,"0");
+	m_apm_absolute_value(f_result_re,tmp_num_re);
+      }
+      break;
+
+    case HASH_FLOOR:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(f_result_im,"0");
+      }
+      m_apmc_floor(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_CEIL:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(f_result_im,"0");
+      }
+      m_apmc_ceil(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_ROUND:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(f_result_im,"0");
+      }
+      m_apmc_round(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_ANS:
+      m_apm_copy(f_result_re,hc_lans_mapm_re);
+      m_apm_copy(f_result_im,hc_lans_mapm_im);
+      break;
+
+    case HASH_ACOS:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("acos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_from_rad(f_result_re);
+      }
+      break;
+
+    case HASH_ASIN:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("asin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_from_rad(f_result_re);
+      }
+      break;
+
+    case HASH_ATAN:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("atan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_from_rad(f_result_re);
+      }
+      break;
+
+    case HASH_COS:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("cos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_to_rad(tmp_num_re);
+        m_apmc_cos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
+      break;
+
+    case HASH_EXP:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_exp(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_FACTORIAL:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (!m_apm_is_integer(tmp_num_re) || m_apm_compare(tmp_num_im,MM_Zero)!=0)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); arg_error("factorial() : an integer is required."); return 0;}
+      m_apm_factorial(f_result_re,tmp_num_re);
+      m_apm_set_string(f_result_im,"0");
+      break;
+
+    case HASH_GCD:
+      if (hc_gcd(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_LCM:
+      if (hc_lcm(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_LN:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_log(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_LOG10:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_log10(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_SIN:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("sin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_to_rad(tmp_num_re);
+        m_apmc_sin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
+      break;
+
+    case HASH_TAN:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("tan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+	hc_to_rad(tmp_num_re);
+        m_apmc_tan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
+      break;
+
+    case HASH_SUM:
+      if (hc_sum(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_PRODUCT:
+      if (hc_product(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_COSH:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("cosh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+        m_apmc_cosh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
+      break;
+
+    case HASH_SINH:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("sinh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+        m_apmc_sinh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
+      break;
+
+    case HASH_TANH:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
+      {
+	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	m_apm_free(f_result_re); m_apm_free(f_result_im);
+	arg_error("tanh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+      } else {
+        m_apmc_tanh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      }
+      break;
+
+    case HASH_SQRT:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_sqrt(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_CBRT:
+      fme = hc_result_(f_expr);
+      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+            tmp_ri = hc_real_part(fme);
+      m_apm_set_string(tmp_num_re,tmp_ri);
+      free(tmp_ri);
+      tmp_ri = hc_imag_part(fme);
+      free(fme);
+      if (tmp_ri)
+      {
+	m_apm_set_string(tmp_num_im,tmp_ri);
+	free(tmp_ri);
+      } else {
+	m_apm_set_string(tmp_num_im,"0");
+      }
+      m_apmc_root(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im,3,3);
+      break;
+
+    case HASH_DOTP: // dot/scalar product
+      if (hc_dotp(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_CROSSP: // cross product
+      if ((f_result_str = hc_crossp(f_expr)) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      *type = HC_VAR_VEC;
+      break;
+
+    case HASH_STR:
+      if ((f_result_str = hc_2str(f_expr)) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      *type = HC_VAR_STR;
+      break;
+
+    case HASH_NUM:
+      if (hc_2num(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_MOD:
+      if (hc_modulus(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_FIBO:
+      if (hc_fibo(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_TOTIENT:
+      if (hc_totient(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_CTOF:
+      if (hc_c2f(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_FTOC:
+      if (hc_f2c(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_CTOK:
+      if (hc_c2k(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_KTOC:
+      if (hc_k2c(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_FTOK:
+      if (hc_f2k(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_KTOF:
+      if (hc_k2f(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_MITOKM:
+      if (hc_mi2km(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_KMTOMI:
+      if (hc_km2mi(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_MLTOFLOZ:
+      if (hc_ml2floz(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_FLOZTOML:
+      if (hc_floz2ml(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_INCHTOCM:
+      if (hc_inch2cm(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_CMTOINCH:
+      if (hc_cm2inch(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_FTTOM:
+      if (hc_ft2m(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_MTOFT:
+      if (hc_m2ft(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_NCR:
+      if (hc_binomc(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_NPR:
+      if (hc_permutations(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_RAND:
+      if (hc_rand(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_PRINT:
+      hc_output(PRINT, f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_WRITE:
+      hc_output(WRITE, f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_INPUT:
+      if (hc_input(f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_CAT:
+      if ((f_result_str = hc_cat(f_expr)) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      *type = HC_VAR_VEC;
+      break;
+
+    case HASH_GRAPH:
+      hc_graph(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_GMUL:
+      hc_graph_n(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_GRAPH3D:
+      hc_graph3d(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_SLPFLD:
+      hc_graph_slpfld(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_GRAPHPEQ:
+      hc_graph_peq(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_STATS:
+      hc_stats(f_expr, FALSE, FALSE);
+      *type = HC_VAR_EMPTY;
+      break;
+
+   case HASH_STATS_EFF:
+      hc_stats(f_expr, FALSE, TRUE);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_BOXPLOT:
+      hc_stats(f_expr, TRUE, FALSE);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_BOXPLOT_EFF:
+      hc_stats(f_expr, TRUE, TRUE);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_MMASS:
+      if (hc_mmass(f_result_re,f_expr)==FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    default:
+      success = FALSE;
+      break;
+    }
+
+    if (success)
+    {
+      if (*type == HC_VAR_NUM)
+      {
+	char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
+	if (f_result_tmp_re[0]=='-')
+	  f_result_tmp_re[0] = '_';
+	char *f_result_tmp_im;
+	if (m_apm_compare(f_result_im,MM_Zero)!=0)
+	{
+	  f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
+	  if (f_result_tmp_im[0]=='-')
+	    f_result_tmp_im[0] = '_';
+	  // re i im \0
+	  strcpy(result,f_result_tmp_re);
+	  strcat(result,"i");
+	  strcat(result,f_result_tmp_im);
+	  free(f_result_tmp_re); free(f_result_tmp_im);
+	} else {
+	  strcpy(result,f_result_tmp_re);
+	  free(f_result_tmp_re);
+	}
+      } else if (*type == HC_VAR_STR || *type == HC_VAR_VEC)
+      {
+	strcpy(result,f_result_str);
+	free(f_result_str);
+      } else if (*type == HC_VAR_EMPTY)
+      {
+	strcpy(result,"");
+      }
+      m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+      return 1;
+    } else { // check if not a user-defined function
+      m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+
+      struct hc_ventry *var_tmp = hc_var_first;
+      while (var_tmp && var_tmp->name)
+      {
+	if (var_tmp->type == HC_USR_FUNC && strcmp(var_tmp->name,v_name) == 0)
+	{
+	  // f_expr
+	  char *t1, *t2;
+	  unsigned int k=1;
+	  t1 = hc_get_arg(f_expr,k);
+	  t2 = hc_get_arg(var_tmp->args,k);
+	  char *res_expr = strdup(var_tmp->value);
+	  if (!res_expr)
+	    mem_error();
+	  while (t1 && t2)
+	  {
+	    char *fme = res_expr;
+	    res_expr = strreplace(res_expr,t2,t1);
+	    free(fme);
+	    free(t1); free(t2);
+	    k++;
+	    t1 = hc_get_arg(f_expr,k);
+	    t2 = hc_get_arg(var_tmp->args,k);
+	  }
+	  if (t1 || t2)
+	  {
+	    arg_error_custom();
+	    free(t1); free(t2); free(res_expr);
+	    return 0;
+	  } else {
+	    char *res_of_expr = hc_result_(res_expr);
+	    free(res_expr);
+	    if (!res_of_expr)
+	      return 0;
+	    else {
+	      strcpy(result,res_of_expr);
+	      free(res_of_expr);
+	      if (is_num(result))
+		*type = HC_VAR_NUM;
+	      else if (is_string(result))
+		*type = HC_VAR_STR;
+	      else if (is_vector(result))
+		*type = HC_VAR_VEC;
+	      else {
+		notify("Invalid variable type. This is most likely a bug, please report it.\n");
+		return 0;
+	      }
+	      return 1;
+	    }
+	  }
+	}
+	var_tmp = var_tmp->next;
+      }
+
+      unknown_var_error(v_name,HC_USR_FUNC);
+      return 0;
+    }
+  }
 }

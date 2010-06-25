@@ -31,7 +31,9 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_FNAMES 91
+#define HC_NAMES 91 // number of fields in the hc_names array
+#define HC_NAMES_CNST_START 62 // first field with a constant in the hc_names array
+#define HC_NAMES_CNST_STOP 67 // last field with a constant in the hc_names array
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128
@@ -83,7 +85,7 @@ extern void unknown_var_error(char *var, char type);
 extern void load_error(unsigned int line, char *expr);
 extern void type_error(char *expr);
 #define dim_error() notify_error("Dimension error.\n")
-#define varname_error() {notify_error("Invalid variable name (variables must contain only letters and numbers, and may not be 'e' or 'i', which are used for exponents and complex numbers respectively).\n");return;}
+#define varname_error() {notify_error("Invalid variable name (variables must contain only letters and numbers, may not be 'e' or 'i', which are used for exponents and complex numbers respectively, and must be at most %i bytes).\n",MAX_V_NAME);return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define var_nospecial_error() {notify_error("You cannot use +=, -=, *= or /= with this type of variable.\n");return;}
 #define recursive_error() {notify_error("Error : recursive definition.\n");return;}
@@ -113,7 +115,7 @@ extern char is_num(char *);
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)
-#define MAX_F_NAME 16
+#define MAX_V_NAME 64 // maximum length of variable / function name
 #define MAX_DOUBLE_STRING MAX_EXPR // To make the routines to check overflows work properly, do not change this (but you can change MAX_EXPR, obviously)
 #define MAX_OP_STACK (MAX_EXPR / 2)
 //#define MAX_DOUBLE_STACK MAX_EXPR
@@ -143,9 +145,9 @@ extern char is_num(char *);
 #define HC_USR_VAR 1
 #define HC_USR_FUNC 2
 
-#define HC_VAR_NUM 1
-#define HC_VAR_STR 2
-#define HC_VAR_VEC 3
+typedef enum {
+  HC_VAR_EMPTY, HC_VAR_NUM, HC_VAR_STR, HC_VAR_VEC
+} HC_VAR_TYPES;
 
 typedef enum {
   HC_COND_E, HC_COND_NE, HC_COND_GE, HC_COND_SE, HC_COND_S, HC_COND_G
@@ -223,8 +225,11 @@ extern struct hc_config hc;
 extern struct hc_ventry *hc_var_first;
 extern char announce_errors;
 extern char graphing_ignore_errors;
-extern const char *hc_fnames[][2];
+extern const char *hc_names[][2];
+extern unsigned int hc_hashes[HC_NAMES];
 extern char *_cur_var_name_;
+extern M_APM hc_lans_mapm_re;
+extern M_APM hc_lans_mapm_im;
 
 extern void hc_load_cfg();
 extern void hc_load(char *fname);
@@ -237,5 +242,6 @@ extern char *hc_exec_struct(char *);
 extern char hc_check_varname(char *);
 extern unsigned int simple_hash(char *p);
 extern char hc_is_predef(char *var);
+extern char hc_value(char *result, char *type, char *v_name, char *f_expr);
 
 #endif
