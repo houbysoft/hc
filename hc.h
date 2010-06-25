@@ -215,6 +215,7 @@ typedef struct hc_stack_element_stats {
 
 typedef struct hc_ventry {
   char *name;
+  unsigned int hash; // hash of the name of the variable / function -- this is used in some functions for speed where the string name is not important
   char *value;
   char *args; // functions only
   char type; // function or variable

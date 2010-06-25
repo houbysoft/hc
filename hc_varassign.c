@@ -71,6 +71,7 @@ void hc_varassign(char *e)
       if (special)
 	var_nospecial_error();
       char *name = strtok(var,"(");
+      unsigned int name_hash = simple_hash(name);
       char *args = strtok(NULL,"(");
       args[strlen(args)-1]=0;
 
@@ -82,9 +83,9 @@ void hc_varassign(char *e)
 #endif
 
       struct hc_ventry *tmp = hc_var_first;
-      while ((tmp->next) && (tmp->name!=NULL) && (strcmp(tmp->name,name)!=0))
+      while ((tmp->next) && (tmp->name!=NULL) && (tmp->hash!=name_hash))
 	tmp = tmp->next;
-      if ((tmp->name!=NULL) && (strcmp(tmp->name,name)!=0))
+      if ((tmp->name!=NULL) && tmp->hash!=name_hash)
       {
 	tmp->next = malloc(sizeof (struct hc_ventry));
 	if (!tmp->next)
@@ -95,12 +96,13 @@ void hc_varassign(char *e)
       }
       
       tmp->type = HC_USR_FUNC;
-      if ((tmp->name==NULL) || (strcmp(tmp->name,name)!=0))
+      if ((tmp->name==NULL) || (tmp->hash!=name_hash))
       {
 	// new function name
 	tmp->name = strdup(name);
 	if (!tmp->name)
 	  mem_error();
+	tmp->hash = name_hash;
       } else {
 	// function name already defined, just changing expression
 	free(tmp->value);
@@ -118,6 +120,7 @@ void hc_varassign(char *e)
   } else {
 
     // variable
+    unsigned int name_hash = simple_hash(var);
     char *value = NULL;
     if (is_string(expr))
     {
@@ -145,9 +148,9 @@ void hc_varassign(char *e)
     }
 
     struct hc_ventry *tmp = hc_var_first;
-    while ((tmp->next) && (tmp->name!=NULL) && (strcmp(tmp->name,var)!=0))
+    while ((tmp->next) && (tmp->name!=NULL) && (tmp->hash!=name_hash))
       tmp = tmp->next;
-    if ((tmp->name!=NULL) && (strcmp(tmp->name,var)!=0))
+    if ((tmp->name!=NULL) && (tmp->hash!=name_hash))
     {
       tmp->next = malloc(sizeof (struct hc_ventry));
       if (!tmp->next)
@@ -159,13 +162,14 @@ void hc_varassign(char *e)
 
     tmp->type = HC_USR_VAR;
     tmp->args = NULL;
-    if ((tmp->name==NULL) || (strcmp(tmp->name,var)!=0))
+    if ((tmp->name==NULL) || (tmp->hash!=name_hash))
     {
       // new variable name
       tmp->name = malloc((strlen(var)+1) * sizeof(char));
       if (!tmp->name)
 	mem_error();
       strcpy(tmp->name,var);
+      tmp->hash = name_hash;
     } else {
       // variable name already defined, just changing value
       free(tmp->value);
@@ -282,7 +286,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
     struct hc_ventry *var_tmp = hc_var_first;
     while (var_tmp && var_tmp->name)
     {
-      if (var_tmp->type == HC_USR_VAR && strcmp(var_tmp->name,v_name) == 0)
+      if (var_tmp->type == HC_USR_VAR && var_tmp->hash == v_hash)
       {
 	strcpy(result,var_tmp->value);
 	if (is_num(result))
@@ -997,7 +1001,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       struct hc_ventry *var_tmp = hc_var_first;
       while (var_tmp && var_tmp->name)
       {
-	if (var_tmp->type == HC_USR_FUNC && strcmp(var_tmp->name,v_name) == 0)
+	if (var_tmp->type == HC_USR_FUNC && var_tmp->hash == v_hash)
 	{
 	  // f_expr
 	  char *t1, *t2;
