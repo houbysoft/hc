@@ -76,6 +76,8 @@ extern char *hc_strip_0s(char *e);
 extern char *hc_2str(char *);
 extern int hc_2num(M_APM, M_APM, char *);
 
+extern char hc_2dec(char base, char *in, int BUFSIZE);
+
 extern char *hc_result_mul(char *e);
 
 extern char *str_multiply(char *, M_APM);

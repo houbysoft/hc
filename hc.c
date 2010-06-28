@@ -149,6 +149,7 @@ unsigned int simple_hash(char *p)
 #define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr(x,'=')-1)[0]!='<' && (strchr(x,'=')-1)[0]!='>' && (strchr(x,'=')-1)[0]!='!')
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
 #define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x) || (strstr(x,"for")==x))
+#define isdigitb(c,b) ((b==16 && isxdigit(c)) || (b==2 && (c=='0' || c=='1')) || (b==10 && isdigit(c)))
 
 
 char *hc_i2p(char *f);
@@ -653,7 +654,16 @@ char *hc_i2p(char *f)
 	  char tmpsts = 0;
 	  int tmpe = 1;
 	  int tmpi = 1;
+	  char base;
+	  if (tmp[i]=='0' && tolower(tmp[i+1])=='x')
+	    base = 16;
+	  else if (tmp[i]=='0' && tolower(tmp[i+1])=='b')
+	    base = 2;
+	  else
+	    base = 10;
 	  /*
+	    Base 10:
+
 	    tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
 
 	    States
@@ -663,42 +673,67 @@ char *hc_i2p(char *f)
 	    2 : after a number or a decimal point, not allowing for a decimal point
 	    3 : after a negative sign
 	   */
-	  while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
+	  if (base == 10)
 	  {
-	    if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
+	    while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
 	    {
-	      syntax_error2();
-	      free(e);
-	      return NULL;
+	      if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
+	      {
+		syntax_error2();
+		free(e);
+		return NULL;
+	      }
+	      if (tolower(tmp[i]) == 'e')
+	      {
+		tmpsts = 0;
+		tmpe--;
+	      } else if (tolower(tmp[i]) == 'i')
+	      {
+		tmpsts = 0;
+		tmpi--;
+		tmpe = 1;
+	      } else if (isdigit(tmp[i]))
+	      {
+		if (tmpsts == 0 || tmpsts == 3)
+		  tmpsts = 1;
+		// nothing needs to be done otherwise
+	      } else if (tmp[i]=='.')
+	      {
+		tmpsts = 2;
+	      } else if (tmp[i]=='_' || tmp[i]=='-')
+	      {
+		tmpsts = 3;
+	      }
+	      if (tmpe < 0 || tmpi < 0)
+	      {
+		syntax_error2();
+		free(e);
+		return NULL;
+	      }
+	      e[j++] = tmp[i++];
 	    }
-	    if (tolower(tmp[i]) == 'e')
+	  } else { // base == 2 or base == 16
+	    /* Base 2 or Base 16:
+
+	       tmpsts contains either TRUE, to allow a decimal point, or FALSE, to allow only digits.
+	       No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
+	    */
+	    tmpsts = TRUE;
+	    e[j++] = tmp[i++]; // write down the '0'
+	    e[j++] = tmp[i++]; // write down the either 'x' (base 16) or 'b' (base 2)
+	    while (!isspace(tmp[i]) && (!isoperator(tmp[i]) || tmp[i]=='_'))
 	    {
-	      tmpsts = 0;
-	      tmpe--;
-	    } else if (tolower(tmp[i]) == 'i')
-	    {
-	      tmpsts = 0;
-	      tmpi--;
-	      tmpe = 1;
-	    } else if (isdigit(tmp[i]))
-	    {
-	      if (tmpsts == 0 || tmpsts == 3)
-		tmpsts = 1;
-	      // nothing needs to be done otherwise
-	    } else if (tmp[i]=='.')
-	    {
-	      tmpsts = 2;
-	    } else if (tmp[i]=='_' || tmp[i]=='-')
-	    {
-	      tmpsts = 3;
+	      if (!isdigitb(tmp[i],base) && (tmp[i]!='.' || tmpsts == FALSE))
+	      {
+		syntax_error2();
+		free(e);
+		return NULL;
+	      } else {
+		if (tmp[i]=='.')
+		  tmpsts = FALSE;
+		e[j++] = tmp[i++];
+	      }
 	    }
-	    if (tmpe < 0 || tmpi < 0)
-	    {
-	      syntax_error2();
-	      free(e);
-	      return NULL;
-	    }
-	    e[j++] = tmp[i++];
 	  }
 	} else if (tmp[i]=='\"') {
 	  e[j++] = tmp[i++];
@@ -1618,7 +1653,16 @@ char *hc_postfix_result(char *e)
 	  char tmpsts = 0;
 	  int tmpe = 1;
 	  int tmpi = 1;
+	  char base;
+	  if (e[i]=='0' && tolower(e[i+1])=='x')
+	    base = 16;
+	  else if (e[i]=='0' && tolower(e[i+1])=='b')
+	    base = 2;
+	  else
+	    base = 10;
 	  /*
+	    Base 10:
+
 	    tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
 
 	    States
@@ -1628,45 +1672,93 @@ char *hc_postfix_result(char *e)
 	    2 : after a number or a decimal point, not allowing for a decimal point
 	    3 : after a negative sign
 	   */
-	  while ((!isspace(e[i]))&&(!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_')&& e[i])
+	  if (base == 10)
 	  {
-            if (hc.rpn) // otherwise, this has already been checked by hc_i2p()
-            {
-	    if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')))
+	    while ((!isspace(e[i]))&&(!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_')&& e[i])
 	    {
-	      syntax_error2();
-	      free(e);
+	      if (hc.rpn) // otherwise, this has already been checked by hc_i2p()
+	      {
+		if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')))
+		{
+		  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+		  while (first->n)
+		  {
+		    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+		  }
+		  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+		  return NULL;
+		}
+		if (tolower(e[i]) == 'e')
+		{
+		  tmpsts = 0;
+		  tmpe--;
+		} else if (tolower(e[i]) == 'i')
+		{
+		  tmpsts = 0;
+		  tmpi--;
+		  tmpe = 1;
+		} else if (isdigit(e[i]))
+		{
+		  if (tmpsts == 0 || tmpsts == 3)
+		    tmpsts = 1;
+		  // nothing needs to be done otherwise
+		} else if (e[i]=='.')
+		{
+		  tmpsts = 2;
+		} else if (e[i]=='_' || e[i]=='-')
+		{
+		  tmpsts = 3;
+		}
+		if (tmpe < 0 || tmpi < 0)
+		{
+		  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+		  while (first->n)
+		  {
+		    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+		  }
+		  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+		  return NULL;
+		}
+	      }
+	      tmp_num[j++] = e[i++];
+	    }
+	  } else { // base == 2 or base == 16
+	    /* Base 2 or Base 16:
+
+	       tmpsts contains either TRUE, to allow a decimal point, or FALSE, to allow only digits.
+	       No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
+	    */
+	    tmpsts = TRUE;
+	    i+=2; // skip the initial '0x' or '0b'
+	    while (!isspace(e[i]) && (!isoperator(e[i]) || e[i]=='_'))
+	    {
+	      if (hc.rpn && (!isdigitb(e[i],base) && (e[i]!='.' || tmpsts == FALSE))) // hc.rpn : if not true, this has already been checked by hc_i2p() so we can skip this
+	      {
+		m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+		while (first->n)
+		{
+		  m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+		}
+		m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+		return NULL;
+	      } else {
+		if (e[i]=='.')
+		  tmpsts = FALSE;
+		tmp_num[j++] = e[i++];
+	      }
+	    }
+	    tmp_num[j] = '\0';
+	    if (!hc_2dec(base,(char *)&tmp_num,MAX_DOUBLE_STRING))
+	    {
+	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
+	      while (first->n)
+	      {
+		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
+	      }
+	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
 	      return NULL;
 	    }
-	    if (tolower(e[i]) == 'e')
-	    {
-	      tmpsts = 0;
-	      tmpe--;
-	    } else if (tolower(e[i]) == 'i')
-	    {
-	      tmpsts = 0;
-	      tmpi--;
-	      tmpe = 1;
-	    } else if (isdigit(e[i]))
-	    {
-	      if (tmpsts == 0 || tmpsts == 3)
-		tmpsts = 1;
-	      // nothing needs to be done otherwise
-	    } else if (e[i]=='.')
-	    {
-	      tmpsts = 2;
-	    } else if (e[i]=='_' || e[i]=='-')
-	    {
-	      tmpsts = 3;
-	    }
-	    if (tmpe < 0 || tmpi < 0)
-	    {
-	      syntax_error2();
-	      free(e);
-	      return NULL;
-	    }
-            }
-	    tmp_num[j++] = e[i++];
+	    j = strlen(tmp_num);
 	  }
 	} else if (e[i]=='\"') {
 	  type = HC_VAR_STR;
@@ -2104,7 +2196,7 @@ char *hc_impmul_resolve(char *e)
   {
     if (!isspace(e[i]))
     {
-      if (((isalpha(e[i]) || e[i]=='(') && tolower(e[i])!='i' && tolower(e[i])!='e') && last_was_num)
+      if (((isalpha(e[i]) || e[i]=='(') && tolower(e[i])!='i' && tolower(e[i])!='e') && last_was_num && (last_was_num!='0' || (tolower(e[i])!='x' && tolower(e[i])!='b')))
       {
 	e = realloc(e, strlen(e)+2);
 	memmove(e+sizeof(char)*i+sizeof(char), e+sizeof(char)*i, strlen(e)-i+1);
@@ -2113,7 +2205,7 @@ char *hc_impmul_resolve(char *e)
       }
       if ((isdigit(e[i]) || e[i]=='.') && could_be_num)
       {
-	last_was_num = 1;
+	last_was_num = e[i];
       } else {
 	last_was_num = 0;
 	could_be_num = 0;

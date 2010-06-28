@@ -27,6 +27,9 @@
 #include "hc_list.h"
 
 
+#define b10(c) (isdigit(c) ? c - 48 : tolower(c) - 87) // '0' == 48, 'a' == 97
+
+
 double hc_strtod(const char *e, char *unused)
 {
   return strtod(e,NULL);
@@ -2107,4 +2110,49 @@ char is_num(char *str)
     }
   }
   return TRUE;
+}
+
+
+char hc_2dec(char base, char *in, int BUFSIZE)
+{
+  int i = strlen(in)-1;
+  int power = 0;
+  int decp = i;
+  M_APM res = m_apm_init(); m_apm_copy(res,MM_Zero);
+  M_APM t1 = m_apm_init();
+  M_APM t2 = m_apm_init();
+  M_APM t3 = m_apm_init();
+  for (; i>=0; i--, power++)
+  {
+    if (in[i]=='.')
+    {
+      decp = i;
+      power--;
+    } else if (in[i]=='-' && i == 0) {
+      m_apm_copy(t1,res);
+      m_apm_negate(res,t1);
+    } else {
+      m_apm_set_long(t1,(long)base);
+      m_apm_integer_pow(t2,HC_DEC_PLACES,t1,power);
+      m_apm_set_long(t1,(long)b10(in[i]));
+      m_apm_multiply(t3,t1,t2);
+      m_apm_copy(t1,res);
+      m_apm_add(res,t1,t3);
+    }
+  }
+  if (decp != strlen(in) - 1)
+  {
+    m_apm_set_long(t2,(long)base);
+    m_apm_integer_pow(t3,HC_DEC_PLACES, t2, strlen(in)- 1 - decp);
+    m_apm_copy(t2,res);
+    m_apm_divide(res,HC_DEC_PLACES,t2,t3);
+  }
+  char *tmp = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, res, '.', 0, 0);
+  strncpy(in,tmp,BUFSIZE);
+  free(tmp);
+  m_apm_free(t1); m_apm_free(t2); m_apm_free(t3); m_apm_free(res);
+  if (strlen(in)==BUFSIZE - 1)
+    return FALSE;
+  else
+    return TRUE;
 }
