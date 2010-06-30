@@ -177,6 +177,8 @@ int hc_nested;
 
 char *hc_result(char *e)
 {
+  if (!e)
+    return NULL;
   announce_errors = TRUE; // This variable is used so that syntax errors etc. are not announced multiple times if multiple errors are detected
   hc_nested = 0; // This is set to prevent infinite recursion
 

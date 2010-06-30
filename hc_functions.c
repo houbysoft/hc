@@ -1855,7 +1855,7 @@ int hc_output(int mode, char *f_expr)
   printme[0] = '\0';
   int alloc = 0;
   char *t1_tmp = hc_get_arg(f_expr,pos);
-  char *t1 = hc_result_(t1_tmp);
+  char *t1 = hc_result(t1_tmp);
   free(t1_tmp);
   char done = 0;
   while (t1)
@@ -1896,7 +1896,7 @@ int hc_output(int mode, char *f_expr)
       }
     }
     t1_tmp = hc_get_arg(f_expr,++pos);
-    t1 = hc_result_(t1_tmp);
+    t1 = hc_result(t1_tmp);
     free(t1_tmp);
   }
   if (mode==PRINT)
