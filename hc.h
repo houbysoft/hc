@@ -231,6 +231,7 @@ extern unsigned int hc_hashes[HC_NAMES];
 extern char *_cur_var_name_;
 extern M_APM hc_lans_mapm_re;
 extern M_APM hc_lans_mapm_im;
+extern M_APM MM_MOne;
 
 extern void hc_load_cfg();
 extern void hc_load(char *fname);

@@ -404,6 +404,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       break;
 
     case HASH_ACOS:
+    case HASH_ARCCOS:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       tmp_ri = hc_real_part(fme);
@@ -418,7 +419,11 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)==0 && m_apm_compare(tmp_num_re,MM_One)!=1 && m_apm_compare(tmp_num_re,MM_MOne)!=-1)
+	m_apm_acos(f_result_re,HC_DEC_PLACES,tmp_num_re);
+      else
+	m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+
       if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
       {
 	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
@@ -430,6 +435,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       break;
 
     case HASH_ASIN:
+    case HASH_ARCSIN:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
             tmp_ri = hc_real_part(fme);
@@ -444,7 +450,11 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)==0 && m_apm_compare(tmp_num_re,MM_One)!=1 && m_apm_compare(tmp_num_re,MM_MOne)!=-1)
+	m_apm_asin(f_result_re,HC_DEC_PLACES,tmp_num_re);
+      else
+	m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+
       if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
       {
 	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
@@ -456,6 +466,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       break;
 
     case HASH_ATAN:
+    case HASH_ARCTAN:
       fme = hc_result_(f_expr);
       if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
             tmp_ri = hc_real_part(fme);
@@ -470,7 +481,10 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       } else {
 	m_apm_set_string(tmp_num_im,"0");
       }
-      m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      if (m_apm_compare(tmp_num_im,MM_Zero)==0)
+	m_apm_atan(f_result_re,HC_DEC_PLACES,tmp_num_re);
+      else
+	m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
       {
 	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
