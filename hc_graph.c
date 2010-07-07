@@ -25,6 +25,7 @@
 #include "hc_functions.h"
 #include "hc_graph.h"
 #include "hc_complex.h"
+#include "hc_list.h"
 
 
 #define HC_GRAPH_POINTS 300
@@ -73,8 +74,11 @@ char hc_graph(char *e)
   free(t2);free(t4);
   double xmin,xmax,ymin,ymax;
 
-  if (!func_expr)
+  if (!func_expr || !strlen(func_expr))
+  {
+    free(func_expr);
     arg_error("graph() needs at least one argument (expr).");
+  }
 
   if (!arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
   {
@@ -89,6 +93,17 @@ char hc_graph(char *e)
     hc.xmax2d = xmax = strtod(arg_xmax,NULL);
     hc.ymin2d = ymin = strtod(arg_ymin,NULL);
     hc.ymax2d = ymax = strtod(arg_ymax,NULL);
+  }
+
+  if (is_vector(func_expr))
+  {
+    hc_graph_n(list_clean(func_expr));
+    free(func_expr);
+    free(arg_xmin);
+    free(arg_xmax);
+    free(arg_ymin);
+    free(arg_ymax);
+    return SUCCESS;
   }
 
   double step = (xmax-xmin) / HC_GRAPH_POINTS;
@@ -160,14 +175,10 @@ char hc_graph(char *e)
 
   free(graph_top_label);
   free(func_expr);
-  if (arg_xmin)
-    free(arg_xmin);
-  if (arg_xmax)
-    free(arg_xmax);
-  if (arg_ymin)
-    free(arg_ymin);
-  if (arg_ymax)
-    free(arg_ymax);
+  free(arg_xmin);
+  free(arg_xmax);
+  free(arg_ymin);
+  free(arg_ymax);
 
 #ifdef HCG
 #ifndef WIN32
@@ -195,7 +206,7 @@ char hc_graph_n(char *e)
   }
 
   if (!*func_expr[0])
-    arg_error("gmul() needs at least one argument (expr_1).");
+    arg_error("gmul() and graph() need at least one argument (expr_1).");
 
   double xmin = hc.xmin2d;
   double xmax = hc.xmax2d;
