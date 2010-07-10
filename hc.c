@@ -348,6 +348,7 @@ char *hc_result(char *e)
   return r;
 }
 
+
 char *hc_result_(char *e)
 {
   if (!e)
@@ -490,7 +491,7 @@ char *hc_i2p(char *f)
   stack[sp][0] = '$';
   stack[sp++][1] = 0;
 
-  while (tmp[i]!=0)
+  while (tmp[i]!=0 && j < MAX_EXPR)
   {
     if (!isspace(tmp[i]))
     {
@@ -802,6 +803,12 @@ char *hc_i2p(char *f)
       }
     }
     i++;
+  }
+  if (j >= MAX_EXPR)
+  {
+    overflow_error_nq();
+    free(e);
+    return NULL;
   }
 
   return e;

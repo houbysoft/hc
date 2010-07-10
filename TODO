@@ -1,4 +1,3 @@
 TODO list
 =========
 - add binary and hex output formats [input now done]
-- check hc_postfix_result() for overflows for very large (long) numbers

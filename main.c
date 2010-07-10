@@ -82,7 +82,10 @@ int main(int argc, char *argv[])
   if (eval)
   {
     hc.announce = FALSE;
-    printf("%s",hc_result(eval));
+    char *fme = hc_result(eval);
+    if (fme && strlen(fme))
+      printf("%s",fme);
+    free(fme);
     return 0;
   } else if (argv[optind]!=NULL) {
     hc.announce = FALSE;
