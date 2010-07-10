@@ -438,6 +438,12 @@ char *hc_result_normal(char *f)
   free(e_fme);
   e_fme = e;
 
+  if (!e)
+  {
+    hc_nested--;
+    return NULL;
+  }
+
   char *fme;
 
 #ifdef DBG
@@ -2002,12 +2008,20 @@ char *hc_plusminus(char *f)
   //  2) If + & - appear next to each other, figure out the resulting number
   f = strreplace_(f,"i-","i_");
   if (hc.rpn)
+  {
+    char *f2 = f;
     f = strreplace_(f," -"," _");
+    free(f2);
+  }
+  if (strlen(f)>=MAX_EXPR)
+  {
+    free(f);
+    overflow_error_nq();
+    return NULL;
+  }
   char *e = malloc(MAX_EXPR);
   if (!e)
     mem_error();
-  if (strlen(f)>MAX_EXPR-1)
-    overflow_error();
   strcpy(e,f);
   free(f);
 
