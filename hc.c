@@ -202,7 +202,9 @@ char *hc_result(char *e)
     hc_var_first->name = NULL;
     hc_var_first->args = NULL;
     m_apmc_init();
-    memset(hc_hashes,0,HC_NAMES * sizeof(unsigned int));
+    int i = 0;
+    for (; i < HC_NAMES; i++)
+      hc_hashes[i] = simple_hash((char *)hc_names[i][0]);
     init = 1;
   }
 
@@ -1784,8 +1786,6 @@ char *hc_plusminus(char *f)
 
   int i=0;
   int count=0;
-  char new[MAX_EXPR];
-  memset(&new,0,MAX_EXPR);
   char last_was_op=0;
 
   while (e[i]!=0)
@@ -2221,8 +2221,6 @@ char hc_is_predef(char *var)
   unsigned int name_hash = simple_hash(var);
   for (; i < HC_NAMES; i++)
   {
-    if (hc_hashes[i]==0)
-      hc_hashes[i] = simple_hash((char *)hc_names[i][0]);
     if (name_hash == hc_hashes[i])
     {
       return 1;
