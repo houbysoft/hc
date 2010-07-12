@@ -87,4 +87,6 @@ extern char check_completeness(char *e);
 extern char *get_string(char *);
 extern char *strchr_outofblock(char *, char);
 
+extern char hc_reim(char part, M_APM re, M_APM im, char *e);
+
 #endif

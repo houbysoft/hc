@@ -801,6 +801,18 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
+    case HASH_RE:
+    case HASH_REAL:
+      if (hc_reim(REAL,f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_IM:
+    case HASH_IMAG:
+      if (hc_reim(IMAG,f_result_re,f_result_im,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
     case HASH_MOD:
       if (hc_modulus(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}

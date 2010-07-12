@@ -1221,6 +1221,33 @@ int hc_mmass(M_APM result, char *e)
 
 
 
+char hc_reim(char type, M_APM re, M_APM im, char *e)
+{
+  e = hc_result_(e);
+  if (!e || !is_num(e))
+  {
+    free(e);
+    return FAIL;
+  }
+  char *tmp;
+  m_apm_copy(im,MM_Zero);
+  if (type == REAL)
+  {
+    tmp = hc_real_part(e);
+    m_apm_set_string(re,tmp);
+  } else {
+    tmp = hc_imag_part(e);
+    if (tmp)
+      m_apm_set_string(re,tmp);
+    else
+      m_apm_copy(re,MM_Zero);
+  }
+  free(tmp); free(e);
+  return SUCCESS;
+}
+
+
+
 void hc_from_rad(M_APM result)
 {
   if (hc.angle=='r')
