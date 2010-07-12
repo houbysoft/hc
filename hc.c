@@ -151,6 +151,8 @@ unsigned int simple_hash(char *p)
 #define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x) || (strstr(x,"for")==x))
 #define isdigitb(c,b) ((b==16 && isxdigit(c)) || (b==2 && (c=='0' || c=='1')) || (b==10 && isdigit(c)))
 
+#define hc_postfix_result_cleanup() {m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str); while (first->n) {m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);} m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);}
+
 
 char *hc_i2p(char *f);
 char *hc_postfix_result(char *e);
@@ -866,12 +868,7 @@ char *hc_postfix_result(char *e)
       case '*':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
@@ -917,23 +914,13 @@ char *hc_postfix_result(char *e)
 	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i, '*');
 	  if (!curr->str)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    return NULL;
 	  }
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
 	} else {
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("* accepts either numbers, an integer and a string, or a vector and a number");
 	  return NULL;	  
 	}
@@ -944,12 +931,7 @@ char *hc_postfix_result(char *e)
       case '/':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
@@ -975,12 +957,7 @@ char *hc_postfix_result(char *e)
 	{
 	  if (m_apm_sign(op2_r)==0 && m_apm_sign(op2_i)==0)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    d0_error();
 	    return NULL;
 	  }
@@ -999,23 +976,13 @@ char *hc_postfix_result(char *e)
 	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i, '/');
 	  if (!curr->str)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    return NULL;
 	  }
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
 	} else {
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("/ accepts only two numbers or a vector and a number (in that order)");
 	  return NULL;
 	}
@@ -1029,12 +996,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    type_error("% accepts only numbers");
 	    return NULL;
 	  }
@@ -1042,12 +1004,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    type_error("% accepts only numbers");
 	    return NULL;
 	  }
@@ -1057,12 +1014,7 @@ char *hc_postfix_result(char *e)
 	}
 	if (sp < 2 || m_apm_compare(op1_i,MM_Zero)!=0 || m_apm_compare(op2_i,MM_Zero)!=0)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  if (sp < 2)
 	  {
 	    syntax_error2();
@@ -1074,12 +1026,7 @@ char *hc_postfix_result(char *e)
 	M_APM tmp = m_apm_init();
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("% accepts only numbers");
 	  return NULL;
 	}
@@ -1093,12 +1040,7 @@ char *hc_postfix_result(char *e)
       case '+':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
@@ -1146,23 +1088,13 @@ char *hc_postfix_result(char *e)
 	  curr->n->str = NULL;
 	  if (!(curr->str = list_add_sub(op1_str, op2_str, '+')))
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    return NULL;
 	  }
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
 	} else {
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("+ accepts either two numbers, two strings or two vectors");
 	  return NULL;
 	}
@@ -1184,21 +1116,11 @@ char *hc_postfix_result(char *e)
 	    free(tmp);
 	    if (!curr->str)
 	    {
-	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	      while (first->n)
-	      {
-		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	      }
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      hc_postfix_result_cleanup();
 	      return NULL;
 	    }
 	  } else {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    type_error("- accepts only numbers or vectors");
 	    return NULL;
 	  }
@@ -1215,12 +1137,7 @@ char *hc_postfix_result(char *e)
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    type_error("- accepts only two numbers or two vectors");
 	    return NULL;
 	  }
@@ -1253,23 +1170,13 @@ char *hc_postfix_result(char *e)
 	    curr->n->str = NULL;
 	    if (!(curr->str = list_add_sub(op1_str, op2_str, '-')))
 	    {
-	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	      while (first->n)
-	      {
-		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	      }
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      hc_postfix_result_cleanup();
 	      return NULL;
 	    }
 	    free(op1_str); op1_str = NULL;
 	    free(op2_str); op2_str = NULL;
 	  } else {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    type_error("- accepts only two numbers or two vectors");
 	    return NULL;
 	  }
@@ -1281,24 +1188,14 @@ char *hc_postfix_result(char *e)
       case PW_SIGN:
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("^ accepts only numbers");
 	  return NULL;
 	}
@@ -1306,12 +1203,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("^ accepts only numbers");
 	  return NULL;
 	}
@@ -1340,12 +1232,7 @@ char *hc_postfix_result(char *e)
 	  i++;
 	  if (sp < 2)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first);
+	    hc_postfix_result_cleanup();
 	    syntax_error2();
 	    return NULL;
 	  }
@@ -1365,35 +1252,20 @@ char *hc_postfix_result(char *e)
 	  // interpret as factorial
 	  if (sp < 1)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first);
+	    hc_postfix_result_cleanup();
 	    syntax_error2();
 	    return NULL;
 	  }
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    type_error("! accepts only numbers");
 	    return NULL;
 	  }
 	  if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
 	  {
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first);
+	    hc_postfix_result_cleanup();
 	    arg_error("! : an integer is required.");
 	    return NULL;
 	  }
@@ -1408,24 +1280,14 @@ char *hc_postfix_result(char *e)
       case '<':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("</<= accepts only numbers");
 	  return NULL;
 	}
@@ -1433,12 +1295,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("</<= accepts only numbers");
 	  return NULL;
 	}
@@ -1467,24 +1324,14 @@ char *hc_postfix_result(char *e)
       case '>':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first);
+	   hc_postfix_result_cleanup();
            syntax_error2();
            return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	   type_error(">/>= accepts only numbers");
 	   return NULL;
 	}
@@ -1492,12 +1339,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error(">/>= accepts only numbers");
 	  return NULL;
 	}
@@ -1526,12 +1368,7 @@ char *hc_postfix_result(char *e)
       case '=':
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
@@ -1560,24 +1397,14 @@ char *hc_postfix_result(char *e)
 	  i++;
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("|| accepts only numbers");
 	  return NULL;
 	}
@@ -1585,12 +1412,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("|| accepts only numbers");
 	  return NULL;
 	}
@@ -1611,24 +1433,14 @@ char *hc_postfix_result(char *e)
 	  i++;
 	if (sp < 2)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  syntax_error2();
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("&& accepts only numbers");
 	  return NULL;
 	}
@@ -1636,12 +1448,7 @@ char *hc_postfix_result(char *e)
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
-	  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	  while (first->n)
-	  {
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	  }
-	  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	  hc_postfix_result_cleanup();
 	  type_error("&& accepts only numbers");
 	  return NULL;
 	}
@@ -1695,12 +1502,7 @@ char *hc_postfix_result(char *e)
 	      {
 		if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')))
 		{
-		  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-		  while (first->n)
-		  {
-		    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-		  }
-		  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+		  hc_postfix_result_cleanup();
 		  return NULL;
 		}
 		if (tolower(e[i]) == 'e')
@@ -1726,12 +1528,7 @@ char *hc_postfix_result(char *e)
 		}
 		if (tmpe < 0 || tmpi < 0)
 		{
-		  m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-		  while (first->n)
-		  {
-		    m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-		  }
-		  m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+		  hc_postfix_result_cleanup();
 		  return NULL;
 		}
 	      }
@@ -1749,12 +1546,7 @@ char *hc_postfix_result(char *e)
 	    {
 	      if (hc.rpn && (!isdigitb(e[i],base) && (e[i]!='.' || tmpsts == FALSE))) // hc.rpn : if not true, this has already been checked by hc_i2p() so we can skip this
 	      {
-		m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-		while (first->n)
-		{
-		  m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-		}
-		m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+		hc_postfix_result_cleanup();
 		return NULL;
 	      } else {
 		if (e[i]=='.')
@@ -1765,12 +1557,7 @@ char *hc_postfix_result(char *e)
 	    tmp_num[j] = '\0';
 	    if (!hc_2dec(base,(char *)&tmp_num,MAX_DOUBLE_STRING))
 	    {
-	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	      while (first->n)
-	      {
-		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	      }
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      hc_postfix_result_cleanup();
 	      return NULL;
 	    }
 	    j = strlen(tmp_num);
@@ -1801,12 +1588,7 @@ char *hc_postfix_result(char *e)
 	    tmp_num[j]=0;
 	    if (!hc_list_get((char *)&tmp_num,&type,e,&i))
 	    {
-	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	      while (first->n)
-	      {
-		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	      }
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      hc_postfix_result_cleanup();
 	      return NULL;
 	    }
 	    j = strlen(tmp_num);
@@ -1814,13 +1596,8 @@ char *hc_postfix_result(char *e)
 	} else {
 	  if (!isalpha(e[i]))
 	  {
-	    syntax_error2();
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
+            syntax_error2();
 	    return NULL;
 	  }
 	  char *v_name = malloc(MAX_V_NAME * sizeof(char));
@@ -1838,12 +1615,7 @@ char *hc_postfix_result(char *e)
 	  {
 	    syntax_error2();
 	    free(v_name); free(f_expr);
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    return NULL;
 	  } else if (e[i] == '(') { // function
 	    f_expr[0] = e[i];
@@ -1872,24 +1644,14 @@ char *hc_postfix_result(char *e)
 	    } else {
 	      syntax_error2();
 	      free(v_name); free(f_expr);
-	      m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	      while (first->n)
-	      {
-		m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	      }
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	      hc_postfix_result_cleanup();
 	      return NULL;
 	    }
 	  }
 	  if (!hc_value((char *)&tmp_num, &type, v_name, f_expr))
 	  {
 	    free(v_name); free(f_expr);
-	    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-	    while (first->n)
-	    {
-	      m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);
-	    }
-	    m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);
+	    hc_postfix_result_cleanup();
 	    return NULL;
 	  }
 	  free(v_name); free(f_expr);
@@ -1944,12 +1706,7 @@ char *hc_postfix_result(char *e)
   
   if (sp!=1)
   {
-    m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str);
-    while (first->n)
-    {
-      m_apm_free(first->re);m_apm_free(first->im);first = first->n;free(first->p);
-    }
-    m_apm_free(first->re);m_apm_free(first->im);free(first);
+    hc_postfix_result_cleanup();
     syntax_error2();
     return NULL;
   }
