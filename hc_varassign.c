@@ -916,8 +916,8 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
-    case HASH_CAT:
-      if ((f_result_str = hc_cat(f_expr)) == FAIL)
+    case HASH_JOIN:
+      if ((f_result_str = hc_join(f_expr)) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       *type = HC_VAR_VEC;
       break;

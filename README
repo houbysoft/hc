@@ -10,6 +10,11 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+2.1:
+  - added -e command line argument for direct evaluation from cli arguments
+  - numbers can now be also entered in hex (with the 0x prefix) and in binary (with the 0b prefix)
+  - added a few synonyms : quit for exit, and arc* for asin, acos, atan
+  - added join() to join lists/vectors
 2.0:
   - added vectors; they can be used with normal operators where appropriate, and can also be used with functions crossP() and dotP().
     example usage : crossp([1,2,3],[4,5,6])

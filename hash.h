@@ -155,6 +155,6 @@
 #define HASH_YMAXPEQ 11679
 #define HASH_PEQSTEP 13476
 
-#define HASH_CAT 8295
+#define HASH_JOIN 29070
 
 #endif

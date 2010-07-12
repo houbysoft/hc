@@ -1715,7 +1715,7 @@ char *hc_crossp(char *f_expr)
 }
 
 
-char *hc_cat(char *f_expr)
+char *hc_join(char *f_expr)
 {
   char *v1_orig = hc_get_arg(f_expr,1);
   char *v2_orig = hc_get_arg(f_expr,2);
