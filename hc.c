@@ -359,12 +359,17 @@ char *hc_result(char *e)
 
 char *hc_result_(char *e)
 {
+  char *r=NULL;
   if (!e)
     return NULL;
   e = strip_spaces(e);
-  if (!e[0]) // empty string
-    return NULL;
-  char *r=NULL;
+  if (!e[0] || e[0]=='#') // empty string or comment
+  {
+    r = malloc(1);
+    if (!r) mem_error();
+    r[0]='\0';
+    return r;
+  }
   
   if (iscontrolstruct(e) || (strchr_outofblock(e,';') && !(isvarassign(e))))
   {
@@ -2251,7 +2256,7 @@ void hc_load(char *fname)
   while (fgets(expr,MAX_EXPR+1,fr))
   {
     if (strcmp(expr,"\n")==0)
-      break;
+      continue;
     if (expr[strlen(expr)-1]=='\n')
       expr[strlen(expr)-1]=0;
     if (strlen(expr)>=MAX_EXPR)
