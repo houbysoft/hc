@@ -9,8 +9,10 @@ COPT=-DHCG_E
 # additional options to pass to gcc when linking
 LOPT=`pkg-config gtk+-2.0 plplotd --cflags --libs`
 
-hcg: cleanup gui_main.o gui_utils.o hc_functions.o hc_varassign.o hc.o hc_graph.o m_apmc.o hc_complex.o hc_stats.o hc_programming.o hc_chemistry.o hc_list.o
-	gcc ${LOPT} gui_main.o gui_utils.o hc_functions.o hc_varassign.o hc_graph.o hc.o hc_complex.o m_apmc.o hc_stats.o hc_programming.o hc_chemistry.o hc_list.o /usr/lib/libmapm.a -o $@
+OBJS=hc.o hc_functions.o hc_calculus.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o hc_stats.o hc_programming.o hc_chemistry.o hc_list.o
+
+hcg: cleanup gui_main.o gui_utils.o ${OBJS}
+	gcc ${LOPT} gui_main.o gui_utils.o ${OBJS} /usr/lib/libmapm.a -o $@
 
 cleanup: hc.make.gui
 
@@ -19,23 +21,8 @@ hc.make.gui:
 	rm -f hc.make.cli
 	touch hc.make.gui
 
-hc_stats.o: hc_stats.c
-	gcc -DHCG ${COPT} -c hc_stats.c
-
-hc_chemistry.o: hc_chemistry.c
-	gcc -DHCG ${COPT} -c hc_chemistry.c
-
 gui_main.o: gui_main.c
 	gcc -DHCG `pkg-config gtk+-2.0 --cflags` ${COPT} -c gui_main.c
-
-hc.o: hc.c
-	gcc ${COPT} -c hc.c
-
-hc_functions.o: hc_functions.c
-	gcc ${COPT} -c hc_functions.c
-
-hc_varassign.o: hc_varassign.c
-	gcc ${COPT} -c hc_varassign.c
 
 gui_utils.o: gui_utils.c
 	gcc -DHCG `pkg-config gtk+-2.0 --cflags` ${COPT} -c gui_utils.c
@@ -43,14 +30,5 @@ gui_utils.o: gui_utils.c
 hc_graph.o: hc_graph.c
 	gcc -DHCG `pkg-config plplotd --cflags` ${COPT} -c hc_graph.c
 
-hc_complex.o: hc_complex.c
-	gcc ${COPT} -c hc_complex.c
-
-hc_programming.o: hc_programming.c
-	gcc ${COPT} -c hc_programming.c
-
-hc_list.o: hc_list.c
-	gcc ${COPT} -c hc_list.c
-
-m_apmc.o: m_apmc.c
-	gcc ${COPT} -c m_apmc.c
+%.o: %.c hc.h
+	gcc ${COPT} -c $<
