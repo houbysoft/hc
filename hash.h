@@ -83,6 +83,7 @@
 #define HASH_INPUT 14896
 
 // Conversions
+#define HASH_CONVERT 9364
 #define HASH_CTOF 5450
 #define HASH_FTOC 4853
 #define HASH_CTOK 5455

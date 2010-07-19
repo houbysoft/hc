@@ -241,19 +241,23 @@ char *hc_get_arg(char *e, int pos)
 }
 
 
+char *hc_get_arg_r(char *e, int pos)
+{
+  char *r1 = hc_get_arg(e,pos);
+  char *r2 = hc_result_(r1);
+  free(r1);
+  return r2;
+}
+
+
 int hc_modulus(M_APM result, char *e)
 {
   if (strchr(e,',')==NULL)
     arg_error("mod() needs two arguments.");
   
   /* 2-arg INIT */
-  char *arg1,*arg2,*t1,*t2;
-  t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2);
-  arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2);
-  free(t1); free(t2);
-  t1 = arg1; t2 = arg2;
-  arg1 = hc_result_(arg1);  arg2 = hc_result_(arg2);
-  free(t1); free(t2);
+  char *arg1,*arg2;
+  arg1 = hc_get_arg_r(e,1);  arg2 = hc_get_arg_r(e,2);
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
@@ -290,13 +294,8 @@ int hc_binomc(M_APM result, char *e)
     arg_error("nCr() needs two arguments.");
  
   /* 2-arg INIT */
-  char *arg1,*arg2,*t1,*t2;
-  t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2);
-  arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2);
-  free(t1); free(t2);
-  t1 = arg1; t2 = arg2;
-  arg1 = hc_result_(arg1);  arg2 = hc_result_(arg2);
-  free(t1); free(t2);
+  char *arg1,*arg2;
+  arg1 = hc_get_arg_r(e,1);  arg2 = hc_get_arg_r(e,2);
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
@@ -371,13 +370,8 @@ int hc_permutations(M_APM result, char *e)
     arg_error("nPr() needs two arguments.");
  
   /* 2-arg INIT */
-  char *arg1,*arg2,*t1,*t2;
-  t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2);
-  arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2);
-  free(t1); free(t2);
-  t1 = arg1; t2 = arg2;
-  arg1 = hc_result_(arg1);  arg2 = hc_result_(arg2);
-  free(t1); free(t2);
+  char *arg1,*arg2;
+  arg1 = hc_get_arg_r(e,1);  arg2 = hc_get_arg_r(e,2);
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
@@ -451,17 +445,13 @@ int hc_permutations(M_APM result, char *e)
 int hc_sum(M_APM result_re, M_APM result_im, char *e)
 {
   /* 3-arg INIT mod */
-  char *arg1,*arg2,*arg3,*t1,*t2,*t3;
-  t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2); t3 = hc_get_arg(e,3);
-  if (t1 == NULL || t2 == NULL || t3 == NULL)
+  char *arg1,*arg2,*arg3;
+  arg1 = hc_get_arg(e,1);  arg2 = hc_get_arg_r(e,2);  arg3 = hc_get_arg_r(e,3);
+  if (arg1 == NULL || arg2 == NULL || arg3 == NULL)
+  {
+    free(arg1); free(arg2); free(arg3);
     arg_error("sum() needs 3 arguments (expr,low,high).");
-  arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2); arg3 = (char *)hc_plusminus(t3);
-  free(t1); free(t2); free(t3);
-  t1 = arg1; t2 = arg2; t3 = arg3;
-  arg2 = hc_result_(arg2);  arg3 = hc_result_(arg3);
-  if (arg2 == NULL || arg3 == NULL)
-    return FAIL;
-  free(t2); free(t3);
+  }
   /* 3-arg INIT END */
 
   M_APM min,max,res_re,res_im,copy_tmp_re,copy_tmp_im,copy_tmp2_re,copy_tmp2_im;
@@ -533,17 +523,13 @@ int hc_sum(M_APM result_re, M_APM result_im, char *e)
 int hc_product(M_APM result_re, M_APM result_im, char *e)
 {
   /* 3-arg INIT mod */
-  char *arg1,*arg2,*arg3,*t1,*t2,*t3;
-  t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2); t3 = hc_get_arg(e,3);
-  if (t1 == NULL || t2 == NULL || t3 == NULL)
-    arg_error("sum() needs 3 arguments (expr,low,high).");
-  arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2); arg3 = (char *)hc_plusminus(t3);
-  free(t1); free(t2); free(t3);
-  t1 = arg1; t2 = arg2; t3 = arg3;
-  arg2 = hc_result_(arg2);  arg3 = hc_result_(arg3);
-  if (arg2 == NULL || arg3 == NULL)
-    return FAIL;
-  free(t2); free(t3);
+  char *arg1,*arg2,*arg3;
+  arg1 = hc_get_arg(e,1);  arg2 = hc_get_arg_r(e,2);  arg3 = hc_get_arg_r(e,3);
+  if (arg1 == NULL || arg2 == NULL || arg3 == NULL)
+  {
+    free(arg1); free(arg2); free(arg3);
+    arg_error("product() needs 3 arguments (expr,low,high).");
+  }
   /* 3-arg INIT END */
 
   M_APM min,max,res_re,res_im,copy_tmp_re,copy_tmp_im,copy_tmp2_re,copy_tmp2_im;
@@ -624,13 +610,8 @@ int hc_gcd(M_APM result, char *e)
     arg_error("gcd() needs two arguments.");
 
   /* 2-arg INIT */
-  char *arg1,*arg2,*t1,*t2;
-  t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2);
-  arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2);
-  free(t1); free(t2);
-  t1 = arg1; t2 = arg2;
-  arg1 = hc_result_(arg1);  arg2 = hc_result_(arg2);
-  free(t1); free(t2);
+  char *arg1,*arg2;
+  arg1 = hc_get_arg_r(e,1);  arg2 = hc_get_arg_r(e,2);
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
@@ -650,13 +631,8 @@ int hc_lcm(M_APM result, char *e)
     arg_error("lcm() needs two arguments.");
 
   /* 2-arg INIT */
-  char *arg1,*arg2,*t1,*t2;
-  t1 = hc_get_arg(e,1);  t2 = hc_get_arg(e,2);
-  arg1 = (char *)hc_plusminus(t1);  arg2 = (char *)hc_plusminus(t2);
-  free(t1); free(t2);
-  t1 = arg1; t2 = arg2;
-  arg1 = hc_result_(arg1);  arg2 = hc_result_(arg2);
-  free(t1); free(t2);
+  char *arg1,*arg2;
+  arg1 = hc_get_arg_r(e,1);  arg2 = hc_get_arg_r(e,2);
   if (arg1 == NULL || arg2 == NULL)
     return FAIL;
   /* 2-arg INIT END */
@@ -1820,9 +1796,7 @@ int hc_output(int mode, char *f_expr)
   }
   else
   {
-    char *fname_tmp_ = hc_get_arg(f_expr,1);
-    char *fname_tmp = hc_result_(fname_tmp_);
-    free(fname_tmp_);
+    char *fname_tmp = hc_get_arg_r(f_expr,1);
     if (!is_string(fname_tmp))
     {
       free(fname_tmp);
@@ -1850,9 +1824,7 @@ int hc_output(int mode, char *f_expr)
   char *printme = malloc(1);
   printme[0] = '\0';
   int alloc = 0;
-  char *t1_tmp = hc_get_arg(f_expr,pos);
-  char *t1 = hc_result(t1_tmp);
-  free(t1_tmp);
+  char *t1 = hc_get_arg_r(f_expr,pos);
   char done = 0;
   while (t1)
   {
@@ -1891,9 +1863,7 @@ int hc_output(int mode, char *f_expr)
 	free(tmp);
       }
     }
-    t1_tmp = hc_get_arg(f_expr,++pos);
-    t1 = hc_result(t1_tmp);
-    free(t1_tmp);
+    t1 = hc_get_arg_r(f_expr,++pos);
   }
   if (mode==PRINT)
   {

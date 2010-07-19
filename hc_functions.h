@@ -63,6 +63,7 @@ extern void hc_to_rad(M_APM);
 extern char *strreplace(char *in, char *old, char *new);
 extern char *strreplace_(char *in, char *old, char *new); // same as strreplace, but does not include any measures against replacing inside variables etc. (ie. raw string replace)
 extern char *hc_get_arg(char *e, int pos);
+extern char *hc_get_arg_r(char *e, int pos); // same as hc_get_arg() but also automatically computes result
 extern int hc_need_space_int(int i);
 extern void is_zero_free();
 extern char contains_char(char *);
