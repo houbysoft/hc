@@ -1114,7 +1114,7 @@ char *hc_postfix_result(char *e)
 	break;
 	
       case '_':
-	if (!isdigit(e[i+1]))
+	if (e[i+1] && !isdigit(e[i+1]))
 	{
 	  curr = curr->p;
 	  if (curr->type == HC_VAR_NUM)
@@ -1138,6 +1138,12 @@ char *hc_postfix_result(char *e)
 	  curr = curr->n;
 	  break;
 	} else {
+	  if (!e[i+1])
+	  {
+	    hc_postfix_result_cleanup();
+	    syntax_error2();
+	    return NULL;
+	  }
 	  e[i] = '@';
 	  i--;
 	  break;

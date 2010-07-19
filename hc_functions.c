@@ -2079,6 +2079,20 @@ char is_num(char *str)
 }
 
 
+char is_real_num(char *str)
+{
+  unsigned int i = 0;
+  for (; i < strlen(str); i++)
+  {
+    if (!isdigit(str[i]) && str[i]!='.' && tolower(str[i])!='e' && str[i]!='+' && str[i]!='-')
+    {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+
 char hc_2dec(char base, char *in, int BUFSIZE)
 {
   int i = strlen(in)-1;

@@ -82,8 +82,20 @@
 #define HASH_WRITE 11366
 #define HASH_INPUT 14896
 
-// Conversions
+// Conversions & units
 #define HASH_CONVERT 9364
+#define HASH_CM 3178
+#define HASH_INCH 28115
+#define HASH_C 99
+#define HASH_F 102
+#define HASH_K 107
+#define HASH_FLOZ 27117
+#define HASH_ML 3487
+#define HASH_FT 3278
+#define HASH_M 109
+#define HASH_KM 3426
+#define HASH_MI 3484
+
 #define HASH_CTOF 5450
 #define HASH_FTOC 4853
 #define HASH_CTOK 5455
