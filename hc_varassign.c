@@ -33,6 +33,7 @@ struct hc_ventry *hc_var_first;
 char hc_check_funcname(char *e);
 char hc_check_varname(char *e);
 char hc_check_not_recursive(char *n, char *e);
+int hc_clear(char *e);
 
 
 void hc_varassign(char *e)
@@ -261,6 +262,58 @@ char hc_check_not_recursive(char *n, char *e)
     found++;
   }
   return 1;
+}
+
+
+int hc_clear(char *e)
+{
+  unsigned int hash = simple_hash(e);
+  struct hc_ventry *curr = hc_var_first;
+  struct hc_ventry *tmp = NULL;
+  char done = FALSE;
+  if (curr->hash == hash)
+  {
+    free(curr->name);
+    free(curr->value);
+    free(curr->args);
+    hc_var_first = curr->next;
+    free(curr);
+    if (!hc_var_first)
+    {
+      hc_var_first = malloc(sizeof (struct hc_ventry));
+      if (!hc_var_first)
+	mem_error();
+      hc_var_first->next = NULL;
+      hc_var_first->type = 0;
+      hc_var_first->value = NULL;
+      hc_var_first->name = NULL;
+      hc_var_first->args = NULL;
+      hc_var_first->hash = 0;
+    }
+    done = TRUE;
+  } else {
+    while (curr->next)
+    {
+      if (hash == curr->next->hash)
+      {
+	free(curr->next->name);
+	free(curr->next->value);
+	free(curr->next->args);
+	tmp = curr->next->next;
+	free(curr->next);
+	curr->next = tmp;
+	done = TRUE;
+	break;
+      }
+      curr = curr->next;
+    }
+  }
+  if (!done)
+  {
+    arg_error("clear() : argument is already not defined.");
+  } else {
+    return SUCCESS;
+  }
 }
 
 
@@ -976,6 +1029,12 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 
     case HASH_BOXPLOT_EFF:
       hc_stats(f_expr, TRUE, TRUE);
+      *type = HC_VAR_EMPTY;
+      break;
+
+    case HASH_CLEAR:
+      if (hc_clear(f_expr)==FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       *type = HC_VAR_EMPTY;
       break;
 

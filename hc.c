@@ -1909,12 +1909,9 @@ void hc_process_direction(char *d)
     while (hc_var_tmp->next)
     {
       hc_var_first = hc_var_tmp->next;
-      if (hc_var_tmp->name)
-	free(hc_var_tmp->name);
-      if (hc_var_tmp->value)
-	free(hc_var_tmp->value);
-      if (hc_var_tmp->args)
-	free(hc_var_tmp->args);
+      free(hc_var_tmp->name);
+      free(hc_var_tmp->value);
+      free(hc_var_tmp->args);
       free(hc_var_tmp);
       hc_var_tmp = hc_var_first;
     }
@@ -1927,6 +1924,7 @@ void hc_process_direction(char *d)
     hc_var_first->value = NULL;
     hc_var_first->name = NULL;
     hc_var_first->args = NULL;
+    hc_var_first->hash = 0;
     printf("All user-defined variables were cleared.\n");
     break;
   case HASH_LOAD:
