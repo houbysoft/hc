@@ -1729,17 +1729,8 @@ char *hc_postfix_result(char *e)
   }
   
   curr = curr->p;
-  
-  char *result_std=NULL,*result_im=NULL;
-  
-  if (curr->type == HC_VAR_NUM)
-  {
-    result_std = m_apm_to_fixpt_stringexp(hc.precision,curr->re,'.',0,0);
-    if (m_apm_compare(curr->im,MM_Zero)!=0)
-      result_im = m_apm_to_fixpt_stringexp(hc.precision,curr->im,'.',0,0);
-  } else {
-    result_std = strdup(curr->str);
-  }
+
+  char *result = hc_strrepr(curr);
   
   m_apm_free(op1_r);m_apm_free(op1_i);
   m_apm_free(op2_r);m_apm_free(op2_i);
@@ -1756,18 +1747,7 @@ char *hc_postfix_result(char *e)
   free(first->str);
   free(first);
 
-  if (!result_im)
-    return result_std;
-  else
-  {
-    char *result_cplx = malloc(strlen(result_std)+1+strlen(result_im)+1);
-    strcpy(result_cplx,result_std);
-    strcat(result_cplx,"i");
-    strcat(result_cplx,result_im);
-    free(result_std);
-    free(result_im);
-    return result_cplx;
-  }
+  return result;
 }
 
 

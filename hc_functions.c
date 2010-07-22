@@ -2136,3 +2136,33 @@ char hc_2dec(char base, char *in, int BUFSIZE)
   else
     return TRUE;
 }
+
+
+char *hc_strrepr(struct hc_stack_element *el)
+{
+  char *r = NULL;
+  char *r1 = NULL;
+  char *r2 = NULL;
+  switch (el->type)
+  {
+  case HC_VAR_NUM:
+    r1 = m_apm_to_fixpt_stringexp(hc.precision,el->re,'.',0,0);
+    if (m_apm_compare(el->im,MM_Zero)!=0)
+    {
+      r2 = m_apm_to_fixpt_stringexp(hc.precision,el->im,'.',0,0);
+      r = malloc(strlen(r1)+1+strlen(r2)+1);
+      sprintf(r,"%si%s",r1,r2);
+      free(r1); free(r2);
+    } else {
+      r = r1;
+    }
+    break;
+
+  case HC_VAR_STR:
+  case HC_VAR_VEC:
+    r = strdup(el->str);
+    break;
+  }
+
+  return r;
+}
