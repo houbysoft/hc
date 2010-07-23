@@ -767,13 +767,19 @@ char *hc_i2p(char *f)
 	  {
 	    unsigned int pct = 1;
 	    e[j++] = tmp[i++];
-	    while (pct!=0)
+	    while (pct!=0 && tmp[i])
 	    {
 	      if (tmp[i]=='[')
 		pct++;
 	      if (tmp[i]==']')
 		pct--;
 	      e[j++] = tmp[i++];
+	    }
+	    if (pct!=0)
+	    {
+	      syntax_error2();
+	      free(e);
+	      return NULL;
 	    }
 	  }
 	} else {
@@ -817,6 +823,27 @@ char *hc_i2p(char *f)
 	    }
 	  }
 	}
+
+	while (tmp[i]=='[')
+	{
+	  unsigned int pct = 1;
+	  e[j++] = tmp[i++];
+	  while (pct!=0 && tmp[i])
+	  {
+	    if (tmp[i]=='[')
+	      pct++;
+	    if (tmp[i]==']')
+	      pct--;
+	    e[j++] = tmp[i++];
+	  }
+	  if (pct!=0)
+	  {
+	    syntax_error2();
+	    free(e);
+	    return NULL;
+	  }
+	}
+
 	e[j++] = ' ';
 	i--;
       }
@@ -1585,11 +1612,21 @@ char *hc_postfix_result(char *e)
 	  while (e[i]!='\"')
 	    tmp_num[j++] = e[i++];
 	  tmp_num[j++] = e[i++];
+	  while (e[i]=='[') // index
+	  {
+	    tmp_num[j] = 0;
+	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+	    {
+	      hc_postfix_result_cleanup();
+	      return NULL;
+	    }
+	    j = strlen(tmp_num);
+	  }
 	} else if (e[i]=='[') {
 	  type = HC_VAR_VEC;
 	  unsigned int pct = 1;
 	  tmp_num[j++] = e[i++];
-	  while (pct!=0)
+	  while (pct!=0 && e[i])
 	  {
 	    if (e[i]=='[')
 	      pct++;
@@ -1597,13 +1634,18 @@ char *hc_postfix_result(char *e)
 	      pct--;
 	    tmp_num[j++] = e[i++];
 	  }
+	  if (pct!=0)
+	  {
+	    hc_postfix_result_cleanup();
+	    return NULL;
+	  }
 	  tmp_num[j]=0;
 	  list_simplify((char *)&tmp_num);
 	  j = strlen(tmp_num);
 	  while (e[i]=='[') // index
 	  {
 	    tmp_num[j]=0;
-	    if (!hc_list_get((char *)&tmp_num,&type,e,&i))
+	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
 	    {
 	      hc_postfix_result_cleanup();
 	      return NULL;
@@ -1672,6 +1714,17 @@ char *hc_postfix_result(char *e)
 	    return NULL;
 	  }
 	  free(v_name); free(f_expr);
+	  j = strlen(tmp_num);
+	  while (e[i]=='[')
+	  {
+	    tmp_num[j]=0;
+	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+	    {
+	      hc_postfix_result_cleanup();
+	      return NULL;
+	    }
+	    j = strlen(tmp_num);
+	  }
 	  j = strlen(tmp_num);
 	}
 	i--;

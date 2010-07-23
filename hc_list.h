@@ -19,7 +19,7 @@
 #ifndef HC_LIST_H
 #define HC_LIST_H
 
-extern char hc_list_get(char *data, char *type, char *scan, int *i);
+extern char hc_get_by_index(char *data, char *type, char *scan, int *i);
 extern char *list_mul_div(char *str, M_APM n_r, M_APM n_i, char mode);
 extern char *list_add_sub(char *l1, char *l2, char mode);
 extern char *list_neg(char *list);

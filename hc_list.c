@@ -23,28 +23,50 @@
 
 
 // returns 0 on error
-char hc_list_get(char *data, char *type, char *scan, int *i)
+char hc_get_by_index(char *data, char *type, char *scan, int *i)
 {
+  char *scanres = hc_result((char *)(scan + *i));
+  *i += strlen((char *)(scan + *i));
+  // FIXME : hc_result() is expensive, should use hc_result_() instead, but this needs the result to be nicely parsed (ie. the radix and zeroes after an integer stripped)
   // scan[*i] points at the '[' of the beginning of the index
-  *i += 1;
   char tmp_idx[MAX_DOUBLE_STRING];
-  int j=0;
-  while (scan[*i]!=']')
+  int j=0,k=1;
+  for (; scanres[k]!=']'; k++)
   {
-    if (!isdigit(scan[*i]))
+    if (!isdigit(scanres[k]))
     {
+      free(scanres);
       arg_error("only integer indexes are accepted.");
     }
-    tmp_idx[j++] = scan[*i];
-    *i += 1;
+    tmp_idx[j++] = scanres[k];
   }
-  *i += 1;
+  k++;
   tmp_idx[j] = 0;
-  data[strlen(data)-1] = '\0'; // delete the last ']'
-  char *res = hc_get_arg((char *)(data + 1), atoi(tmp_idx) + 1);
-  if (!res)
+  free(scanres);
+  char *res = NULL;
+  if (is_string(data))
   {
-    arg_error("index out of range.");
+    data = strip_spaces(data);
+    data[strlen(data)-1] = '\0'; // delete the last '"'
+    if (atoi(tmp_idx) >= strlen((char *)(data + 1)))
+      arg_error("index out of range.");
+    res = malloc(4);
+    if (!res)
+      mem_error();
+    res[0] = '"';
+    res[1] = ((char *)(data + 1))[atoi(tmp_idx)];
+    res[2] = '"';
+    res[3] = '\0';
+  } else if (is_vector(data))
+  {
+    data[strlen(data)-1] = '\0'; // delete the last ']'
+    res = hc_get_arg((char *)(data + 1), atoi(tmp_idx) + 1);
+    if (!res)
+    {
+      arg_error("index out of range.");
+    }
+  } else {
+    arg_error("only vectors/lists and strings can be indexed.");
   }
 
   if (is_string(res))
