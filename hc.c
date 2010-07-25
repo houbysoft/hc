@@ -1281,14 +1281,49 @@ char *hc_postfix_result(char *e)
 	    return NULL;
 	  }
 	  curr = curr->p; // [--sp]
-	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	  op2_type = curr->type;
+	  if (op2_type == HC_VAR_NUM)
+	  {
+	    m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+	  } else if (op2_type == HC_VAR_STR)
+	  {
+	    op2_str = get_string(curr->str);
+	  } else if (op2_type == HC_VAR_VEC)
+	  {
+	    op2_str = strdup(curr->str);
+	  }
 	  curr = curr->p; // [--sp]
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	  m_apm_set_string(curr->im,"0");
-	  if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
-	    m_apm_set_string(curr->re,"0");
-	  else
-	    m_apm_set_string(curr->re,"1");
+	  op1_type = curr->type;
+	  if (op1_type == HC_VAR_NUM)
+	  {
+	    m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+	  } else if (op1_type == HC_VAR_STR) {
+	    op1_str = get_string(curr->str);
+	  } else if (op1_type == HC_VAR_VEC) {
+	    op1_str = strdup(curr->str);
+	  }
+	  m_apm_copy(curr->im,MM_Zero);
+	  curr->type = HC_VAR_NUM;
+	  if (op1_type == op2_type)
+	  {
+	    if (op1_type == HC_VAR_NUM)
+	    {
+	      if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
+		m_apm_copy(curr->re,MM_Zero);
+	      else
+		m_apm_copy(curr->re,MM_One);
+	    } else if (op1_type == HC_VAR_STR || op1_type == HC_VAR_VEC)
+	    {
+	      if (strcmp(op1_str,op2_str)==0)
+		m_apm_copy(curr->re,MM_Zero);
+	      else
+		m_apm_copy(curr->re,MM_One);
+	    }
+	  } else {
+	    m_apm_copy(curr->re,MM_One);
+	  }
+	  free(op1_str); free(op2_str);
+	  op1_str = op2_str = NULL;
 	  curr = curr->n;
 	  sp -= 1;
 	  break;
@@ -1438,7 +1473,7 @@ char *hc_postfix_result(char *e)
 	} else if (op1_type == HC_VAR_VEC) {
 	  op1_str = strdup(curr->str);
 	}
-	m_apm_set_string(curr->im,"0");
+	m_apm_copy(curr->im,MM_Zero);
 	switch(e[++i])
 	{
 	case '=':
