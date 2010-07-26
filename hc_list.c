@@ -114,18 +114,27 @@ char *list_neg(char *list)
 }
 
 
-char *list_mul_div(char *list, M_APM n_r, M_APM n_i, char mode)
+char *list_mul_div(char *list, M_APM n_r, M_APM n_i, char *str, char mode)
 {
   list++; // skip the initial '['; this assumes valid data is sent in
   list[strlen(list)-1] = '\0';
-  char *n_str_r = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, n_r, '.', 0, 0);
-  char *n_str_i = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, n_i, '.', 0, 0);
-  char *n_str = malloc(strlen(n_str_r)+1+strlen(n_str_i)+1);
-  if (!n_str)
-    mem_error();
-  sprintf(n_str,"%si%s",n_str_r,n_str_i);
-  free(n_str_r);
-  free(n_str_i);
+  char *n_str = NULL;
+  if (!str)
+  {
+    char *n_str_r = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, n_r, '.', 0, 0);
+    char *n_str_i = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, n_i, '.', 0, 0);
+    n_str = malloc(strlen(n_str_r)+1+strlen(n_str_i)+1);
+    if (!n_str)
+      mem_error();
+    sprintf(n_str,"%si%s",n_str_r,n_str_i);
+    free(n_str_r);
+    free(n_str_i);
+  } else {
+    n_str = malloc(strlen(str)+3);
+    if (!n_str)
+      mem_error();
+    sprintf(n_str,"\"%s\"",str);
+  }
   char *res = malloc(2);
   if (!res)
     mem_error();

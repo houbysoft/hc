@@ -945,11 +945,11 @@ char *hc_postfix_result(char *e)
 	  curr->str = str_multiply(op1_type == HC_VAR_STR ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
 	  free(op1_str); op1_str = NULL;
 	  free(op2_str); op2_str = NULL;
-	} else if ((op1_type == HC_VAR_NUM && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_NUM && op1_type == HC_VAR_VEC)) {
+	} else if ((op1_type == HC_VAR_NUM && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_NUM && op1_type == HC_VAR_VEC) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_STR && op1_type == HC_VAR_VEC)) {
 	  curr->type = HC_VAR_VEC;
 	  free(curr->str); free(curr->n->str);
 	  curr->n->str = NULL;
-	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i, '*');
+	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_type == HC_VAR_NUM ? op2_r : NULL, op1_type == HC_VAR_NUM ? op1_i : op2_type == HC_VAR_NUM ? op2_i : NULL, op1_type == HC_VAR_STR ? op1_str : op2_type == HC_VAR_STR ? op2_str : NULL, '*');
 	  if (!curr->str)
 	  {
 	    hc_postfix_result_cleanup();
@@ -959,7 +959,7 @@ char *hc_postfix_result(char *e)
 	  free(op2_str); op2_str = NULL;
 	} else {
 	  hc_postfix_result_cleanup();
-	  type_error("* accepts either numbers, an integer and a string, or a vector and a number");
+	  type_error("* accepts either numbers, an integer and a string, a vector and a number, or an all-integer vector and a string");
 	  return NULL;	  
 	}
 	curr = curr->n; // [sp++]
@@ -1011,7 +1011,7 @@ char *hc_postfix_result(char *e)
 	  curr->type = HC_VAR_VEC;
 	  free(curr->str); free(curr->n->str);
 	  curr->n->str = NULL;
-	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i, '/');
+	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i, NULL, '/');
 	  if (!curr->str)
 	  {
 	    hc_postfix_result_cleanup();

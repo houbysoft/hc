@@ -2,4 +2,3 @@ TODO list
 =========
 - add binary and hex output formats [input now done]
 - unify/combine all conversions into single function convert()
-- multiplying a vector with integers by a string should work
