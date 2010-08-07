@@ -2160,6 +2160,7 @@ char *hc_strrepr(struct hc_stack_element *el)
 
   case HC_VAR_STR:
   case HC_VAR_VEC:
+  case HC_VAR_EMPTY:
     r = strdup(el->str);
     break;
   }

@@ -651,6 +651,23 @@ char *hc_i2p(char *f)
 	  break;
 	  
 	case '&':
+	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='|'))
+	  {
+	    stack[sp][0] = tmp[i];
+	    if (tmp[i+1]==tmp[i])
+	    {
+	      stack[sp++][1] = tmp[i+1];
+	      i++;
+	    } else
+	      stack[sp++][1] = 0;
+	  } else {
+	    e[j++] = stack[--sp][0];
+	    if (stack[sp][1])
+	      e[j++] = stack[sp][1];
+	    i--;
+	  }
+	  break;
+
 	case '|':
 	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
 	  {
@@ -668,6 +685,7 @@ char *hc_i2p(char *f)
 	    i--;
 	  }
 	  break;
+
 	}
 
       } else {
