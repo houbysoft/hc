@@ -126,6 +126,7 @@ extern char is_real_num(char *);
 #define HC_PEQSTEP_DEFAULT 0.02
 
 #define PW_SIGN '^'
+#define NOT_SIGN '?'
 
 #ifndef MM_PI
 #define HC_PI 3.14159265359
