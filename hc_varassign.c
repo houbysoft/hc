@@ -389,10 +389,10 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       {
 	m_apm_set_string(tmp_num_im,tmp_ri);
 	free(tmp_ri);
-	m_apm_set_string(f_result_im,"0");
+	m_apm_copy(f_result_im,MM_Zero);
 	m_apmc_abs(f_result_re,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       } else {
-	m_apm_set_string(f_result_im,"0");
+	m_apm_copy(f_result_im,MM_Zero);
 	m_apm_absolute_value(f_result_re,tmp_num_re);
       }
       break;
@@ -410,7 +410,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 	m_apm_set_string(tmp_num_im,tmp_ri);
 	free(tmp_ri);
       } else {
-	m_apm_set_string(f_result_im,"0");
+	m_apm_copy(f_result_im,MM_Zero);
       }
       m_apmc_floor(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
       break;
@@ -428,7 +428,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 	m_apm_set_string(tmp_num_im,tmp_ri);
 	free(tmp_ri);
       } else {
-	m_apm_set_string(f_result_im,"0");
+	m_apm_copy(f_result_im,MM_Zero);
       }
       m_apmc_ceil(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
       break;
@@ -446,7 +446,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 	m_apm_set_string(tmp_num_im,tmp_ri);
 	free(tmp_ri);
       } else {
-	m_apm_set_string(f_result_im,"0");
+	m_apm_copy(f_result_im,MM_Zero);
       }
       m_apmc_round(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
       break;
@@ -610,7 +610,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       if (!m_apm_is_integer(tmp_num_re) || m_apm_compare(tmp_num_im,MM_Zero)!=0)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); arg_error("factorial() : an integer is required."); return 0;}
       m_apm_factorial(f_result_re,tmp_num_re);
-      m_apm_set_string(f_result_im,"0");
+      m_apm_copy(f_result_im,MM_Zero);
       break;
 
     case HASH_GCD:
