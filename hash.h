@@ -175,4 +175,7 @@
 #define HASH_IM 3364
 #define HASH_IMAG 27091
 
+#define HASH_CHARTOCODE 23290
+#define HASH_CODETOCHAR 24145
+
 #endif

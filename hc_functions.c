@@ -21,6 +21,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <errno.h>
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_complex.h"
@@ -1048,6 +1049,53 @@ int hc_m2ft(M_APM result, char *e)
 
   m_apm_free(x); m_apm_free(tmp); free(fme);
   return SUCCESS;
+}
+
+
+int hc_char2code(M_APM result, char *e)
+{
+  e = hc_result_(e);
+  if (!e)
+    return FAIL;
+  char *fme = get_string(e);
+  if (!fme || strlen(fme)!=1)
+  {
+    free(e); free(fme);
+    arg_error("chartocode() : argument must be a one-character string.");
+  }
+
+  m_apm_set_long(result,(long)fme[0]);
+
+  free(e); free(fme);
+  return SUCCESS;
+}
+
+
+char *hc_code2char(char *e)
+{
+  e = hc_result_(e);
+  if (!e)
+    return FAIL;
+  if (!is_num(e)) // FIXME : should really check whether is an integer
+  {
+    free(e);
+    arg_error("codetochar() : argument must be an integer in the range 0-255 inclusive.");
+  }
+  errno = 0;
+  int charcode = strtol(e,(char **) NULL,10);
+  free(e);
+  if (errno != 0 || charcode < 0 || charcode >= 256)
+  {
+    arg_error("codetochar() : argument must be an integer in the range 0-255 inclusive.");
+  }
+
+  char *r = malloc(4);
+  if (!r)
+    mem_error();
+
+  sprintf(r,"\"%c\"",charcode);
+
+  return r;
 }
 
 
