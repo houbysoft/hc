@@ -74,6 +74,7 @@ const char *hc_names[][2] = {
   {"ktoc","func"},
   {"ktof","func"},
   {"lcm","func"},
+  {"length","func"},
   {"ln","func"},
   {"log10","func"},
   {"mitokm","func"},

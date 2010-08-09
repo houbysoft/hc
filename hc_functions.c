@@ -1937,6 +1937,52 @@ int hc_output(int mode, char *f_expr)
 }
 
 
+int hc_length(M_APM result, char *e)
+{
+  e = hc_result_(e);
+  if (!e)
+    return FAIL;
+
+  if (is_vector(e))
+  {
+    unsigned int i = 0;
+    unsigned long len = 1; // for the last element, which is not followed by a ','
+    int par = 0;
+    char *tmp = list_clean(e);
+    char ignore = FALSE;
+    for (; i < strlen(tmp); i++)
+    {
+      if (tmp[i]=='\"')
+      {
+	ignore = ignore == FALSE ? TRUE : FALSE;
+	continue;
+      }
+      if (ignore)
+	continue;
+      if (tmp[i] == '[')
+	par++;
+      if (tmp[i] == ']')
+	par--;
+      if (!par && tmp[i] == ',')
+	len++;
+    }
+    m_apm_set_long(result,len);
+    free(e);
+  } else if (is_string(e))
+  {
+    char *tmp = get_string(e);
+    free(e);
+    m_apm_set_double(result,(double) strlen(tmp));
+    free(tmp);
+  } else {
+    free(e);
+    arg_error("length() : only strings and vectors have lengths");
+  }
+
+  return SUCCESS;
+}
+
+
 char *strip_spaces(char *e)
 {
   char *r = e;

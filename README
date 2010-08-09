@@ -18,6 +18,7 @@ RELEASE NOTES
   - added re()/real() and im()/imag() to get only real / imaginary part of a number
   - logic operators precedence bugfix, and added ! as the logical NOT operator
   - added codetochar() and chartocode() to work with character codes and made strings indexable
+  - added length() to get length of lists/vectors and strings
 2.0:
   - added vectors; they can be used with normal operators where appropriate, and can also be used with functions crossP() and dotP().
     example usage : crossp([1,2,3],[4,5,6])

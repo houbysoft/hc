@@ -170,6 +170,8 @@
 
 #define HASH_JOIN 29070
 
+#define HASH_LENGTH 23197
+
 #define HASH_RE 3635
 #define HASH_REAL 17626
 #define HASH_IM 3364

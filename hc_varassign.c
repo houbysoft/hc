@@ -998,6 +998,11 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       *type = HC_VAR_VEC;
       break;
 
+	case HASH_LENGTH:
+	  if (hc_length(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+	  break;
+
     case HASH_GRAPH:
       hc_graph(f_expr);
       *type = HC_VAR_EMPTY;
