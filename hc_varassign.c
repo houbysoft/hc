@@ -127,10 +127,6 @@ void hc_varassign(char *e)
     hc.flags &= ~PRINTFULL;
     if (!value)
       return;
-    if (is_string(value) && special)
-    {
-      var_nospecial_error(); // FIXME : this should now be possible
-    }
 
     if (special) // special means that one of these has been used: += -= *= /= %=
     {
