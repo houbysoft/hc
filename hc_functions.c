@@ -1076,7 +1076,7 @@ char *hc_code2char(char *e)
   e = hc_result_(e);
   if (!e)
     return FAIL;
-  if (!is_num(e)) // FIXME : should really check whether is an integer
+  if (!is_int(e))
   {
     free(e);
     arg_error("codetochar() : argument must be an integer in the range 0-255 inclusive.");
@@ -2181,6 +2181,31 @@ char is_real_num(char *str)
     if (!isdigit(str[i]) && str[i]!='.' && tolower(str[i])!='e' && str[i]!='+' && str[i]!='-')
     {
       return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+
+// returns true if str contains a base-10 integer in normal (non-scientific) notation
+char is_int(char *str)
+{
+  unsigned int i = 0;
+  char sawradix = FALSE;
+  for (; i < strlen(str); i++)
+  {
+    if (str[i] == '.')
+    {
+      sawradix = TRUE;
+      continue;
+    }
+    if (!sawradix)
+    {
+      if (!isdigit(str[i]) && str[i]!='.' && str[i]!='+' && str[i]!='-')
+	return FALSE;
+    } else {
+      if (str[i]!='0')
+	return FALSE;
     }
   }
   return TRUE;
