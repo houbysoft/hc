@@ -162,6 +162,9 @@ typedef enum {
   HC_EXEC_IF, HC_EXEC_WHILE, HC_EXEC_FOR
 } HC_EXECS;
 
+// hc_config's hc.flags
+#define PRINTFULL 0x1
+
 typedef struct hc_config {
   char announce; // used when command line options are supplied to supress configuration notice
   char rpn;
@@ -197,6 +200,7 @@ typedef struct hc_config {
   double xmaxpeq;
   double yminpeq;
   double ymaxpeq;
+  char flags;
 } hc_config_;
 
 typedef struct hc_stack_element {

@@ -87,6 +87,8 @@ extern char *hc_result_mul(char *e);
 
 extern char *hc_strrepr(struct hc_stack_element *el);
 
+extern inline void hc_round(M_APM, int, M_APM);
+
 extern char *str_multiply(char *, M_APM);
 extern char *strip_spaces(char *e);
 extern char last_char(char *e);

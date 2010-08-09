@@ -122,16 +122,14 @@ void hc_varassign(char *e)
 
     // variable
     unsigned int name_hash = simple_hash(var);
-    char *value = NULL;
-    if (is_string(expr))
+    hc.flags |= PRINTFULL;
+    char *value = hc_result_(expr);
+    hc.flags &= ~PRINTFULL;
+    if (!value)
+      return;
+    if (is_string(value) && special)
     {
-      if (special)
-	var_nospecial_error();
-      value = strdup(expr);
-    } else {
-      value = hc_result_(expr);
-      if (!value)
-	return;
+      var_nospecial_error(); // FIXME : this should now be possible
     }
 
     if (special) // special means that one of these has been used: += -= *= /= %=

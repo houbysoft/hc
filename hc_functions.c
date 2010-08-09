@@ -2237,13 +2237,20 @@ char *hc_strrepr(struct hc_stack_element *el)
   char *r = NULL;
   char *r1 = NULL;
   char *r2 = NULL;
+
+  int precision;
+  if (hc.flags & PRINTFULL)
+    precision = HC_DEC_PLACES;
+  else
+    precision = hc.precision;
+
   switch (el->type)
   {
   case HC_VAR_NUM:
-    r1 = m_apm_to_fixpt_stringexp(hc.precision,el->re,'.',0,0);
+    r1 = m_apm_to_fixpt_stringexp(precision,el->re,'.',0,0);
     if (m_apm_compare(el->im,MM_Zero)!=0)
     {
-      r2 = m_apm_to_fixpt_stringexp(hc.precision,el->im,'.',0,0);
+      r2 = m_apm_to_fixpt_stringexp(precision,el->im,'.',0,0);
       r = malloc(strlen(r1)+1+strlen(r2)+1);
       sprintf(r,"%si%s",r1,r2);
       free(r1); free(r2);
@@ -2260,4 +2267,10 @@ char *hc_strrepr(struct hc_stack_element *el)
   }
 
   return r;
+}
+
+
+inline void hc_round(M_APM result, int decp, M_APM in)
+{
+  m_apm_round(result, decp + (m_apm_exponent(in) > 0 ? m_apm_exponent(in) : 0), in);
 }
