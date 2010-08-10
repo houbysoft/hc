@@ -30,23 +30,22 @@
 
 #ifndef I_HATE_TIPS
 char *tips[] = {
-  "You can use \"pi\" to get the value of pi.",
-  "To enter a negative number, simply prepend it with a '-' (same as the minus operator).",
   "We may be in the matrix right now.",
-  "If you have an idea or wish for a function in HC, you can contact me at http://houbysoft.com/en/about.php.",
+  "To report a bug or suggest a feature, you can go to bugs.houbysoft.com.",
   "If you don't like these tips, you can recompile HC with the -DI_HATE_TIPS flag.",
   "To get the factorial of n, type factorial(n) or use the '!' notation.",
   "To recall the last result, you can use ans().",
   "You can use \\rpn to switch between RPN-mode and infix-mode.",
   "You can use \\deg, \\rad, and \\grad to switch the angle mode.",
   "HC is also a good converter. For example, to convert 1 US Fl Oz to mL, type floztoml(1). Type conversions to get a list of other built-in conversions!",
-  "You can type a constant's name with english characters to use it in a calculation.",
+  "You can type a constant's name with english characters to use it in a calculation -- for example, try pi.",
   "This calculator can provide you The Answer.",
   "From version 0.4.1, you can use the '!' notation for factorial and the '%' notation for modulus.",
   "You can use implied multiplication in hc.",
-  "You can graph multiple functions on one graph with the gmul() function."
+  "You can graph multiple functions on one graph with the gmul() function, or with the graph() function, passing a list of functions as the function (for example, graph([x,x^2,x^3])).",
+  "You can enter numbers not only in decimal, but also hexadecimal and binary form, using the 0x and 0b prefixes respectively."
 };
-#define TIP_COUNT 15
+#define TIP_COUNT 14
 #endif
 
 

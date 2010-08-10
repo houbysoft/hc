@@ -1773,7 +1773,7 @@ char *hc_join(char *f_expr)
   if (!v1_orig || !v2_orig || !is_vector(v1_orig) || !is_vector(v2_orig))
   {
     free(v1_orig); free(v2_orig);
-    arg_error("cat() needs two vector arguments.");
+    arg_error("join() needs two vector arguments.");
   }
   char *v1 = list_clean(v1_orig);
   char *v2 = list_clean(v2_orig);

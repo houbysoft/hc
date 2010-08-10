@@ -165,7 +165,9 @@ Constants are stored with 128 decimal places.
 - boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency
 - cbrt(x) - returns the cube root of x (you could also use x^(1/3))
 - ceil(x) - returns x rounded to the nearest integer upwards
+- chartocode(x) - converts x, a single-character string, to its ASCII code
 - cmtoinch(x) - converts x, which has to be in cm, to inches
+- codetochar(x) - converts x, an ASCII code, to the corresponding character
 - cos(x) - cosine of x
 - cosh(x) - hyperbolic cosine of x
 - crossp(v1,v2) - return the vector cross product of v1 X v2
@@ -189,12 +191,15 @@ Constants are stored with 128 decimal places.
     graph3(x+y,-10,10,-10,10,-20,20)
     Note: as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional
 - graphpeq(expr_x,expr_y[,tmin,tmax,xmin,xmax,ymin,ymax]) - draw the parametric equation modeled by expr_x and expr_y (use t as the variable)
+- im(x)/imag(x) - return the imaginary part of x
 - inchtocm(x) - converts x, which has to be in inches, to cm
 - input([str]) - shows an inut dialog using either a standard prompt or str, if specified
+- join(a,b) - join a and b, two vectors, together
 - kmtomi(x) - converts x, which has to be in km, to miles
 - ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius
 - ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit
 - lcm(x,y) - finds the least common multiple of x and y
+- length(x) - return the length of x
 - ln(x) - natural logarithm
 - log10(x) - common logarithm
 - mitokm(x) - converts x, which has to be in miles, to km
@@ -211,6 +216,7 @@ Constants are stored with 128 decimal places.
 	     > product(x^2,1,5)
 	     = 14400
 - rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[
+- re(x)/real(x) - return the real part of x
 - round(x) - round x to the nearest integer (for .5 cases, away from zero)
 - sin(x) - sine of x
 - sinh(x) - hyperbolic sine of x

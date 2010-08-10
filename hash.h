@@ -21,7 +21,7 @@
 
 #define HASH_ANS 6775
 
-/* Combinatorics */
+// Combinatorics
 #define HASH_NCR 18926
 #define HASH_NPR 19329
 
@@ -179,5 +179,7 @@
 
 #define HASH_CHARTOCODE 23290
 #define HASH_CODETOCHAR 24145
+
+#define HASH_HELP 19951
 
 #endif
