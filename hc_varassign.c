@@ -27,6 +27,7 @@
 #include "hash.h"
 #include "hc_complex.h"
 #include "hc_graph.h"
+#include "hc_help.h"
 
 
 struct hc_ventry *hc_var_first;
@@ -971,6 +972,11 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
+    case HASH_HELP:
+      hc_help(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
     case HASH_PRINT:
       hc_output(PRINT, f_expr);
       *type = HC_VAR_EMPTY;
@@ -1007,7 +1013,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       *type = HC_VAR_EMPTY;
       break;
 
-    case HASH_GRAPH3D:
+    case HASH_GRAPH3:
       hc_graph3d(f_expr);
       *type = HC_VAR_EMPTY;
       break;
@@ -1027,7 +1033,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       *type = HC_VAR_EMPTY;
       break;
 
-   case HASH_STATS_EFF:
+   case HASH_STATSF:
       hc_stats(f_expr, FALSE, TRUE);
       *type = HC_VAR_EMPTY;
       break;
@@ -1037,7 +1043,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       *type = HC_VAR_EMPTY;
       break;
 
-    case HASH_BOXPLOT_EFF:
+    case HASH_BOXPLOTF:
       hc_stats(f_expr, TRUE, TRUE);
       *type = HC_VAR_EMPTY;
       break;
