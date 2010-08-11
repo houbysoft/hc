@@ -19,7 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hc.h"
-#include "hc_functions.h" // includes hc_chemistry.h
+#include "hc_functions.h"
+#include "hc_chemistry.h"
 
 
 double hc_get_element_info(char *el, int info)

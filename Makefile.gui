@@ -2,8 +2,8 @@
 # (c) Jan Dlabal, 2010
 
 # additional options to pass to gcc when compiling
-#COPT=-DDBG -g -lefence
-COPT=-DHCG_E
+COPT=-DHCG_E -DDBG -g -lefence
+#COPT=-DHCG_E
 
 # -Wl,-Bdynamic
 # additional options to pass to gcc when linking

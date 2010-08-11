@@ -26,6 +26,9 @@
 #include "hc_functions.h"
 #include "hc_complex.h"
 #include "hc_list.h"
+#ifdef HCG_E
+#include "gui_utils.h"
+#endif
 
 
 #define b10(c) (isdigit(c) ? c - 48 : tolower(c) - 87) // '0' == 48, 'a' == 97
@@ -1972,7 +1975,7 @@ int hc_length(M_APM result, char *e)
   {
     char *tmp = get_string(e);
     free(e);
-    m_apm_set_double(result,(double) strlen(tmp));
+    m_apm_set_long(result,(long) strlen(tmp));
     free(tmp);
   } else {
     free(e);

@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 #include <string.h> // for strdup
 #include "gui_main.h"
+#include "gui_utils.h"
 
 
 void notify(char *string)
@@ -27,7 +28,8 @@ void notify(char *string)
 			GTK_DIALOG_MODAL,
                         GTK_MESSAGE_INFO,
                         GTK_BUTTONS_OK,
-                        string);
+                        "%s",
+			string);
 
   gtk_dialog_run (GTK_DIALOG (dialog1));
   gtk_widget_destroy (dialog1);
@@ -40,7 +42,8 @@ void notify_error(char *string)
                         GTK_DIALOG_MODAL,
                         GTK_MESSAGE_ERROR,
                         GTK_BUTTONS_OK,
-                        string);
+                        "%s",
+			string);
 
   gtk_dialog_run (GTK_DIALOG (dialog1));
   gtk_widget_destroy (dialog1);
@@ -57,7 +60,9 @@ char *prompt(char *string)
 					      GTK_DIALOG_MODAL,
 					      GTK_MESSAGE_QUESTION,
 					      GTK_BUTTONS_OK,
+					      "%s",
 					      string);
+
   GtkWidget *entry = gtk_entry_new();
   g_signal_connect(G_OBJECT (entry), "activate", G_CALLBACK (prompt_respond), dialog1);
   gtk_box_pack_end_defaults(GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG (dialog1))), entry);

@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     GtkWidget *mit_conv = gtk_menu_item_new_with_mnemonic("C_onversions");
     GtkWidget *mit_cnst = gtk_menu_item_new_with_mnemonic("_Constants");
     GtkWidget *mit_graph = gtk_menu_item_new_with_mnemonic("_Graphs");
-	GtkWidget *mit_stats = gtk_menu_item_new_with_mnemonic("_Stats");
+    GtkWidget *mit_stats = gtk_menu_item_new_with_mnemonic("_Stats");
     GtkWidget *mit_usrdf = gtk_menu_item_new_with_mnemonic("User-d_efined vars/funcs");
     GtkWidget *mit_help = gtk_menu_item_new_with_mnemonic("_Help");
     gtk_menu_bar_append(main_menu_bar, mit_file);
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     gtk_menu_bar_append(main_menu_bar, mit_conv);
     gtk_menu_bar_append(main_menu_bar, mit_cnst);
     gtk_menu_bar_append(main_menu_bar, mit_graph);
-	gtk_menu_bar_append(main_menu_bar, mit_stats);
+    gtk_menu_bar_append(main_menu_bar, mit_stats);
     gtk_menu_bar_append(main_menu_bar, mit_usrdf);
     gtk_menu_bar_append(main_menu_bar, mit_help);
     GtkWidget *subm_file = gtk_menu_new();
@@ -155,35 +155,59 @@ int main(int argc, char *argv[])
     menu_append(GTK_MENU (subm_trig), "tanh(x) - hyperbolic tangent of x", G_CALLBACK (entry_append), "tanh(");
     gtk_menu_append(GTK_MENU (subm_fns), subm_mit_trig);
 
+    // Functions/Math submenu
+    GtkWidget *subm_math = gtk_menu_new();
+    GtkWidget *subm_mit_math = gtk_menu_item_new_with_label("Math");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM (subm_mit_math), subm_math);
+    menu_append(GTK_MENU (subm_math), "abs(x) - absolute value of x", G_CALLBACK (entry_append), "abs(");
+    menu_append(GTK_MENU (subm_math), "cbrt(x) - returns the cube root of x (you could also use x^(1/3))", G_CALLBACK (entry_append), "cbrt(");
+    menu_append(GTK_MENU (subm_math), "ceil(x) - returns x rounded to the nearest integer upwards", G_CALLBACK (entry_append), "ceil(");
+    menu_append(GTK_MENU (subm_math), "exp(x) - exponential function", G_CALLBACK (entry_append), "exp(");
+    menu_append(GTK_MENU (subm_math), "factorial(x) - factorial of x (you can also use the '!' notation)", G_CALLBACK (entry_append), "factorial(");
+    menu_append(GTK_MENU (subm_math), "fibo(x) - returns the xth term of the Fibonacci sequence", G_CALLBACK (entry_append), "fibo(");
+    menu_append(GTK_MENU (subm_math), "floor(x) - returns x rounded to the nearest integer downwards", G_CALLBACK (entry_append), "floor(");
+    menu_append(GTK_MENU (subm_math), "gcd(x,y) - finds the greatest common divisor of x and y", G_CALLBACK (entry_append), "gcd(");
+    menu_append(GTK_MENU (subm_math), "im(x)/imag(x) - return the imaginary part of x", G_CALLBACK (entry_append), "imag(");
+    menu_append(GTK_MENU (subm_math), "lcm(x,y) - finds the least common multiple of x and y", G_CALLBACK (entry_append), "lcm(");
+    menu_append(GTK_MENU (subm_math), "ln(x) - natural logarithm", G_CALLBACK (entry_append), "ln(");
+    menu_append(GTK_MENU (subm_math), "log10(x) - common logarithm", G_CALLBACK (entry_append), "log10(");
+    menu_append(GTK_MENU (subm_math), "mod(x,y) - modulus (you can also use the C-style '%' notation)", G_CALLBACK (entry_append), "mod(");
+    menu_append(GTK_MENU (subm_math), "product(expr,low,high) - returns the product of expr with x from low to high inclusive", G_CALLBACK (entry_append), "product(");
+    menu_append(GTK_MENU (subm_math), "re(x)/real(x) - return the real part of x", G_CALLBACK (entry_append), "real(");
+    menu_append(GTK_MENU (subm_math), "round(x) - round x to the nearest integer (for .5 cases, away from zero)", G_CALLBACK (entry_append), "round(");
+    menu_append(GTK_MENU (subm_math), "sqrt(x) - returns the square root of x", G_CALLBACK (entry_append), "sqrt(");
+    menu_append(GTK_MENU (subm_math), "sum(expr,low,high) - same as product, except the result is summation, not multiplication", G_CALLBACK (entry_append), "sum(");
+    menu_append(GTK_MENU (subm_math), "totient(x) - Euler's totient function", G_CALLBACK (entry_append), "totient(");
+    gtk_menu_append(GTK_MENU (subm_fns), subm_mit_math);
+
+    // Functions/Chemistry submenu
+    GtkWidget *subm_chemistry = gtk_menu_new();
+    GtkWidget *subm_mit_chemistry = gtk_menu_item_new_with_label("Chemistry");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM (subm_mit_chemistry), subm_chemistry);
+    menu_append(GTK_MENU (subm_chemistry), "mmass(molecule) - returns the molar mass of the molecule specified (use standard notation without using subscripts, such as H2O or Ca(OH)2)", G_CALLBACK (entry_append), "mmass(");
+    gtk_menu_append(GTK_MENU (subm_fns), subm_mit_chemistry);
+
+    // Functions/Misc submenu
+    GtkWidget *subm_misc = gtk_menu_new();
+    GtkWidget *subm_mit_misc = gtk_menu_item_new_with_label("Misc");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM (subm_mit_misc), subm_misc);
+    menu_append(GTK_MENU (subm_misc), "ans() - Will be replaced by the result of the last entered expression", G_CALLBACK (entry_append), "ans()");
+    menu_append(GTK_MENU (subm_misc), "input([str]) - shows an inut dialog using either a standard prompt or str, if specified", G_CALLBACK (entry_append), "input(");
+    menu_append(GTK_MENU (subm_misc), "join(a,b) - join a and b, two vectors, together", G_CALLBACK (entry_append), "join(");
+    menu_append(GTK_MENU (subm_misc), "length(x) - return the length of x", G_CALLBACK (entry_append), "length(");
+    menu_append(GTK_MENU (subm_misc), "num(str) - returns a number representation of the number in the string str", G_CALLBACK (entry_append), "num(");
+    menu_append(GTK_MENU (subm_misc), "print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)", G_CALLBACK (entry_append), "print(");
+    menu_append(GTK_MENU (subm_misc), "rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[", G_CALLBACK (entry_append), "rand(");
+    menu_append(GTK_MENU (subm_misc), "str(expr) - returns a string representation of expr", G_CALLBACK (entry_append), "str(");
+    menu_append(GTK_MENU (subm_misc), "write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname", G_CALLBACK (entry_append), "write(");
+    gtk_menu_append(GTK_MENU (subm_fns), subm_mit_misc);
+
     // Functions/* submenu
-    menu_append(GTK_MENU (subm_fns), "ans() - Will be replaced by the result of the last entered expression", G_CALLBACK (entry_append), "ans()");
-    menu_append(GTK_MENU (subm_fns), "abs(x) - absolute value of x", G_CALLBACK (entry_append), "abs(");
-    menu_append(GTK_MENU (subm_fns), "cbrt(x) - returns the cube root of x (you could also use x^(1/3))", G_CALLBACK (entry_append), "cbrt(");
-    menu_append(GTK_MENU (subm_fns), "ceil(x) - returns x rounded to the nearest integer upwards", G_CALLBACK (entry_append), "ceil(");
-    menu_append(GTK_MENU (subm_fns), "exp(x) - exponential function", G_CALLBACK (entry_append), "exp(");
-    menu_append(GTK_MENU (subm_fns), "factorial(x) - factorial of x (you can also use the '!' notation)", G_CALLBACK (entry_append), "factorial(");
-    menu_append(GTK_MENU (subm_fns), "fibo(x) - returns the xth term of the Fibonacci sequence", G_CALLBACK (entry_append), "fibo(");
-    menu_append(GTK_MENU (subm_fns), "floor(x) - returns x rounded to the nearest integer downwards", G_CALLBACK (entry_append), "floor(");
-    menu_append(GTK_MENU (subm_fns), "gcd(x,y) - finds the greatest common divisor of x and y", G_CALLBACK (entry_append), "gcd(");
-	menu_append(GTK_MENU (subm_fns), "input([str]) - shows an inut dialog using either a standard prompt or str, if specified", G_CALLBACK (entry_append), "input(");
-    menu_append(GTK_MENU (subm_fns), "lcm(x,y) - finds the least common multiple of x and y", G_CALLBACK (entry_append), "lcm(");
-    menu_append(GTK_MENU (subm_fns), "ln(x) - natural logarithm", G_CALLBACK (entry_append), "ln(");
-    menu_append(GTK_MENU (subm_fns), "log10(x) - common logarithm", G_CALLBACK (entry_append), "log10(");
-	menu_append(GTK_MENU (subm_fns), "mmass(molecule) - returns the molar mass of the molecule specified (use standard notation without using subscripts, such as H2O or Ca(OH)2)", G_CALLBACK (entry_append), "mmass(");
-    menu_append(GTK_MENU (subm_fns), "mod(x,y) - modulus (you can also use the C-style '%' notation)", G_CALLBACK (entry_append), "mod(");
-    menu_append(GTK_MENU (subm_fns), "num(str) - returns a number representation of the number in the string str", G_CALLBACK (entry_append), "num(");
-    menu_append(GTK_MENU (subm_fns), "print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)", G_CALLBACK (entry_append), "print(");
-    menu_append(GTK_MENU (subm_fns), "product(expr,low,high) - returns the product of expr with x from low to high inclusive", G_CALLBACK (entry_append), "product(");
-    menu_append(GTK_MENU (subm_fns), "rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[", G_CALLBACK (entry_append), "rand(");
-    menu_append(GTK_MENU (subm_fns), "round(x) - round x to the nearest integer (for .5 cases, away from zero)", G_CALLBACK (entry_append), "round(");
-    menu_append(GTK_MENU (subm_fns), "sqrt(x) - returns the square root of x", G_CALLBACK (entry_append), "sqrt(");
-    menu_append(GTK_MENU (subm_fns), "str(expr) - returns a string representation of expr", G_CALLBACK (entry_append), "str(");
-    menu_append(GTK_MENU (subm_fns), "sum(expr,low,high) - same as product, except the result is summation, not multiplication", G_CALLBACK (entry_append), "sum(");
-    menu_append(GTK_MENU (subm_fns), "totient(x) - Euler's totient function", G_CALLBACK (entry_append), "totient(");
-	menu_append(GTK_MENU (subm_fns), "write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname", G_CALLBACK (entry_append), "write(");
 
     // Conversions submenu
+    menu_append(GTK_MENU (subm_conv), "chartocode(x) - converts x, a single-character string, to its ASCII code", G_CALLBACK (entry_append), "chartocode(");
     menu_append(GTK_MENU (subm_conv), "cmtoinch(x) - converts x, which has to be in cm, to inches", G_CALLBACK (entry_append), "cmtoinch(");
+    menu_append(GTK_MENU (subm_conv), "codetochar(x) - converts x, an ASCII code, to the corresponding character", G_CALLBACK (entry_append), "codetochar(");
     menu_append(GTK_MENU (subm_conv), "ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit", G_CALLBACK (entry_append), "ctof(");
     menu_append(GTK_MENU (subm_conv), "ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin", G_CALLBACK (entry_append), "ctok(");
     menu_append(GTK_MENU (subm_conv), "floztoml(x) - converts x, which has to be in US fluid ounces, to ml", G_CALLBACK (entry_append), "floztoml(");
