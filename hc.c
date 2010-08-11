@@ -22,6 +22,7 @@
 #include <string.h>
 #include <math.h>
 #include <m_apm.h>
+#include <locale.h>
 #include "m_apmc.h"
 #include "hc.h"
 #include "hc_functions.h"
@@ -194,6 +195,7 @@ char *hc_result(char *e)
   static char init=0;
   if (!init)
   {
+    setlocale(LC_NUMERIC, "POSIX");
     atexit(hc_cleanup);
     hc_load_cfg();
     hc_lans_mapm_re = m_apm_init();
