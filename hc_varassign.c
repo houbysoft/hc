@@ -28,6 +28,7 @@
 #include "hc_complex.h"
 #include "hc_graph.h"
 #include "hc_help.h"
+#include "hc_list.h"
 
 
 struct hc_ventry *hc_var_first;
@@ -1086,10 +1087,21 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 	  strcpy(result,f_result_tmp_re);
 	  free(f_result_tmp_re);
 	}
-      } else if (*type == HC_VAR_STR || *type == HC_VAR_VEC)
+      } else if (*type == HC_VAR_STR)
       {
 	strcpy(result,f_result_str);
 	free(f_result_str);
+      } else if (*type == HC_VAR_VEC) {
+	char *newlist = list_simplify(f_result_str);
+	if (newlist)
+	{
+	  strcpy(result,newlist);
+	  free(f_result_str); free(newlist);
+	} else {
+	  free(f_result_str); free(newlist);
+	  m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	  return 0;
+	}
       } else if (*type == HC_VAR_EMPTY)
       {
 	strcpy(result,"");

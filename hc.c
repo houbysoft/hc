@@ -903,7 +903,7 @@ char *hc_postfix_result(char *e)
 
   char op1_type,op2_type;
   
-  char tmp_num[MAX_DOUBLE_STRING];
+  char tmp_num[MAX_DOUBLE_STRING]; // this is used below, do not change
   int i=0,j=0;
   
   op1_r = m_apm_init();
@@ -1765,7 +1765,15 @@ char *hc_postfix_result(char *e)
 	    return NULL;
 	  }
 	  tmp_num[j]=0;
-	  list_simplify((char *)&tmp_num);
+	  char *newlist = list_simplify((char *)&tmp_num);
+	  if (strlen(newlist) < MAX_DOUBLE_STRING)
+	  {
+	    strcpy(tmp_num,newlist);
+	    free(newlist);
+	  } else {
+	    hc_postfix_result_cleanup();
+	    overflow_error();
+	  }
 	  j = strlen(tmp_num);
 	  while (e[i]=='[') // index
 	  {

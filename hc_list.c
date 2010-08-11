@@ -221,13 +221,17 @@ char *list_add_sub(char *l1, char *l2, char mode)
 }
 
 
-void list_simplify(char *list)
+char *list_simplify(char *list)
 {
+  unsigned int alloc = 2;
+  char *new = malloc(alloc);
+  if (!new)
+    mem_error();
+  strcpy(new,"[");
   char *old = strdup((char *)(list+1));
   if (!old)
     mem_error();
   old[strlen(old)-1] = '\0';
-  strcpy(list,"[");
   long idx = 1;
   char *curarg = hc_get_arg(old,idx);
   while (curarg)
@@ -237,16 +241,21 @@ void list_simplify(char *list)
     {
       free(old);
       free(curarg);
-      return;
+      return NULL;
     }
-    strcat(list,curres);
-    strcat(list,",");
+    alloc += strlen(curres) + 1;
+    new = realloc(new,alloc);
+    if (!new)
+      mem_error();
+    strcat(new,curres);
+    strcat(new,",");
     free(curarg);
     free(curres);
     curarg = hc_get_arg(old,++idx);
   }
-  list[strlen(list)-1] = ']';
+  new[strlen(new)-1] = ']';
   free(old);
+  return new;
 }
 
 
