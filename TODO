@@ -2,3 +2,4 @@ TODO list
 =========
 - add binary and hex output formats [input now done]
 - unify/combine all conversions into single function convert()
+- better hashing system needed. cond and dotp both hash to 612, for example.

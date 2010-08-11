@@ -57,12 +57,16 @@ void hc_varassign(char *e)
   }
 
   // clean up var name
-  while (isspace(var[0]))
-    var+=sizeof(char);
-  int i=0;
-  while (!isspace(var[i]) && var[i])
-    i++;
-  var[i]=0;
+  unsigned int i = 0;
+  while (var[i])
+  {
+    if (isspace(var[i]))
+	{
+	  memmove((void *)(var + i),(void *)(var + i + 1),strlen((char *)(var + i + 1))+1);
+	} else {
+	  i++;
+	}
+  }
 
   if (!hc_check_varname(var))
   {
