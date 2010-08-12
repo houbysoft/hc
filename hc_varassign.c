@@ -61,11 +61,11 @@ void hc_varassign(char *e)
   while (var[i])
   {
     if (isspace(var[i]))
-	{
-	  memmove((void *)(var + i),(void *)(var + i + 1),strlen((char *)(var + i + 1))+1);
-	} else {
-	  i++;
-	}
+    {
+      memmove((void *)(var + i),(void *)(var + i + 1),strlen((char *)(var + i + 1))+1);
+    } else {
+      i++;
+    }
   }
 
   if (!hc_check_varname(var))
