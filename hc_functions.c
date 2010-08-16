@@ -1986,6 +1986,29 @@ int hc_length(M_APM result, char *e)
 }
 
 
+char hc_get_type(char *e)
+{
+  if (!e)
+  {
+    return HC_VAR_INVALID;
+  } else if (is_string(e))
+  {
+    return HC_VAR_STR;
+  } else if (is_vector(e))
+  {
+    return HC_VAR_VEC;
+  } else if (is_num(e))
+  {
+    return HC_VAR_NUM;
+  } else if (e && !strlen(e))
+  {
+    return HC_VAR_EMPTY;
+  } else {
+    return HC_VAR_INVALID;
+  }
+}
+
+
 char *strip_spaces(char *e)
 {
   char *r = e;
@@ -2054,13 +2077,18 @@ char *get_string(char *e)
 char *strchr_outofblock(char *e, char c)
 {
   int par=0;
+  int par2=0;
   while (e[0])
   {
     if (e[0]=='{')
       par++;
     if (e[0]=='}')
       par--;
-    if (par==0 && e[0]==c)
+    if (e[0]=='(')
+      par2++;
+    if (e[0]==')')
+      par2--;
+    if (par==0 && par2==0&& e[0]==c)
       return e;
     e++;
   }
@@ -2119,25 +2147,30 @@ char *hc_2str(char *e)
 }
 
 
-
 int hc_2num(M_APM re, M_APM im, char *e)
 {
   e = hc_result_(e);
   if (!e)
     return FAIL;
+  int r = hc_2num_nr(re, im, e);
+  free(e);
+  return r;
+}
+
+
+int hc_2num_nr(M_APM re, M_APM im, char *e)
+{
   char *r_re = NULL;
   char *r_im = NULL;
   if (is_string(e))
   {
     char *tmp = get_string(e);
-    free(e);
     r_re = hc_real_part(tmp);
     r_im = hc_imag_part(tmp);
     free(tmp);
   } else {
     r_re = hc_real_part(e);
     r_im = hc_imag_part(e);
-    free(e);
   }
   m_apm_set_string(re,r_re);
   if (r_im)
@@ -2172,7 +2205,10 @@ char is_num(char *str)
       return FALSE;
     }
   }
-  return TRUE;
+  if (i == 0) // empty string
+    return FALSE;
+  else
+    return TRUE;
 }
 
 

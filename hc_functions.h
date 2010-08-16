@@ -80,6 +80,7 @@ extern char *hc_strip_0s(char *e);
 
 extern char *hc_2str(char *);
 extern int hc_2num(M_APM, M_APM, char *);
+extern int hc_2num_nr(M_APM, M_APM, char *);
 
 extern char hc_2dec(char base, char *in, int BUFSIZE);
 
@@ -95,6 +96,7 @@ extern char last_char(char *e);
 extern char check_completeness(char *e);
 extern char *get_string(char *);
 extern char *strchr_outofblock(char *, char);
+extern char hc_get_type(char *e);
 
 extern char hc_reim(char part, M_APM re, M_APM im, char *e);
 

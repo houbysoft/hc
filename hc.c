@@ -30,7 +30,8 @@
 #include "hc_graph.h"
 #include "hc_complex.h"
 #include "hc_list.h"
-#define NHASH 29989 // use a large prime number
+//#define NHASH 29989 // use a large prime number
+#define NHASH 139969
 #define MULT 31
 
 
@@ -60,6 +61,7 @@ const char *hc_names[][2] = {
   {"fibo","func"},
   {"floor","func"},
   {"floztoml","func"},
+  {"for","func"},
   {"ftoc","func"},
   {"ftok","func"},
   {"fttom","func"},
@@ -69,6 +71,7 @@ const char *hc_names[][2] = {
   {"gmul","func"},
   {"graph3","func"},
   {"help","func"},
+  {"if","func"},
   {"im","func"},
   {"imag","func"},
   {"inchtocm","func"},
@@ -106,6 +109,7 @@ const char *hc_names[][2] = {
   {"tan","func"},
   {"tanh","func"},
   {"totient","func"},
+  {"while","func"},
   {"write","func"},
   // CONSTANTS
   {"pi","cnst:3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384461"},
@@ -118,11 +122,6 @@ const char *hc_names[][2] = {
   {"help","cmd"},
   {"credits","cmd"},
   {"i","sys"},
-  {"if","sys"},
-  {"else","sys"},
-  {"for","sys"},
-  {"while","sys"},
-  {"return","sys"},
   // DIRECTIONS/CONFIG (for tab-complete)
   {"\\p","dir"},
   {"\\rpn","dir"},
@@ -141,7 +140,6 @@ const char *hc_names[][2] = {
 
 unsigned int hc_hashes[HC_NAMES];
 
-
 unsigned int simple_hash(char *p)
 {
   unsigned int h = 0;
@@ -154,7 +152,7 @@ unsigned int simple_hash(char *p)
 #define isoperator(c) (isoperator_np(c) || (c=='(') || (c==')'))
 #define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='$') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='=') || (c=='&') || (c=='|') || (c==NOT_SIGN))
 #define isdirection(x) (x[0]=='\\')
-#define isvarassign(x) (strchr(x,'=')!=NULL && strchr(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr(x,'=')-1)[0]!='<' && (strchr(x,'=')-1)[0]!='>' && (strchr(x,'=')-1)[0]!='!')
+#define isvarassign(x) (strchr_outofblock(x,'=')!=NULL && strchr_outofblock(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr_outofblock(x,'=')-1)[0]!='<' && (strchr_outofblock(x,'=')-1)[0]!='>' && (strchr_outofblock(x,'=')-1)[0]!='!')
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
 #define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x) || (strstr(x,"for")==x))
 #define isdigitb(c,b) ((b==16 && isxdigit(c)) || (b==2 && (c=='0' || c=='1')) || (b==10 && isdigit(c)))
@@ -351,23 +349,13 @@ char *hc_result_(char *e)
     r[0]='\0';
     return r;
   }
+  char buf_isvarassign = isvarassign(e);
   
-  if (iscontrolstruct(e) || (strchr_outofblock(e,';') && !(isvarassign(e))))
+  if (strchr_outofblock(e,';') && !(buf_isvarassign))
   {
-    if (iscontrolstruct(e))
-    {
-      r = hc_exec_struct(e);
-      if (!r)
-      {
-	r = malloc(1);
-	r[0]=0;
-      }
-      return r;
-    } else {
-      return hc_result_mul(e);
-    }
+    return hc_result_mul(e);
   } else {
-    if (isvarassign(e))
+    if (buf_isvarassign)
     {
       if (strchr_outofblock(e,';'))
 	return hc_result_mul(e);

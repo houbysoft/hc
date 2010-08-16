@@ -29,6 +29,7 @@
 #include "hc_graph.h"
 #include "hc_help.h"
 #include "hc_list.h"
+#include "hc_programming.h"
 
 
 struct hc_ventry *hc_var_first;
@@ -881,6 +882,21 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
+    case HASH_IF:
+      if (hc_if(f_expr,f_result_re,f_result_im,&f_result_str,type) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_FOR:
+      if (hc_for(f_expr,f_result_re,f_result_im,&f_result_str,type) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_WHILE:
+      if (hc_while(f_expr,f_result_re,f_result_im,&f_result_str,type) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
     case HASH_CHARTOCODE:
       if (hc_char2code(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
@@ -1157,7 +1173,9 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 		*type = HC_VAR_STR;
 	      else if (is_vector(result))
 		*type = HC_VAR_VEC;
-	      else {
+	      else if (!strlen(result))
+        *type = HC_VAR_EMPTY;
+          else {
 		notify("Invalid variable type. This is most likely a bug, please report it.\n");
 		return 0;
 	      }

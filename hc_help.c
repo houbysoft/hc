@@ -366,7 +366,7 @@ int hc_help(char *e)
     break;
 
   case HASH_LOGIC:
-    print = allocline("This version of HC supports the following logic/boolean operators : < > <= >= == != &[&] (AND) |[|] (OR). For AND and OR, both the C-style && / || and single & / | can be used.\nThese operators return 1 (true) or 0 (false). In general in HC, 0 means false, everything else means true.\n\nThis version of HC supports the following control structures : if while for. The syntax is somewhat similar to C:\nif (condition) { cmd_1; cmd_2; ...; cmd_n; } else { else_cmd_1; else_cmd_2; ...; else_cmd_n; }\nwhile (condition) { cmd_1; cmd_2; ...; cmd_n; }\nfor (start_cmd; condition; iter_cmd) { cmd_1; cmd_2; ...; cmd_n; }\nFor the \"if\" structure, the \"else\" clause is optional. The { } part of each structure can have an arbitrary number of commands or nested structures.\nFor more information and examples about logic in HC, visit http://houbysoft.com/hc/logic.php.");
+    print = allocline("This version of HC supports the following logic/boolean operators : < > <= >= == != &[&] (AND) |[|] (OR). For AND and OR, both the C-style && / || and single & / | can be used.\nThese operators return 1 (true) or 0 (false). In general in HC, 0 means false, everything else means true.\n\nThis version of HC supports the following control structures : if(), while() and for(), which behave like ordinary functions -- type help(\"if\"), help(\"while\") and help(\"for\") to get more information about using them. For even more information and examples about logic in HC, visit http://houbysoft.com/hc/logic.php.");
     break;
 
   case HASH_DIRECTIVES:
