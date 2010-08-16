@@ -151,6 +151,10 @@ int hc_help(char *e)
     print = allocline("- floztoml(x) - converts x, which has to be in US fluid ounces, to ml");
     break;
 
+  case HASH_FOR:
+    print = allocline("- for(init, condition, iter, body) - executes init, and then executes body while condition holds, executing iter at the end of each iteration.\n    Example:\n     * this example shows how to print numbers from 1 to 5 with for:\n       for(j=1, j<=5, j+=1, print(j)) would print out:\n1\n2\n3\n4\n5");
+    break;
+
   case HASH_FTOC:
     print = allocline("- ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius");
     break;
@@ -181,6 +185,10 @@ int hc_help(char *e)
 
   case HASH_GRAPHPEQ:
     print = allocline("- graphpeq(expr_x,expr_y,tmin,tmax,xmin,xmax,ymin,ymax) - draw the parametric equation modeled by expr_x and expr_y (use t as the variable)\n    Note:\n     * the tmin, tmax, xmin, xmax, ymin and ymax arguments are optional");
+    break;
+
+  case HASH_IF:
+    print = allocline("- if(condition, truebranch, falsebranch) - evaluates condition, and if it is true, returns truebranch, otherwise returns falsebranch.\n    Note:\n     * falsebranch is optional\n\n    Example:\n     * if(1==2,\"hello\",\"hi\") would return \"hi\", since 1 is not equal to 2. If the falsebranch would have been ommited, in this case nothing would be returned:\n       if(1==2,\"hello\") returns nothing.");
     break;
 
   case HASH_IM:
@@ -323,6 +331,10 @@ int hc_help(char *e)
 
   case HASH_TOTIENT:
     print = allocline("- totient(x) - Euler's totient function");
+    break;
+
+  case HASH_WHILE:
+    print = allocline("- while(condition, body) - executes body while condition holds.\n    Example:\n     * for a prime number x, totient(x)==x-1. We can use this property to find the first prime number starting from 1001:\n       n = 1001; while(totient(n)!=n-1, n+=2); n\n       The result would be 1009.");
     break;
 
   case HASH_WRITE:

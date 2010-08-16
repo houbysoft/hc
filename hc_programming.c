@@ -36,10 +36,12 @@
       free(r);\
       break;\
     case HC_VAR_EMPTY:\
-    case HC_VAR_STR:\
-    case HC_VAR_VEC:\
       *res_str = NULL;\
       free(r);\
+      break;\
+    case HC_VAR_STR:\
+    case HC_VAR_VEC:\
+      *res_str = r;\
       break;\
     case HC_VAR_INVALID:\
       free(r);\

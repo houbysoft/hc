@@ -2033,7 +2033,7 @@ void hc_process_direction(char *d)
       notify("Bypass is now off.\n");
     break;
   case HASH_PRECISION:
-  case HASH_PRECISION_SHORT:
+  case HASH_P:
     if (atoi(&d[i+1]) < 0)
     {
       error_nq("Precision needs to be zero or a positive number.");
