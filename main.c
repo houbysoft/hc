@@ -43,9 +43,10 @@ char *tips[] = {
   "From version 0.4.1, you can use the '!' notation for factorial and the '%' notation for modulus.",
   "You can use implied multiplication in hc.",
   "You can graph multiple functions on one graph with the gmul() function, or with the graph() function, passing a list of functions as the function (for example, graph([x,x^2,x^3])).",
-  "You can enter numbers not only in decimal, but also hexadecimal and binary form, using the 0x and 0b prefixes respectively."
+  "You can enter numbers not only in decimal, but also hexadecimal and binary form, using the 0x and 0b prefixes respectively.",
+  "Need help about something? Call help(\"nameoftopic\"), for example help(\"totient\") to get help about the totient function."
 };
-#define TIP_COUNT 14
+#define TIP_COUNT 15
 #endif
 
 
