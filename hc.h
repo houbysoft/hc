@@ -113,7 +113,7 @@ extern char is_num(char *);
 extern char is_real_num(char *);
 extern char is_int(char *);
 
-#define NAME_VERSION "Welcome to hc 2.0 (infix / RPN) -- http://hc.houbysoft.com/\n"
+#define NAME_VERSION "Welcome to hc 3.0 (infix / RPN) -- http://hc.houbysoft.com/\n"
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)

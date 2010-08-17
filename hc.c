@@ -514,12 +514,24 @@ char *hc_i2p(char *f)
 	case ')':
 	  last_was_operator[1] = FALSE;
 	  sp--;
+	  if (sp < 0)
+	  {
+	    syntax_error2();
+	    free(e);
+	    return NULL;
+	  }
 	  while (stack[sp][0]!='(')
 	  {
 	    e[j++] = stack[sp][0];
 	    if (stack[sp][1])
 	      e[j++] = stack[sp][1];
 	    sp--;
+	    if (sp < 0)
+	    {
+	      syntax_error2();
+	      free(e);
+	      return NULL;
+	    }
 	  }
 	  if (neg)
 	  {

@@ -10,8 +10,9 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
-2.1:
+3.0
   - completely new help system with the help() function
+  - completely new control structure system -- control structures are now functions. Why? No new syntax to learn for newbies, easier (therefore faster) parsing, consistent syntax.
   - added -e command line argument for direct evaluation from cli arguments
   - numbers can now be also entered in hex (with the 0x prefix) and in binary (with the 0b prefix)
   - added a few synonyms : quit for exit, and arc* for asin, acos, atan
@@ -20,6 +21,7 @@ RELEASE NOTES
   - logic operators precedence bugfix, and added ! as the logical NOT operator
   - added codetochar() and chartocode() to work with character codes and made strings indexable
   - added length() to get length of lists/vectors and strings
+  - many bugfixes
 2.0:
   - added vectors; they can be used with normal operators where appropriate, and can also be used with functions crossP() and dotP().
     example usage : crossp([1,2,3],[4,5,6])
@@ -150,6 +152,7 @@ RELEASE NOTES
 
 FEATURES
 ========
+Warning: this list may not be up to date. Hit TAB twice in HC (CLI) to get the complete list of functions, or use the menus in the GUI version.
 All functions are implemented with the MAPM library allowing for high precision.
 Constants are stored with 128 decimal places.
 
