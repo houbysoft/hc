@@ -453,19 +453,19 @@ void hcg_about()
 
 void hcg_help()
 {
-  notify("Welcome to the HoubySoft Calculator!\nUsage is very simple; to evaluate an expression either type it with your keyboard, or use the on-screen keys, and then press enter (or the '=' symbol, if using the onscreen keyboard).\n\nIf you need a constant, function, or conversion function, either type it with your keyboard if you remember it, or find it using the menus, and then click on the menu item to insert it.\n\nBelow the expression entry and the onscreen keys (if enabled), you will notice some configuration options:\n  - precision (calculated in scientific notation) - enter whatever precision you require\n - DEG / RAD / GRAD - the angle mode - degrees, radians and gradians respectively, click on the one you want to use\n  - the SCI checkbox - select it if you want the results to be displayed in scientific notation\n  - the RPN checkbox - select it if you want to use RPN (ie use 2 2 + instead of 2+2)\n  - the KEYS checkbox - select it if you want the onscreen keys to be displayed.\n\n\nIf you have any questions, feel free to email me at dlabaljan@gmail.\nThis program is (C) Jan Dlabal, 2009-2010 and is distributed under the terms of the GNU GPL version 3 License.");
+  notify("Welcome to the HoubySoft Calculator!\nUsage is very simple; to evaluate an expression either type it with your keyboard, or use the on-screen keys, and then press enter (or the '=' symbol, if using the onscreen keyboard).\n\nIf you need a constant, function, or conversion function, either type it with your keyboard if you remember it, or find it using the menus, and then click on the menu item to insert it.\n\nTo get help about any function, constant, etc., use the help() function, calling it with the name of the object you want to learn about as a string. For example, to learn about the fibo() function, you would type help(\"fibo\").\n\nBelow the expression entry and the onscreen keys (if enabled), you will notice some configuration options:\n  - precision (calculated in scientific notation) - enter whatever precision you require\n - DEG / RAD / GRAD - the angle mode - degrees, radians and gradians respectively, click on the one you want to use\n  - the SCI checkbox - select it if you want the results to be displayed in scientific notation\n  - the RPN checkbox - select it if you want to use RPN (ie use 2 2 + instead of 2+2)\n  - the KEYS checkbox - select it if you want the onscreen keys to be displayed.\n\n\nIf you have any questions, feel free to email me at dlabaljan@gmail.\nThis program is (C) Jan Dlabal, 2009-2010 and is distributed under the terms of the GNU GPL version 3 License.");
 }
 
 
 void hcg_help_cplx()
 {
-  notify("Complex numbers are inputted and outputted with this syntax:\nreal_partiimaginary_part\n\nFor example, 5 + 3i would be written as\n5i3\nin HC. This format is inspired by the J programming language.\nAs another example, you can try to type\nsqrt(-1)\nin HC. The result given will be:\n0i1\n\nOther notes\n* Trigonometry functions will refuse to work with complex numbers unless you are in RAD mode (switch to it by clicking on RAD, on the bottom of the window).\n* You cannot type a non-number as the real part or imaginary part. Therefore, you cannot write something like 0ipi, if you wanted to have a number pi*i. To express this number you would have to use something like:\n0i1*pi");
+  free(hc_result("help(\"complex\")"));
 }
 
 
 void hcg_help_logic()
 {
-  notify("This version of HC supports the following logic/boolean operators : < > <= >= == != &[&] (AND) |[|] (OR). For AND and OR, both the C-style && / || and single & / | can be used. These operators return 1 (true) or 0 (false). In general in HC, 0 means false, everything else means true.\n\nThis version of HC supports the following control structures : if while for. The syntax is somewhat similar to C:\n\nif (condition) { cmd_1; cmd_2; ...; cmd_n; } else { else_cmd_1; else_cmd_2; ...; else_cmd_n; }\n\nwhile (condition) { cmd_1; cmd_2; ...; cmd_n; }\n\nfor (start_cmd; condition; iter_cmd) { cmd_1; cmd_2; ...; cmd_n; }\n\nFor the \"if\" structure, the \"else\" clause is optional. The { } part of each structure can have an arbitrary number of commands or nested structures.\n\nFor more information and examples about logic in HC, visit http://houbysoft.com/hc/logic.php .");
+  free(hc_result("help(\"logic\")"));
 }
 
 
