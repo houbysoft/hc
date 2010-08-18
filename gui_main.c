@@ -192,6 +192,7 @@ int main(int argc, char *argv[])
     GtkWidget *subm_mit_misc = gtk_menu_item_new_with_label("Misc");
     gtk_menu_item_set_submenu(GTK_MENU_ITEM (subm_mit_misc), subm_misc);
     menu_append(GTK_MENU (subm_misc), "ans() - Will be replaced by the result of the last entered expression", G_CALLBACK (entry_append), "ans()");
+    menu_append(GTK_MENU (subm_misc), "help(\"str\") - show help for function/variable/topic called str", G_CALLBACK (entry_append), "help(\"");
     menu_append(GTK_MENU (subm_misc), "input([str]) - shows an inut dialog using either a standard prompt or str, if specified", G_CALLBACK (entry_append), "input(");
     menu_append(GTK_MENU (subm_misc), "join(a,b) - join a and b, two vectors, together", G_CALLBACK (entry_append), "join(");
     menu_append(GTK_MENU (subm_misc), "length(x) - return the length of x", G_CALLBACK (entry_append), "length(");
