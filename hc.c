@@ -30,6 +30,7 @@
 #include "hc_graph.h"
 #include "hc_complex.h"
 #include "hc_list.h"
+#include "hc_utils.h"
 //#define NHASH 29989 // use a large prime number
 #define NHASH 139969
 #define MULT 31
@@ -516,7 +517,7 @@ char *hc_i2p(char *f)
 	  sp--;
 	  if (sp < 0)
 	  {
-	    syntax_error2();
+	    hc_error(SYNTAX,"('s and )'s do not match");
 	    free(e);
 	    return NULL;
 	  }
@@ -528,7 +529,7 @@ char *hc_i2p(char *f)
 	    sp--;
 	    if (sp < 0)
 	    {
-	      syntax_error2();
+	      hc_error(SYNTAX,"('s and )'s do not match");
 	      free(e);
 	      return NULL;
 	    }
@@ -718,7 +719,7 @@ char *hc_i2p(char *f)
 	    {
 	      if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
 	      {
-		syntax_error2();
+		hc_error(SYNTAX,"invalid number encountered");
 		free(e);
 		return NULL;
 	      }
@@ -745,7 +746,7 @@ char *hc_i2p(char *f)
 	      }
 	      if (tmpe < 0 || tmpi < 0)
 	      {
-		syntax_error2();
+		hc_error(SYNTAX,"too many e's or i's encountered in number");
 		free(e);
 		return NULL;
 	      }
@@ -764,7 +765,7 @@ char *hc_i2p(char *f)
 	    {
 	      if (!isdigitb(tmp[i],base) && (tmp[i]!='.' || tmpsts == FALSE))
 	      {
-		syntax_error2();
+		hc_error(SYNTAX, "invalid binary or hex number encountered");
 		free(e);
 		return NULL;
 	      } else {
@@ -794,7 +795,7 @@ char *hc_i2p(char *f)
 	    }
 	    if (pct!=0)
 	    {
-	      syntax_error2();
+	      hc_error(SYNTAX, "['s and ]'s do not match");
 	      free(e);
 	      return NULL;
 	    }
@@ -832,7 +833,7 @@ char *hc_i2p(char *f)
 	    }
 	    if (par != 0)
 	    {
-	      syntax_error2();
+	      hc_error(SYNTAX,"('s and )'s do not match");
 	      free(e);
 	      return NULL;
 	    } else {
@@ -855,7 +856,7 @@ char *hc_i2p(char *f)
 	  }
 	  if (pct!=0)
 	  {
-	    syntax_error2();
+	    hc_error(SYNTAX,"['s and ]'s do not match");
 	    free(e);
 	    return NULL;
 	  }
@@ -924,7 +925,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"*");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -987,7 +988,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"/");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -1072,7 +1073,7 @@ char *hc_postfix_result(char *e)
 	  hc_postfix_result_cleanup();
 	  if (sp < 2)
 	  {
-	    syntax_error2();
+	    hc_error(NOT_ENOUGH_OPERANDS,"%%");
 	  } else {
 	    arg_error("% : real arguments are required.");
 	  }
@@ -1096,7 +1097,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"+");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -1250,7 +1251,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"%c",PW_SIGN);
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -1289,14 +1290,14 @@ char *hc_postfix_result(char *e)
 	if (sp < 1)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"! (used as logical NOT)");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("! (not) accepts only numbers");
+	  type_error("! (used as logical NOT) accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(curr->im,MM_Zero);
@@ -1318,7 +1319,7 @@ char *hc_postfix_result(char *e)
 	  if (sp < 2)
 	  {
 	    hc_postfix_result_cleanup();
-	    syntax_error2();
+	    hc_error(NOT_ENOUGH_OPERANDS,"!=");
 	    return NULL;
 	  }
 	  curr = curr->p; // [--sp]
@@ -1377,14 +1378,14 @@ char *hc_postfix_result(char *e)
 	  if (sp < 1)
 	  {
 	    hc_postfix_result_cleanup();
-	    syntax_error2();
+	    hc_error(NOT_ENOUGH_OPERANDS,"! (used as factorial)");
 	    return NULL;
 	  }
 	  curr = curr->p; // [--sp]
 	  if (curr->type != HC_VAR_NUM)
 	  {
 	    hc_postfix_result_cleanup();
-	    type_error("! accepts only numbers");
+	    type_error("! (used as factorial) accepts only numbers");
 	    return NULL;
 	  }
 	  if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
@@ -1405,7 +1406,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"< / <=");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -1453,8 +1454,8 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	   hc_postfix_result_cleanup();
-           syntax_error2();
-           return NULL;
+       hc_error(NOT_ENOUGH_OPERANDS,"> / >=");
+       return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
@@ -1501,7 +1502,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"==");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -1569,7 +1570,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"||");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -1605,7 +1606,7 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	  hc_postfix_result_cleanup();
-	  syntax_error2();
+	  hc_error(NOT_ENOUGH_OPERANDS,"&&");
 	  return NULL;
 	}
 	curr = curr->p; // [--sp]
@@ -1791,7 +1792,7 @@ char *hc_postfix_result(char *e)
 	  if (!isalpha(e[i]))
 	  {
 	    hc_postfix_result_cleanup();
-            syntax_error2();
+        syntax_error2();
 	    return NULL;
 	  }
 	  char *v_name = malloc(MAX_V_NAME * sizeof(char));
@@ -1807,7 +1808,7 @@ char *hc_postfix_result(char *e)
 	  v_name[ti] = '\0';
 	  if (isalpha(e[i]))
 	  {
-	    syntax_error2();
+	    hc_error(SYNTAX,"name of variable or function too long (limit is %i characters)",MAX_V_NAME);
 	    free(v_name); free(f_expr);
 	    hc_postfix_result_cleanup();
 	    return NULL;
@@ -1836,7 +1837,7 @@ char *hc_postfix_result(char *e)
 	      f_expr[ti] = '\0';
 	      i++; // skip the last ')'
 	    } else {
-	      syntax_error2();
+	      hc_error(SYNTAX,"('s and )'s do not match");
 	      free(v_name); free(f_expr);
 	      hc_postfix_result_cleanup();
 	      return NULL;

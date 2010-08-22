@@ -101,28 +101,6 @@ char *hc_result_mul(char *e)
       in_par++;
     if (expr[pos]==')')
       in_par--;
-    if (expr[pos]=='{')
-    {
-      int par=1;
-      pos++;
-      while (par && expr[pos])
-      {
-	if (expr[pos]=='{')
-	  par++;
-	if (expr[pos]=='}')
-	  par--;
-	pos++;
-      }
-      if (par)
-      {
-	syntax_error2();
-	return NULL;
-      }
-      if (strstr(strip_spaces(expr+sizeof(char)*pos),"else")!=strip_spaces(expr+sizeof(char)*pos))
-      {
-	stop = 1;
-      }
-    }
     if ((expr[pos]==';' && !in_par) || stop)
     {
       char save=expr[pos];
