@@ -803,7 +803,7 @@ char *hc_i2p(char *f)
 	} else {
 	  if (!isalpha(tmp[i]))
 	  {
-	    syntax_error2();
+	    hc_error(SYNTAX, "at character %i : %c", i+1, tmp[i]);
 	    free(e);
 	    return NULL;
 	  }
