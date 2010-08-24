@@ -1771,8 +1771,8 @@ char *hc_crossp(char *f_expr)
 
 char *hc_join(char *f_expr)
 {
-  char *v1_orig = hc_get_arg(f_expr,1);
-  char *v2_orig = hc_get_arg(f_expr,2);
+  char *v1_orig = hc_get_arg_r(f_expr,1);
+  char *v2_orig = hc_get_arg_r(f_expr,2);
   if (!v1_orig || !v2_orig || !is_vector(v1_orig) || !is_vector(v2_orig))
   {
     free(v1_orig); free(v2_orig);

@@ -19,5 +19,7 @@ while(x <= 4000000, x = fibo(j); if(x%2 == 0, s+=x); j+=1)
 test("Project Euler's P2",s == 4613732)
 test("if",if(1==2,"hello","hi")=="hi")
 test("precision error fixing test",(1/3)/3 == (1/3)^2)
+y = [1]
+test("join test",join(y,[2])==[1,2])
 
 print("END OF TESTING")
