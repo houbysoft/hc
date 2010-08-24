@@ -1769,7 +1769,11 @@ char *hc_postfix_result(char *e)
 	  }
 	  tmp_num[j]=0;
 	  char *newlist = list_simplify((char *)&tmp_num);
-	  if (strlen(newlist) < MAX_DOUBLE_STRING)
+	  if (!newlist)
+	  {
+	    hc_postfix_result_cleanup();
+	    return NULL;
+	  } else if (strlen(newlist) < MAX_DOUBLE_STRING)
 	  {
 	    strcpy(tmp_num,newlist);
 	    free(newlist);

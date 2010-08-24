@@ -22,10 +22,12 @@
 #include "hc_list.h"
 
 
-// returns 0 on error
+// returns 0 (FAIL) on error
 char hc_get_by_index(char *data, char *type, char *scan, int *i)
 {
   char *scanres = hc_result((char *)(scan + *i));
+  if (!scanres)
+    return FAIL;
   *i += strlen((char *)(scan + *i));
   // FIXME : hc_result() is expensive, should use hc_result_() instead, but this needs the result to be nicely parsed (ie. the radix and zeroes after an integer stripped)
   // scan[*i] points at the '[' of the beginning of the index
@@ -239,6 +241,7 @@ char *list_simplify(char *list)
     char *curres = hc_result_(curarg);
     if (!curres)
     {
+      free(new);
       free(old);
       free(curarg);
       return NULL;
