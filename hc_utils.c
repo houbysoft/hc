@@ -42,6 +42,11 @@ void hc_error(char type, char *xformat, ...)
       if (!format) mem_error();
       sprintf(format,"Syntax Error : not enough operands supplied for %s",xformat);
       break;
+
+  case WARNING:
+    format = malloc(strlen("Warning : ")+strlen(xformat)+1);
+    if (!format) mem_error();
+    sprintf(format,"Warning : %s",xformat);
   }
 
   va_list args;

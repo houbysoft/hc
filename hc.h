@@ -75,7 +75,6 @@
 #define varname_error() {printf("Invalid variable name (variables must contain only letters and numbers, and may not be 'e' or 'i', which are used for exponents and complex numbers respectively).\n");return;}
 #define varname_predefined_error() {printf("You can't change a predefined variable.\n");return 0;}
 #define var_nospecial_error() {printf("You cannot use +=, -=, *= or /= with this type of variable.\n");return;}
-#define recursive_error() {printf("Error : recursive definition.\n");return;}
 #define recursion_error() {printf("Error : too much recursion/nestedness. If you know what you are doing, you can bypass this with:\n \\bpn.\n");}
 #define boxplot_cplx_error() {printf("Warning : Complex part of number was ignored in the boxplot.\n");}
 #define type_error(str) printf("Type error : %s\n",str)
@@ -88,7 +87,6 @@ extern void type_error(char *expr);
 #define varname_error() {notify_error("Invalid variable name (variables must contain only letters and numbers, may not be 'e' or 'i', which are used for exponents and complex numbers respectively, and must be at most %i bytes).\n",MAX_V_NAME);return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define var_nospecial_error() {notify_error("You cannot use +=, -=, *= or /= with this type of variable.\n");return;}
-#define recursive_error() {notify_error("Error : recursive definition.\n");return;}
 #define recursion_error() {notify_error("Error : too much recursion/nestedness. This can be bypassed in the command-line version if you know what you are doing.\n");}
 #define boxplot_cplx_error() {notify_error("Warning : Complex part of number was ignored in the boxplot.\n");}
 #endif

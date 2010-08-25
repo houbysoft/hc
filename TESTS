@@ -23,5 +23,7 @@ y = [1]
 test("join test",join(y,[2])==[1,2])
 x = []
 test("join test 2",join(x,[pi])==[pi])
+myfib(n) = if(n<2,n,myfib(n-1)+myfib(n-2))
+test("built-in vs user-defined fibonacci",myfib(10) == fibo(10))
 
 print("END OF TESTING")

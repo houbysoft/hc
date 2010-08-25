@@ -30,6 +30,7 @@
 #include "hc_help.h"
 #include "hc_list.h"
 #include "hc_programming.h"
+#include "hc_utils.h"
 
 
 struct hc_ventry *hc_var_first;
@@ -84,7 +85,7 @@ void hc_varassign(char *e)
       args[strlen(args)-1]=0;
 
       if (!hc_check_not_recursive(name,expr))
-	recursive_error();
+	hc_error(WARNING,"recursive definition");
 
 #ifdef DBG
       printf("[%s] [%s]\n",name,args);
