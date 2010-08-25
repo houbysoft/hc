@@ -408,7 +408,7 @@ char *hc_result_normal(char *f)
     return NULL;
   }
 
-#ifdef DBG
+#ifdef DDBG
   printf("hc_nested = %i\n",hc_nested);
 #endif
 
@@ -1796,7 +1796,7 @@ char *hc_postfix_result(char *e)
 	  if (!isalpha(e[i]))
 	  {
 	    hc_postfix_result_cleanup();
-        syntax_error2();
+	    syntax_error2();
 	    return NULL;
 	  }
 	  char *v_name = malloc(MAX_V_NAME * sizeof(char));

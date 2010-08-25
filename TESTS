@@ -25,5 +25,18 @@ x = []
 test("join test 2",join(x,[pi])==[pi])
 myfib(n) = if(n<2,n,myfib(n-1)+myfib(n-2))
 test("built-in vs user-defined fibonacci",myfib(10) == fibo(10))
+meh = 2
+test("multiple level indexing",[1,2,[1,2,["hello",2,3]]][meh][exp(0)+1][0][(1+1)*2]=="o")
 
-print("END OF TESTING")
+fft(x)=for(k=0,k<length(x),k+=1,
+  xk = 0;
+  for(j=0,j<length(x),j+=1,
+    xk+=x[j] * exp(-2pi*k*j*0i1/length(x));
+    );
+  y=if(k==0,[xk],join(y,[xk]));
+  if(k==length(x)-1,y);
+  )
+
+test("FFT",fft([1,0,3i-3,4i5,5])==[13i2,-7.8203160070896799i3.7250338450183462,6.7264861191111235i2.6059037339171068,-8.4904181416113337i-1.3698357564173172,1.5842480295898901i-6.9611018225181358])
+
+print("END OF TESTING. If no errors were reported, all tests passed successfully.")

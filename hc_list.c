@@ -25,10 +25,25 @@
 // returns 0 (FAIL) on error
 char hc_get_by_index(char *data, char *type, char *scan, int *i)
 {
-  char *scanres = hc_result((char *)(scan + *i));
+  int pct = 1;
+  unsigned int oldi = *i;
+  *i += 1;
+  while (pct!=0 && scan[*i])
+  {
+    if (scan[*i]=='[')
+      pct++;
+    else if (scan[*i]==']')
+      pct--;
+    *i += 1;
+  }
+  char *resme = malloc(*i - oldi + 1);
+  strncpy(resme,(char *)(scan + oldi),*i - oldi);
+  resme[*i - oldi] = 0;
+  char *scanres = hc_result(resme);
+  free(resme);
   if (!scanres)
     return FAIL;
-  *i += strlen((char *)(scan + *i));
+  //*i += strlen((char *)(scan + *i));
   // FIXME : hc_result() is expensive, should use hc_result_() instead, but this needs the result to be nicely parsed (ie. the radix and zeroes after an integer stripped)
   // scan[*i] points at the '[' of the beginning of the index
   char tmp_idx[MAX_DOUBLE_STRING];
