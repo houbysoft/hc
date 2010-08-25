@@ -37,6 +37,7 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
     *i += 1;
   }
   char *resme = malloc(*i - oldi + 1);
+  if (!resme) mem_error();
   strncpy(resme,(char *)(scan + oldi),*i - oldi);
   resme[*i - oldi] = 0;
   char *scanres = hc_result(resme);
