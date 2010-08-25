@@ -4,7 +4,7 @@ test(msg, con) = if(con!=1,print("Error :",msg))
 
 print("WELCOME TO HC AUTOMATED TESTING")
 test("1+1 is 2",1+1==2)
-test("mmass("H2O")",mmass("H2O")==18.01528)
+test("mmass('H2O')",mmass("H2O")==18.01528)
 test("nCr",nCr(50,5)==2118760)
 test("totient of prime number",totient(101)==100)
 
@@ -37,6 +37,7 @@ fft(x)=for(k=0,k<length(x),k+=1,
   if(k==length(x)-1,y);
   )
 
-test("FFT",fft([1,0,3i-3,4i5,5])==[13i2,-7.8203160070896799i3.7250338450183462,6.7264861191111235i2.6059037339171068,-8.4904181416113337i-1.3698357564173172,1.5842480295898901i-6.9611018225181358])
+mehfoo = [1,0,3i-3,4i5,5]
+test("FFT",fft(mehfoo)==[13i2,-7.8203160070896799i3.7250338450183462,6.7264861191111235i2.6059037339171068,-8.4904181416113337i-1.3698357564173172,1.5842480295898901i-6.9611018225181358])
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

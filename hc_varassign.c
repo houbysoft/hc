@@ -1140,7 +1140,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 	  // f_expr
 	  char *t1, *t2;
 	  unsigned int k=1;
-	  t1 = hc_get_arg(f_expr,k);
+	  t1 = hc_get_arg_r(f_expr,k);
 	  t2 = hc_get_arg(var_tmp->args,k);
 	  char *res_expr = strdup(var_tmp->value);
 	  if (!res_expr)
