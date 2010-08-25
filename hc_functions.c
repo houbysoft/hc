@@ -1780,11 +1780,12 @@ char *hc_join(char *f_expr)
   }
   char *v1 = list_clean(v1_orig);
   char *v2 = list_clean(v2_orig);
+  char *sep = (v1[0]==0||v2[0]==0) ? "" : ",";
 
-  char *r = malloc(strlen(v1)+strlen(v2)+4);
+  char *r = malloc(strlen(v1)+strlen(sep)+strlen(v2)+3);
   if (!r)
     mem_error();
-  sprintf(r,"[%s,%s]",v1,v2);
+  sprintf(r,"[%s%s%s]",v1,sep,v2);
 
   free(v1_orig); free(v2_orig);
   return r;
