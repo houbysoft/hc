@@ -27,10 +27,10 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
 {
   int pct = 1;
   unsigned int oldi = *i;
-  *i += 1;
   char ignore = FALSE;
   while (pct!=0 && scan[*i])
   {
+    *i += 1;
     if (scan[*i]=='\"')
     {
       ignore = ignore == FALSE ? TRUE : FALSE;
@@ -42,8 +42,8 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
       pct++;
     else if (scan[*i]==']')
       pct--;
-    *i += 1;
   }
+  *i += 1;
   char *resme = malloc(*i - oldi + 1);
   if (!resme) mem_error();
   strncpy(resme,(char *)(scan + oldi),*i - oldi);

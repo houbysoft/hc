@@ -784,12 +784,17 @@ char *hc_i2p(char *f)
 	  while (tmp[i]=='[')
 	  {
 	    unsigned int pct = 1;
+	    char ignore = FALSE;
 	    e[j++] = tmp[i++];
 	    while (pct!=0 && tmp[i])
 	    {
-	      if (tmp[i]=='[')
+	      if (tmp[i]=='\"')
+	      {
+		ignore = ignore == FALSE ? TRUE : FALSE;
+	      }
+	      if (tmp[i]=='[' && !ignore)
 		pct++;
-	      if (tmp[i]==']')
+	      if (tmp[i]==']' && !ignore)
 		pct--;
 	      e[j++] = tmp[i++];
 	    }
@@ -845,12 +850,17 @@ char *hc_i2p(char *f)
 	while (tmp[i]=='[')
 	{
 	  unsigned int pct = 1;
+	  char ignore = FALSE;
 	  e[j++] = tmp[i++];
 	  while (pct!=0 && tmp[i])
 	  {
-	    if (tmp[i]=='[')
+	    if (tmp[i]=='\"')
+	    {
+	      ignore = ignore == FALSE ? TRUE : FALSE;
+	    }
+	    if (tmp[i]=='[' && !ignore)
 	      pct++;
-	    if (tmp[i]==']')
+	    if (tmp[i]==']' && !ignore)
 	      pct--;
 	    e[j++] = tmp[i++];
 	  }
@@ -1753,12 +1763,17 @@ char *hc_postfix_result(char *e)
 	} else if (e[i]=='[') {
 	  type = HC_VAR_VEC;
 	  unsigned int pct = 1;
+	  char ignore = FALSE;
 	  tmp_num[j++] = e[i++];
 	  while (pct!=0 && e[i])
 	  {
-	    if (e[i]=='[')
+	    if (e[i]=='\"')
+	    {
+	      ignore = ignore == FALSE ? TRUE : FALSE;
+	    }
+	    if (e[i]=='[' && !ignore)
 	      pct++;
-	    if (e[i]==']')
+	    if (e[i]==']' && !ignore)
 	      pct--;
 	    tmp_num[j++] = e[i++];
 	  }
