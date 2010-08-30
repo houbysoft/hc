@@ -69,7 +69,7 @@ char *strreplace_(char *in, char *old, char *new)
       if (tmp)
 	free(tmp);
       tmp = result;
-      result = strreplace(result,old,new);
+      result = strreplace_(result,old,new);
     }
     free(tmp);
     return result;

@@ -25,5 +25,6 @@ extern char *list_add_sub(char *l1, char *l2, char mode);
 extern char *list_neg(char *list);
 extern char *list_clean(char *list);
 extern char *list_simplify(char *list);
+extern int list_compare(char *l1, char *l2);
 
 #endif

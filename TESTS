@@ -44,5 +44,6 @@ v = [["[][]]",[1,2]],2,[3,"heike"]]
 x = 0
 v[0][x][-1+1] = "?"
 test("assignment by index", v[0][0][0] == "?")
+test("assignment by index 2", v == [["?"+"]"+"[]]",[x^2 + 1,2.5 - 0.5]],2,[3+x,"he"*(x+1)+"ike"]])
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

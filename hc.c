@@ -1368,9 +1368,15 @@ char *hc_postfix_result(char *e)
 		m_apm_copy(curr->re,MM_Zero);
 	      else
 		m_apm_copy(curr->re,MM_One);
-	    } else if (op1_type == HC_VAR_STR || op1_type == HC_VAR_VEC)
+	    } else if (op1_type == HC_VAR_STR)
 	    {
 	      if (strcmp(op1_str,op2_str)==0)
+		m_apm_copy(curr->re,MM_Zero);
+	      else
+		m_apm_copy(curr->re,MM_One);
+	    } else if (op1_type == HC_VAR_VEC)
+	    {
+	      if (list_compare(op1_str,op2_str)==0)
 		m_apm_copy(curr->re,MM_Zero);
 	      else
 		m_apm_copy(curr->re,MM_One);
@@ -1554,9 +1560,15 @@ char *hc_postfix_result(char *e)
 		m_apm_copy(curr->re,MM_One);
 	      else
 		m_apm_copy(curr->re,MM_Zero);
-	    } else if (op1_type == HC_VAR_STR || op1_type == HC_VAR_VEC)
+	    } else if (op1_type == HC_VAR_STR)
 	    {
 	      if (strcmp(op1_str,op2_str)==0)
+		m_apm_copy(curr->re,MM_One);
+	      else
+		m_apm_copy(curr->re,MM_Zero);
+	    } else if (op1_type == HC_VAR_VEC)
+	    {
+	      if (list_compare(op1_str,op2_str)==0)
 		m_apm_copy(curr->re,MM_One);
 	      else
 		m_apm_copy(curr->re,MM_Zero);

@@ -247,6 +247,44 @@ char *list_add_sub(char *l1, char *l2, char mode)
 }
 
 
+// returns 0 if the lists are equal
+int list_compare(char *l1, char *l2)
+{
+  l1++; l2++;
+  l1[strlen(l1)-1]='\0'; l2[strlen(l2)-1]='\0';
+  long idx = 1;
+  char *curarg1 = hc_get_arg(l1,idx);
+  char *curarg2 = hc_get_arg(l2,idx);
+  while (curarg1 && curarg2)
+  {
+    char *tmp = malloc(strlen(curarg1)+2+strlen(curarg2)+1);
+    if (!tmp)
+      mem_error();
+    sprintf(tmp,"%s==%s",curarg1,curarg2);
+    char *tmp_r = hc_result_(tmp);
+    free(tmp);
+    if (!tmp_r || !is_positive_int(tmp_r) || strstr(tmp_r,"1.") != tmp_r)
+    {
+      free(curarg1); free(curarg2); free(tmp_r);
+      return 1;
+    }
+    free(tmp_r);
+    free(curarg1);
+    free(curarg2);
+    curarg1 = hc_get_arg(l1,++idx);
+    curarg2 = hc_get_arg(l2,idx);
+  }
+
+  if (curarg1 || curarg2)
+  {
+    free(curarg1); free(curarg2);
+    return 1;
+  }
+
+  return 0;
+}
+
+
 char *list_simplify(char *list)
 {
   unsigned int alloc = 2;
