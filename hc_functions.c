@@ -2252,6 +2252,17 @@ char is_int(char *str)
 }
 
 
+// same as is_int() (above), but checks if the first character is a negative sign
+// TRUE for positive or zero
+char is_positive_int(char *str)
+{
+  if (str[0] == '-')
+    return FALSE;
+  else
+    return is_int(str);
+}
+
+
 char hc_2dec(char base, char *in, int BUFSIZE)
 {
   int i = strlen(in)-1;

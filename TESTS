@@ -40,5 +40,9 @@ fft(x)=for(k=0,k<length(x),k+=1,
 mehfoo = [1,0,3i-3,4i5,5]
 test("FFT",fft(mehfoo)==[13i2,-7.8203160070896799i3.7250338450183462,6.7264861191111235i2.6059037339171068,-8.4904181416113337i-1.3698357564173172,1.5842480295898901i-6.9611018225181358])
 test("indexing tricks",["[","]]["][length("[")][length("][")]=="[")
+v = [["[][]]",[1,2]],2,[3,"heike"]]
+x = 0
+v[0][x][-1+1] = "?"
+test("assignment by index", v[0][0][0] == "?")
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

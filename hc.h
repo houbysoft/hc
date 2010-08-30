@@ -110,6 +110,7 @@ extern void type_error(char *expr);
 extern char is_num(char *);
 extern char is_real_num(char *);
 extern char is_int(char *);
+extern char is_positive_int(char *); // positive or zero
 
 #define NAME_VERSION "Welcome to hc 3.0 (infix / RPN) -- http://hc.houbysoft.com/\n"
 

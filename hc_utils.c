@@ -47,6 +47,13 @@ void hc_error(char type, char *xformat, ...)
     format = malloc(strlen("Warning : ")+strlen(xformat)+1);
     if (!format) mem_error();
     sprintf(format,"Warning : %s",xformat);
+    break;
+
+  case ERROR:
+    format = malloc(strlen("Error : ")+strlen(xformat)+1);
+    if (!format) mem_error();
+    sprintf(format,"Error : %s",xformat);
+    break;
   }
 
   va_list args;

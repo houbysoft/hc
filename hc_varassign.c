@@ -22,6 +22,7 @@
 #include <string.h>
 #include <math.h>
 #include <m_apm.h>
+#include <errno.h>
 #include "hc.h"
 #include "hc_functions.h"
 #include "hash.h"
@@ -38,11 +39,14 @@ char hc_check_funcname(char *e);
 char hc_check_varname(char *e);
 char hc_check_not_recursive(char *n, char *e);
 int hc_clear(char *e);
+int hc_get_first_index(char **indexes, unsigned long *index);
+char *hc_varassign_replace_index(char *oldvalue, char **indexes, char *value);
 
 
 void hc_varassign(char *e)
 {
   char special = 0;
+  unsigned int indexed = 0;
   if (!strchr(e,'='))
     varname_error();
   char *expr = strchr(e,'=') + sizeof(char);
@@ -60,15 +64,33 @@ void hc_varassign(char *e)
 
   // clean up var name
   unsigned int i = 0;
+  int par = 0;
   while (var[i])
   {
     if (isspace(var[i]))
     {
       memmove((void *)(var + i),(void *)(var + i + 1),strlen((char *)(var + i + 1))+1);
     } else {
+      if (var[i]=='[')
+      {
+	if (!indexed)
+	  indexed = i;
+	par++;
+      } else if (var[i]==']')
+      {
+	par--;
+      }
       i++;
     }
   }
+
+  if (par)
+  {
+    hc_error(SYNTAX,"['s and ]'s do not match");
+    return;
+  }
+  if (indexed)
+    var[indexed] = '\0';
 
   if (!hc_check_varname(var))
   {
@@ -79,6 +101,11 @@ void hc_varassign(char *e)
       // function
       if (special)
 	var_nospecial_error();
+      if (indexed)
+      {
+	hc_error(ERROR, "you can't index a function.");
+	return;
+      }
       char *name = strtok(var,"(");
       unsigned int name_hash = simple_hash(name);
       char *args = strtok(NULL,"(");
@@ -130,7 +157,7 @@ void hc_varassign(char *e)
 
     // variable
     unsigned int name_hash = simple_hash(var);
-    hc.flags |= PRINTFULL;
+    hc.flags |= PRINTFULL; // return all the digits that are used internally
     char *value = hc_result_(expr);
     hc.flags &= ~PRINTFULL;
     if (!value)
@@ -138,11 +165,8 @@ void hc_varassign(char *e)
 
     if (special) // special means that one of these has been used: += -= *= /= %=
     {
-      char *tmp = malloc(strlen(var)+1+strlen(value)+1);
-      strcpy(tmp,var);
-      tmp[strlen(tmp)+1]='\0';
-      tmp[strlen(tmp)]=special;
-      strcat(tmp,value);
+      char *tmp = malloc(strlen(var)+1+(indexed ? 1 + strlen((char *)(var+indexed+1)) : 0) + strlen(value)+1);
+      sprintf(tmp,"%s%s%s%c%s",var,indexed ? "[" : "",indexed ? (char *)(var+indexed+1) : "",special,value);
       free(value);
       value = hc_result_(tmp);
       free(tmp);
@@ -168,16 +192,153 @@ void hc_varassign(char *e)
     if ((tmp->name==NULL) || (tmp->hash!=name_hash))
     {
       // new variable name
+      if (indexed)
+      {
+	tmp->name = NULL;
+	free(value);
+	hc_error(ERROR, "Variable %s does not exist yet you are trying to index it.",var);
+	return;
+      }
       tmp->name = malloc((strlen(var)+1) * sizeof(char));
       if (!tmp->name)
 	mem_error();
       strcpy(tmp->name,var);
       tmp->hash = name_hash;
-    } else {
-      // variable name already defined, just changing value
+      tmp->value = value;
+    } else if (!indexed) {
+      // variable name already defined, just changing value, but not indexing
       free(tmp->value);
+      tmp->value = value;
+    } else {
+      // variable name already defined, changing value of one of its members (by indexing)
+      char *indexes = var + indexed + 1;
+      char *newvalue = hc_varassign_replace_index(tmp->value, &indexes, value);
+      free(value);
+      if (newvalue)
+      {
+	free(tmp->value);
+	tmp->value = newvalue;
+      }
     }
-    tmp->value = value;
+  }
+}
+
+
+char *hc_varassign_replace_index(char *oldvalue, char **indexes, char *value)
+{
+  char *newvalue = NULL;
+  unsigned long i = 0;
+  unsigned long changeindex;
+  char donereplacing = FALSE;
+  int done = hc_get_first_index(indexes, &changeindex);
+  if (done == -1)
+  {
+    return NULL;
+  }
+  unsigned long curindex;
+  if (!done)
+  {
+    if (oldvalue[i] != '\"' && oldvalue[i] != '[')
+    {
+      hc_error(ERROR, "Only strings and vectors can be indexed");
+      return NULL;
+    } else if (oldvalue[i] == '\"') {
+      i++;
+      curindex = 0;
+      while (curindex != changeindex)
+      {
+	if (oldvalue[i+1] == '\"') // since i is ++'d below
+	{
+	  hc_error(ERROR, "Index out of range.");
+	  return NULL;
+	} else {
+	  i++; curindex++;
+	}
+      }
+      char *tmpval = get_string(value);
+      if (!tmpval || tmpval[1]!='\0')
+      {
+	hc_error(ERROR, "You can only replace a character in a string by another character");
+	free(tmpval);
+	return NULL;
+      }
+      newvalue = strdup(oldvalue);
+      newvalue[i] = tmpval[0];
+      free(tmpval);
+      donereplacing = TRUE;
+
+    } else {
+
+      int par = 1;
+      char ignore = FALSE;
+      i++;
+      unsigned long curindex = 0;
+      unsigned long starts_at = 0, ends_at = 0;
+      while (curindex != changeindex && oldvalue[i])
+      {
+	if (oldvalue[i] == '\"')
+	  ignore = ignore == FALSE ? TRUE : FALSE;
+	else if (oldvalue[i] == '[' && !ignore)
+	  par++;
+	else if (oldvalue[i] == ']' && !ignore)
+	  par--;
+	else if (oldvalue[i] == ',' && !ignore && par == 1)
+	  curindex++;
+	i++;
+      }
+      if (curindex != changeindex)
+      {
+	hc_error(SYNTAX, "malformed index(es)");
+	return NULL;
+      }
+      starts_at = i;
+      ignore = FALSE;
+      while (!ends_at)
+      {
+	if (oldvalue[i] == '\"')
+	  ignore = ignore == FALSE ? TRUE : FALSE;
+	else if (oldvalue[i] == '[' && !ignore)
+	  par++;
+	else if (oldvalue[i] == ']' && !ignore)
+	  par--;
+
+	if ((oldvalue[i] == ',' && !ignore && par == 1) || (oldvalue[i] == ']' && par == 0))
+	  ends_at = i;
+
+	i++;
+      }
+      char *newold = malloc(ends_at - starts_at + 1);
+      if (!newold) mem_error();
+      strncpy(newold, oldvalue + starts_at, ends_at - starts_at);
+      newold[ends_at - starts_at] = '\0';
+      char *tmp = hc_varassign_replace_index(newold, indexes, value);
+      free(newold);
+      if (!tmp)
+      {
+	return NULL;
+      }
+      newvalue = malloc(starts_at + 1 + strlen(tmp) + strlen(oldvalue) - ends_at);
+      if (!newvalue) mem_error();
+      strncpy(newvalue, oldvalue, starts_at);
+      newvalue[starts_at] = '\0';
+      strcat(newvalue, tmp);
+      free(tmp);
+      strcat(newvalue, oldvalue + ends_at);
+    }
+
+    done = hc_get_first_index(indexes, &changeindex);
+    if (done == -1)
+    {
+      return NULL;
+    } else if (done == 0 && donereplacing == TRUE)
+    {
+      hc_error(ERROR,"index too deep");
+      return NULL;
+    } else {
+      return newvalue;
+    }
+  } else {
+    return hc_result_(value);
   }
 }
 
@@ -315,6 +476,58 @@ int hc_clear(char *e)
     arg_error("clear() : argument is already not defined.");
   } else {
     return SUCCESS;
+  }
+}
+
+
+int hc_get_first_index(char **indexes, unsigned long *index)
+{
+  if (!*indexes[0])
+  {
+    return 1; // no more indexes available, we are done
+  } else {
+    int par = 1;
+    char *tmp = malloc(strlen(*indexes)+1); // maximum length (strlen()+1-2, where -2 because of the [])
+    unsigned int i = 0;
+    char ignore = FALSE;
+    while (par && *indexes[0])
+    {
+      tmp[i++] = *indexes[0];
+      if (*indexes[0] == '\"')
+	ignore = ignore == FALSE ? TRUE : FALSE;
+      else if (*indexes[0] == '[' && !ignore)
+	par++;
+      else if (*indexes[0] == ']' && !ignore)
+	par--;
+      *indexes += 1;
+    }
+    if (par != 0)
+    {
+      free(tmp);
+      hc_error(SYNTAX, "['s and ]'s do not match");
+      return -1;
+    }
+    tmp[i-1] = '\0';
+    if (*indexes[0] == '[')
+      *indexes += 1;
+    char *tmpres = hc_result_(tmp);
+    free(tmp);
+    if (!tmpres || !is_positive_int(tmpres))
+    {
+      free(tmpres);
+      hc_error(ERROR, "indexes must be positive integers (or zero)");
+      return -1;
+    }
+    errno = 0;
+    *index = strtol(tmpres, NULL, 10);
+    if (errno)
+    {
+      free(tmpres);
+      hc_error(ERROR, "%s", strerror(errno));
+      return -1;
+    }
+    free(tmpres);
+    return 0;
   }
 }
 

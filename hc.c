@@ -1464,15 +1464,15 @@ char *hc_postfix_result(char *e)
 	if (sp < 2)
 	{
 	   hc_postfix_result_cleanup();
-       hc_error(NOT_ENOUGH_OPERANDS,"> / >=");
-       return NULL;
+	   hc_error(NOT_ENOUGH_OPERANDS,"> / >=");
+	   return NULL;
 	}
 	curr = curr->p; // [--sp]
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	   type_error(">/>= accepts only numbers");
-	   return NULL;
+	  type_error(">/>= accepts only numbers");
+	  return NULL;
 	}
 	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
 	hc_round(op2_r,hc.precision,curr->re);
