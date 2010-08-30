@@ -243,7 +243,7 @@ extern M_APM hc_lans_mapm_im;
 extern M_APM MM_MOne;
 
 extern void hc_load_cfg();
-extern void hc_load(char *fname);
+extern void hc_load(char *);
 extern char *hc_result(char *e);
 extern char *hc_result_(char *e);
 extern char *hc_plusminus(char *);

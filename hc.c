@@ -23,6 +23,7 @@
 #include <math.h>
 #include <m_apm.h>
 #include <locale.h>
+#include <wordexp.h>
 #include "m_apmc.h"
 #include "hc.h"
 #include "hc_functions.h"
@@ -172,7 +173,7 @@ void hc_process_direction(char *d);
 void hc_load_cfg();
 void hc_save_cfg();
 void hc_cleanup();
-void hc_load(char *fname);
+void hc_load(char *);
 
 
 M_APM hc_lans_mapm_re;
@@ -2443,9 +2444,20 @@ char hc_is_predef(char *var)
 }
 
 
-void hc_load(char *fname)
+void hc_load(char *fname_)
 {
-  FILE *fr = fopen(fname,"r");
+#ifndef WIN32
+  wordexp_t expanded_fname;
+  FILE *fr = NULL;
+  if (!wordexp(fname_, &expanded_fname, 0))
+  {
+    fr = fopen(expanded_fname.we_wordv[0],"r");
+  }
+  wordfree(&expanded_fname);
+#else
+  FILE *fr = fopen(fname_,"r");
+#endif
+
   if (!fr)
   {
     perror("Error");
