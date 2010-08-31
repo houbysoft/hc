@@ -23,7 +23,9 @@
 #include <math.h>
 #include <m_apm.h>
 #include <locale.h>
+#ifndef WIN32
 #include <wordexp.h>
+#endif
 #include "m_apmc.h"
 #include "hc.h"
 #include "hc_functions.h"
