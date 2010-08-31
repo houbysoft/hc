@@ -667,8 +667,14 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       break;
 
     case HASH_ANS:
-      m_apm_copy(f_result_re,hc_lans_mapm_re);
-      m_apm_copy(f_result_im,hc_lans_mapm_im);
+      if (hc_lans_type == HC_VAR_NUM)
+      {
+	m_apm_copy(f_result_re,hc_lans_mapm_re);
+	m_apm_copy(f_result_im,hc_lans_mapm_im);
+      } else if (hc_lans_type == HC_VAR_VEC || hc_lans_type == HC_VAR_STR) {
+	*type = hc_lans_type;
+	f_result_str = strdup(hc_lans_strvec);
+      }
       break;
 
     case HASH_ACOS:

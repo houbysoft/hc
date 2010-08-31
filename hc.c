@@ -178,6 +178,9 @@ void hc_load(char *);
 
 M_APM hc_lans_mapm_re;
 M_APM hc_lans_mapm_im;
+char *hc_lans_strvec;
+char hc_lans_type;
+
 M_APM MM_MOne; // Minus one
 struct hc_config hc;
 char announce_errors=TRUE;
@@ -200,6 +203,8 @@ char *hc_result(char *e)
     hc_load_cfg();
     hc_lans_mapm_re = m_apm_init();
     hc_lans_mapm_im = m_apm_init();
+    hc_lans_strvec = NULL;
+    hc_lans_type = HC_VAR_NUM;
     MM_MOne = m_apm_init();
     m_apm_set_double(MM_MOne,(double)-1);
     hc_var_first = malloc(sizeof (struct hc_ventry));
@@ -240,6 +245,9 @@ char *hc_result(char *e)
     char *r_re = hc_real_part(r);
     char *r_im = hc_imag_part(r);
     free(r);
+    free(hc_lans_strvec);
+    hc_lans_strvec = NULL;
+    hc_lans_type = HC_VAR_NUM;
     m_apm_set_string(hc_lans_mapm_re,r_re);
     if (r_im)
     {
@@ -327,7 +335,13 @@ char *hc_result(char *e)
     r_new[strlen(r_new)-1] = ']';
     free(r);
     r = r_new;
+    free(hc_lans_strvec);
+    hc_lans_type = HC_VAR_VEC;
+    hc_lans_strvec = strdup(r);
   } else if (is_string(r)) {
+    free(hc_lans_strvec);
+    hc_lans_type = HC_VAR_STR;
+    hc_lans_strvec = strdup(r);
     return r;
   } else {
     free(r);

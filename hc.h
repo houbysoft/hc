@@ -240,6 +240,8 @@ extern unsigned int hc_hashes[HC_NAMES];
 extern char *_cur_var_name_;
 extern M_APM hc_lans_mapm_re;
 extern M_APM hc_lans_mapm_im;
+extern char *hc_lans_strvec;
+extern char hc_lans_type;
 extern M_APM MM_MOne;
 
 extern void hc_load_cfg();
