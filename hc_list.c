@@ -252,6 +252,8 @@ int list_compare(char *l1, char *l2)
 {
   l1++; l2++;
   l1[strlen(l1)-1]='\0'; l2[strlen(l2)-1]='\0';
+  if (!strlen(l1) && !strlen(l2)) // the lists are both empty
+    return 0;
   long idx = 1;
   char *curarg1 = hc_get_arg(l1,idx);
   char *curarg2 = hc_get_arg(l2,idx);
@@ -295,7 +297,8 @@ char *list_simplify(char *list)
   char *old = strdup((char *)(list+1));
   if (!old)
     mem_error();
-  old[strlen(old)-1] = '\0';
+  if (strlen(old))
+    old[strlen(old)-1] = '\0';
   long idx = 1;
   char *curarg = hc_get_arg(old,idx);
   while (curarg)

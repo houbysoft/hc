@@ -1832,6 +1832,37 @@ int hc_input(M_APM re, M_APM im, char *f_expr)
 }
 
 
+char *hc_constantlist(char *e, char *el)
+{
+  char *nstr = hc_get_arg_r(e,1);
+  if (!nstr || !strlen(nstr) || !is_positive_int(nstr))
+  {
+    free(nstr);
+    arg_error("zeros()/ones() needs a positive integer as argument");
+  }
+  errno = 0;
+  long int n = strtol(nstr, NULL, 10);
+  free(nstr);
+  if (errno)
+  {
+    free(nstr);
+    arg_error("zeros()/ones() needs a positive integer as argument");
+  }
+  char *r = malloc(3 + n * (strlen(el) + 1));
+  if (!r) mem_error();
+  r[0]='[';
+  r[1]='\0';
+  long int i = 0;
+  for (; i<n; i++)
+  {
+    strcat(r,el);
+    strcat(r,",");
+  }
+  r[strlen(r)-1] = ']';
+  return r;
+}
+
+
 int hc_output(int mode, char *f_expr)
 {
   static FILE *fw=NULL;

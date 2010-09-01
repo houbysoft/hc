@@ -268,6 +268,10 @@ int hc_help(char *e)
     print = allocline("- num(str) - returns a number representation of the number in string str");
     break;
 
+  case HASH_ONES:
+    print = allocline("- ones(n) - generate a list containing n ones. See also zeros().\n    Example:\n     * Generate a list containing eight fives:\n      ones(8) * 5");
+    break;
+
   case HASH_PRINT:
     print = allocline("- print(expr_1, expr_2, ..., expr_n) - prints its number or string arguments (if more than one argument is passed, the outputs will be separated by a space) and a newline character (useful for printing variables in loops)");
     break;
@@ -339,6 +343,10 @@ int hc_help(char *e)
 
   case HASH_WRITE:
     print = allocline("- write(fname, expr_1, expr_2, ..., expr_n) - behaves like the print function (run help(\"print\") to learn more), but writes to the file specified with fname.");
+    break;
+
+  case HASH_ZEROS:
+    print = allocline("- zeros(n) - generate a list containing n zeros. See also ones()");
     break;
 
 /**** CONSTANTS ****/

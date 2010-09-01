@@ -45,5 +45,9 @@ x = 0
 v[0][x][-1+1] = "?"
 test("assignment by index", v[0][0][0] == "?")
 test("assignment by index 2", v == [["?"+"]"+"[]]",[x^2 + 1,2.5 - 0.5]],2,[3+x,"he"*(x+1)+"ike"]])
+test("ones() example", ones(8) * 5 == [5,5,5,5,5,5,5,5])
+test("zeros() example", zeros(1) == [0])
+test("zeros() example 2", zeros(0) == [])
+test("testing some constants", round(pi + e + answer) == 48)
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

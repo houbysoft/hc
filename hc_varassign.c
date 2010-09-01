@@ -1208,6 +1208,18 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
+    case HASH_ONES:
+      *type = HC_VAR_VEC;
+      if ((f_result_str = hc_constantlist(f_expr,"1")) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_ZEROS:
+      *type = HC_VAR_VEC;
+      if ((f_result_str = hc_constantlist(f_expr,"0")) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
     case HASH_RAND:
       if (hc_rand(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}

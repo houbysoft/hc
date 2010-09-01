@@ -96,6 +96,7 @@ const char *hc_names[][2] = {
   {"nCr","func"},
   {"nPr","func"},
   {"num","func"},
+  {"ones","func"},
   {"print","func"},
   {"product","func"},
   {"rand","func"},
@@ -115,6 +116,7 @@ const char *hc_names[][2] = {
   {"totient","func"},
   {"while","func"},
   {"write","func"},
+  {"zeros","func"},
   // CONSTANTS
   {"pi","cnst:3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384461"},
   {"c","cnst:299792458"},
