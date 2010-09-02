@@ -10,6 +10,12 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+3.1
+  - added more detailed syntax error messages
+  - fixes and enhancements to vectors; for example, it is now possible to use assignment by index (ie. v[2] = 3)
+  - on *NIX, it is now possible to use ~ in filenames and it will get properly expanded
+  - added zeros() and ones()
+  - bugfixes
 3.0
   - completely new help system with the help() function
   - completely new control structure system -- control structures are now functions. Why? No new syntax to learn for newbies, easier (therefore faster) parsing, consistent syntax.

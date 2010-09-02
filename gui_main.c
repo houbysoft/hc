@@ -197,10 +197,12 @@ int main(int argc, char *argv[])
     menu_append(GTK_MENU (subm_misc), "join(a,b) - join a and b, two vectors, together", G_CALLBACK (entry_append), "join(");
     menu_append(GTK_MENU (subm_misc), "length(x) - return the length of x", G_CALLBACK (entry_append), "length(");
     menu_append(GTK_MENU (subm_misc), "num(str) - returns a number representation of the number in the string str", G_CALLBACK (entry_append), "num(");
+    menu_append(GTK_MENU (subm_misc), "ones(n) - generate a list containing n ones", G_CALLBACK (entry_append), "ones(");
     menu_append(GTK_MENU (subm_misc), "print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)", G_CALLBACK (entry_append), "print(");
     menu_append(GTK_MENU (subm_misc), "rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[", G_CALLBACK (entry_append), "rand(");
     menu_append(GTK_MENU (subm_misc), "str(expr) - returns a string representation of expr", G_CALLBACK (entry_append), "str(");
     menu_append(GTK_MENU (subm_misc), "write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname", G_CALLBACK (entry_append), "write(");
+    menu_append(GTK_MENU (subm_misc), "zeros(n) - generate a list containing n zeros", G_CALLBACK (entry_append), "zeros(");
     gtk_menu_append(GTK_MENU (subm_fns), subm_mit_misc);
 
     // Functions/* submenu
