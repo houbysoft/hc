@@ -220,6 +220,7 @@ Constants are stored with 128 decimal places.
 - nCr(n,k) - binomial coefficient (combinatorics)
 - nPr(n,k) - number of permutations (combinatorics)
 - num(str) - returns a number representation of the number in the string str
+- ones(n) - generate a list containing n ones. See also zeros().
 - print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)
 - product(expr,low,high) - expression can contain 'x', which
   	     will be incremented from low to high inclusive, for example:
@@ -243,6 +244,7 @@ Constants are stored with 128 decimal places.
 - tanh(x) - hyperbolic tangent of x
 - totient(x) - Euler's totient function
 - write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname
+- zeros(n) - generate a list containing n zeros. See also ones()
 - Constants:
   - answer - The Answer
   - c - speed of light
