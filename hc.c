@@ -1893,7 +1893,7 @@ char *hc_postfix_result(char *e)
 	      return NULL;
 	    }
 	  }
-	  if (!hc_value((char *)&tmp_num, &type, v_name, f_expr))
+	  if (!hc_value((char *)&tmp_num, MAX_DOUBLE_STRING, &type, v_name, f_expr))
 	  {
 	    free(v_name); free(f_expr);
 	    hc_postfix_result_cleanup();

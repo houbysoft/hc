@@ -532,7 +532,7 @@ int hc_get_first_index(char **indexes, unsigned long *index)
 }
 
 
-char hc_value(char *result, char *type, char *v_name, char *f_expr)
+char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_expr)
 {
   unsigned int v_hash = simple_hash(v_name);
 
@@ -585,6 +585,7 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
     M_APM tmp_num_re = m_apm_init();
     M_APM tmp_num_im = m_apm_init();
     char *f_result_str = NULL;
+    char f_result_is_simplified = FALSE;
     char *fme;
     char *tmp_ri;
     char success = TRUE;
@@ -1210,12 +1211,14 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 
     case HASH_ONES:
       *type = HC_VAR_VEC;
+      f_result_is_simplified = TRUE;
       if ((f_result_str = hc_constantlist(f_expr,"1")) == NULL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
     case HASH_ZEROS:
       *type = HC_VAR_VEC;
+      f_result_is_simplified = TRUE;
       if ((f_result_str = hc_constantlist(f_expr,"0")) == NULL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
@@ -1341,18 +1344,45 @@ char hc_value(char *result, char *type, char *v_name, char *f_expr)
 	}
       } else if (*type == HC_VAR_STR)
       {
+	if (strlen(f_result_str) > MAXRESULT - 1)
+	{
+	  hc_error(ERROR,"Overflow");
+	  free(f_result_str);
+	  m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	  return 0;
+	}
 	strcpy(result,f_result_str);
 	free(f_result_str);
       } else if (*type == HC_VAR_VEC) {
-	char *newlist = list_simplify(f_result_str);
-	if (newlist)
+	if (!f_result_is_simplified)
 	{
-	  strcpy(result,newlist);
-	  free(f_result_str); free(newlist);
+	  char *newlist = list_simplify(f_result_str);
+	  if (newlist)
+	  {
+	    if (strlen(newlist) > MAXRESULT - 1)
+	    {
+	      hc_error(ERROR,"Overflow");
+	      free(f_result_str); free(newlist);
+	      m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	      return 0;
+	    }
+	    strcpy(result,newlist);
+	    free(f_result_str); free(newlist);
+	  } else {
+	    free(f_result_str); free(newlist);
+	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	    return 0;
+	  }
 	} else {
-	  free(f_result_str); free(newlist);
-	  m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	  return 0;
+	  if (strlen(f_result_str) > MAXRESULT - 1)
+	  {
+	    hc_error(ERROR,"Overflow");
+	    free(f_result_str);
+	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+	    return 0;
+	  }
+	  strcpy(result,f_result_str);
+	  free(f_result_str);
 	}
       } else if (*type == HC_VAR_EMPTY)
       {
