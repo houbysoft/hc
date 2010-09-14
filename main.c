@@ -63,19 +63,23 @@ int main(int argc, char *argv[])
   char c;
   char err=0;
   char *eval = NULL;
-  while ((c = getopt(argc, argv, "e:"))!=-1)
+  char *import = NULL;
+  while ((c = getopt(argc, argv, "e:i:"))!=-1)
     switch (c)
     {
     case 'e':
       eval = optarg;
       break;
+    case 'i':
+      import = optarg;
+      break;
     default:
       err++;
     }
 
-  if (err || (eval && argv[optind]!=NULL) || (!eval && (argc!=2 && argc!=1)))
+  if (err || ((eval || import) && argv[optind]!=NULL) || (!eval && !import && (argc!=2 && argc!=1)))
   {
-    printf("%s\nUsage:\n%s [FILE] [-e EXPRESSION]\n - use either FILE to load FILE into HC and execute it\n - OR use -e EXPRESSION to directly compute EXPRESSION and exit\n - OR pass no arguments to launch the default CLI interface and have access to more help and options.\n",eval ? "Invalid arguments (did you enclose the expression to calculate in quotes?)." : "Invalid arguments.",argv[0]);
+    printf("%s\nUsage:\n%s [[-i] FILE] [-e EXPRESSION]\n - use either FILE to load FILE into HC and execute it (add -i to leave the calculator open after execution)\n - OR use -e EXPRESSION to directly compute EXPRESSION and exit\n - OR pass no arguments to launch the default CLI interface and have access to more help and options.\n",eval ? "Invalid arguments (did you enclose the expression to calculate in quotes?)." : "Invalid arguments.",argv[0]);
     exit(1);
   }
 
@@ -93,6 +97,8 @@ int main(int argc, char *argv[])
     return 0;
   } else {
     hc.announce = TRUE;
+    if (import)
+      hc_load(import);
   }
 
 #ifdef WIN32

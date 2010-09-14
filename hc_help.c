@@ -16,6 +16,7 @@
 /*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "hc.h"
 #include "hc_functions.h"
