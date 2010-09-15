@@ -376,6 +376,10 @@ int hc_help(char *e)
     print = allocline("- pi - 3.141592...");
     break;
 
+  case HASH_NA:
+    print = allocline("- Na - Avogadro constant");
+    break;
+
 /**** MISC HELP TOPICS ****/
 
   case HASH_CONVERSIONS:

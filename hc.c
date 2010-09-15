@@ -124,6 +124,7 @@ const char *hc_names[][2] = {
   {"phi","cnst:1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475408807538689175212663386"},
   {"g","cnst:9.80655"},
   {"answer","cnst:42"},
+  {"na","cnst:6.0221415e23"},
   // OTHERS
   {"help","cmd"},
   {"credits","cmd"},
@@ -2277,7 +2278,7 @@ void hc_load_cfg()
 	else
 	  hc.rpn = FALSE;
 	break;
-      case HASH_EXP_FORMAT:
+      case HASH_EXPF:
 	hc.exp = buffer[i+1];
 	if (hc.exp!='s' && hc.exp!='e' && hc.exp!='n')
 	{
@@ -2290,7 +2291,7 @@ void hc_load_cfg()
 	if (hc.precision>HC_MAX_PRECISION)
 	  hc.precision = HC_MAX_PRECISION;
 	break;
-      case HASH_ANGLE_FORMAT:
+      case HASH_ANGLE:
 	hc.angle = buffer[i+1];
 	if (hc.angle!='d' && hc.angle!='r' && hc.angle!='g')
 	{
