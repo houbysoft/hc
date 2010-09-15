@@ -1368,6 +1368,8 @@ char *hc_2sci(char *n)
     unsigned int i = 1, j=2;
     while (n[i]=='0' || n[i]=='-' || n[i]=='.')
       i++;
+    if (n[i] == '\0')
+      i--;
     if (n[0]=='-')
     {
       r[0] = '-';
@@ -1389,8 +1391,9 @@ char *hc_2sci(char *n)
     }
     if (!digits)
       j--;
-    r[j] = 'E';
-    r[j+1] = 0;
+    r[j] = 0;
+    r = hc_strip_0s_real(r);
+    strcat(r,"E");
     char *_exp_ = malloc(hc_need_space_int(exp)+1);
     sprintf(_exp_,"%i",exp);
     strcat(r,_exp_);
@@ -1425,8 +1428,9 @@ char *hc_2sci(char *n)
     }
     if (!digits)
       j--;
-    r[j] = 'E';
-    r[j+1] = 0;
+    r[j] = 0;
+    r = hc_strip_0s_real(r);
+    strcat(r,"E");
     char *_exp_ = malloc(hc_need_space_int(exp)+1);
     sprintf(_exp_,"%i",exp);
     strcat(r,_exp_);
@@ -1557,6 +1561,21 @@ char *hc_2eng(char *n)
   }
 
   return NULL;
+}
+
+
+// Use to strip zeros from a real number (in place)
+char *hc_strip_0s_real(char *e)
+{
+  if (strchr(e,'.'))
+  {
+    int i = strlen(e)-1;
+    while(i && e[i] == '0')
+      e[i--]=0;
+    if (e[i] == '.')
+      e[i]=0;
+  }
+  return e;
 }
 
 

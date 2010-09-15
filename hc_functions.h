@@ -78,6 +78,7 @@ extern char hc_stats(char *e, char g, char ef);
 extern char *hc_2sci(char *);
 extern char *hc_2eng(char *);
 extern char *hc_strip_0s(char *e);
+extern char *hc_strip_0s_real(char *e);
 
 extern char *hc_2str(char *);
 extern int hc_2num(M_APM, M_APM, char *);
