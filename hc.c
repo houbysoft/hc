@@ -106,6 +106,7 @@ const char *hc_names[][2] = {
   {"sin","func"},
   {"sinh","func"},
   {"slpfld","func"},
+  {"sort","func"},
   {"sqrt","func"},
   {"stats","func"},
   {"statsf","func"},

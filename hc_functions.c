@@ -1811,6 +1811,12 @@ char *hc_join(char *f_expr)
 }
 
 
+char *hc_sort(char *e)
+{
+  return NULL; // TODO
+}
+
+
 int hc_input(M_APM re, M_APM im, char *f_expr)
 {
   char *str=NULL;

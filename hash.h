@@ -159,5 +159,6 @@
 #define HASH_ZEROS 37200
 #define HASH_ONES 56501
 #define HASH_NA 3507
+#define HASH_SORT 37061
 
 #endif

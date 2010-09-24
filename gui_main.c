@@ -230,6 +230,7 @@ int main(int argc, char *argv[])
     menu_append(GTK_MENU (subm_cnst), "c - speed of light", G_CALLBACK (entry_append), "c");
     menu_append(GTK_MENU (subm_cnst), "e - Euler's number", G_CALLBACK (entry_append), "e");
     menu_append(GTK_MENU (subm_cnst), "g - std gravitational acceleration on Earth", G_CALLBACK (entry_append), "g");
+    menu_append(GTK_MENU (subm_cnst), "Na - Avogadro constant", G_CALLBACK (entry_append), "Na");
     menu_append(GTK_MENU (subm_cnst), "phi - golden ratio", G_CALLBACK (entry_append), "phi");
     menu_append(GTK_MENU (subm_cnst), "pi", G_CALLBACK (entry_append), "pi");
 
