@@ -1811,9 +1811,23 @@ char *hc_join(char *f_expr)
 }
 
 
+char *hc_quicksort(char *list, char *cmp)
+{
+  return NULL;
+}
+
+
 char *hc_sort(char *e)
 {
-  return NULL; // TODO
+  char *sort = hc_get_arg_r(e,1);
+  if (!sort || !is_list(sort))
+  {
+    free(sort);
+    arg_error("sort() : first argument must be a list");
+  }
+  char *result = hc_quicksort(list_clean(sort),NULL);
+  free(sort);
+  return result;
 }
 
 

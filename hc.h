@@ -107,6 +107,7 @@ extern void type_error(char *expr);
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
 #define is_vector(x) (strip_spaces(x)[0]=='[' && last_char(x)==']')
+#define is_list(x) is_vector(x)
 extern char is_num(char *);
 extern char is_real_num(char *);
 extern char is_int(char *);
