@@ -1813,7 +1813,92 @@ char *hc_join(char *f_expr)
 
 char *hc_quicksort(char *list, char *cmp)
 {
-  return NULL;
+  unsigned long idx = 1;
+  char *pivotexpr = hc_get_arg(list,idx);
+  if (!pivotexpr) // empty list
+  {
+    char *r = malloc(1);
+    r[0] = '\0';
+    return r;
+  }
+  char *pivot = hc_result_(pivotexpr);
+  free(pivotexpr);
+  if (!pivot)
+    return NULL;
+  unsigned int pivotlen = strlen(pivot);
+  char *larger = malloc(1), *smaller = malloc(1);
+  unsigned long largeralloc = 1, smalleralloc = 1;
+  larger[0] = smaller[0] = '\0';
+  char *cur = hc_get_arg(list,++idx);
+  while (cur)
+  {
+    char *curres = hc_result_(cur);
+    free(cur);
+    if (!curres)
+    {
+      free(larger); free(smaller); free(pivot);
+      return NULL;
+    }
+
+    char *eval = NULL;
+    if (!cmp)
+    {
+      eval = malloc(strlen(curres)+1+pivotlen+1);
+      if (!eval) mem_error();
+      sprintf(eval, "%s<%s", curres, pivot);
+    } else {
+      // TODO
+    }
+
+    char *evalr = hc_result_(eval);
+    free(eval);
+    if (!evalr)
+    {
+      free(curres); free(larger); free(smaller); free(pivot);
+      return NULL;
+    }
+
+    if (evalr[0]=='0' && is_positive_int(evalr)) // curres is larger (or equal) to pivot, put it in the 'larger' list
+    {
+      largeralloc += strlen(curres) + 1;
+      larger = realloc(larger, largeralloc);
+      if (!larger) mem_error();
+      strcat(larger, curres);
+      strcat(larger, ",");
+    } else { // curres is smaller than the pivot, put it in the 'smaller' list
+      smalleralloc += strlen(curres) + 1;
+      smaller = realloc(smaller, smalleralloc);
+      if (!smaller) mem_error();
+      strcat(smaller, curres);
+      strcat(smaller, ",");
+    }
+    free(curres); free(evalr);
+
+    cur = hc_get_arg(list,++idx);
+  }
+
+  if (idx == 2) // means that 1 was the last valid; the list contained only one element, pivot; return it
+  {
+    free(smaller); free(larger);
+    return pivot;
+  }
+
+  if (strlen(larger))
+    larger[strlen(larger) - 1]='\0';
+  if (strlen(smaller))
+    smaller[strlen(smaller) - 1]='\0';
+  char *smallersorted = hc_quicksort(smaller,cmp); free(smaller);
+  char *largersorted = hc_quicksort(larger,cmp); free(larger);
+  if (!smallersorted || !largersorted)
+  {
+    free(pivot); free(smallersorted); free(largersorted);
+    return NULL;
+  }
+  char *res = malloc(strlen(smallersorted)+1+pivotlen+1+strlen(largersorted)+1);
+  if (!res) mem_error();
+  sprintf(res, "%s%s%s%s%s", smallersorted, strlen(smallersorted)>0 ? "," : "",pivot, strlen(largersorted)>0 ? "," : "", largersorted);
+  free(pivot); free(smallersorted); free(largersorted);
+  return res;
 }
 
 
@@ -1822,11 +1907,22 @@ char *hc_sort(char *e)
   char *sort = hc_get_arg_r(e,1);
   if (!sort || !is_list(sort))
   {
-    free(sort);
-    arg_error("sort() : first argument must be a list");
+    if (sort)
+    {
+      free(sort);
+      arg_error("sort() : first argument must be a list");
+    } else {
+      return NULL;
+    }
   }
-  char *result = hc_quicksort(list_clean(sort),NULL);
+  char *tmp = hc_quicksort(list_clean(sort),NULL);
   free(sort);
+  if (!tmp)
+    return NULL;
+  char *result = malloc(1+strlen(tmp)+1+1);
+  if (!result) mem_error();
+  sprintf(result, "[%s]", tmp);
+  free(tmp);
   return result;
 }
 
