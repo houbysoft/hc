@@ -1814,17 +1814,13 @@ char *hc_join(char *f_expr)
 char *hc_quicksort(char *list, char *cmp)
 {
   unsigned long idx = 1;
-  char *pivotexpr = hc_get_arg(list,idx);
-  if (!pivotexpr) // empty list
+  char *pivot = hc_get_arg(list,idx);
+  if (!pivot) // empty list
   {
     char *r = malloc(1);
     r[0] = '\0';
     return r;
   }
-  char *pivot = hc_result_(pivotexpr);
-  free(pivotexpr);
-  if (!pivot)
-    return NULL;
   unsigned int pivotlen = strlen(pivot);
   char *larger = malloc(1), *smaller = malloc(1);
   unsigned long largeralloc = 1, smalleralloc = 1;
@@ -1832,20 +1828,12 @@ char *hc_quicksort(char *list, char *cmp)
   char *cur = hc_get_arg(list,++idx);
   while (cur)
   {
-    char *curres = hc_result_(cur);
-    free(cur);
-    if (!curres)
-    {
-      free(larger); free(smaller); free(pivot);
-      return NULL;
-    }
-
     char *eval = NULL;
     if (!cmp)
     {
-      eval = malloc(strlen(curres)+1+pivotlen+1);
+      eval = malloc(strlen(cur)+1+pivotlen+1);
       if (!eval) mem_error();
-      sprintf(eval, "%s<%s", curres, pivot);
+      sprintf(eval, "%s<%s", cur, pivot);
     } else {
       // TODO
     }
@@ -1854,25 +1842,25 @@ char *hc_quicksort(char *list, char *cmp)
     free(eval);
     if (!evalr)
     {
-      free(curres); free(larger); free(smaller); free(pivot);
+      free(cur); free(larger); free(smaller); free(pivot);
       return NULL;
     }
 
-    if (evalr[0]=='0' && is_positive_int(evalr)) // curres is larger (or equal) to pivot, put it in the 'larger' list
+    if (evalr[0]=='0' && is_positive_int(evalr)) // cur is larger (or equal) to pivot, put it in the 'larger' list
     {
-      largeralloc += strlen(curres) + 1;
+      largeralloc += strlen(cur) + 1;
       larger = realloc(larger, largeralloc);
       if (!larger) mem_error();
-      strcat(larger, curres);
+      strcat(larger, cur);
       strcat(larger, ",");
     } else { // curres is smaller than the pivot, put it in the 'smaller' list
-      smalleralloc += strlen(curres) + 1;
+      smalleralloc += strlen(cur) + 1;
       smaller = realloc(smaller, smalleralloc);
       if (!smaller) mem_error();
-      strcat(smaller, curres);
+      strcat(smaller, cur);
       strcat(smaller, ",");
     }
-    free(curres); free(evalr);
+    free(cur); free(evalr);
 
     cur = hc_get_arg(list,++idx);
   }
