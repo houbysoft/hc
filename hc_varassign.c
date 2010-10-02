@@ -1230,6 +1230,7 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
 
     case HASH_SORT:
       *type = HC_VAR_VEC;
+      f_result_is_simplified = TRUE;
       if ((f_result_str = hc_sort(f_expr)) == NULL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;

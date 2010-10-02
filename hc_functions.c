@@ -1835,7 +1835,9 @@ char *hc_quicksort(char *list, char *cmp)
       if (!eval) mem_error();
       sprintf(eval, "%s<%s", cur, pivot);
     } else {
-      // TODO
+      eval = malloc(strlen(cmp)+3+strlen(cur)+pivotlen+1);
+      if (!eval) mem_error();
+      sprintf(eval, "%s(%s,%s)", cmp, cur, pivot);
     }
 
     char *evalr = hc_result_(eval);
@@ -1846,7 +1848,7 @@ char *hc_quicksort(char *list, char *cmp)
       return NULL;
     }
 
-    if (evalr[0]=='0' && is_positive_int(evalr)) // cur is larger (or equal) to pivot, put it in the 'larger' list
+    if ((!cmp && (evalr[0]=='0' && is_positive_int(evalr))) || (cmp && !(evalr[0]=='-' && evalr[1]=='1' && evalr[2]=='.' && is_int(evalr)))) // cur is larger (or equal) to pivot, put it in the 'larger' list
     {
       largeralloc += strlen(cur) + 1;
       larger = realloc(larger, largeralloc);
@@ -1903,8 +1905,9 @@ char *hc_sort(char *e)
       return NULL;
     }
   }
-  char *tmp = hc_quicksort(list_clean(sort),NULL);
-  free(sort);
+  char *cmp = hc_get_arg(e,2);
+  char *tmp = hc_quicksort(list_clean(sort),cmp);
+  free(sort); free(cmp);
   if (!tmp)
     return NULL;
   char *result = malloc(1+strlen(tmp)+1+1);

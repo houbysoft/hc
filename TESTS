@@ -57,5 +57,8 @@ test("sort()", sort([3,1,2]) == [1,2^3-6,3])
 test("sort() 2", sort([0,0,0,0,-1]) == [-1,0,0,0,0^5])
 meh = 0
 test("sort() 3", sort([0,0,meh,0,1+4]) == [-1+1,0,0,0,10-5])
+list = [meh,1,sqrt(4)]
+rcmp(x,y) = if(x<y,1,-1)
+test("sort() 4, custom cmp", sort(list,rcmp) == [2,1,0])
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")
