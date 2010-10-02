@@ -306,6 +306,10 @@ int hc_help(char *e)
     print = allocline("- slpfld(expr,xmin,xmax,ymin,ymax) - draw a slope field of dy/dx = expr. The xmin, xmax, ymin and ymax arguments are optional. If not specified, the last or default ones will be used.");
     break;
 
+  case HASH_SORT:
+    print = allocline("- sort(list,cmp) - returns a sorted version of list. The cmp argument is an optional name of a custom sorting function which should return -1 if its first argument is smaller than the second, 0 if the two are equal (optional, it can return anything for equal elements), and 1 if the second is larger than the first.\n    Example:\n     * sort([-2,0,1,-1,2]) will return [-2,-1,0,1,2]\n     * Example of using the optional cmp argument to \"reverse sort\" a list:\n       mycmp(a,b) = if(a<b,1,-1)\n       sort([-2,0,1,-1,2],mycmp) will return [2,1,0,-1,-2]");
+    break;
+
   case HASH_SQRT:
     print = allocline("- sqrt(x) - returns the square root of x");
     break;
