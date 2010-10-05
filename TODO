@@ -2,5 +2,4 @@ TODO list
 =========
 - add binary and hex output formats [input now done]
 - unify/combine all conversions into single function convert()
-- add a sort() function
 - improve graphs in GUI (zooming, etc.)

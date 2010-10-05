@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
     gtk_menu_item_set_submenu(GTK_MENU_ITEM (mit_cnst), subm_cnst);
     GtkWidget *subm_graph = gtk_menu_new();
     gtk_menu_item_set_submenu(GTK_MENU_ITEM (mit_graph), subm_graph);
-	GtkWidget *subm_stats = gtk_menu_new();
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM (mit_stats), subm_stats);
+    GtkWidget *subm_stats = gtk_menu_new();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM (mit_stats), subm_stats);
     GtkWidget *subm_usrdf = gtk_menu_new();
     gtk_menu_item_set_submenu(GTK_MENU_ITEM (mit_usrdf), subm_usrdf);
     GtkWidget *subm_help = gtk_menu_new();
