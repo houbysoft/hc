@@ -44,9 +44,10 @@ char *tips[] = {
   "You can use implied multiplication in hc.",
   "You can graph multiple functions on one graph with the gmul() function, or with the graph() function, passing a list of functions as the function (for example, graph([x,x^2,x^3])).",
   "You can enter numbers not only in decimal, but also hexadecimal and binary form, using the 0x and 0b prefixes respectively.",
-  "Need help about something? Call help(\"nameoftopic\"), for example help(\"totient\") to get help about the totient function."
+  "Need help about something? Call help(\"nameoftopic\"), for example help(\"totient\") to get help about the totient function.",
+  "There is an easy way to reuse the last result. Call help(\"ans\") for more details."
 };
-#define TIP_COUNT 15
+#define TIP_COUNT 16
 #endif
 
 

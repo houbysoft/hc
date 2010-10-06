@@ -61,4 +61,9 @@ list = [meh,1,sqrt(4)]
 rcmp(x,y) = if(x<y,1,-1)
 test("sort() 4, custom cmp", sort(list,rcmp) == [2,1,0])
 
+# Taylor's request begins below
+1+1
+/8
+test("Taylor's request",ans() == 0.25)
+
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

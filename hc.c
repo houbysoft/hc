@@ -156,9 +156,16 @@ unsigned int simple_hash(char *p)
   return h % NHASH;
 }
 
-
+// all operators
 #define isoperator(c) (isoperator_np(c) || (c=='(') || (c==')'))
-#define isoperator_np(c) ((c=='*') || (c=='/') || (c=='+') || (c=='-') || (c=='$') || (c==PW_SIGN) || (c==',') || (c=='!') || (c=='%') || (c=='_') || (c=='<') || (c=='>') || (c=='=') || (c=='&') || (c=='|') || (c==NOT_SIGN))
+
+// all operators without parenthesis
+#define isoperator_np(c) (isoperator_allowfirst(c) || (c=='-') || (c=='$') || (c==',') || (c=='!') || (c=='_') || (c=='<') || (c=='>') || (c=='=') || (c=='&') || (c=='|') || (c==NOT_SIGN))
+
+// all operators that are allowed for "reusing" an old result. For example if a user types 2+3, the result, 5, will be stored internally. If the next input received is then for example *3, the 5 will be substituted back and therefore the result of *3 would be 5*3 = 15.
+// Note that c=='-' is not allowed since it is ambiguous (this might change in a later version).
+#define isoperator_allowfirst(c) ((c=='*') || (c=='/') || (c=='+') || (c==PW_SIGN) || (c=='%'))
+
 #define isdirection(x) (x[0]=='\\')
 #define isvarassign(x) (strchr_outofblock(x,'=')!=NULL && strchr_outofblock(x,'=')[1]!='=' && strchr(x,'=')!=x && (strchr_outofblock(x,'=')-1)[0]!='<' && (strchr_outofblock(x,'=')-1)[0]!='>' && (strchr_outofblock(x,'=')-1)[0]!='!')
 #define iscondition(x) (strstr(x,"==")!=NULL || strstr(x,"!=")!=NULL || strstr(x,">=")!=NULL || strstr(x,"<=")!=NULL || strstr(x,"<")!=NULL || strstr(x,">")!=NULL)
@@ -185,6 +192,7 @@ void hc_load(char *);
 M_APM hc_lans_mapm_re;
 M_APM hc_lans_mapm_im;
 char *hc_lans_strvec;
+char *hc_lans_strform;
 char hc_lans_type;
 
 M_APM MM_MOne; // Minus one
@@ -210,6 +218,7 @@ char *hc_result(char *e)
     hc_lans_mapm_re = m_apm_init();
     hc_lans_mapm_im = m_apm_init();
     hc_lans_strvec = NULL;
+    hc_lans_strform = NULL;
     hc_lans_type = HC_VAR_NUM;
     MM_MOne = m_apm_init();
     m_apm_set_double(MM_MOne,(double)-1);
@@ -348,12 +357,13 @@ char *hc_result(char *e)
     free(hc_lans_strvec);
     hc_lans_type = HC_VAR_STR;
     hc_lans_strvec = strdup(r);
-    return r;
   } else {
     free(r);
     syntax_error2();
     return NULL;
   }
+  free(hc_lans_strform);
+  hc_lans_strform = strdup(r);
   return r;
 }
 
@@ -434,8 +444,7 @@ char *hc_result_normal(char *f)
 #endif
 
   char *e = strdup(f);
-  if (!e)
-    mem_error();
+  if (!e) mem_error();
 
   char *e_fme = hc_impmul_resolve(e);
   e = hc_plusminus(e_fme);
@@ -446,6 +455,16 @@ char *hc_result_normal(char *f)
   {
     hc_nested--;
     return NULL;
+  }
+
+  char firstchar = strip_spaces(e)[0];
+  if (hc_lans_strform && isoperator_allowfirst(firstchar))
+  {
+    e = malloc(strlen(hc_lans_strform)+strlen(e_fme)+1);
+    if (!e) mem_error();
+    sprintf(e,"%s%s",hc_lans_strform,e_fme);
+    free(e_fme);
+    e_fme = e;
   }
 
   char *fme;

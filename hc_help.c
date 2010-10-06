@@ -54,7 +54,7 @@ int hc_help(char *e)
 /**** FUNCTIONS ****/
 
   case HASH_ANS:
-    print = allocline("- ans() - returns the result of the last expression");
+    print = allocline("- ans() - returns the result of the last expression\n    Note that there is also an easier way to reuse the last result; simply start the new line with an operator. Example:\n      > 2 + 1\n      3\n      > + 4\n       7\n    Not all operators can however be used in this way, since for some ambiguity would result; in those cases, use ans() which is always unambiguous.");
     break;
 
   case HASH_ABS:
