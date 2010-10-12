@@ -572,7 +572,7 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       var_tmp = var_tmp->next;
     }
 
-    unknown_var_error(v_name, HC_USR_VAR);
+    hc_error(ERROR, "Variable %s is undefined.", v_name);
     return 0;
 
   } else { // function
@@ -1455,7 +1455,7 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
 	var_tmp = var_tmp->next;
       }
 
-      unknown_var_error(v_name,HC_USR_FUNC);
+      hc_error(ERROR, "Function %s is undefined.", v_name);
       return 0;
     }
   }

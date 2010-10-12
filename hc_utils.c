@@ -76,5 +76,7 @@ void hc_error(char type, char *xformat, ...)
   line = realloc(line, strlen(line)+2);
   line[strlen(line)+1] = '\0';
   line[strlen(line)] = '\n';
-  notify(line); free(line); free(format);
+  if (!graphing_ignore_errors)
+    notify_error(line);
+  free(line); free(format);
 }

@@ -677,14 +677,6 @@ void hcg_load()
 }
 
 
-void unknown_var_error(char *var,char type)
-{
-  char *str = g_strdup_printf("%s %s is undefined.\n",type == HC_USR_FUNC ? "Function" : "Variable",var);
-  notify_error(str);
-  g_free(str);
-}
-
-
 void load_error(unsigned int line, char *expr)
 {
   char *str = g_strdup_printf("Error occured at line %i (%s), interrupting execution.\n",line,expr);

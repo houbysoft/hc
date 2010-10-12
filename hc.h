@@ -70,7 +70,6 @@
 #define undef_error() {notify_error("Function name undefined or you used an undefined variable name as an argument.\n");}
 #endif
 #ifndef HCG_E
-#define unknown_var_error(var,type) {printf("%s %s is undefined.\n",type == HC_USR_FUNC ? "Function" : "Variable",var);}
 #define load_error(line,expr) {printf("Error occured at line %i (%s), interrupting execution.\n",line,expr);}
 #define varname_error() {printf("Invalid variable name (variables must contain only letters and numbers, and may not be 'e' or 'i', which are used for exponents and complex numbers respectively).\n");return;}
 #define varname_predefined_error() {printf("You can't change a predefined variable.\n");return 0;}
@@ -103,6 +102,7 @@ extern void type_error(char *expr);
 #define error_nq(str) {printf("%s\n",str);}
 #if !defined(HCG) && !defined(HCG_E)
 #define notify(str) printf("%s",str)
+#define notify_error(str) notify(str)
 #define prompt(str) readline(str)
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
