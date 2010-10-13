@@ -160,5 +160,7 @@
 #define HASH_ONES 56501
 #define HASH_NA 3507
 #define HASH_SORT 37061
+#define HASH_MAP 107868
+#define HASH_RANGE 84088
 
 #endif

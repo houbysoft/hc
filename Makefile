@@ -12,7 +12,7 @@ COPT=-Wall
 # additional options to pass to gcc when linking
 LOPT=
 
-OBJS=main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o hc_stats.o hc_programming.o hc_chemistry.o hc_list.o hc_help.o hc_utils.o
+OBJS=main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o hc_stats.o hc_programming.o hc_chemistry.o hc_list.o hc_help.o hc_utils.o hc_fnp.o
 
 hc: cleanup ${OBJS}
 	gcc `pkg-config --cflags --libs plplotd` ${LOPT} ${OBJS} /usr/lib/libmapm.so.0 -lgd -lm -lreadline -o $@

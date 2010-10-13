@@ -66,4 +66,8 @@ test("sort() 4, custom cmp", sort(list,rcmp) == [2,1,0])
 /8
 test("Taylor's request",ans() == 0.25)
 
+bar = 3
+plusthree(foo) = foo + bar
+test("map & sort", sort(map(plusthree,[2,1,2^2,2 + .5,-4])) == [-1,4,5,5.5,7])
+
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

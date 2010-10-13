@@ -88,6 +88,7 @@ const char *hc_names[][2] = {
   {"length","func"},
   {"ln","func"},
   {"log10","func"},
+  {"map","func"},
   {"mitokm","func"},
   {"mltofloz","func"},
   {"mmass","func"},

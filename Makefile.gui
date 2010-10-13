@@ -9,7 +9,7 @@ COPT=-DHCG_E
 # additional options to pass to gcc when linking
 LOPT=`pkg-config gtk+-2.0 plplotd --cflags --libs`
 
-OBJS=hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o hc_stats.o hc_programming.o hc_chemistry.o hc_list.o hc_help.o hc_utils.o
+OBJS=hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o hc_stats.o hc_programming.o hc_chemistry.o hc_list.o hc_help.o hc_utils.o hc_fnp.o
 
 hcg: cleanup gui_main.o gui_utils.o ${OBJS}
 	gcc ${LOPT} gui_main.o gui_utils.o ${OBJS} /usr/lib/libmapm.so.0 -o $@
