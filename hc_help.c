@@ -237,6 +237,10 @@ int hc_help(char *e)
     print = allocline("- log10(x) - return the common logarithm of x");
     break;
 
+  case HASH_MAP:
+    print = allocline("- map(f,list) - apply f to each element in list; ie. return a list of the form [f(list[0]),f(list[1]),...]\n    Examples:\n     * create a function that will show the n first fibonacci numbers:\n       > showfibo(n) = map(fibo,range(1,n+1))\n       > showfibo(10)\n        [1,1,2,3,5,8,13,21,34,55]");
+    break;
+
   case HASH_MITOKM:
     print = allocline("- mitokm(x) - converts x, which has to be in miles, to km");
     break;
@@ -283,6 +287,10 @@ int hc_help(char *e)
 
   case HASH_RAND:
     print = allocline("- rand(int) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[");
+    break;
+
+  case HASH_RANGE:
+    print = allocline("- range(a,b) - return a list containing numbers from a (included) to b (not included). If only one argument is provided, return a list containing numbers from 0 (included) to the argument (not included).\n    Examples:\n     * range(5) will return [0,1,2,3,4]\n     * range(2,4) will return [2,3]\n     * range(3,3) will return []");
     break;
 
   case HASH_RE:

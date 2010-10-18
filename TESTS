@@ -72,5 +72,8 @@ test("map & sort", sort(map(plusthree,[2,1,2^2,2 + .5,-4])) == [-1,4,5,5.5,7])
 test("range", range(0) == [])
 test("range 2", range(5) == sort([2,1,0,3,4]))
 test("range & map & sort", map(plusthree,range(4)) == sort([4,3,6,5]))
+test("range & map & fibo & sort", map(fibo,range(1,5)) == sort([1,2,3,1]))
+showfibo(n) = map(fibo,range(1,n+1))
+test("showfibo", showfibo(10) == [1,1,2,3,5,8,13,21,34,55])
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

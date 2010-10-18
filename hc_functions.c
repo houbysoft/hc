@@ -2150,11 +2150,17 @@ char *hc_range(char *e)
   if (!a || !is_positive_int(a))
   {
     free(a);
-    arg_error("hc_range() : argument needs to be a positive integer");
+    arg_error("hc_range() : first argument needs to be a positive integer");
   }
-  unsigned int current = 0;
-  unsigned int upperbound = atoi(a);
-  free(a);
+  char *b = hc_get_arg_r(e,2);
+  if (b && !is_positive_int(b))
+  {
+    free(b);
+    arg_error("hc_range() : second argument needs to be a positive integer");
+  }
+  unsigned int current = b != NULL ? atoi(a) : 0;
+  unsigned int upperbound = b != NULL ? atoi(b) : atoi(a);
+  free(a); free(b);
   unsigned long int alloc = 128;
   char *r = malloc(alloc);
   if (!r) mem_error();

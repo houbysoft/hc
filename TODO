@@ -8,4 +8,3 @@ TODO list
 - save() -- have a central file (on user's computer) that HC will load automatically every start; save() would save a user-defined function/variable to that file
 - functional programming (?) -- map [done], apply, lambda functions...
 - graph table of values
-- add map() and range() to hc_help.c
