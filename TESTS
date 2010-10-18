@@ -69,5 +69,8 @@ test("Taylor's request",ans() == 0.25)
 bar = 3
 plusthree(foo) = foo + bar
 test("map & sort", sort(map(plusthree,[2,1,2^2,2 + .5,-4])) == [-1,4,5,5.5,7])
+test("range", range(0) == [])
+test("range 2", range(5) == sort([2,1,0,3,4]))
+test("range & map & sort", map(plusthree,range(4)) == sort([4,3,6,5]))
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

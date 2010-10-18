@@ -62,6 +62,7 @@ extern char *hc_join(char *);
 extern char *hc_sort(char *);
 extern int hc_length(M_APM, char *);
 extern char *hc_constantlist(char *e, char *el);
+extern char *hc_range(char *e);
 
 extern void hc_from_rad(M_APM);
 extern void hc_to_rad(M_APM);

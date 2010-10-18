@@ -101,6 +101,7 @@ const char *hc_names[][2] = {
   {"print","func"},
   {"product","func"},
   {"rand","func"},
+  {"range","func"},
   {"re","func"},
   {"real","func"},
   {"round","func"},

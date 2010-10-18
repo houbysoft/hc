@@ -1275,6 +1275,13 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       f_result_is_simplified = TRUE;
       break;
 
+    case HASH_RANGE:
+      if ((f_result_str = hc_range(f_expr)) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      *type = HC_VAR_VEC;
+      f_result_is_simplified = TRUE;
+      break;
+
     case HASH_GRAPH:
       hc_graph(f_expr);
       *type = HC_VAR_EMPTY;

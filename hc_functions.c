@@ -2144,6 +2144,45 @@ int hc_length(M_APM result, char *e)
 }
 
 
+char *hc_range(char *e)
+{
+  char *a = hc_get_arg_r(e,1);
+  if (!a || !is_positive_int(a))
+  {
+    free(a);
+    arg_error("hc_range() : argument needs to be a positive integer");
+  }
+  unsigned int current = 0;
+  unsigned int upperbound = atoi(a);
+  free(a);
+  unsigned long int alloc = 128;
+  char *r = malloc(alloc);
+  if (!r) mem_error();
+  r[0] = r[1] = 0; // need to set r[1] to 0 as well if range(0) is called
+
+  while (current < upperbound)
+  {
+    sprintf((char *)(r + strlen(r)), ",%u", current++);
+    if (strlen(r) + hc_need_space_int(current) + 1 >= alloc)
+    {
+      alloc += 10 * (hc_need_space_int(current) + 1); // allocate it 10 times to avoid calling this often
+      r = realloc(r,alloc);
+      if (!r) mem_error();
+    }
+  }
+
+  r[0] = '[';
+  if (strlen(r) + 1 >= alloc)
+  {
+    r = realloc(r,alloc + 1);
+    if (!r) mem_error();
+  }
+  r[strlen(r)+1] = '\0';
+  r[strlen(r)] = ']';
+  return r;
+}
+
+
 char hc_get_type(char *e)
 {
   if (!e)
@@ -2387,6 +2426,8 @@ char is_real_num(char *str)
 // returns true if str contains a base-10 integer in normal (non-scientific) notation
 char is_int(char *str)
 {
+  if (str[0] == '\0')
+    return FALSE;
   unsigned int i = 0;
   char sawradix = FALSE;
   for (; i < strlen(str); i++)
