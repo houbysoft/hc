@@ -819,8 +819,14 @@ char *hc_i2p(char *f)
 	  }
 	} else if (tmp[i]=='\"') {
 	  e[j++] = tmp[i++];
-	  while (tmp[i]!='\"')
+	  while (tmp[i]!='\"' && tmp[i]!='$')
 	    e[j++] = tmp[i++];
+	  if (tmp[i] != '\"')
+	  {
+	    hc_error(SYNTAX,"missing end quotes");
+	    free(e);
+	    return NULL;
+	  }
 	  e[j++] = tmp[i++];
 	} else if (tmp[i]=='[') {
 	  while (tmp[i]=='[')
@@ -1801,8 +1807,14 @@ char *hc_postfix_result(char *e)
 	} else if (e[i]=='\"') {
 	  type = HC_VAR_STR;
 	  tmp_num[j++] = e[i++];
-	  while (e[i]!='\"')
+	  while (e[i]!='\"' && e[i])
 	    tmp_num[j++] = e[i++];
+	  if (e[i] != '\"')
+	  {
+	    hc_postfix_result_cleanup();
+	    hc_error(SYNTAX,"missing end quotes");
+	    return NULL;
+	  }
 	  tmp_num[j++] = e[i++];
 	  while (e[i]=='[') // index
 	  {
