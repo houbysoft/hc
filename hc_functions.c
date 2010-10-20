@@ -2281,18 +2281,24 @@ char *strchr_outofblock(char *e, char c)
 {
   int par=0;
   int par2=0;
+  char ignore = FALSE;
   while (e[0])
   {
-    if (e[0]=='{')
-      par++;
-    if (e[0]=='}')
-      par--;
-    if (e[0]=='(')
-      par2++;
-    if (e[0]==')')
-      par2--;
-    if (par==0 && par2==0&& e[0]==c)
-      return e;
+    if (e[0]=='\"')
+      ignore = ignore == FALSE ? TRUE : FALSE;
+    if (!ignore)
+    {
+      if (e[0]=='[')
+	par++;
+      if (e[0]==']')
+	par--;
+      if (e[0]=='(')
+	par2++;
+      if (e[0]==')')
+	par2--;
+      if (par==0 && par2==0&& e[0]==c)
+	return e;
+    }
     e++;
   }
   return NULL;

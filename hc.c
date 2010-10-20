@@ -34,6 +34,7 @@
 #include "hc_complex.h"
 #include "hc_list.h"
 #include "hc_utils.h"
+#include "hc_fnp.h"
 //#define NHASH 29989 // use a large prime number
 #define NHASH 139969
 #define MULT 31
@@ -851,6 +852,46 @@ char *hc_i2p(char *f)
 	      hc_error(SYNTAX, "['s and ]'s do not match");
 	      free(e);
 	      return NULL;
+	    }
+	  }
+	} else if (tmp[i]=='\'') { // lambda expression
+	  char *endoffunc = strchr_outofblock(tmp + i + 1,'\'');
+	  if (!endoffunc)
+	  {
+	    hc_error(SYNTAX,"single quotes do not match");
+	    free(e);
+	    return NULL;
+	  }
+	  memcpy((char *)(e + j),(char *)(tmp + i),endoffunc - tmp - i + 1);
+	  j += endoffunc - tmp - i + 1;
+	  i = endoffunc - tmp + 1;
+	  if (tmp[i]=='(') // called
+	  {
+	    e[j++] = tmp[i];
+	    int par = 1;
+	    char ignore = FALSE;
+	    while (par!=0 && tmp[i]!='$' && tmp[i])
+	    {
+	      e[j++] = tmp[++i];
+	      if (tmp[i]=='\"')
+	      {
+		ignore = ignore == FALSE ? TRUE : FALSE;
+		continue;
+	      }
+	      if (ignore)
+		continue;
+	      if (tmp[i]=='(')
+		par++;
+	      else if (tmp[i]==')')
+		par--;
+	    }
+	    if (par != 0)
+	    {
+	      hc_error(SYNTAX,"('s and )'s do not match");
+	      free(e);
+	      return NULL;
+	    } else {
+	      i++; // skip the last ')'
 	    }
 	  }
 	} else {
@@ -1873,6 +1914,58 @@ char *hc_postfix_result(char *e)
 	    }
 	    j = strlen(tmp_num);
 	  }
+	} else if (e[i]=='\'') { // lambda expression
+	  char *lambda_expr = malloc(MAX_EXPR);
+	  if (!lambda_expr) mem_error();
+	  char *lambda_end = strchr_outofblock((char *)(e + i + 1),'\'');
+	  if (!lambda_end)
+	  {
+	    hc_error(SYNTAX,"single quotes do not match");
+	    hc_postfix_result_cleanup();
+	    free(lambda_expr);
+	    return NULL;
+	  }
+	  if (((char *)(lambda_end + 1))[0] != '(')
+	  {
+	    hc_error(SYNTAX,"( expected after lambda expression");
+	    hc_postfix_result_cleanup();
+	    free(lambda_expr);
+	    return NULL;
+	  }
+	  memcpy(lambda_expr,(char *)(e + i),lambda_end - e - i + 1);
+	  lambda_expr[lambda_end - e - i + 1] = '\0';
+	  i = lambda_end - e + 1;
+	  char *args_end = strchr_outofblock((char *)(e + i),')');
+	  if (!args_end)
+	  {
+	    hc_error(SYNTAX,"('s and )'s do not match");
+	    hc_postfix_result_cleanup();
+	    free(lambda_expr);
+	    return NULL;
+	  }
+	  char *args = malloc(MAX_EXPR); if (!args) mem_error();
+	  memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
+	  args[args_end - e - i] = '\0';
+	  i = lambda_end - e + 1;
+	  if (!hc_eval_lambda((char *)&tmp_num, MAX_DOUBLE_STRING, &type, lambda_expr, args))
+	  {
+	    free(lambda_expr); free(args);
+	    hc_postfix_result_cleanup();
+	    return NULL;
+	  }
+	  free(lambda_expr); free(args);
+	  j = strlen(tmp_num);
+	  while (e[i]=='[')
+	  {
+	    tmp_num[j]=0;
+	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+	    {
+	      hc_postfix_result_cleanup();
+	      return NULL;
+	    }
+	    j = strlen(tmp_num);
+	  }
+	  j = strlen(tmp_num);
 	} else {
 	  if (!isalpha(e[i]))
 	  {

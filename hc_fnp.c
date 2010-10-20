@@ -65,3 +65,10 @@ char *hc_map(char *e)
   free(list_orig); free(fn);
   return res;
 }
+
+
+char hc_eval_lambda(char *result, int MAXRESULT, char *type, char *lambda, char *args)
+{
+  printf("got lambda : %s and args : %s\n",lambda,args);
+  return FAIL;
+}
