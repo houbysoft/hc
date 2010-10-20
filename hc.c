@@ -1932,8 +1932,8 @@ char *hc_postfix_result(char *e)
 	    free(lambda_expr);
 	    return NULL;
 	  }
-	  memcpy(lambda_expr,(char *)(e + i),lambda_end - e - i + 1);
-	  lambda_expr[lambda_end - e - i + 1] = '\0';
+	  memcpy(lambda_expr,(char *)(e + i + 1),lambda_end - e - i - 1);
+	  lambda_expr[lambda_end - e - i - 1] = '\0';
 	  i = lambda_end - e + 1;
 	  char *args_end = strchr_outofblock((char *)(e + i),')');
 	  if (!args_end)
@@ -1945,8 +1945,8 @@ char *hc_postfix_result(char *e)
 	  }
 	  char *args = malloc(MAX_EXPR); if (!args) mem_error();
 	  memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
-	  args[args_end - e - i] = '\0';
-	  i = lambda_end - e + 1;
+	  args[args_end - e - i - 1] = '\0';
+	  i = args_end - e + 1;
 	  if (!hc_eval_lambda((char *)&tmp_num, MAX_DOUBLE_STRING, &type, lambda_expr, args))
 	  {
 	    free(lambda_expr); free(args);

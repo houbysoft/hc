@@ -21,6 +21,7 @@
 #include "hc_fnp.h"
 #include "hc_functions.h"
 #include "hc_list.h"
+#include "hc_utils.h"
 
 
 char *hc_map(char *e)
@@ -69,6 +70,44 @@ char *hc_map(char *e)
 
 char hc_eval_lambda(char *result, int MAXRESULT, char *type, char *lambda, char *args)
 {
-  printf("got lambda : %s and args : %s\n",lambda,args);
-  return FAIL;
+  unsigned int argc = 0;
+  char *curarg = NULL;
+  char *lambda2 = strdup(lambda);
+  char *old = malloc(hc_need_space_int(MAX_LAMBDA_ARGS)+2); if (!old) mem_error();
+  while ((curarg = hc_get_arg_r(args,++argc)) != NULL) {
+    if (argc > MAX_LAMBDA_ARGS)
+    {
+      hc_error(ERROR,"Too many lambda arguments (maximum is %i).",MAX_LAMBDA_ARGS);
+      free(curarg); free(lambda2); free(old);
+      return FAIL;
+    }
+    sprintf(old,"~%u",argc);
+    lambda = strreplace(lambda2,old,curarg);
+    free(lambda2); lambda2 = lambda;
+    if (argc == 1)
+    {
+      sprintf(old,"~");
+      lambda = strreplace(lambda2,old,curarg);
+      free(lambda2); lambda2 = lambda;
+    }
+    free(curarg);
+  }
+  free(old);
+
+  char *r = hc_result_(lambda2);
+  free(lambda2);
+  if (!r)
+    return FAIL;
+
+  if (strlen(r) >= MAXRESULT)
+  {
+    hc_error(ERROR,"Overflow");
+    free(r);
+    return FAIL;
+  }
+
+  strcpy(result,r);
+  *type = hc_get_type(result);
+  free(r);
+  return SUCCESS;
 }
