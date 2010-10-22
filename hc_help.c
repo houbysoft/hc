@@ -414,6 +414,10 @@ int hc_help(char *e)
     print = allocline("The following operators are available : + - * / % ^ ! < > <= >= == != & && (boolean and) | || (boolean or). For boolean and/or, both the single-character and two-character variants are accepted.");
     break;
 
+  case HASH_LAMBDA:
+    print = allocline("HC supports lambda expressions (also called anonymous functions). The syntax is very simple; to create an anonymous function, enclose its expression in single quotes. To use the arguments in your lambda expression, use ~1 or ~ for the first argument, ~2 for the second, ~3 for the third, etc. The lambda expression can be then used as any other function.\n    Examples:\n     * Use map(), range() and a lambda expression to quickly generate the list of pair numbers from 0 to 50:\n       map('~ * 2',range(26))\n     * Example of using a lambda expression as a normal function:\n       '~^2 + ~2 + 1'(2,4) will return 9");
+    break;
+
 /**** END ****/
 
   default:
