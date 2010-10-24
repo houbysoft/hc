@@ -73,6 +73,7 @@ const char *hc_names[][2] = {
   {"gcd","func"},
   {"graph","func"},
   {"graphpeq","func"},
+  {"graphv","func"},
   {"graphvalues","func"},
   {"gmul","func"},
   {"graph3","func"},

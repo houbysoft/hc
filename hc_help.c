@@ -188,6 +188,11 @@ int hc_help(char *e)
     print = allocline("- graphpeq(expr_x,expr_y,tmin,tmax,xmin,xmax,ymin,ymax) - draw the parametric equation modeled by expr_x and expr_y (use t as the variable)\n    Note:\n     * the tmin, tmax, xmin, xmax, ymin and ymax arguments are optional");
     break;
 
+  case HASH_GRAPHV:
+  case HASH_GRAPHVALUES:
+    print = allocline("- graphvalues([v_1,v_2,...,v_n]) - synonym : graphv() - Use this to graph a table of values as a xy line. The values must be in a list. There are two formats which you can use; either simply list the y coordinates, and the x coordinates will be automatically added, starting from 0 and going +1 for each value, or the values can themselves be lists containing two elements: the x and the y coordinate.\n    Examples:\n     * Let's say you want to draw a line connecting three points: (0,0), (1,3), and (2,6). Since the x values are all just +1 increments, you can use : graphvalues([0,3,6]) or graphv([0,3,6])\n     * Now let's say your points are (0,0), (5,3) and (8,6). You can't use the same as above since HC would think your points' x coordinates are 0,1 and 2. For this data, you would need to use: graphvalues([[0,0],[5,3],[8,6]]) or graphv([[0,0],[5,3],[8,6]])");
+    break;
+
   case HASH_IF:
     print = allocline("- if(condition, truebranch, falsebranch) - evaluates condition, and if it is true, returns truebranch, otherwise returns falsebranch.\n    Note:\n     * falsebranch is optional\n\n    Example:\n     * if(1==2,\"hello\",\"hi\") would return \"hi\", since 1 is not equal to 2. If the falsebranch would have been ommited, in this case nothing would be returned:\n       if(1==2,\"hello\") returns nothing.");
     break;
