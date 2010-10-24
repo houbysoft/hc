@@ -31,9 +31,9 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_NAMES 102 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 80 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 86 // last field with a constant in the hc_names array
+#define HC_NAMES 103 // number of fields in the hc_names array
+#define HC_NAMES_CNST_START 81 // first field with a constant in the hc_names array
+#define HC_NAMES_CNST_STOP 87 // last field with a constant in the hc_names array
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128

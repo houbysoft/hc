@@ -1297,6 +1297,12 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       *type = HC_VAR_EMPTY;
       break;
 
+    case HASH_GRAPHV:
+    case HASH_GRAPHVALUES:
+      hc_graph_values(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
     case HASH_SLPFLD:
       hc_graph_slpfld(f_expr);
       *type = HC_VAR_EMPTY;

@@ -817,3 +817,150 @@ char hc_graph_peq(char *e)
 
   return SUCCESS;
 }
+
+
+// Draw a graph using the values specified
+char hc_graph_values(char *e)
+{
+  char *points_orig = hc_get_arg_r(e,1);
+  if (!points_orig || !is_list(points_orig))
+  {
+    free(points_orig);
+    arg_error("graphvalues() : argument needs to be a list of point coordinates");
+  }
+  char *points = list_clean(points_orig);
+  double xmin,xmax,ymin,ymax;
+  double lastpointx;
+  PLFLT x1,x2,y1,y2;
+  char mode = 0;
+
+  unsigned int idx = 0;
+  char *cur = NULL;
+
+  // Check points and determine xmin, xmax, ymin, ymax
+  while ((cur = hc_get_arg(points,++idx)) != NULL)
+  {
+    if (is_list(cur) && mode==0)
+    {
+      mode = 2;
+    }
+    else if ((is_list(cur) && mode==1) || (!is_list(cur) && mode==2))
+    {
+      free(cur); free(points_orig);
+      arg_error("graphvalues() : inconsistent input");
+    } else if (mode==0) {
+      mode = 1;
+    }
+
+    if (mode == 1)
+    {
+      if (idx == 1)
+      {
+	xmin = xmax = 0;
+	ymin = ymax = strtod(cur,NULL);
+      } else {
+	xmax = idx - 1;
+	if (strtod(cur,NULL) < ymin)
+	  ymin = strtod(cur,NULL);
+	if (strtod(cur,NULL) > ymax)
+	  ymax = strtod(cur,NULL);
+      }
+    } else { // mode == 2
+      char *curtmp = list_clean(cur);
+      char *curx = hc_get_arg(curtmp,1);
+      char *cury = hc_get_arg(curtmp,2);
+      if (idx == 1)
+      {
+	xmin = xmax = lastpointx = strtod(curx,NULL);
+	ymin = ymax = strtod(cury,NULL);
+      } else {
+	if (strtod(curx,NULL) <= lastpointx)
+	{
+	  free(curx); free(cury); free(cur); free(points_orig);
+	  arg_error("graphvalues() : invalid point list. x values are not in ascending order.");
+	} else {
+	  lastpointx = strtod(curx,NULL);
+	  if (lastpointx > xmax)
+	    xmax = lastpointx;
+	  if (strtod(cury,NULL) < ymin)
+	    ymin = strtod(cury,NULL);
+	  if (strtod(cury,NULL) > ymax)
+	    ymax = strtod(cury,NULL);
+	}
+      }
+      free(curx); free(cury);
+    }
+
+    free(cur);
+  }
+
+#ifndef HCG
+  if (!hc.plplot_dev_override)
+#ifndef WIN32
+    plsdev("pngcairo");
+#else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
+  plsdev("pngcairo");
+  plsfnam("tmp-graph.png");
+#else
+  plsdev("wingcc");
+#endif
+#endif
+  plinit();
+  plcol0(15);
+  plenv(xmin,xmax,ymin,ymax,0,1);
+  pllab("x","y","HoubySoft Calculator - Graph");
+  plcol0(1);
+
+  graphing_ignore_errors = TRUE;
+  cur = NULL;
+  idx = 0;
+
+  // Do the actual graphing. If we get here, points are correct, so no checking is necessary.
+  double cx = -1,cy;
+  while ((cur = hc_get_arg(points,++idx)) != NULL)
+  {
+    if (is_list(cur))
+    {
+      char *ctmp = list_clean(cur);
+      char *ctmpx = hc_get_arg(ctmp,1);
+      char *ctmpy = hc_get_arg(ctmp,2);
+      cx = strtod(ctmpx,NULL); cy = strtod(ctmpy,NULL);
+      free(ctmpx); free(ctmpy);
+    } else {
+      cx++;
+      cy = strtod(cur,NULL);
+    }
+
+    if (idx == 1)
+    {
+      x1 = cx;
+      y1 = cy;
+    } else {
+      x2 = cx;
+      y2 = cy;
+      pljoin(x1,y1,x2,y2);
+      x1 = x2;
+      y1 = y2;
+    }
+
+    free(cur);
+  }
+
+  graphing_ignore_errors = FALSE;
+  plend();
+
+  free(points_orig);
+
+#ifdef HCG
+#ifndef WIN32
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#endif
+#endif
+
+  return SUCCESS;
+}
