@@ -24,6 +24,7 @@
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_complex.h"
+#include "hc_graph.h"
 #ifdef HCG_E
 #undef notify
 #endif
@@ -598,24 +599,7 @@ char hc_stats(char *e, char g, char ef)
 
   if (g)
   {
-#ifndef HCG
-    if (!hc.plplot_dev_override)
-#ifndef WIN32
-      plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-    plsdev("pngcairo");
-    plsfnam("tmp-graph.png");
-#else
-    plsdev("wingcc");
-#endif
-#endif
-    
-    plinit();
-    
+    hc_init_plplot();
     pladv(0);
     plvsta();
     

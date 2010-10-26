@@ -34,6 +34,30 @@
 #define HC_GRAPH_PEQ_T_STEP (hc.peqstep)
 
 
+void hc_init_plplot()
+{
+#ifndef HCG
+  if (!hc.plplot_dev_override)
+#ifndef WIN32
+    plsdev("pngcairo");
+#else
+    plsdev("wingcc");
+#endif
+#else
+#ifndef WIN32
+  plsdev("pngcairo");
+  plsfnam("tmp-graph.png");
+#else
+  plsdev("wingcc");
+#endif
+#endif
+  plscol0(0,255,255,255);
+  plscol0(15,0,0,0);
+  plinit();
+  plcol0(15);
+}
+
+
 // Taken from example 11, to setup the color palette for 3D graphs
 static void cmap1_init()
 {
@@ -111,23 +135,7 @@ char hc_graph(char *e)
   char discont = 1;
   PLFLT x1,x2,y1,y2;
 
-#ifndef HCG
-  if (!hc.plplot_dev_override)
-#ifndef WIN32
-    plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-  plsdev("pngcairo");
-  plsfnam("tmp-graph.png");
-#else
-  plsdev("wingcc");
-#endif
-#endif
-  plinit();
-  plcol0(15);
+  hc_init_plplot();
   plenv(xmin,xmax,ymin,ymax,0,1);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
   if (!graph_top_label)
@@ -222,23 +230,7 @@ char hc_graph_n(char *e)
   PLFLT x1,y1,x2,y2;
   char discont = 1;
 
-#ifndef HCG
-  if (!hc.plplot_dev_override)
-#ifndef WIN32
-    plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-  plsdev("pngcairo");
-  plsfnam("tmp-graph.png");
-#else
-  plsdev("wingcc");
-#endif
-#endif
-  plinit();
-  plcol0(15);
+  hc_init_plplot();
   plenv(xmin,xmax,ymin,ymax,0,1);
   int mallocme = strlen("HC - ")+1;
   for (j=0; j<k; j++)
@@ -425,23 +417,7 @@ char hc_graph3d(char *e)
   }
   graphing_ignore_errors = FALSE;
 
-#ifndef HCG
-  if (!hc.plplot_dev_override)
-#ifndef WIN32
-    plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-  plsdev("pngcairo");
-  plsfnam("tmp-graph.png");
-#else
-  plsdev("wingcc");
-#endif
-#endif
-  plinit();
-  plcol0(15);
+  hc_init_plplot();
   pladv(0);
   plvpor(0,1.0,-0.2,0.9);
   plwind(-1.0,1.0,-1.0,1.5);
@@ -618,23 +594,7 @@ char hc_graph_slpfld(char *e)
   }
   graphing_ignore_errors = FALSE;
 
-#ifndef HCG
-  if (!hc.plplot_dev_override)
-#ifndef WIN32
-    plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-  plsdev("pngcairo");
-  plsfnam("tmp-graph.png");
-#else
-  plsdev("wingcc");
-#endif
-#endif
-  plinit();
-  plcol0(15);
+  hc_init_plplot();
   plenv(xmin,xmax,ymin,ymax,0,1);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Slope Field - dy/dx = ")+strlen(func_expr)+1);
   if (!graph_top_label)
@@ -730,23 +690,7 @@ char hc_graph_peq(char *e)
     hc.tmaxpeq = tmax = strtod(arg_tmax,NULL);
   }
 
-#ifndef HCG
-  if (!hc.plplot_dev_override)
-#ifndef WIN32
-    plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-  plsdev("pngcairo");
-  plsfnam("tmp-graph.png");
-#else
-  plsdev("wingcc");
-#endif
-#endif
-  plinit();
-  plcol0(15);
+  hc_init_plplot();
   plenv(xmin,xmax,ymin,ymax,0,1);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Parametric Function - x = , y = ")+strlen(func_exprx)+strlen(func_expry)+1);
   if (!graph_top_label)
@@ -894,23 +838,7 @@ char hc_graph_values(char *e)
     free(cur);
   }
 
-#ifndef HCG
-  if (!hc.plplot_dev_override)
-#ifndef WIN32
-    plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-  plsdev("pngcairo");
-  plsfnam("tmp-graph.png");
-#else
-  plsdev("wingcc");
-#endif
-#endif
-  plinit();
-  plcol0(15);
+  hc_init_plplot();
   plenv(xmin,xmax,ymin,ymax,0,1);
   pllab("x","y","HoubySoft Calculator - Graph");
   plcol0(1);
