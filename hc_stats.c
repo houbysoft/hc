@@ -25,6 +25,7 @@
 #include "hc_functions.h"
 #include "hc_complex.h"
 #include "hc_graph.h"
+#include "hc_list.h"
 #ifdef HCG_E
 #undef notify
 #endif
@@ -702,4 +703,120 @@ void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw)
 
     pllsty(1);
     plline(2, barx, bary);
+}
+
+
+// Returns a vector containing two elements; the first one is the slope and the second one is the intercept of the best fit line through the data given
+char *hc_linreg(char *e)
+{
+  if (!is_list(e))
+  {
+    arg_error("linreg() : first argument must be a list of lists containing an x and y value each");
+  }
+
+  unsigned int m_Sxy, m_Sx, m_Sy, m_Sx2;
+  m_Sxy = m_Sx = m_Sy = m_Sx2 = 1;
+  char *Sxy=malloc(m_Sxy), *Sx=malloc(m_Sx), *Sy=malloc(m_Sy), *Sx2=malloc(m_Sx2);
+  char *slope=NULL, *intercept=NULL;
+  char *data= list_clean(e);
+  // N -- length of input data
+  // Sxy -- sum of products
+  // Sx -- sum of x values
+  // Sy -- sum of y values
+  // Sx2 -- sum of x^2 values
+  if (!Sxy || !Sx || !Sy || !Sx2) mem_error();
+  Sxy[0] = Sx[0] = Sy[0] = Sx2[0] = '\0';
+
+  unsigned int idx = 0;
+  char *cur = NULL;
+  while ((cur = hc_get_arg(data,++idx)) != NULL)
+  {
+    if (!is_list(cur))
+    {
+      free(cur);
+      free(Sxy); free(Sx); free(Sy); free(Sx2);
+      arg_error("linreg() : invalid data; a list of lists of x and y pairs is expected");
+    }
+    char *pt = list_clean(cur);
+    char *x = hc_get_arg_r(pt,1); char *y = hc_get_arg_r(pt,2);
+    free(cur);
+    if (!x || !y)
+    {
+      free(x); free(y);
+      free(Sxy); free(Sx); free(Sy); free(Sx2);
+      arg_error("linreg() : invalid data; a list of lists of x and y pairs is expected");
+    }
+    unsigned int xlen = strlen(x), ylen = strlen(y);
+
+    m_Sxy += xlen + 1 + ylen + 1;
+    Sxy = realloc(Sxy, m_Sxy); if (!Sxy) mem_error();
+    strcat(Sxy,x); strcat(Sxy,"*"); strcat(Sxy,y); strcat(Sxy,"+");
+
+    m_Sx += xlen + 1;
+    Sx = realloc(Sx, m_Sx); if (!Sx) mem_error();
+    strcat(Sx,x); strcat(Sx,"+");
+
+    m_Sy += ylen + 1;
+    Sy = realloc(Sy, m_Sy); if (!Sy) mem_error();
+    strcat(Sy,y); strcat(Sy,"+");
+
+    m_Sx2 += xlen + 2 + 1;
+    Sx2 = realloc(Sx2, m_Sx2); if (!Sx2) mem_error();
+    strcat(Sx2,x); strcat(Sx2,"^2+");
+
+    free(x); free(y);
+  }
+
+  // delete the trailing + signs
+  Sxy[strlen(Sxy)-1]='\0';
+  Sx[strlen(Sx)-1]='\0';
+  Sy[strlen(Sy)-1]='\0';
+  Sx2[strlen(Sx2)-1]='\0';
+
+  char *r_Sxy=hc_result_(Sxy), *r_Sx=hc_result_(Sx), *r_Sy=hc_result_(Sy), *r_Sx2=hc_result_(Sx2);
+  free(Sxy); free(Sx); free(Sy); free(Sx2);
+
+  if (!r_Sxy || !r_Sx || !r_Sy || !r_Sx2)
+  {
+    free(r_Sxy); free(r_Sx); free(r_Sy); free(r_Sx2);
+    return NULL;
+  }
+
+  char *N = malloc(hc_need_space_int(idx-1)+1);
+  if (!N) mem_error();
+  sprintf(N,"%u",idx-1);
+
+  // Need space for (n * r_Sxy - r_Sx * r_Sy) / (n * r_Sx2 - (r_Sx)^2)
+  slope = malloc(1+strlen(N)+1+strlen(r_Sxy)+1+strlen(r_Sx)+1+strlen(r_Sy)+1+1+1+strlen(N)+1+strlen(r_Sx2)+1+1+strlen(r_Sx)+1+2+1+1);
+  if (!slope) mem_error();
+  sprintf(slope,"(%s*%s-%s*%s)/(%s*%s-(%s)^2)",N,r_Sxy,r_Sx,r_Sy,N,r_Sx2,r_Sx);
+
+  char *r_slope = hc_result_(slope);
+  free(slope);
+  if (!r_slope)
+  {
+    free(r_Sxy); free(r_Sx); free(r_Sy); free(r_Sx2); free(N);
+    return NULL;
+  }
+
+  // Need space for (r_Sy - r_slope * r_Sx) / n
+  intercept = malloc(1+strlen(r_Sy)+1+strlen(r_slope)+1+strlen(r_Sx)+1+1+strlen(N)+1);
+  if (!intercept) mem_error();
+  sprintf(intercept,"(%s-%s*%s)/%s",r_Sy,r_slope,r_Sx,N);
+
+  char *r_intercept = hc_result_(intercept);
+  free(intercept);
+  free(r_Sxy); free(r_Sx); free(r_Sy); free(r_Sx2); free(N);
+  if (!r_intercept)
+  {
+    return NULL;
+  }
+
+  char *R = malloc(1+strlen(r_slope)+1+strlen(r_intercept)+1+1);
+  if (!R) mem_error();
+  sprintf(R,"[%s,%s]",r_slope,r_intercept);
+
+  free(r_slope); free(r_intercept);
+
+  return R;
 }

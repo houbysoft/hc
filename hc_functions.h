@@ -75,7 +75,9 @@ extern int hc_need_space_int(int i);
 extern void is_zero_free();
 extern char contains_char(char *);
 
+// Statistics functions
 extern char hc_stats(char *e, char g, char ef);
+extern char *hc_linreg(char *e);
 
 extern char *hc_2sci(char *);
 extern char *hc_2eng(char *);
