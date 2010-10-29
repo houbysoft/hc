@@ -38,9 +38,13 @@ void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
 //   arguments:
 //     - e : list of comma separated arguments passed by the user
 //     - g : passed by the internal functions, TRUE if we should draw a boxplot, FALSE if we only should display information
-//     - ef : TRUE if e is a list of arguments followed by their effective, FALSE if e is just a list of arguments
-char hc_stats(char *e, char g, char ef)
+char hc_stats(char *f, char g)
 {
+  if (!is_list(f))
+  {
+    arg_error("stats() : argument must be a list of values");
+  }
+  char *e = list_clean(f);
   struct hc_stack_element_stats *first = malloc(sizeof(struct hc_stack_element_stats));
   struct hc_stack_element_stats *curr;
 
@@ -90,8 +94,17 @@ char hc_stats(char *e, char g, char ef)
       free(first);
       return FAIL;
     }
-    tmp_num_re = hc_real_part(tmp_res);
-    tmp_num_im = hc_imag_part(tmp_res);
+    char *tmp_res_val=NULL,*tmp_res_eff=NULL;
+    if (is_list(tmp_res))
+    {
+      char *cleanlist = list_clean(tmp_res);
+      tmp_res_val = hc_get_arg(cleanlist,1);
+      tmp_res_eff = hc_get_arg(cleanlist,2);
+    } else {
+      tmp_res_val = tmp_res;
+    }
+    tmp_num_re = hc_real_part(tmp_res_val);
+    tmp_num_im = hc_imag_part(tmp_res_val);
     m_apm_set_string(curr->re,tmp_num_re);
     if (tmp_num_im)
       m_apm_set_string(curr->im,tmp_num_im);
@@ -118,29 +131,15 @@ char hc_stats(char *e, char g, char ef)
       }
     }
     free(tmp_num_re); free(tmp_res); free(tmp);
-    if (ef)
+    if (tmp_res_eff)
     {
-      argc++;
-      tmp = hc_get_arg(e,argc);
-      if (!tmp)
-      {
-	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
-	while (first->n)
-	{
-	  m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
-	first = first->n;
-	free(first->p);
-	}
-	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
-	free(first);
-	arg_error("statsf() requires an even number of arguments.");
-	return FAIL;
-      }
-      tmp_num_re = hc_real_part(tmp);
-      tmp_num_im = hc_imag_part(tmp);
+      free(tmp_res_val);
+      tmp_num_re = hc_real_part(tmp_res_eff);
+      tmp_num_im = hc_imag_part(tmp_res_eff);
+      free(tmp_res_eff);
       if (tmp_num_im)
       {
-	free(tmp); free(tmp_num_re); free(tmp_num_im);
+	free(tmp_num_re); free(tmp_num_im);
 	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
 	while (first->n)
 	{
@@ -153,7 +152,7 @@ char hc_stats(char *e, char g, char ef)
 	return FAIL;
       }
       m_apm_set_string(curr->ef,tmp_num_re);
-      free(tmp_num_re); free(tmp);
+      free(tmp_num_re);
     } else {
       m_apm_set_string(curr->ef,"1");
     }

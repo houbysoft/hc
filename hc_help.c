@@ -77,11 +77,7 @@ int hc_help(char *e)
     break;
 
   case HASH_BOXPLOT:
-    print = allocline("- boxplot(v1,v2,...,vn) - draw a boxplot of values v1...vn");
-    break;
-
-  case HASH_BOXPLOTF:
-    print = allocline("- boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency");
+    print = allocline("- boxplot([v1,v2,...,vn]) - draw a boxplot of values v1...vn Each of these values can either be a single number, or a list containing two elements : the number and its frequency. For examples, view help for \"stats\" which has the same argument format.");
     break;
 
   case HASH_CBRT:
@@ -234,6 +230,10 @@ int hc_help(char *e)
     print = allocline("- length(x) - return the length of x");
     break;
 
+  case HASH_LINREG:
+    print = allocline("- linreg(data) - returns a list of two values; the first one being the slope and the second the intercept of the \"best fit\" line through the data points\n    Example:\n     * linreg([[1,3],[2,6],[3,8.95]]) would return [2.975,0.0333333333333333] which means that the best fit line would have the equation 2.975x + 0.0333333333333333");
+    break;
+
   case HASH_LN:
     print = allocline("- ln(x) - return the natural logarithm of x");
     break;
@@ -328,11 +328,7 @@ int hc_help(char *e)
     break;
 
   case HASH_STATS:
-    print = allocline("- stats(v1,v2,...,vn) - show statistics inforomation of v1...vn\n    Example:\n     * stats(4,2,2,7) :\n      n = 4\n      Average = 3.75\n      Q1 = 2\n      Median = 3\n      Q3 = 5.5\n      Min = 2\n      Max = 7\n      sum(x) = 15\n      sum(x^2) = 73");
-    break;
-
-  case HASH_STATSF:
-    print = allocline("- statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats (run help(\"stats\") to learn more), but after each value, you have to append its frequency");
+    print = allocline("- stats([v1,v2,...,vn]) - show statistics inforomation of v1...vn Each of these values can either be a single number, or a list containing two elements : the number and its frequency\n    Examples:\n     * stats([4,2,2,7]) :\n      n = 4\n      Average = 3.75\n      Q1 = 2\n      Median = 3\n      Q3 = 5.5\n      Min = 2\n      Max = 7\n      sum(x) = 15\n      sum(x^2) = 73\n     * stats([[1,5],[2,4],3]) --  [1,5] means 1 repeats 5 times in the data, [2,4] means 2 repeats 4 times in the data, and the 3 is just present once. Hence, this represents the data : [1,1,1,1,1,2,2,2,2,3]. The result will be:\n      n = 10\n      Average = 1.6\n      Q1 = 1\n      Median = 1.5\n      Q3 = 2\n      Min = 1\n      Max = 3\n      sum(x) = 16\n      sum(x^2) = 30");
     break;
 
   case HASH_STR:

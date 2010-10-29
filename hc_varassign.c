@@ -1321,22 +1321,12 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       break;
 
     case HASH_STATS:
-      hc_stats(f_expr, FALSE, FALSE);
-      *type = HC_VAR_EMPTY;
-      break;
-
-   case HASH_STATSF:
-      hc_stats(f_expr, FALSE, TRUE);
+      hc_stats(f_expr, FALSE);
       *type = HC_VAR_EMPTY;
       break;
 
     case HASH_BOXPLOT:
-      hc_stats(f_expr, TRUE, FALSE);
-      *type = HC_VAR_EMPTY;
-      break;
-
-    case HASH_BOXPLOTF:
-      hc_stats(f_expr, TRUE, TRUE);
+      hc_stats(f_expr, TRUE);
       *type = HC_VAR_EMPTY;
       break;
 
