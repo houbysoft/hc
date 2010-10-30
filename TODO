@@ -1,9 +1,9 @@
 TODO list
 =========
 - add binary and hex output formats [input now done]
-- unify/combine all conversions into single function convert()
+- unify/combine all conversions into single function convert() (?)
 - improve graphs in GUI (zooming, etc.)
 - GUI : arrow up should bring up last result - use http://library.gnome.org/devel/gtk/unstable/GtkWidget.html#GtkWidget-key-press-event (?)
 - grab/import -- have a central repository to download functions from (?)
 - save() -- have a central file (on user's computer) that HC will load automatically every start; save() would save a user-defined function/variable to that file
-- sleep()
+- update mechanism (windows-only, linux has repos)
