@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
   rl_attempted_completion_function = hc_completion;
   rl_basic_word_break_characters = " \t\n\"'`@$><=;|&{(*/+-)^,!%";
 
-  printf("%s(type help for help, and exit to exit)\n",NAME_VERSION);
+  printf("Welcome to hc %s -- http://houbysoft.com/hc/\n(type help for help, and exit to exit)\n",VERSION);
 
 #ifndef I_HATE_TIPS
   srand(time(NULL));

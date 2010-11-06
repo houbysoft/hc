@@ -49,6 +49,20 @@ void notify_error(char *string)
   gtk_widget_destroy (dialog1);
 }
 
+int notify_ask(char *string)
+{
+  GtkWidget *dialog1 = gtk_message_dialog_new(
+			NULL,
+			GTK_DIALOG_MODAL,
+                        GTK_MESSAGE_QUESTION,
+                        GTK_BUTTONS_YES_NO,
+                        string);
+
+  int ret = gtk_dialog_run (GTK_DIALOG (dialog1));
+  gtk_widget_destroy (dialog1);
+  return ret; // either GTK_RESPONSE_NO or GTK_RESPONSE_YES
+}
+
 void prompt_respond(GtkWidget *entry, GtkDialog *dialog)
 {
   gtk_dialog_response(GTK_DIALOG (dialog), GTK_RESPONSE_OK);

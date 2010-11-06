@@ -455,6 +455,7 @@ void hcg_about()
 {
   gtk_show_about_dialog (NULL,
 			 "program-name", "HC",
+			 "version", VERSION,
 			 "comments", "A high-precision scientific calculator.",
 			 "website", "http://houbysoft.com/hc/",
 			 "title", "About HC",
@@ -471,7 +472,11 @@ void hcg_update()
   HUL *update = hul_checkupdates(VERSION,STATUS_URL_GUI);
   if (update && update->version)
   {
-    // TODO
+    if (notify_ask("An update is available, would you like to download it?\n(Selecting Yes will start the updater and close HC)") == GTK_RESPONSE_YES)
+    {
+      system("start updater.exe");
+      gtk_main_quit();
+    }
   } else if (update) {
     notify("You have the latest version.");
   } else {

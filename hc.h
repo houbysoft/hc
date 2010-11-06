@@ -113,7 +113,8 @@ extern char is_real_num(char *);
 extern char is_int(char *);
 extern char is_positive_int(char *); // positive or zero
 
-#define NAME_VERSION "Welcome to hc 3.1 (infix / RPN) -- http://hc.houbysoft.com/\n"
+#define VERSION "3.1"
+#define STATUS_URL_GUI "http://houbysoft.com/status/hcg_w32"
 
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)
