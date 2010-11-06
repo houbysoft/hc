@@ -54,6 +54,7 @@ void hcg_help();
 void hcg_load();
 void hcg_help_cplx();
 void hcg_help_logic();
+void hcg_help_lambda();
 void hcg_process_expr(GtkWidget *widget, gpointer trash);
 void scrollprint(char *format, ...);
 void hcg_cfg_change_precision(GtkWidget *widget, gpointer trash);
@@ -191,6 +192,14 @@ int main(int argc, char *argv[])
   menu_append(GTK_MENU (subm_chemistry), "mmass(molecule) - returns the molar mass of the molecule specified (use standard notation without using subscripts, such as H2O or Ca(OH)2)", G_CALLBACK (entry_append), "mmass(");
   gtk_menu_append(GTK_MENU (subm_fns), subm_mit_chemistry);
 
+  // Functions/Functional Programming submenu
+  GtkWidget *subm_fnp = gtk_menu_new();
+  GtkWidget *subm_mit_fnp = gtk_menu_item_new_with_label("Functional Programming");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM (subm_mit_fnp), subm_fnp);
+  menu_append(GTK_MENU (subm_fnp), "map(f,list) - map f to each element in list", G_CALLBACK (entry_append), "map(");
+  menu_append(GTK_MENU (subm_fnp), "Lambda expressions", G_CALLBACK (hcg_help_lambda), NULL);
+  gtk_menu_append(GTK_MENU (subm_fns), subm_mit_fnp);
+
   // Functions/Misc submenu
   GtkWidget *subm_misc = gtk_menu_new();
   GtkWidget *subm_mit_misc = gtk_menu_item_new_with_label("Misc");
@@ -204,6 +213,7 @@ int main(int argc, char *argv[])
   menu_append(GTK_MENU (subm_misc), "ones(n) - generate a list containing n ones", G_CALLBACK (entry_append), "ones(");
   menu_append(GTK_MENU (subm_misc), "print(expr_1[,expr_2,...,expr_n]) - prints its number or string arguments (if more than one, separated by a space) and a newline character (useful for printing variables in loops)", G_CALLBACK (entry_append), "print(");
   menu_append(GTK_MENU (subm_misc), "rand([int]) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[", G_CALLBACK (entry_append), "rand(");
+  menu_append(GTK_MENU (subm_misc), "range(a) / range(a,b) - generate list containing integers from 0 to a or a (included) to b (not included)", G_CALLBACK (entry_append), "range(");
   menu_append(GTK_MENU (subm_misc), "sort(list[,cmp]) - sort list, optionally using cmp as comparison function", G_CALLBACK (entry_append), "sort(");
   menu_append(GTK_MENU (subm_misc), "str(expr) - returns a string representation of expr", G_CALLBACK (entry_append), "str(");
   menu_append(GTK_MENU (subm_misc), "write(fname,expr_1[expr_2,...,expr_n]) - behaves like the print function, but writes to the file specified with fname", G_CALLBACK (entry_append), "write(");
@@ -245,6 +255,7 @@ int main(int argc, char *argv[])
   menu_append(GTK_MENU (subm_graph), "gmul(expr_1, expr_2, ..., expr_n) - draw multiple functions on one graph", G_CALLBACK (entry_append), "gmul(");
   menu_append(GTK_MENU (subm_graph), "graph3(expr[, xmin, xmax, ymin, ymax, zmin, zmax]) - draw a 3D graph", G_CALLBACK (entry_append), "graph3(");
   menu_append(GTK_MENU (subm_graph), "graphpeq(expr_x,expr_y[,tmin,tmax,xmin,xmax,ymin,ymax]) - draw the parametric equation modeled by expr_x and expr_y (use t as the variable)", G_CALLBACK (entry_append), "graphpeq(");
+  menu_append(GTK_MENU (subm_graph), "graphvalues([v_1,v_2,...,v_n]) - draw a table of values as a xy-line - see help(\"graphvalues\")", G_CALLBACK (entry_append), "graphvalues(");
   menu_append(GTK_MENU (subm_graph), "slpfld(expr[,xmin,xmax,ymin,ymax]) - draw a slope field of dy/dx = expr", G_CALLBACK (entry_append), "slpfld(");
 
   // Stats submenu
@@ -252,6 +263,7 @@ int main(int argc, char *argv[])
   menu_append(GTK_MENU (subm_stats), "statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency", G_CALLBACK (entry_append), "statsf(");
   menu_append(GTK_MENU (subm_stats), "boxplot(v1,v2,...,vn) - draw a boxplot of v1...vn", G_CALLBACK (entry_append), "boxplot(");
   menu_append(GTK_MENU (subm_stats), "boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency", G_CALLBACK (entry_append), "boxplot(");
+  menu_append(GTK_MENU (subm_stats), "linreg(data) - returns linear regression of data - see help(\"linreg\")", G_CALLBACK (entry_append), "linreg(");
 	
   // User-defined functions and variables submenu
   menu_append(GTK_MENU (subm_usrdf), "Help", G_CALLBACK (hcg_help_usrdf), NULL);
@@ -489,6 +501,12 @@ void hcg_update()
 void hcg_help()
 {
   notify("Welcome to the HoubySoft Calculator!\nUsage is very simple; to evaluate an expression either type it with your keyboard, or use the on-screen keys, and then press enter (or the '=' symbol, if using the onscreen keyboard).\n\nIf you need a constant, function, or conversion function, either type it with your keyboard if you remember it, or find it using the menus, and then click on the menu item to insert it.\n\nTo get help about any function, constant, etc., use the help() function, calling it with the name of the object you want to learn about as a string. For example, to learn about the fibo() function, you would type help(\"fibo\").\n\nBelow the expression entry and the onscreen keys (if enabled), you will notice some configuration options:\n  - precision (calculated in scientific notation) - enter whatever precision you require\n - DEG / RAD / GRAD - the angle mode - degrees, radians and gradians respectively, click on the one you want to use\n  - the SCI checkbox - select it if you want the results to be displayed in scientific notation\n  - the RPN checkbox - select it if you want to use RPN (ie use 2 2 + instead of 2+2)\n  - the KEYS checkbox - select it if you want the onscreen keys to be displayed.\n\n\nIf you have any questions, feel free to email me at dlabaljan@gmail.\nThis program is (C) Jan Dlabal, 2009-2010 and is distributed under the terms of the GNU GPL version 3 License.");
+}
+
+
+void hcg_help_lambda()
+{
+  free(hc_result("help(\"lambda\")"));
 }
 
 

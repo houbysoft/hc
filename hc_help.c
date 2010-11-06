@@ -243,7 +243,7 @@ int hc_help(char *e)
     break;
 
   case HASH_MAP:
-    print = allocline("- map(f,list) - apply f to each element in list; ie. return a list of the form [f(list[0]),f(list[1]),...]\n    Examples:\n     * create a function that will show the n first fibonacci numbers:\n       > showfibo(n) = map(fibo,range(1,n+1))\n       > showfibo(10)\n        [1,1,2,3,5,8,13,21,34,55]");
+    print = allocline("- map(f,list) - map f to each element in list; ie. return a list of the form [f(list[0]),f(list[1]),...]\n    Examples:\n     * create a function that will show the n first fibonacci numbers:\n       > showfibo(n) = map(fibo,range(1,n+1))\n       > showfibo(10)\n        [1,1,2,3,5,8,13,21,34,55]");
     break;
 
   case HASH_MITOKM:
