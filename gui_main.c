@@ -718,10 +718,12 @@ void hcg_load()
   {
     char *filename;
     filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+    gtk_widget_destroy(dialog);
     hc_load(filename);
     g_free (filename);
+  } else {
+    gtk_widget_destroy (dialog);
   }
-  gtk_widget_destroy (dialog);
 }
 
 
