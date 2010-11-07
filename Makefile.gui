@@ -30,5 +30,8 @@ gui_utils.o: gui_utils.c
 hc_graph.o: hc_graph.c
 	gcc -DHCG `pkg-config plplotd --cflags` ${COPT} -c hc_graph.c
 
+hc_stats.o: hc_stats.c
+	gcc -DHCG `pkg-config plplotd --cflags` ${COPT} -c hc_stats.c
+
 %.o: %.c hc.h
 	gcc ${COPT} -c $<

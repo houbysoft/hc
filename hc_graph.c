@@ -52,6 +52,20 @@ void hc_init_plplot()
 #endif
 #endif
   plscol0(0,255,255,255);
+  plscol0(1,255,0,0); // red
+  plscol0(2,255,255,0); // yellow
+  plscol0(3,0,255,0); // green
+  plscol0(4,127,255,212); // aquamarine
+  plscol0(5,255,105,180); // pink
+  plscol0(6,245,222,179); // wheat
+  plscol0(7,190,190,190); // grey
+  plscol0(8,160,82,45); // brown
+  plscol0(9,0,0,255); // blue
+  plscol0(10,138,43,226); // blue violet
+  plscol0(11,0,255,255); // cyan
+  plscol0(12,64,224,208); // turquoise
+  plscol0(13,255,0,255); // magenta
+  plscol0(14,250,128,114); // salmon
   plscol0(15,0,0,0);
   plinit();
   plcol0(15);

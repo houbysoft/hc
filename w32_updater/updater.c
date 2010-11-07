@@ -23,20 +23,20 @@
 
 void printstatus(int status)
 {
-  static lastwaspercent = FALSE;
+  static int lastp = -1;
   if (status <= 100 && status >= 0)
   {
-    if (lastwaspercent)
-      printf("\r%i%% downloaded ");
-    else
-      printf("\n%i%% downloaded ");
-    lastwaspercent = TRUE;
+    if (status != lastp)
+    {
+      printf("\r%i%% downloaded",status);
+      lastp = status;
+    }
   } else if (status == HUL_STATUS_CONNECTING) {
-    printf("\nConnecting to update server...\n");
+    printf("\nConnecting to update server...\n\n");
   } else if (status == HUL_STATUS_DOWNLOAD_IN_PROGRESS) {
     printf("\nDownloading update...\n");
   } else if (status == HUL_STATUS_DOWNLOAD_FINISHED) {
-    printf("\nDownload finished.\n");
+    printf("\r               \nDownload finished.\n");
   }
 }
 
@@ -50,12 +50,14 @@ int main()
     printf("Update found (newest version is %s). Please wait while the update is downloaded and installed.\n",update->version);
     if (!hul_applyupdate(update,printstatus))
     {
-      printf("An error occured while downloading the update.\n");
+      printf("\r               \n\nAn error occured while downloading or veryfing the update. Please try again later.\n");
+    } else {
+      return;
     }
   } else if (update) {
-    printf("You have the latest version.\n");
+    printf("\nYou have the latest version.\n");
   } else {
-    printf("An error occured while checking for updates.\n");
+    printf("\nAn error occured while checking for updates.\n");
   }
   system("pause");
   return 0;

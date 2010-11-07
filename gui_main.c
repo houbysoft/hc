@@ -260,9 +260,7 @@ int main(int argc, char *argv[])
 
   // Stats submenu
   menu_append(GTK_MENU (subm_stats), "stats(v1,v2,...,vn) - show stats info of v1...vn", G_CALLBACK (entry_append), "stats(");
-  menu_append(GTK_MENU (subm_stats), "statsf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as stats, but after each value, you have to append its frequency", G_CALLBACK (entry_append), "statsf(");
   menu_append(GTK_MENU (subm_stats), "boxplot(v1,v2,...,vn) - draw a boxplot of v1...vn", G_CALLBACK (entry_append), "boxplot(");
-  menu_append(GTK_MENU (subm_stats), "boxplotf(v1,freq1,v2,freq2,...,...,vn,freqn) - same as boxplot, but after each value, you have to append its frequency", G_CALLBACK (entry_append), "boxplot(");
   menu_append(GTK_MENU (subm_stats), "linreg(data) - returns linear regression of data - see help(\"linreg\")", G_CALLBACK (entry_append), "linreg(");
 	
   // User-defined functions and variables submenu
