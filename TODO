@@ -6,4 +6,3 @@ TODO list
 - GUI : arrow up should bring up last result - use http://library.gnome.org/devel/gtk/unstable/GtkWidget.html#GtkWidget-key-press-event (?)
 - grab/import -- have a central repository to download functions from (?)
 - save() -- have a central file (on user's computer) that HC will load automatically every start; save() would save a user-defined function/variable to that file
-- update mechanism (windows-only, linux has repos)
