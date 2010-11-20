@@ -16,6 +16,7 @@
 /*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
 
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -24,6 +25,7 @@
 #include <hul.h>
 #endif
 #include "hc.h"
+#include "hcg_history.h"
 #undef notify
 
 #define gtk_box_pack_start_defaults(x,y) gtk_box_pack_start(x,y,FALSE,FALSE,0)
@@ -40,6 +42,7 @@ GtkTextBuffer *scroll_buf;
 
 // Expression entry
 GtkWidget *expr_entry;
+char expr_entry_was_modified;
 GtkEntryCompletion *expr_com;
 GtkListStore *expr_com_ls;
 GtkTreeIter expr_com_iter;
@@ -48,6 +51,7 @@ GtkTreeIter expr_com_iter;
 GtkWidget *keys_table;
 
 void hcg_quit();
+void hcg_init();
 void hcg_about();
 void hcg_update();
 void hcg_help();
@@ -69,6 +73,16 @@ void hcg_help_usrdf(GtkWidget *widget, gpointer trash);
 void hcg_help_graph(GtkWidget *widget, gpointer trash);
 void hcg_clear_usrdf(GtkWidget *widget, gpointer trash);
 void hcg_disp_graph(char *fname);
+gboolean expr_entry_keypress_callback(GtkWidget *widget, GdkEvent *event, gpointer trash);
+void expr_entry_modified();
+
+
+void hcg_init()
+{
+  memset(&history, 0, HISTORY_MAX * HISTORY_ITEM_MAX);
+  history_cur = history_last = -1;
+  expr_entry_was_modified = FALSE;
+}
 
 
 int main(int argc, char *argv[])
@@ -76,6 +90,9 @@ int main(int argc, char *argv[])
   hc_load_cfg();
 
   gtk_init(&argc,&argv);
+
+  hcg_init();
+
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_resizable(GTK_WINDOW (window), TRUE);
   g_signal_connect(G_OBJECT (window), "delete-event", G_CALLBACK (hcg_quit), NULL);
@@ -297,6 +314,10 @@ int main(int argc, char *argv[])
 
   // Expression entry
   expr_entry = gtk_entry_new();
+  g_signal_connect(G_OBJECT (expr_entry), "key-press-event", G_CALLBACK (expr_entry_keypress_callback), NULL);
+  g_signal_connect(G_OBJECT (expr_entry), "insert-at-cursor", G_CALLBACK (expr_entry_modified), NULL);
+  g_signal_connect(G_OBJECT (expr_entry), "delete-from-cursor", G_CALLBACK (expr_entry_modified), NULL);
+  g_signal_connect(G_OBJECT (expr_entry), "backspace", G_CALLBACK (expr_entry_modified), NULL);
   gtk_entry_set_max_length(GTK_ENTRY (expr_entry), MAX_EXPR+1);
   expr_com = gtk_entry_completion_new();
   expr_com_ls = gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_STRING);
@@ -638,6 +659,8 @@ void hcg_process_expr(GtkWidget *widget, gpointer trash)
   if (check_completeness(tmp1))
   {
     scrollprint("\n>%s",gtk_entry_get_text(GTK_ENTRY (expr_entry)));
+    hcg_history_insert(tmp1);
+    expr_entry_was_modified = FALSE;
     char *tmp = hc_result(tmp1);
     if (tmp && strlen(tmp))
       scrollprint("\n = %s",tmp);
@@ -738,4 +761,39 @@ void type_error(char *expr)
   char *str = g_strdup_printf("Type error : %s\n",expr);
   notify_error(str);
   g_free(str);
+}
+
+
+gboolean expr_entry_keypress_callback(GtkWidget *widget, GdkEvent *event, gpointer trash)
+{
+  if (event->type == GDK_KEY_PRESS && ((((GdkEventKey*)event)->keyval == GDK_uparrow) || (((GdkEventKey*)event)->keyval == GDK_Up)))
+  {
+    if (expr_entry_was_modified)
+    {
+      hcg_history_insert_at_current((char *)gtk_entry_get_text(GTK_ENTRY (expr_entry)));
+    }
+    expr_entry_was_modified = FALSE;
+    char *tmp = hcg_history_back();
+    if (tmp)
+      gtk_entry_set_text(GTK_ENTRY (expr_entry), tmp);
+    return TRUE;
+  } else if (event->type == GDK_KEY_PRESS && ((((GdkEventKey*)event)->keyval == GDK_downarrow) || (((GdkEventKey*)event)->keyval == GDK_Down))) {
+    if (expr_entry_was_modified)
+    {
+      hcg_history_insert_at_current((char *)gtk_entry_get_text(GTK_ENTRY (expr_entry)));
+    }
+    expr_entry_was_modified = FALSE;
+    char *tmp = hcg_history_forward();
+    if (tmp)
+      gtk_entry_set_text(GTK_ENTRY (expr_entry), tmp);
+    return TRUE;
+  } else {
+    return FALSE; // propagate the event further
+  }
+}
+
+
+void expr_entry_modified()
+{
+  expr_entry_was_modified = TRUE;
 }
