@@ -21,7 +21,7 @@
 
 #include "hc.h"
 
-#define HISTORY_MAX 3
+#define HISTORY_MAX 100
 #define HISTORY_ITEM_MAX MAX_EXPR
 
 extern char history[HISTORY_MAX][HISTORY_ITEM_MAX];
