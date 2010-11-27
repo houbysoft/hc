@@ -748,22 +748,6 @@ void hcg_load()
 }
 
 
-void load_error(unsigned int line, char *expr)
-{
-  char *str = g_strdup_printf("Error occured at line %i (%s), interrupting execution.\n",line,expr);
-  notify_error(str);
-  g_free(str);
-}
-
-
-void type_error(char *expr)
-{
-  char *str = g_strdup_printf("Type error : %s\n",expr);
-  notify_error(str);
-  g_free(str);
-}
-
-
 gboolean expr_entry_keypress_callback(GtkWidget *widget, GdkEvent *event, gpointer trash)
 {
   if (event->type == GDK_KEY_PRESS && ((((GdkEventKey*)event)->keyval == GDK_uparrow) || (((GdkEventKey*)event)->keyval == GDK_Up)))

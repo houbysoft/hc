@@ -20,7 +20,7 @@
 #define HC_UTILS_H
 
 typedef enum {
-  SYNTAX, NOT_ENOUGH_OPERANDS, WARNING, ERROR
+  SYNTAX, NOT_ENOUGH_OPERANDS, TYPE, LOAD, WARNING, ERROR
 } HC_ERRORS;
 
 extern void hc_error(char type, char *xformat, ...);

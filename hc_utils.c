@@ -31,17 +31,29 @@ void hc_error(char type, char *xformat, ...)
   char *format;
   switch (type)
   {
-    case SYNTAX:
-      format = malloc(strlen("Syntax Error : ")+strlen(xformat)+1);
-      if (!format) mem_error();
-      sprintf(format,"Syntax Error : %s",xformat);
-      break;
+  case SYNTAX:
+    format = malloc(strlen("Syntax Error : ")+strlen(xformat)+1);
+    if (!format) mem_error();
+    sprintf(format,"Syntax Error : %s",xformat);
+    break;
 
-    case NOT_ENOUGH_OPERANDS:
-      format = malloc(strlen("Syntax Error : not enough operands supplied for ")+strlen(xformat)+1);
-      if (!format) mem_error();
-      sprintf(format,"Syntax Error : not enough operands supplied for %s",xformat);
-      break;
+  case NOT_ENOUGH_OPERANDS:
+    format = malloc(strlen("Syntax Error : not enough operands supplied for ")+strlen(xformat)+1);
+    if (!format) mem_error();
+    sprintf(format,"Syntax Error : not enough operands supplied for %s",xformat);
+    break;
+
+  case TYPE:
+    format = malloc(strlen("Type Error : ")+strlen(xformat)+1);
+    if (!format) mem_error();
+    sprintf(format,"Type Error : %s",xformat);
+    break;
+
+  case LOAD:
+    format = malloc(strlen("Load Error : ")+strlen(xformat)+1);
+    if (!format) mem_error();
+    sprintf(format,"Load Error : %s",xformat);
+    break;
 
   case WARNING:
     format = malloc(strlen("Warning : ")+strlen(xformat)+1);

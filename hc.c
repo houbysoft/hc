@@ -1077,7 +1077,7 @@ char *hc_postfix_result(char *e)
 	  free(op2_str); op2_str = NULL;
 	} else {
 	  hc_postfix_result_cleanup();
-	  type_error("* accepts either numbers, an integer and a string, a vector and a number, or an all-integer vector and a string");
+	  hc_error(TYPE,"* accepts either numbers, an integer and a string, a vector and a number, or an all-integer vector and a string");
 	  return NULL;	  
 	}
 	curr = curr->n; // [sp++]
@@ -1139,7 +1139,7 @@ char *hc_postfix_result(char *e)
 	  free(op2_str); op2_str = NULL;
 	} else {
 	  hc_postfix_result_cleanup();
-	  type_error("/ accepts only two numbers or a vector and a number (in that order)");
+	  hc_error(TYPE,"/ accepts only two numbers or a vector and a number (in that order)");
 	  return NULL;
 	}
 	curr = curr->n; // [sp++]
@@ -1153,7 +1153,7 @@ char *hc_postfix_result(char *e)
 	  if (curr->type != HC_VAR_NUM)
 	  {
 	    hc_postfix_result_cleanup();
-	    type_error("% accepts only numbers");
+	    hc_error(TYPE,"%% accepts only numbers");
 	    return NULL;
 	  }
 	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
@@ -1161,7 +1161,7 @@ char *hc_postfix_result(char *e)
 	  if (curr->type != HC_VAR_NUM)
 	  {
 	    hc_postfix_result_cleanup();
-	    type_error("% accepts only numbers");
+	    hc_error(TYPE,"%% accepts only numbers");
 	    return NULL;
 	  }
 	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
@@ -1183,7 +1183,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("% accepts only numbers");
+	  hc_error(TYPE,"%% accepts only numbers");
 	  return NULL;
 	}
 	m_apm_integer_div_rem(tmp,curr->re,op1_r,op2_r);
@@ -1251,7 +1251,7 @@ char *hc_postfix_result(char *e)
 	  free(op2_str); op2_str = NULL;
 	} else {
 	  hc_postfix_result_cleanup();
-	  type_error("+ accepts either two numbers, two strings or two vectors");
+	  hc_error(TYPE,"+ accepts either two numbers, two strings or two vectors");
 	  return NULL;
 	}
 	curr = curr->n; // [sp++]
@@ -1277,7 +1277,7 @@ char *hc_postfix_result(char *e)
 	    }
 	  } else {
 	    hc_postfix_result_cleanup();
-	    type_error("- accepts only numbers or vectors");
+	    hc_error(TYPE,"- accepts only numbers or vectors");
 	    return NULL;
 	  }
 	  curr = curr->n;
@@ -1300,7 +1300,7 @@ char *hc_postfix_result(char *e)
 	  if (curr->type != HC_VAR_NUM)
 	  {
 	    hc_postfix_result_cleanup();
-	    type_error("- accepts only two numbers or two vectors");
+	    hc_error(TYPE,"- accepts only two numbers or two vectors");
 	    return NULL;
 	  }
 	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
@@ -1339,7 +1339,7 @@ char *hc_postfix_result(char *e)
 	    free(op2_str); op2_str = NULL;
 	  } else {
 	    hc_postfix_result_cleanup();
-	    type_error("- accepts only two numbers or two vectors");
+	    hc_error(TYPE,"- accepts only two numbers or two vectors");
 	    return NULL;
 	  }
 	  curr = curr->n; // [sp++]
@@ -1358,7 +1358,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("^ accepts only numbers");
+	  hc_error(TYPE,"^ accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
@@ -1366,7 +1366,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("^ accepts only numbers");
+	  hc_error(TYPE,"^ accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
@@ -1397,7 +1397,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("! (used as logical NOT) accepts only numbers");
+	  hc_error(TYPE,"! (used as logical NOT) accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(curr->im,MM_Zero);
@@ -1491,7 +1491,7 @@ char *hc_postfix_result(char *e)
 	  if (curr->type != HC_VAR_NUM)
 	  {
 	    hc_postfix_result_cleanup();
-	    type_error("! (used as factorial) accepts only numbers");
+	    hc_error(TYPE,"! (used as factorial) accepts only numbers");
 	    return NULL;
 	  }
 	  if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
@@ -1519,7 +1519,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("</<= accepts only numbers");
+	  hc_error(TYPE,"</<= accepts only numbers");
 	  return NULL;
 	}
 	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
@@ -1529,7 +1529,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("</<= accepts only numbers");
+	  hc_error(TYPE,"</<= accepts only numbers");
 	  return NULL;
 	}
 	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
@@ -1567,7 +1567,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error(">/>= accepts only numbers");
+	  hc_error(TYPE,">/>= accepts only numbers");
 	  return NULL;
 	}
 	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
@@ -1577,7 +1577,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error(">/>= accepts only numbers");
+	  hc_error(TYPE,">/>= accepts only numbers");
 	  return NULL;
 	}
 	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
@@ -1689,7 +1689,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("|| accepts only numbers");
+	  hc_error(TYPE,"|| accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
@@ -1697,7 +1697,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("|| accepts only numbers");
+	  hc_error(TYPE,"|| accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
@@ -1725,7 +1725,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("&& accepts only numbers");
+	  hc_error(TYPE,"&& accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
@@ -1733,7 +1733,7 @@ char *hc_postfix_result(char *e)
 	if (curr->type != HC_VAR_NUM)
 	{
 	  hc_postfix_result_cleanup();
-	  type_error("&& accepts only numbers");
+	  hc_error(TYPE,"&& accepts only numbers");
 	  return NULL;
 	}
 	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
@@ -2636,7 +2636,7 @@ void hc_load(char *fname_)
     char *fme = hc_result(expr);
     if (!fme)
     {
-      load_error(line,expr);
+      hc_error(LOAD,"occured at line %i (%s), interrupting execution.",line,expr);
       break;
     }
     free(fme);
