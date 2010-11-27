@@ -83,7 +83,7 @@ extern void unknown_var_error(char *var, char type);
 extern void load_error(unsigned int line, char *expr);
 extern void type_error(char *expr);
 #define dim_error() notify_error("Dimension error.\n")
-#define varname_error() {notify_error("Invalid variable name (variables must contain only letters and numbers, may not be 'e' or 'i', which are used for exponents and complex numbers respectively, and must be at most %i bytes).\n",MAX_V_NAME);return;}
+#define varname_error() {notify_error("Invalid variable name (variables must contain only letters and numbers, may not be 'e' or 'i', which are used for exponents and complex numbers respectively).\n");return;}
 #define varname_predefined_error() {notify_error("You can't change a predefined variable.\n");return 0;}
 #define var_nospecial_error() {notify_error("You cannot use +=, -=, *= or /= with this type of variable.\n");return;}
 #define recursion_error() {notify_error("Error : too much recursion/nestedness. This can be bypassed in the command-line version if you know what you are doing.\n");}
@@ -104,6 +104,10 @@ extern void type_error(char *expr);
 #define notify(str) printf("%s",str)
 #define notify_error(str) notify(str)
 #define prompt(str) readline(str)
+#else
+extern void notify(char *);
+extern void notify_error(char *);
+extern char *prompt(char *);
 #endif
 #define is_string(x) (strip_spaces(x)[0]=='\"' && last_char(x)=='\"')
 #define is_vector(x) (strip_spaces(x)[0]=='[' && last_char(x)==']')
