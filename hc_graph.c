@@ -34,9 +34,29 @@
 #define HC_GRAPH_PEQ_T_STEP (hc.peqstep)
 
 
+#ifdef MEM_DRIVER
+
+#ifndef MEM_DRIVER_X
+#define MEM_DRIVER_X 640
+#endif
+
+#ifndef MEM_DRIVER_Y
+#define MEM_DRIVER_Y 480
+#endif
+
+void *driver_memory = NULL;
+#endif
+
+
 void hc_init_plplot()
 {
-#if defined(HCG) && defined(WIN32)
+#if defined(MEM_DRIVER)
+  plsdev("mem");
+  free(driver_memory);
+  driver_memory = malloc(MEM_DRIVER_Y * MEM_DRIVER_X * 3); // 3 for RGB
+  if (!driver_memory) mem_error();
+  plsmem(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
+#elif defined(HCG) && defined(WIN32)
   plsdev("wingcc");
 #elif defined(HCG) && !defined(WIN32)
   plsdev("pngcairo"); plsfnam("tmp-graph.png");
@@ -72,9 +92,13 @@ void hc_init_plplot()
 void hc_finish_plplot()
 {
   plend();
-#if defined(HCG) && !defined(WIN32)
+#if defined(HCG) && !defined(WIN32) && !defined(MEM_DRIVER)
   hcg_disp_graph("tmp-graph.png");
   remove("tmp-graph.png");
+#elif defined(MEM_DRIVER)
+  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
+  free(driver_memory);
+  driver_memory = NULL;
 #endif
 }
 
