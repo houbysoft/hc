@@ -55,6 +55,7 @@ void hc_init_plplot()
   free(driver_memory);
   driver_memory = malloc(MEM_DRIVER_Y * MEM_DRIVER_X * 3); // 3 for RGB
   if (!driver_memory) mem_error();
+  memset(driver_memory, 255, MEM_DRIVER_Y * MEM_DRIVER_X * 3); // set all pixels to white (background)
   plsmem(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
 #elif defined(HCG) && defined(WIN32)
   plsdev("wingcc");
