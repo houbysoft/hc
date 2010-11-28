@@ -72,6 +72,16 @@ void hc_init_plplot()
 }
 
 
+void hc_finish_plplot()
+{
+  plend();
+#if defined(HCG) && !defined(WIN32)
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#endif
+}
+
+
 // Taken from example 11, to setup the color palette for 3D graphs
 static void cmap1_init()
 {
@@ -193,7 +203,6 @@ char hc_graph(char *e)
       free(tmp_3);
   }
   graphing_ignore_errors = FALSE;
-  plend();
 
   free(graph_top_label);
   free(func_expr);
@@ -202,12 +211,7 @@ char hc_graph(char *e)
   free(arg_ymin);
   free(arg_ymax);
 
-#ifdef HCG
-#ifndef WIN32
-  hcg_disp_graph("tmp-graph.png");
-  remove("tmp-graph.png");
-#endif
-#endif
+  hc_finish_plplot();
   
   return SUCCESS;
 }
@@ -310,20 +314,13 @@ char hc_graph_n(char *e)
   }
   graphing_ignore_errors = FALSE;
 
-  plend();
-
   for (j=0; j<k; j++)
   {
     free(func_expr[j]);
   }
   free(func_expr);
     
-#ifdef HCG
-#ifndef WIN32
-  hcg_disp_graph("tmp-graph.png");
-  remove("tmp-graph.png");
-#endif
-#endif
+  hc_finish_plplot();
   
   return SUCCESS;
 }
@@ -481,22 +478,14 @@ char hc_graph3d(char *e)
     free(a1[1]);
     free(a1);
   }
-  plend();
-
   free(graph_top_label);
   free(func_expr);
-  if (arg_xmin)
-    free(arg_xmin);
-  if (arg_ymin)
-    free(arg_ymin);
-  if (arg_zmin)
-    free(arg_zmin);
-  if (arg_xmax)
-    free(arg_xmax);
-  if (arg_ymax)
-    free(arg_ymax);
-  if (arg_zmax)
-    free(arg_zmax);
+  free(arg_xmin);
+  free(arg_ymin);
+  free(arg_zmin);
+  free(arg_xmax);
+  free(arg_ymax);
+  free(arg_zmax);
   free(a_x);
   free(a_y);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)
@@ -506,12 +495,7 @@ char hc_graph3d(char *e)
   }
   free(a);
 
-#ifdef HCG
-#ifndef WIN32
-  hcg_disp_graph("tmp-graph.png");
-  remove("tmp-graph.png");
-#endif
-#endif
+  hc_finish_plplot();
   
   return SUCCESS; 
 }
@@ -628,18 +612,12 @@ char hc_graph_slpfld(char *e)
     }
   }
 
-  plend();
-
   free(graph_top_label);
   free(func_expr);
-  if (arg_xmin)
-    free(arg_xmin);
-  if (arg_ymin)
-    free(arg_ymin);
-  if (arg_xmax)
-    free(arg_xmax);
-  if (arg_ymax)
-    free(arg_ymax);
+  free(arg_xmin);
+  free(arg_ymin);
+  free(arg_xmax);
+  free(arg_ymax);
   free(a_x);
   free(a_y);
   for (i=0; i<HC_GRAPH_POINTS_SF; i++)
@@ -649,12 +627,7 @@ char hc_graph_slpfld(char *e)
   }
   free(a);
 
-#ifdef HCG
-#ifndef WIN32
-  hcg_disp_graph("tmp-graph.png");
-  remove("tmp-graph.png");
-#endif
-#endif
+  hc_finish_plplot();
   
   return SUCCESS; 
 }
@@ -755,7 +728,6 @@ char hc_graph_peq(char *e)
   }
 
   graphing_ignore_errors = FALSE;
-  plend();
 
   free(graph_top_label);
   free(func_exprx); free(func_expry);
@@ -766,12 +738,7 @@ char hc_graph_peq(char *e)
   free(arg_tmin);
   free(arg_tmax);
 
-#ifdef HCG
-#ifndef WIN32
-  hcg_disp_graph("tmp-graph.png");
-  remove("tmp-graph.png");
-#endif
-#endif
+  hc_finish_plplot();
 
   return SUCCESS;
 }
@@ -893,16 +860,10 @@ char hc_graph_values(char *e)
   }
 
   graphing_ignore_errors = FALSE;
-  plend();
 
   free(points_orig);
 
-#ifdef HCG
-#ifndef WIN32
-  hcg_disp_graph("tmp-graph.png");
-  remove("tmp-graph.png");
-#endif
-#endif
+  hc_finish_plplot();
 
   return SUCCESS;
 }

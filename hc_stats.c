@@ -610,13 +610,7 @@ char hc_stats(char *f, char g)
     plcol0(9);
     plfbox(1, pl_q1, pl_q2, pl_q3, pl_min, pl_max);
   
-    plend();
-#ifdef HCG
-#ifndef WIN32
-    hcg_disp_graph("tmp-graph.png");
-    remove("tmp-graph.png");
-#endif
-#endif
+    hc_finish_plplot();
   } else {
     notify(out_string);
     free(out_string);

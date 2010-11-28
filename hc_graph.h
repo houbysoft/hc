@@ -20,6 +20,7 @@
 #define HC_GRAPH_H
 
 extern void hc_init_plplot();
+extern void hc_finish_plplot();
 extern char hc_graph(char *e);
 extern char hc_graph_n(char *e);
 extern char hc_graph3d(char *e);
