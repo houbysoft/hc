@@ -36,21 +36,18 @@
 
 void hc_init_plplot()
 {
-#ifndef HCG
-  if (!hc.plplot_dev_override)
-#ifndef WIN32
-    plsdev("pngcairo");
-#else
-    plsdev("wingcc");
-#endif
-#else
-#ifndef WIN32
-  plsdev("pngcairo");
-  plsfnam("tmp-graph.png");
-#else
+#if defined(HCG) && defined(WIN32)
   plsdev("wingcc");
+#elif defined(HCG) && !defined(WIN32)
+  plsdev("pngcairo"); plsfnam("tmp-graph.png");
+#elif !defined(HCG) && defined(WIN32)
+  if (!hc.plplot_dev_override)
+    plsdev("wingcc");
+#elif !defined(HCG) && !defined(WIN32)
+  if (!hc.plplot_dev_override)
+    plsdev("pngcairo");
 #endif
-#endif
+
   plscol0(0,255,255,255);
   plscol0(1,255,0,0); // red
   plscol0(2,255,255,0); // yellow
