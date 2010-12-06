@@ -22,6 +22,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "hc.h"
 #include "hc_utils.h"
 

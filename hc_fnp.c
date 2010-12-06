@@ -17,6 +17,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include "hc.h"
 #include "hc_fnp.h"
 #include "hc_functions.h"

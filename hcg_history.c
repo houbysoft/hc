@@ -15,6 +15,7 @@
 /*     You should have received a copy of the GNU General Public License      */
 /*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <string.h>
 #include "hcg_history.h"
 
 char history[HISTORY_MAX][HISTORY_ITEM_MAX];

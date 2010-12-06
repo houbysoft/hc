@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_list.h"
