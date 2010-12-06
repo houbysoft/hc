@@ -21,7 +21,9 @@
 #include <math.h>
 #include <m_apm.h>
 #include <stdio.h> // for readline
+#ifndef HCG_E
 #include <readline/readline.h>
+#endif
 #include "m_apmc.h"
 //#define NDEBUG
 //#include <assert.h>
