@@ -32,4 +32,8 @@ extern char hc_graph_values(char *e);
 extern void hcg_disp_graph(char *);
 #endif
 
+#if defined(MEM_DRIVER)
+extern void hcg_disp_rgb(unsigned int x, unsigned int y, void *data);
+#endif
+
 #endif

@@ -10,6 +10,9 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+4.0.1
+  - added history support with up/down arrows to the GTK GUI
+  - small code improvements
 4.0
   - added some functional programming -- lambda functions, map()
   - added linreg() to do linear regressions of data
