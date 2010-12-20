@@ -18,13 +18,13 @@
 
 #ifndef HC_H
 #define HC_H
-#include <math.h>
 #include <m_apm.h>
 #include <stdio.h> // for readline
+#include "m_apmc.h"
+#include "hc_names.h"
 #ifndef HCG_E
 #include <readline/readline.h>
 #endif
-#include "m_apmc.h"
 //#define NDEBUG
 //#include <assert.h>
 
@@ -33,9 +33,6 @@
 #define HC_CFG_FILE hc_cfg_get_fn()
 #define HC_CFG_BUF_SIZE 512
 #define HC_MAX_PRECISION 128
-#define HC_NAMES 105 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
 #define HC_NESTED_MAX 128
 
 #define HC_GRAPH_N_MAX 128
@@ -240,7 +237,6 @@ extern struct hc_config hc;
 extern struct hc_ventry *hc_var_first;
 extern char announce_errors;
 extern char graphing_ignore_errors;
-extern const char *hc_names[][2];
 extern unsigned int hc_hashes[HC_NAMES];
 extern char *_cur_var_name_;
 extern M_APM hc_lans_mapm_re;

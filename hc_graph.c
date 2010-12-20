@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <plplot/plplot.h>
 #include <errno.h>
+#include <math.h>
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_graph.h"
