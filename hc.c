@@ -82,7 +82,7 @@ const char *hc_names[][4] = {
   {"graphvalues","func:[v_1,v_2,...,v_n]","Graphs","draw a xy-line plot of values v_1,...,v_n"},
   {"gmul","func:expr_1,expr_2,...,expr_n","Graphs","deprecated - use graph([expr_1,expr_2,...,expr_n]) instead"},
   {"graph3","func:expr,xmin,xmax,ymin,ymax,zmin,zmax","Graphs","draw a 3D graph. xmin,...,zmax are optional"},
-  {"help","func:topic","Help","provide help about topic - try help(\"graph\")"},
+  {"help","func:topic","#","provide help about topic - try help(\"graph\")"},
   {"if","func:condition,truebranch,falsebranch","Programming","if condition is true, evaluates truebranch, otherwise falsebranch"},
   {"im","func:x","#",""},
   {"imag","func:x","Functions/Math","imaginary part of x"},
