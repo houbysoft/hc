@@ -27,7 +27,7 @@ extern "C" {
 #define HC_NAMES_CNST_START 82 // first field with a constant in the hc_names array
 #define HC_NAMES_CNST_STOP 88 // last field with a constant in the hc_names array
 
-extern const char *hc_names[][3];
+extern const char *hc_names[][4];
 
 #ifdef __cplusplus
 }

@@ -187,7 +187,7 @@ char *hc_cmd_generator(const char *text, int state)
   while (list_index < HC_NAMES)
   {
     name = (char *)hc_names[list_index][0];
-    if (strcmp((char *)hc_names[list_index][1],"func")==0)
+    if (strstr((char *)hc_names[list_index][1],"func")==(char *)hc_names[list_index][1])
       isfunc = 1;
     else
       isfunc = 0;
