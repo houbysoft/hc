@@ -47,387 +47,45 @@ int hc_help(char *e)
   unsigned int hash = simple_hash(search);
   char *print = NULL;
 
-  switch (hash)
+  if (hash == 0)
   {
-  case 0:
     print = allocline("Welcome to HC! To evaluate an expression, simply type it and press enter. To get a list of all operators you can use, type help(\"operators\"). To get a list of functions you can use, press TAB twice, and to get more details about a function, call help(\"nameoffunction\"). To get more information about conversion functions, type help(\"conversions\"). To get more information about logic and programming, type help(\"logic\"). For information about complex numbers in HC, type help(\"complex\"). There are also a few configuration directives you can use to switch between modes etc.; to learn more, type help(\"directives\").\n\nTo get credits information, simply type credits. Thanks for using HC, and please do not hesitate to suggest new features or report bugs at bugs.houbysoft.com.");
-	break;
-/**** FUNCTIONS ****/
-
-  case HASH_ANS:
-    print = allocline("- ans() - returns the result of the last expression\n    Note that there is also an easier way to reuse the last result; simply start the new line with an operator. Example:\n      > 2 + 1\n      3\n      > + 4\n       7\n    Not all operators can however be used in this way, since for some ambiguity would result; in those cases, use ans() which is always unambiguous.");
-    break;
-
-  case HASH_ABS:
-    print = allocline("- abs(x) - absolute value of x");
-    break;
-
-  case HASH_ACOS:
-  case HASH_ARCCOS:
-    print = allocline("- acos(x) - arc cosine of x");
-    break;
-
-  case HASH_ASIN:
-  case HASH_ARCSIN:
-    print = allocline("- asin(x) - arc sine of x");
-    break;
-
-  case HASH_ATAN:
-  case HASH_ARCTAN:
-    print = allocline("- atan(x) - arc tangent of x");
-    break;
-
-  case HASH_BOXPLOT:
-    print = allocline("- boxplot([v1,v2,...,vn]) - draw a boxplot of values v1...vn Each of these values can either be a single number, or a list containing two elements : the number and its frequency. For examples, view help for \"stats\" which has the same argument format.");
-    break;
-
-  case HASH_CBRT:
-    print = allocline("- cbrt(x) - returns the cube root of x (you can also use x^(1/3))");
-    break;
-
-  case HASH_CEIL:
-    print = allocline("- ceil(x) - returns x rounded to the nearest integer upwards");
-    break;
-
-  case HASH_CHARTOCODE:
-    print = allocline("- chartocode(x) - converts x, a single-character string, to its ASCII code");
-    break;
-
-  case HASH_CLEAR:
-	print = allocline("- clear(x) - clears (undefines) x. You can also use \\clear to clear (undefine) all user-defined variables and functions.");
-	break;
-
-  case HASH_CMTOINCH:
-    print = allocline("- cmtoinch(x) - converts x, which has to be in cm, to inches");
-    break;
-
-  case HASH_CODETOCHAR:
-    print = allocline("- codetochar(x) - converts x, an ASCII code, to the corresponding character");
-    break;
-
-  case HASH_COS:
-    print = allocline("- cos(x) - cosine of x");
-    break;
-
-  case HASH_COSH:
-    print = allocline("- cosh(x) - hyperbolic cosine of x");
-    break;
-
-  case HASH_CROSSP:
-    print = allocline("- crossp(v1,v2) - return the vector cross product of v1 X v2");
-    break;
-
-  case HASH_CTOF:
-    print = allocline("- ctof(x) - converts x, which has to be in degrees Celsius, to Fahrenheit");
-    break;
-
-  case HASH_CTOK:
-    print = allocline("- ctok(x) - converts x, which has to be in degrees Celsius, to Kelvin");
-    break;
-
-  case HASH_DOTP:
-    print = allocline("- dotp(v1,v2) - return the vector dot product of v1 . v2");
-    break;
-
-  case HASH_EXP:
-    print = allocline("- exp(x) - exponential function");
-    break;
-
-  case HASH_FACTORIAL:
-    print = allocline("- factorial(x) - factorial of x (you could also use the '!' notation");
-    break;
-
-  case HASH_FIBO:
-    print = allocline("- fibo(x) - return the xth term of the Fibonacci sequence");
-    break;
-
-  case HASH_FLOOR:
-    print = allocline("- floor(x) - returns x rounded to the nearest integer downwards");
-    break;
-
-  case HASH_FLOZTOML:
-    print = allocline("- floztoml(x) - converts x, which has to be in US fluid ounces, to ml");
-    break;
-
-  case HASH_FOR:
-    print = allocline("- for(init, condition, iter, body) - executes init, and then executes body while condition holds, executing iter at the end of each iteration.\n    Example:\n     * this example shows how to print numbers from 1 to 5 with for:\n       for(j=1, j<=5, j+=1, print(j)) would print out:\n1\n2\n3\n4\n5");
-    break;
-
-  case HASH_FTOC:
-    print = allocline("- ftoc(x) - converts x, which has to be in Fahrenheit, to degrees Celsius");
-    break;
-
-  case HASH_FTOK:
-    print = allocline("- ftok(x) - converts x, which has to be in Fahrenheit, to Kelvin");
-    break;
-
-  case HASH_FTTOM:
-    print = allocline("- fttom(x) - converts x, which has to be in feet, to meters");
-    break;
-
-  case HASH_GCD:
-    print = allocline("- gcd(x,y) - finds the greatest common divisor of x and y");
-    break;
-
-  case HASH_GMUL:
-    print = allocline("- [DEPRECATED, use graph([expr_1, expr_2, ..., expr_n]) instead] gmul(expr_1, expr_2, ..., expr_n) - similar to graph, but can draw an arbitrary number of functions on one graph (note : to set xmin, etc., make a call to graph() first)");
-    break;
-
-  case HASH_GRAPH:
-    print = allocline("- graph(expr,xmin,xmax,ymin,ymax) - draw a graph (generate a PNG file if in command-line), example syntax:\n    graph(x^2,-10,10,-100,100)\n    Note:\n     * the xmin, xmax, ymin and ymax arguments are optional; if not provided, the last will be used (ie after a call of the example, graph(something) would use -10, 10, -100 and 100\n     * to draw multiple functions on one graph, pass them as a list for expr. For example, if you want to draw x, x^2, and x^3 on the same graph, you can use something like:\n       graph([x,x^2,x^3],-10,10,-100,100)");
-    break;
-
-  case HASH_GRAPH3:
-    print = allocline("- graph3(expr,xmin,xmax,ymin,ymax,zmin,zmax) - draw a 3D graph (generate a PNG file if in command-line), example syntax:\n    graph3(x+y,-10,10,-10,10,-20,20)\n    Note:\n     * as with graph(), the xmin, xmax, ymin, ymax, zmin and zmax are optional");
-    break;
-
-  case HASH_GRAPHPEQ:
-    print = allocline("- graphpeq(expr_x,expr_y,tmin,tmax,xmin,xmax,ymin,ymax) - draw the parametric equation modeled by expr_x and expr_y (use t as the variable)\n    Note:\n     * the tmin, tmax, xmin, xmax, ymin and ymax arguments are optional");
-    break;
-
-  case HASH_GRAPHV:
-  case HASH_GRAPHVALUES:
-    print = allocline("- graphvalues([v_1,v_2,...,v_n]) - synonym : graphv() - Use this to graph a table of values as a xy line. The values must be in a list. There are two formats which you can use; either simply list the y coordinates, and the x coordinates will be automatically added, starting from 0 and going +1 for each value, or the values can themselves be lists containing two elements: the x and the y coordinate.\n    Examples:\n     * Let's say you want to draw a line connecting three points: (0,0), (1,3), and (2,6). Since the x values are all just +1 increments, you can use : graphvalues([0,3,6]) or graphv([0,3,6])\n     * Now let's say your points are (0,0), (5,3) and (8,6). You can't use the same as above since HC would think your points' x coordinates are 0,1 and 2. For this data, you would need to use: graphvalues([[0,0],[5,3],[8,6]]) or graphv([[0,0],[5,3],[8,6]])");
-    break;
-
-  case HASH_IF:
-    print = allocline("- if(condition, truebranch, falsebranch) - evaluates condition, and if it is true, returns truebranch, otherwise returns falsebranch.\n    Note:\n     * falsebranch is optional\n\n    Example:\n     * if(1==2,\"hello\",\"hi\") would return \"hi\", since 1 is not equal to 2. If the falsebranch would have been ommited, in this case nothing would be returned:\n       if(1==2,\"hello\") returns nothing.");
-    break;
-
-  case HASH_IM:
-  case HASH_IMAG:
-    print = allocline("- im(x)/imag(x) - return the imaginary part of x");
-    break;
-
-  case HASH_INCHTOCM:
-    print = allocline("- inchtocm(x) - converts x, which has to be in inches, to cm");
-    break;
-
-  case HASH_INPUT:
-    print = allocline("- input(str) - shows an inut dialog using either a standard prompt or str, if specified");
-    break;
-
-  case HASH_JOIN:
-    print = allocline("- join(a,b) - join a and b, two vectors, together");
-    break;
-
-  case HASH_KMTOMI:
-    print = allocline("- kmtomi(x) - converts x, which has to be in km, to miles");
-    break;
-
-  case HASH_KTOC:
-    print = allocline("- ktoc(x) - converts x, which has to be in Kelvin, to degrees Celsius");
-    break;
-
-  case HASH_KTOF:
-    print = allocline("- ktof(x) - converts x, which has to be in Kelvin, to Fahrenheit");
-    break;
-
-  case HASH_LCM:
-    print = allocline("- lcm(x,y) - finds the least common multiple of x and y");
-    break;
-
-  case HASH_LENGTH:
-    print = allocline("- length(x) - return the length of x");
-    break;
-
-  case HASH_LINREG:
-    print = allocline("- linreg(data) - returns a list of two values; the first one being the slope and the second the intercept of the \"best fit\" line through the data points\n    Example:\n     * linreg([[1,3],[2,6],[3,8.95]]) would return [2.975,0.0333333333333333] which means that the best fit line would have the equation 2.975x + 0.0333333333333333");
-    break;
-
-  case HASH_LN:
-    print = allocline("- ln(x) - return the natural logarithm of x");
-    break;
-
-  case HASH_LOG10:
-    print = allocline("- log10(x) - return the common logarithm of x");
-    break;
-
-  case HASH_MAP:
-    print = allocline("- map(f,list) - map f to each element in list; ie. return a list of the form [f(list[0]),f(list[1]),...]\n    Examples:\n     * create a function that will show the n first fibonacci numbers:\n       > showfibo(n) = map(fibo,range(1,n+1))\n       > showfibo(10)\n        [1,1,2,3,5,8,13,21,34,55]");
-    break;
-
-  case HASH_MITOKM:
-    print = allocline("- mitokm(x) - converts x, which has to be in miles, to km");
-    break;
-
-  case HASH_MLTOFLOZ:
-    print = allocline("- mltofloz(x) - converts x, which has to be in ml, to US fluid ounces");
-    break;
-
-  case HASH_MMASS:
-    print = allocline("- mmass(molecule) - returns the molar mass of the molecule specified (use standard notation without using subscripts).\n    Examples:\n      * H20\n      * Ca(OH)2");
-    break;
-
-  case HASH_MOD:
-    print = allocline("- mod(x,y) - modulus (you could also use the C-style '%' notation");
-    break;
-
-  case HASH_MTOFT:
-    print = allocline("- mtoft(x) - converts x, which has to be in meters, to feet");
-    break;
-
-  case HASH_NCR:
-    print = allocline("- nCr(n,k) - binomial coefficient (combinatorics)");
-    break;
-
-  case HASH_NPR:
-    print = allocline("- nPr(n,k) - number of permutations (combinatorics)");
-    break;
-
-  case HASH_NUM:
-    print = allocline("- num(str) - returns a number representation of the number in string str");
-    break;
-
-  case HASH_ONES:
-    print = allocline("- ones(n) - generate a list containing n ones. See also zeros().\n    Example:\n     * Generate a list containing eight fives:\n      ones(8) * 5");
-    break;
-
-  case HASH_PRINT:
-    print = allocline("- print(expr_1, expr_2, ..., expr_n) - prints its number or string arguments (if more than one argument is passed, the outputs will be separated by a space) and a newline character (useful for printing variables in loops)");
-    break;
-
-  case HASH_PRODUCT:
-    print = allocline("- product(expr,low,high) - 'capital Pi product'. expr can contain 'x', which will be incremented from low to high inclusive.\n    Example:\n     * product(x^2,1,5) == 14400");
-    break;
-
-  case HASH_RAND:
-    print = allocline("- rand(int) - if int is specified, return a random integer in the range [1 ; int], otherwise return a real number in the range [0;1[");
-    break;
-
-  case HASH_RANGE:
-    print = allocline("- range(a,b) - return a list containing numbers from a (included) to b (not included). If only one argument is provided, return a list containing numbers from 0 (included) to the argument (not included).\n    Examples:\n     * range(5) will return [0,1,2,3,4]\n     * range(2,4) will return [2,3]\n     * range(3,3) will return []");
-    break;
-
-  case HASH_RE:
-  case HASH_REAL:
-    print = allocline("- re(x)/real(x) - return the real part of x");
-    break;
-
-  case HASH_ROUND:
-    print = allocline("- round(x) - round x to the nearest integer (for .5 cases, away from zero)");
-    break;
-
-  case HASH_SIN:
-    print = allocline("- sin(x) - sine of x");
-    break;
-
-  case HASH_SINH:
-    print = allocline("- sinh(x) - hyperbolic sine of x");
-    break;
-
-  case HASH_SLPFLD:
-    print = allocline("- slpfld(expr,xmin,xmax,ymin,ymax) - draw a slope field of dy/dx = expr. The xmin, xmax, ymin and ymax arguments are optional. If not specified, the last or default ones will be used.");
-    break;
-
-  case HASH_SORT:
-    print = allocline("- sort(list,cmp) - returns a sorted version of list. The cmp argument is an optional name of a custom sorting function which should return -1 if its first argument is smaller than the second, 0 if the two are equal (optional, it can return anything for equal elements), and 1 if the second is larger than the first.\n    Example:\n     * sort([-2,0,1,-1,2]) will return [-2,-1,0,1,2]\n     * Example of using the optional cmp argument to \"reverse sort\" a list:\n       mycmp(a,b) = if(a<b,1,-1)\n       sort([-2,0,1,-1,2],mycmp) will return [2,1,0,-1,-2]");
-    break;
-
-  case HASH_SQRT:
-    print = allocline("- sqrt(x) - returns the square root of x");
-    break;
-
-  case HASH_STATS:
-    print = allocline("- stats([v1,v2,...,vn]) - show statistics inforomation of v1...vn Each of these values can either be a single number, or a list containing two elements : the number and its frequency\n    Examples:\n     * stats([4,2,2,7]) :\n      n = 4\n      Average = 3.75\n      Q1 = 2\n      Median = 3\n      Q3 = 5.5\n      Min = 2\n      Max = 7\n      sum(x) = 15\n      sum(x^2) = 73\n     * stats([[1,5],[2,4],3]) --  [1,5] means 1 repeats 5 times in the data, [2,4] means 2 repeats 4 times in the data, and the 3 is just present once. Hence, this represents the data : [1,1,1,1,1,2,2,2,2,3]. The result will be:\n      n = 10\n      Average = 1.6\n      Q1 = 1\n      Median = 1.5\n      Q3 = 2\n      Min = 1\n      Max = 3\n      sum(x) = 16\n      sum(x^2) = 30");
-    break;
-
-  case HASH_STR:
-    print = allocline("- str(expr) - return a string representation of expr");
-    break;
-
-  case HASH_SUM:
-    print = allocline("- sum(expr,low,high) - 'capital Sigma sum'. expr can contain 'x', which will be incremented from low to high inclusive.\n    Example:\n     * sum(x^2,1,5) == 55");
-    break;
-
-  case HASH_TAN:
-    print = allocline("- tan(x) - tangent of x");
-    break;
-
-  case HASH_TANH:
-    print = allocline("- tanh(x) - hyperbolic tangent of x");
-    break;
-
-  case HASH_TOTIENT:
-    print = allocline("- totient(x) - Euler's totient function");
-    break;
-
-  case HASH_WHILE:
-    print = allocline("- while(condition, body) - executes body while condition holds.\n    Example:\n     * for a prime number x, totient(x)==x-1. We can use this property to find the first prime number starting from 1001:\n       n = 1001; while(totient(n)!=n-1, n+=2); n\n       The result would be 1009.");
-    break;
-
-  case HASH_WRITE:
-    print = allocline("- write(fname, expr_1, expr_2, ..., expr_n) - behaves like the print function (run help(\"print\") to learn more), but writes to the file specified with fname.");
-    break;
-
-  case HASH_ZEROS:
-    print = allocline("- zeros(n) - generate a list containing n zeros. See also ones()");
-    break;
-
-/**** CONSTANTS ****/
-
-  case HASH_ANSWER:
-    print = allocline("- answer - The Answer. A constant that needs no explanation.");
-    break;
-
-  case HASH_C:
-    print = allocline("- c - the speed of light in vacuum");
-    break;
-
-  case HASH_E:
-    print = allocline("- e - Euler's number");
-    break;
-
-  case HASH_G:
-    print = allocline("- g - standard gravitational acceleration on Earth");
-    break;
-
-  case HASH_PHI:
-    print = allocline("- phi - the Golden Ratio");
-    break;
-
-  case HASH_PI:
-    print = allocline("- pi - 3.141592...");
-    break;
-
-  case HASH_NA:
-    print = allocline("- Na - Avogadro constant");
-    break;
-
-/**** MISC HELP TOPICS ****/
-
-  case HASH_CONVERSIONS:
-    print = allocline("List of conversion functions (call help(\"nameoffunction\") to get more details about any of them):\n - chartocode(x)\n - cmtoinch(x)\n - codetochar(x)\n - ctof(x)\n - ctok(x)\n - floztoml(x)\n - ftoc(x)\n - ftok(x)\n - fttom(x)\n - inchtocm(x)\n - kmtomi(x)\n - ktoc(x)\n - ktof(x)\n - mitokm(x)\n - mltofloz(x)\n - mtoft(x)");
-    break;
-
-  case HASH_COMPLEX:
-    print = allocline("Complex numbers are inputted and outputted with this syntax:\nreal_part i imaginary_part (without any spaces, they are added here for clarity)\n\nFor example, 5 + 3i would be written as\n5i3\nin HC. This format is inspired by the J programming language.\nAs another example, you can try to type\nsqrt(-1)\nin HC. The result given will be:\n0i1\n\nOther notes\n* Trigonometry functions will refuse to work with complex numbers unless you are in RAD mode (switch to it by typing \\rad).\n* You cannot type a non-number as the real part or imaginary part. Therefore, you cannot write something like 0ipi, if you wanted to have a number pi*i. To express this number you would have to use something like:\n0i1*pi");
-    break;
-
-  case HASH_LOGIC:
-    print = allocline("This version of HC supports the following logic/boolean operators : < > <= >= == != &[&] (AND) |[|] (OR). For AND and OR, both the C-style && / || and single & / | can be used.\nThese operators return 1 (true) or 0 (false). In general in HC, 0 means false, everything else means true.\n\nThis version of HC supports the following control structures : if(), while() and for(), which behave like ordinary functions -- type help(\"if\"), help(\"while\") and help(\"for\") to get more information about using them. For even more information and examples about logic in HC, visit http://houbysoft.com/hc/logic.php.");
-    break;
-
-  case HASH_DIRECTIVES:
-    print = allocline("You can use the following directives in HC:\n - \\p PLACES - change precision to PLACES decimal places (counted in SCI notation)\n - \\rpn - switch to RPN mode and back\n - \\sci, \\eng, \\normal - switch to scientific, engineering and normal formats\n - \\deg, \\rad, \\grad - switch between DEG, RAD, and GRAD angle modes\n - \\clear - clear all user-defined variables and functions (use clear(name) to clear a single variable/function called name)\n - \\3dpoints SIDE - setup the 3D graphing function to compute a square of side SIDE\n - \\load FILE - load and execute FILE (you can use this for example to define functions you use often, or create larger programs, etc.)");
-    break;
-
-  case HASH_OPERATORS:
-    print = allocline("The following operators are available : + - * / % ^ ! < > <= >= == != & && (boolean and) | || (boolean or). For boolean and/or, both the single-character and two-character variants are accepted.");
-    break;
-
-  case HASH_LAMBDA:
-    print = allocline("HC supports lambda expressions (also called anonymous functions). The syntax is very simple; to create an anonymous function, enclose its expression in single quotes. To use the arguments in your lambda expression, use ~1 or ~ for the first argument, ~2 for the second, ~3 for the third, etc. The lambda expression can be then used as any other function.\n    Examples:\n     * Use map(), range() and a lambda expression to quickly generate the list of pair numbers from 0 to 50:\n       map('~ * 2',range(26))\n     * Example of using a lambda expression as a normal function:\n       '~^2 + ~2 + 1'(2,4) will return 9");
-    break;
-
-/**** END ****/
-
-  default:
-    print = malloc(strlen("Sorry, no help was found for \"\". Try hitting TAB twice to get a list of functions.\n")+strlen(search)+1);
-    if (!print)
-      mem_error();
-    sprintf(print,"Sorry, no help was found for \"%s\". Try hitting TAB twice to get a list of functions.\n",search);
-    break;
+  } else {
+    unsigned int i = 0;
+    unsigned int needmem = 0;
+    for (; i < HC_NAMES; i++)
+    {
+      if (hash == hc_hashes[i])
+      {
+        needmem += strlen(hc_names[i][0]);
+        if (strstr(hc_names[i][1],"func") == hc_names[i][1])
+          needmem += 2 + (strlen(hc_names[i][1]) - 5); // +2 for parenthesis, rest for arguments (-5 to remove "func:")
+        needmem += 5; // strlen(" - ") + \n\0 at the end
+        if (strlen(hc_names[i][4]))
+        {
+          needmem += strlen(hc_names[i][4]);
+        } else if (strlen(hc_names[i][3]))
+        {
+          needmem += strlen(hc_names[i][3]);
+        } else {
+          print = allocline("Sorry, no help is available for the topic you specified.");
+          break;
+        }
+        print = malloc(needmem); if (!print) mem_error();
+        if (strstr(hc_names[i][1],"func") == hc_names[i][1])
+          sprintf(print,"%s(%s) - %s\n",hc_names[i][0],(char *)(hc_names[i][1] + 5),strlen(hc_names[i][4]) == 0 ? hc_names[i][3] : hc_names[i][4]);
+        else
+          sprintf(print,"%s - %s\n",hc_names[i][0],strlen(hc_names[i][4]) == 0 ? hc_names[i][3] : hc_names[i][4]);
+        break;
+      }
+    }
+    if (i == HC_NAMES)
+    {
+      print = malloc(strlen("Sorry, no help was found for \"\". Try hitting TAB twice to get a list of functions.\n")+strlen(search)+1);
+      if (!print)
+        mem_error();
+      sprintf(print,"Sorry, no help was found for \"%s\". Try hitting TAB twice to get a list of functions.\n",search);
+    }
   }
 
   notify(print);

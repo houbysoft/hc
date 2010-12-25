@@ -23,11 +23,11 @@
 extern "C" {
 #endif
 
-#define HC_NAMES 104 // number of fields in the hc_names array
+#define HC_NAMES 110 // number of fields in the hc_names array
 #define HC_NAMES_CNST_START 82 // first field with a constant in the hc_names array
 #define HC_NAMES_CNST_STOP 88 // last field with a constant in the hc_names array
 
-extern const char *hc_names[][4];
+extern const char *hc_names[][5];
 
 #ifdef __cplusplus
 }

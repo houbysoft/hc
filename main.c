@@ -186,6 +186,11 @@ char *hc_cmd_generator(const char *text, int state)
   /* Return the next name which partially matches from the command list. */
   while (list_index < HC_NAMES)
   {
+    if (strcmp(hc_names[list_index][1],"#") == 0)
+    {
+      list_index++;
+      continue;
+    }
     name = (char *)hc_names[list_index][0];
     if (strstr((char *)hc_names[list_index][1],"func")==(char *)hc_names[list_index][1])
       isfunc = 1;
