@@ -1,19 +1,20 @@
-/*    (c) 2009-2010 Jan Dlabal <dlabaljan@gmail.com>                          */
+/*    (c) 2009-2011 Jan Dlabal <dlabaljan@gmail.com>                          */
 /*                                                                            */
-/*     This file is part of HC (HoubySoft Calculator).                                  */
+/*     This file is part of HC (HoubySoft Calculator).                        */
 /*                                                                            */
-/*     HC (HoubySoft Calculator) is free software: you can redistribute it and/or modify*/
-/*     it under the terms of the GNU General Public License as published by   */
-/*     the Free Software Foundation, either version 3 of the License, or      */
-/*     any later version.                                                     */
+/*     HC (HoubySoft Calculator) is free software: you can redistribute it    */
+/*     and/or modify it under the terms of the GNU General Public License as  */
+/*     published by the Free Software Foundation, either version 3 of the     */
+/*     License, or any later version.                                         */
 /*                                                                            */
-/*     HC (HoubySoft Calculator) is distributed in the hope that it will be useful,     */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of         */
+/*     HC (HoubySoft Calculator) is distributed in the hope that it will be   */
+/*     useful, but WITHOUT ANY WARRANTY; without even the implied warranty of */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          */
 /*     GNU General Public License for more details.                           */
 /*                                                                            */
 /*     You should have received a copy of the GNU General Public License      */
-/*     along with HC (HoubySoft Calculator). If not, see <http://www.gnu.org/licenses/>.*/
+/*     along with HC (HoubySoft Calculator). If not, see                      */
+/*     <http://www.gnu.org/licenses/>.                                        */
 
 
 #include <stdio.h>
@@ -2401,136 +2402,136 @@ void hc_load_cfg()
     while (fgets(buffer,HC_CFG_BUF_SIZE,fr))
     {
       if (buffer[strlen(buffer)-1]=='\n')
-	buffer[strlen(buffer)-1]=0;
+        buffer[strlen(buffer)-1]=0;
       strncpy(tmp,buffer,HC_CFG_BUF_SIZE);
       int i=0;
       while (tmp[i]!='=' && tmp[i]!=' ' && i<16)
-	i++;
+        i++;
       tmp[i]=0;
 
       switch (simple_hash(tmp))
       {
       case HASH_KEYS:
-	if (buffer[i+1]=='1')
-	  hc.keys = TRUE;
-	else
-	  hc.keys = FALSE;
-	break;
+	    if (buffer[i+1]=='1')
+	      hc.keys = TRUE;
+	    else
+	      hc.keys = FALSE;
+	    break;
       case HASH_RPN:
-	if (buffer[i+1]=='1')
-	  hc.rpn = TRUE;
-	else
-	  hc.rpn = FALSE;
-	break;
+        if (buffer[i+1]=='1')
+	      hc.rpn = TRUE;
+	    else
+	      hc.rpn = FALSE;
+	    break;
       case HASH_EXPF:
-	hc.exp = buffer[i+1];
-	if (hc.exp!='s' && hc.exp!='e' && hc.exp!='n')
-	{
-	  warning("configuration file has incorrect exponential format specification. Setting to normal.");
-	  hc.exp = 'n';
-	}
-	break;
+	    hc.exp = buffer[i+1];
+	    if (hc.exp!='s' && hc.exp!='e' && hc.exp!='n')
+        {
+	      warning("configuration file has incorrect exponential format specification. Setting to normal.");
+	      hc.exp = 'n';
+	    }
+	    break;
       case HASH_PRECISION:
-	hc.precision = atoi(&buffer[i+1]);
-	if (hc.precision>HC_MAX_PRECISION)
-	  hc.precision = HC_MAX_PRECISION;
-	break;
+	    hc.precision = atoi(&buffer[i+1]);
+	    if (hc.precision>HC_MAX_PRECISION)
+	      hc.precision = HC_MAX_PRECISION;
+	    break;
       case HASH_ANGLE:
-	hc.angle = buffer[i+1];
-	if (hc.angle!='d' && hc.angle!='r' && hc.angle!='g')
-	{
-	  warning("configuration file has incorrect angle specification. Setting angle format to RAD.");
-	  hc.angle = 'r';
-	}
-	break;
+        hc.angle = buffer[i+1];
+	    if (hc.angle!='d' && hc.angle!='r' && hc.angle!='g')
+        {
+	      warning("configuration file has incorrect angle specification. Setting angle format to RAD.");
+	      hc.angle = 'r';
+	    }
+	    break;
       case HASH_PLDEV:
-	if (buffer[i+1]!='$')
-	{
-	  hc.plplot_dev_override = malloc(strlen((char *)&buffer[i+1])+1);
-	  if (!hc.plplot_dev_override)
-	    mem_error();
-	  strcpy(hc.plplot_dev_override,(char *)&buffer[i+1]);
-	} else {
-	  hc.plplot_dev_override = NULL;
-	}
-	break;
+	    if (buffer[i+1]!='$')
+        {
+	      hc.plplot_dev_override = malloc(strlen((char *)&buffer[i+1])+1);
+	      if (!hc.plplot_dev_override)
+	        mem_error();
+	      strcpy(hc.plplot_dev_override,(char *)&buffer[i+1]);
+        } else {
+	      hc.plplot_dev_override = NULL;
+        }
+	    break;
       case HASH_BPN:
-	if (buffer[i+1]=='1')
-	  hc.bypass_nested = TRUE;
-	else
-	  hc.bypass_nested = FALSE;
-	break;
+        if (buffer[i+1]=='1')
+          hc.bypass_nested = TRUE;
+        else
+          hc.bypass_nested = FALSE;
+        break;
       case HASH_3DPOINTS:
-	if (atoi(&buffer[i+1]) < 2)
-	{
-	  hc.graph_points_3d = HC_GP3D_DEFAULT;
-	} else {
-	  hc.graph_points_3d = atoi(&buffer[i+1]);
-	}
-	break;
+        if (atoi(&buffer[i+1]) < 2)
+        {
+          hc.graph_points_3d = HC_GP3D_DEFAULT;
+        } else {
+          hc.graph_points_3d = atoi(&buffer[i+1]);
+        }
+        break;
       case HASH_XMIN2D:
-	hc.xmin2d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xmin2d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMAX2D:
-	hc.xmax2d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xmax2d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMIN2D:
-	hc.ymin2d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.ymin2d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMAX2D:
-	hc.ymax2d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.ymax2d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMIN3D:
-	hc.xmin3d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xmin3d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMAX3D:
-	hc.xmax3d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xmax3d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMIN3D:
-	hc.ymin3d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.ymin3d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMAX3D:
-	hc.ymax3d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.ymax3d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_ZMIN3D:
-	hc.zmin3d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.zmin3d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_ZMAX3D:
-	hc.zmax3d = strtod(&buffer[i+1],NULL);
-	break;
+        hc.zmax3d = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMINSF:
-	hc.xminsf = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xminsf = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMAXSF:
-	hc.xmaxsf = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xmaxsf = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMINSF:
-	hc.yminsf = strtod(&buffer[i+1],NULL);
-	break;
+        hc.yminsf = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMAXSF:
-	hc.ymaxsf = strtod(&buffer[i+1],NULL);
-	break;
+        hc.ymaxsf = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_TMINPEQ:
-	hc.tminpeq = strtod(&buffer[i+1],NULL);
-	break;
+        hc.tminpeq = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_TMAXPEQ:
-	hc.tmaxpeq = strtod(&buffer[i+1],NULL);
-	break;
+        hc.tmaxpeq = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMINPEQ:
-	hc.xminpeq = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xminpeq = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMAXPEQ:
-	hc.xmaxpeq = strtod(&buffer[i+1],NULL);
-	break;
+        hc.xmaxpeq = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMINPEQ:
-	hc.yminpeq = strtod(&buffer[i+1],NULL);
-	break;
+        hc.yminpeq = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_YMAXPEQ:
-	hc.ymaxpeq = strtod(&buffer[i+1],NULL);
-	break;
+        hc.ymaxpeq = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_PEQSTEP:
-	hc.peqstep = strtod(&buffer[i+1],NULL);
-	break;
+        hc.peqstep = strtod(&buffer[i+1],NULL);
+        break;
       }
     }
     free(buffer);
