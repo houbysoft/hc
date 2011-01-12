@@ -278,74 +278,11 @@ char *hc_result(char *e)
     return r;
   } else if (is_num(r))
   {
-    char *r_re = hc_real_part(r);
-    char *r_im = hc_imag_part(r);
-    free(r);
     free(hc_lans_strvec);
     hc_lans_strvec = NULL;
     hc_lans_type = HC_VAR_NUM;
-    m_apm_set_string(hc_lans_mapm_re,r_re);
-    if (r_im)
-    {
-      m_apm_set_string(hc_lans_mapm_im,r_im);
-    }
-    if (!r_im)
-    {
-      r = r_re;
-      int i=strlen(r)-1;
-      while (i && r[i]=='0')
-	r[i--]=0;
-      if (i && r[i]=='.')
-	r[i]=0;
-      switch (hc.exp)
-      {
-      case 's':
-	r = hc_2sci(r);
-	break;
-	
-      case 'e':
-	r = hc_2eng(r);
-	break;
-	
-      default:
-	break;
-      }
-    } else {
-      int i=strlen(r_re)-1;
-      while (r_re[i]=='0')
-	r_re[i--]=0;
-      if (r_re[i]=='.')
-	r_re[i]=0;
-      
-      i = strlen(r_im)-1;
-      while (r_im[i]=='0')
-	r_im[i--]=0;
-      if (r_im[i]=='.')
-	r_im[i]=0;
-      
-      switch (hc.exp)
-      {
-      case 's': // SCI
-	r_re = hc_2sci(r_re);
-	r_im = hc_2sci(r_im);
-	break;
-	
-      case 'e': // ENG
-	r_re = hc_2eng(r_re);
-	r_im = hc_2eng(r_im);
-	break;
-	
-      default:
-	break;
-      }
-      
-      r = malloc(strlen(r_re)+1+strlen(r_im)+1);
-      // r_re i r_im \0
-      strcpy(r,r_re);
-      strcat(r,"i");
-      strcat(r,r_im);
-      free(r_re); free(r_im);
-    }
+
+    r = hc_format_num(r, TRUE); // TRUE means to save r as last result
   } else if (is_vector(r)) {
     r[strlen(r)-1] = '\0';
     char *r_new = malloc(2);
@@ -358,9 +295,9 @@ char *hc_result(char *e)
     {
       if (is_num(curarg))
       {
-	char *tmp = curarg;
-	curarg = hc_strip_0s(curarg);
-	free(tmp);
+        char *tmp = curarg;
+        curarg = hc_strip_0s(curarg);
+        free(tmp);
       }
       r_new = realloc(r_new, strlen(r_new)+1+strlen(curarg)+1);
       strcat(r_new,curarg);
@@ -411,33 +348,33 @@ char *hc_result_(char *e)
     if (buf_isvarassign)
     {
       if (strchr_outofblock(e,';'))
-	return hc_result_mul(e);
+        return hc_result_mul(e);
       else
       {
-	char *f = strdup(e);
-	if (!f)
-	  mem_error();
-	hc_varassign(f);
-	free(f);
-	r = malloc(1);
-	if (!r)
-	  mem_error();
-	r[0]=0;
+        char *f = strdup(e);
+        if (!f)
+          mem_error();
+        hc_varassign(f);
+        free(f);
+        r = malloc(1);
+        if (!r)
+          mem_error();
+        r[0]=0;
       }
     } else {
       if (isdirection(e))
       {
-	char *f = strdup(e);
-	if (!f)
-	  mem_error();
-	hc_process_direction((char *)f+1);
-	free(f);
-	r = malloc(1);
-	*r = 0;
-	if (!r)
-	  mem_error();
+        char *f = strdup(e);
+        if (!f)
+          mem_error();
+        hc_process_direction((char *)f+1);
+        free(f);
+        r = malloc(1);
+        *r = 0;
+        if (!r)
+          mem_error();
       } else {
-	r = hc_result_normal(e);
+        r = hc_result_normal(e);
       }
     }
   }
@@ -548,439 +485,439 @@ char *hc_i2p(char *f)
     {
       if (isoperator(tmp[i]) && (tmp[i]!='_' || !isdigit(tmp[i+1])))
       {
-	last_was_operator[1] = TRUE;
-	if (sp>=MAX_OP_STACK)
-	  overflow_error();
-	if (tmp[i]=='_' && tmp[i+1]=='(')
-	{
-	  neg = 1;
-	  i++;
-	}
-	switch (tmp[i])
-	{
-	case '$': // terminating character
-	  while (stack[sp-1][0]!='$')
-	  {
-	    e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	  }
-	  return e;
+        last_was_operator[1] = TRUE;
+        if (sp>=MAX_OP_STACK)
+          overflow_error();
+        if (tmp[i]=='_' && tmp[i+1]=='(')
+        {
+          neg = 1;
+          i++;
+        }
+        switch (tmp[i])
+        {
+        case '$': // terminating character
+          while (stack[sp-1][0]!='$')
+          {
+            e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+          }
+          return e;
 
-	case '(':
-	  last_was_operator[1] = FALSE;
-	  stack[sp][1] = 0;
-	  stack[sp++][0] = '(';
-	  break;
+        case '(':
+          last_was_operator[1] = FALSE;
+          stack[sp][1] = 0;
+          stack[sp++][0] = '(';
+          break;
 
-	case ')':
-	  last_was_operator[1] = FALSE;
-	  sp--;
-	  if (sp < 0)
-	  {
-	    hc_error(SYNTAX,"('s and )'s do not match");
-	    free(e);
-	    return NULL;
-	  }
-	  while (stack[sp][0]!='(')
-	  {
-	    e[j++] = stack[sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    sp--;
-	    if (sp < 0)
-	    {
-	      hc_error(SYNTAX,"('s and )'s do not match");
-	      free(e);
-	      return NULL;
-	    }
-	  }
-	  if (neg)
-	  {
-	    e[j++] = '_';
-	    e[j++] = ' '; // otherwise following number is treated as a negative
-	    neg=0;
-	  }
-	  break;
+        case ')':
+          last_was_operator[1] = FALSE;
+          sp--;
+          if (sp < 0)
+          {
+            hc_error(SYNTAX,"('s and )'s do not match");
+            free(e);
+            return NULL;
+          }
+          while (stack[sp][0]!='(')
+          {
+            e[j++] = stack[sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            sp--;
+            if (sp < 0)
+            {
+              hc_error(SYNTAX,"('s and )'s do not match");
+              free(e);
+              return NULL;
+            }
+          }
+          if (neg)
+          {
+            e[j++] = '_';
+            e[j++] = ' '; // otherwise following number is treated as a negative
+            neg=0;
+          }
+          break;
 
-	case '^':
-	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
-	  {
-	    stack[sp][0] = tmp[i];
-	    stack[sp++][1] = 0;
-	  } else {
-	    e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    i--;
-	  }
-	  break;
+        case '^':
+          if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
+          {
+            stack[sp][0] = tmp[i];
+            stack[sp++][1] = 0;
+          } else {
+            e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            i--;
+          }
+          break;
 
-	case '!':
-	  if (tmp[i+1]=='=')
-	  {
-	    // interpret as condition
-	    if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
-	    {
-	      stack[sp][0] = '!';
-	      stack[sp++][1] = '=';
-	      i++;
-	    } else {
-	      e[j++] = stack[--sp][0];
-	      if (stack[sp][1])
-		e[j++] = stack[sp][1];
-	      i--;
-	    }
-	  } else if (last_was_operator[0] == FALSE) {
-	    // interpret as factorial
-	    if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
-	    {
-	      stack[sp][0] = tmp[i];
-	      stack[sp++][1] = 0;
-	    } else {
-	      e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    i--;
-	    }
-	  } else {
-	    // interpret as logical NOT and replace the ! with a NOT_SIGN, so that hc_postfix_result interprets this correctly
-	    if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
-	    {
-	      stack[sp][0] = NOT_SIGN;
-	      stack[sp++][1] = 0;
-	    } else {
-	      e[j++] = stack[--sp][0];
-	      if (stack[sp][1])
-		e[j++] = stack[sp][1];
-	      i--;
-	    }
-	  }
-	  break;
+        case '!':
+          if (tmp[i+1]=='=')
+          {
+            // interpret as condition
+            if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
+            {
+              stack[sp][0] = '!';
+              stack[sp++][1] = '=';
+              i++;
+            } else {
+              e[j++] = stack[--sp][0];
+              if (stack[sp][1])
+                e[j++] = stack[sp][1];
+              i--;
+            }
+          } else if (last_was_operator[0] == FALSE) {
+            // interpret as factorial
+            if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
+            {
+              stack[sp][0] = tmp[i];
+              stack[sp++][1] = 0;
+            } else {
+              e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            i--;
+            }
+          } else {
+            // interpret as logical NOT and replace the ! with a NOT_SIGN, so that hc_postfix_result interprets this correctly
+            if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='*')||(stack[sp-1][0]=='/')||(stack[sp-1][0]==PW_SIGN)||(stack[sp-1][0]=='%')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
+            {
+              stack[sp][0] = NOT_SIGN;
+              stack[sp++][1] = 0;
+            } else {
+              e[j++] = stack[--sp][0];
+              if (stack[sp][1])
+                e[j++] = stack[sp][1];
+              i--;
+            }
+          }
+          break;
 
-	case '*':
-	case '/':
-	case '%':
-	  if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
-	  {
-	    stack[sp][0] = tmp[i];
-	    stack[sp++][1] = 0;
-	  } else {
-	    e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    i--;
-	  }
-	  break;
+        case '*':
+        case '/':
+        case '%':
+          if ((stack[sp-1][0]=='+')||(stack[sp-1][0]=='-')||(stack[sp-1][0]=='_')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='(')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
+          {
+            stack[sp][0] = tmp[i];
+            stack[sp++][1] = 0;
+          } else {
+            e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            i--;
+          }
+          break;
 
-	case '_':
-	case '+':
-	case '-':
-	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
-	  {
-	    stack[sp][0] = tmp[i];
-	    stack[sp++][1] = 0;
-	  } else {
-	    e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    i--;
-	  }
-	  break;
+        case '_':
+        case '+':
+        case '-':
+          if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='<')||(stack[sp-1][0]=='>')||(stack[sp-1][0]=='=')||(stack[sp-1][0]=='!' && stack[sp-1][1]=='=')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
+          {
+            stack[sp][0] = tmp[i];
+            stack[sp++][1] = 0;
+          } else {
+            e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            i--;
+          }
+          break;
 
-	case '>':
-	case '<':
-	case '=':
-	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
-	  {
-	    stack[sp][0] = tmp[i];
-	    if (tmp[i+1]=='=')
-	    {
-	      stack[sp++][1] = '=';
-	      i++;
-	    }
-	    else
-	      stack[sp++][1] = 0;
-	  } else {
-	    e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    i--;
-	  }
-	  break;
+        case '>':
+        case '<':
+        case '=':
+          if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='&')||(stack[sp-1][0]=='|'))
+          {
+            stack[sp][0] = tmp[i];
+            if (tmp[i+1]=='=')
+            {
+              stack[sp++][1] = '=';
+              i++;
+            }
+            else
+              stack[sp++][1] = 0;
+          } else {
+            e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            i--;
+          }
+          break;
 
-	case '&':
-	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='|'))
-	  {
-	    stack[sp][0] = tmp[i];
-	    if (tmp[i+1]==tmp[i])
-	    {
-	      stack[sp++][1] = tmp[i+1];
-	      i++;
-	    } else
-	      stack[sp++][1] = 0;
-	  } else {
-	    e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    i--;
-	  }
-	  break;
+        case '&':
+          if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$')||(stack[sp-1][0]=='|'))
+          {
+            stack[sp][0] = tmp[i];
+            if (tmp[i+1]==tmp[i])
+            {
+              stack[sp++][1] = tmp[i+1];
+              i++;
+            } else
+              stack[sp++][1] = 0;
+          } else {
+            e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            i--;
+          }
+          break;
 
-	case '|':
-	  if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
-	  {
-	    stack[sp][0] = tmp[i];
-	    if (tmp[i+1]==tmp[i])
-	    {
-	      stack[sp++][1] = tmp[i+1];
-	      i++;
-	    } else
-	      stack[sp++][1] = 0;
-	  } else {
-	    e[j++] = stack[--sp][0];
-	    if (stack[sp][1])
-	      e[j++] = stack[sp][1];
-	    i--;
-	  }
-	  break;
+        case '|':
+          if ((stack[sp-1][0]=='(')||(stack[sp-1][0]=='$'))
+          {
+            stack[sp][0] = tmp[i];
+            if (tmp[i+1]==tmp[i])
+            {
+              stack[sp++][1] = tmp[i+1];
+              i++;
+            } else
+              stack[sp++][1] = 0;
+          } else {
+            e[j++] = stack[--sp][0];
+            if (stack[sp][1])
+              e[j++] = stack[sp][1];
+            i--;
+          }
+          break;
 
-	}
-	last_was_operator[0] = last_was_operator[1];
+        }
+        last_was_operator[0] = last_was_operator[1];
 
       } else {
-	last_was_operator[0] = FALSE;
-	if (isdigit(tmp[i]) || tmp[i]=='.' || tmp[i]=='_')
-	{
-	  char tmpsts = 0;
-	  int tmpe = 1;
-	  int tmpi = 1;
-	  char base;
-	  if (tmp[i]=='0' && tolower(tmp[i+1])=='x')
-	    base = 16;
-	  else if (tmp[i]=='0' && tolower(tmp[i+1])=='b')
-	    base = 2;
-	  else
-	    base = 10;
-	  /*
-	    Base 10:
+        last_was_operator[0] = FALSE;
+        if (isdigit(tmp[i]) || tmp[i]=='.' || tmp[i]=='_')
+        {
+          char tmpsts = 0;
+          int tmpe = 1;
+          int tmpi = 1;
+          char base;
+          if (tmp[i]=='0' && tolower(tmp[i+1])=='x')
+            base = 16;
+          else if (tmp[i]=='0' && tolower(tmp[i+1])=='b')
+            base = 2;
+          else
+            base = 10;
+          /*
+            Base 10:
 
-	    tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
+            tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
 
-	    States
-	    ------
-	    0 : at the beginning of the scan, or after an 'e', or after an 'i'
-	    1 : after a number, allowing for a decimal point
-	    2 : after a number or a decimal point, not allowing for a decimal point
-	    3 : after a negative sign
-	   */
-	  if (base == 10)
-	  {
-	    while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
-	    {
-	      if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
-	      {
-		hc_error(SYNTAX,"invalid number encountered");
-		free(e);
-		return NULL;
-	      }
-	      if (tolower(tmp[i]) == 'e')
-	      {
-		tmpsts = 0;
-		tmpe--;
-	      } else if (tolower(tmp[i]) == 'i')
-	      {
-		tmpsts = 0;
-		tmpi--;
-		tmpe = 1;
-	      } else if (isdigit(tmp[i]))
-	      {
-		if (tmpsts == 0 || tmpsts == 3)
-		  tmpsts = 1;
-		// nothing needs to be done otherwise
-	      } else if (tmp[i]=='.')
-	      {
-		tmpsts = 2;
-	      } else if (tmp[i]=='_' || tmp[i]=='-')
-	      {
-		tmpsts = 3;
-	      }
-	      if (tmpe < 0 || tmpi < 0)
-	      {
-		hc_error(SYNTAX,"too many e's or i's encountered in number");
-		free(e);
-		return NULL;
-	      }
-	      e[j++] = tmp[i++];
-	    }
-	  } else { // base == 2 or base == 16
-	    /* Base 2 or Base 16:
+            States
+            ------
+            0 : at the beginning of the scan, or after an 'e', or after an 'i'
+            1 : after a number, allowing for a decimal point
+            2 : after a number or a decimal point, not allowing for a decimal point
+            3 : after a negative sign
+           */
+          if (base == 10)
+          {
+            while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
+            {
+              if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
+              {
+                hc_error(SYNTAX,"invalid number encountered");
+                free(e);
+                return NULL;
+              }
+              if (tolower(tmp[i]) == 'e')
+              {
+                tmpsts = 0;
+                tmpe--;
+              } else if (tolower(tmp[i]) == 'i')
+              {
+                tmpsts = 0;
+                tmpi--;
+                tmpe = 1;
+              } else if (isdigit(tmp[i]))
+              {
+                if (tmpsts == 0 || tmpsts == 3)
+                  tmpsts = 1;
+                // nothing needs to be done otherwise
+              } else if (tmp[i]=='.')
+              {
+                tmpsts = 2;
+              } else if (tmp[i]=='_' || tmp[i]=='-')
+              {
+                tmpsts = 3;
+              }
+              if (tmpe < 0 || tmpi < 0)
+              {
+                hc_error(SYNTAX,"too many e's or i's encountered in number");
+                free(e);
+                return NULL;
+              }
+              e[j++] = tmp[i++];
+            }
+          } else { // base == 2 or base == 16
+            /* Base 2 or Base 16:
 
-	       tmpsts contains either TRUE, to allow a decimal point, or FALSE, to allow only digits.
-	       No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
-	    */
-	    tmpsts = TRUE;
-	    e[j++] = tmp[i++]; // write down the '0'
-	    e[j++] = tmp[i++]; // write down the either 'x' (base 16) or 'b' (base 2)
-	    while (!isspace(tmp[i]) && (!isoperator(tmp[i]) || tmp[i]=='_'))
-	    {
-	      if (!isdigitb(tmp[i],base) && (tmp[i]!='.' || tmpsts == FALSE))
-	      {
-		hc_error(SYNTAX, "invalid binary or hex number encountered");
-		free(e);
-		return NULL;
-	      } else {
-		if (tmp[i]=='.')
-		  tmpsts = FALSE;
-		e[j++] = tmp[i++];
-	      }
-	    }
-	  }
-	} else if (tmp[i]=='\"') {
-	  e[j++] = tmp[i++];
-	  while (tmp[i]!='\"' && tmp[i]!='$')
-	    e[j++] = tmp[i++];
-	  if (tmp[i] != '\"')
-	  {
-	    hc_error(SYNTAX,"missing end quotes");
-	    free(e);
-	    return NULL;
-	  }
-	  e[j++] = tmp[i++];
-	} else if (tmp[i]=='[') {
-	  while (tmp[i]=='[')
-	  {
-	    unsigned int pct = 1;
-	    char ignore = FALSE;
-	    e[j++] = tmp[i++];
-	    while (pct!=0 && tmp[i])
-	    {
-	      if (tmp[i]=='\"')
-	      {
-		ignore = ignore == FALSE ? TRUE : FALSE;
-	      }
-	      if (tmp[i]=='[' && !ignore)
-		pct++;
-	      if (tmp[i]==']' && !ignore)
-		pct--;
-	      e[j++] = tmp[i++];
-	    }
-	    if (pct!=0)
-	    {
-	      hc_error(SYNTAX, "['s and ]'s do not match");
-	      free(e);
-	      return NULL;
-	    }
-	  }
-	} else if (tmp[i]=='\'') { // lambda expression
-	  char *endoffunc = strchr_outofblock(tmp + i + 1,'\'');
-	  if (!endoffunc)
-	  {
-	    hc_error(SYNTAX,"single quotes do not match");
-	    free(e);
-	    return NULL;
-	  }
-	  memcpy((char *)(e + j),(char *)(tmp + i),endoffunc - tmp - i + 1);
-	  j += endoffunc - tmp - i + 1;
-	  i = endoffunc - tmp + 1;
-	  if (tmp[i]=='(') // called
-	  {
-	    e[j++] = tmp[i];
-	    int par = 1;
-	    char ignore = FALSE;
-	    while (par!=0 && tmp[i]!='$' && tmp[i])
-	    {
-	      e[j++] = tmp[++i];
-	      if (tmp[i]=='\"')
-	      {
-		ignore = ignore == FALSE ? TRUE : FALSE;
-		continue;
-	      }
-	      if (ignore)
-		continue;
-	      if (tmp[i]=='(')
-		par++;
-	      else if (tmp[i]==')')
-		par--;
-	    }
-	    if (par != 0)
-	    {
-	      hc_error(SYNTAX,"('s and )'s do not match");
-	      free(e);
-	      return NULL;
-	    } else {
-	      i++; // skip the last ')'
-	    }
-	  }
-	} else {
-	  if (!isalpha(tmp[i]))
-	  {
-	    hc_error(SYNTAX, "at character %i : %c", i+1, tmp[i]);
-	    free(e);
-	    return NULL;
-	  }
-	  while (isalpha(tmp[i]) || isdigit(tmp[i])) // the first to be checked can't be a digit since that would be caught above
-	  {
-	    e[j++] = tmp[i++];
-	  }
-	  if (tmp[i]=='(') // function
-	  {
-	    e[j++] = tmp[i];
-	    int par = 1;
-	    char ignore = FALSE;
-	    while (par!=0 && tmp[i]!='$' && tmp[i])
-	    {
-	      e[j++] = tmp[++i];
-	      if (tmp[i]=='\"')
-	      {
-		ignore = ignore == FALSE ? TRUE : FALSE;
-		continue;
-	      }
-	      if (ignore)
-		continue;
-	      if (tmp[i]=='(')
-		par++;
-	      else if (tmp[i]==')')
-		par--;
-	    }
-	    if (par != 0)
-	    {
-	      hc_error(SYNTAX,"('s and )'s do not match");
-	      free(e);
-	      return NULL;
-	    } else {
-	      i++; // skip the last ')'
-	    }
-	  }
-	}
+               tmpsts contains either TRUE, to allow a decimal point, or FALSE, to allow only digits.
+               No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
+            */
+            tmpsts = TRUE;
+            e[j++] = tmp[i++]; // write down the '0'
+            e[j++] = tmp[i++]; // write down the either 'x' (base 16) or 'b' (base 2)
+            while (!isspace(tmp[i]) && (!isoperator(tmp[i]) || tmp[i]=='_'))
+            {
+              if (!isdigitb(tmp[i],base) && (tmp[i]!='.' || tmpsts == FALSE))
+              {
+                hc_error(SYNTAX, "invalid binary or hex number encountered");
+                free(e);
+                return NULL;
+              } else {
+                if (tmp[i]=='.')
+                  tmpsts = FALSE;
+                e[j++] = tmp[i++];
+              }
+            }
+          }
+        } else if (tmp[i]=='\"') {
+          e[j++] = tmp[i++];
+          while (tmp[i]!='\"' && tmp[i]!='$')
+            e[j++] = tmp[i++];
+          if (tmp[i] != '\"')
+          {
+            hc_error(SYNTAX,"missing end quotes");
+            free(e);
+            return NULL;
+          }
+          e[j++] = tmp[i++];
+        } else if (tmp[i]=='[') {
+          while (tmp[i]=='[')
+          {
+            unsigned int pct = 1;
+            char ignore = FALSE;
+            e[j++] = tmp[i++];
+            while (pct!=0 && tmp[i])
+            {
+              if (tmp[i]=='\"')
+              {
+                ignore = ignore == FALSE ? TRUE : FALSE;
+              }
+              if (tmp[i]=='[' && !ignore)
+                pct++;
+              if (tmp[i]==']' && !ignore)
+                pct--;
+              e[j++] = tmp[i++];
+            }
+            if (pct!=0)
+            {
+              hc_error(SYNTAX, "['s and ]'s do not match");
+              free(e);
+              return NULL;
+            }
+          }
+        } else if (tmp[i]=='\'') { // lambda expression
+          char *endoffunc = strchr_outofblock(tmp + i + 1,'\'');
+          if (!endoffunc)
+          {
+            hc_error(SYNTAX,"single quotes do not match");
+            free(e);
+            return NULL;
+          }
+          memcpy((char *)(e + j),(char *)(tmp + i),endoffunc - tmp - i + 1);
+          j += endoffunc - tmp - i + 1;
+          i = endoffunc - tmp + 1;
+          if (tmp[i]=='(') // called
+          {
+            e[j++] = tmp[i];
+            int par = 1;
+            char ignore = FALSE;
+            while (par!=0 && tmp[i]!='$' && tmp[i])
+            {
+              e[j++] = tmp[++i];
+              if (tmp[i]=='\"')
+              {
+                ignore = ignore == FALSE ? TRUE : FALSE;
+                continue;
+              }
+              if (ignore)
+                continue;
+              if (tmp[i]=='(')
+                par++;
+              else if (tmp[i]==')')
+                par--;
+            }
+            if (par != 0)
+            {
+              hc_error(SYNTAX,"('s and )'s do not match");
+              free(e);
+              return NULL;
+            } else {
+              i++; // skip the last ')'
+            }
+          }
+        } else {
+          if (!isalpha(tmp[i]))
+          {
+            hc_error(SYNTAX, "at character %i : %c", i+1, tmp[i]);
+            free(e);
+            return NULL;
+          }
+          while (isalpha(tmp[i]) || isdigit(tmp[i])) // the first to be checked can't be a digit since that would be caught above
+          {
+            e[j++] = tmp[i++];
+          }
+          if (tmp[i]=='(') // function
+          {
+            e[j++] = tmp[i];
+            int par = 1;
+            char ignore = FALSE;
+            while (par!=0 && tmp[i]!='$' && tmp[i])
+            {
+              e[j++] = tmp[++i];
+              if (tmp[i]=='\"')
+              {
+                ignore = ignore == FALSE ? TRUE : FALSE;
+                continue;
+              }
+              if (ignore)
+                continue;
+              if (tmp[i]=='(')
+                par++;
+              else if (tmp[i]==')')
+                par--;
+            }
+            if (par != 0)
+            {
+              hc_error(SYNTAX,"('s and )'s do not match");
+              free(e);
+              return NULL;
+            } else {
+              i++; // skip the last ')'
+            }
+          }
+        }
 
-	while (tmp[i]=='[')
-	{
-	  unsigned int pct = 1;
-	  char ignore = FALSE;
-	  e[j++] = tmp[i++];
-	  while (pct!=0 && tmp[i])
-	  {
-	    if (tmp[i]=='\"')
-	    {
-	      ignore = ignore == FALSE ? TRUE : FALSE;
-	    }
-	    if (tmp[i]=='[' && !ignore)
-	      pct++;
-	    if (tmp[i]==']' && !ignore)
-	      pct--;
-	    e[j++] = tmp[i++];
-	  }
-	  if (pct!=0)
-	  {
-	    hc_error(SYNTAX,"['s and ]'s do not match");
-	    free(e);
-	    return NULL;
-	  }
-	}
+        while (tmp[i]=='[')
+        {
+          unsigned int pct = 1;
+          char ignore = FALSE;
+          e[j++] = tmp[i++];
+          while (pct!=0 && tmp[i])
+          {
+            if (tmp[i]=='\"')
+            {
+              ignore = ignore == FALSE ? TRUE : FALSE;
+            }
+            if (tmp[i]=='[' && !ignore)
+              pct++;
+            if (tmp[i]==']' && !ignore)
+              pct--;
+            e[j++] = tmp[i++];
+          }
+          if (pct!=0)
+          {
+            hc_error(SYNTAX,"['s and ]'s do not match");
+            free(e);
+            return NULL;
+          }
+        }
 
-	e[j++] = ' ';
-	i--;
+        e[j++] = ' ';
+        i--;
       }
     }
     i++;
@@ -1039,1069 +976,1069 @@ char *hc_postfix_result(char *e)
       switch (e[i])
       {
       case '*':
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"*");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	op2_type = curr->type;
-	if (op2_type == HC_VAR_NUM)
-	{
-	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	} else if (op2_type == HC_VAR_STR)
-	{
-	  op2_str = get_string(curr->str);
-	} else if (op2_type == HC_VAR_VEC)
-	{
-	  op2_str = strdup(curr->str);
-	}
-	curr = curr->p; // [--sp]
-	op1_type = curr->type;
-	if (op1_type == HC_VAR_NUM)
-	{
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	} else if (op1_type == HC_VAR_STR)
-	{
-	  op1_str = get_string(curr->str);
-	} else if (op1_type == HC_VAR_VEC)
-	{
-	  op1_str = strdup(curr->str);
-	}
-	if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
-	{
-	  m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
-	} else if ((op1_type == HC_VAR_NUM && m_apm_compare(op1_i,MM_Zero)==0 && m_apm_is_integer(op1_r) && op2_type == HC_VAR_STR) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_NUM && m_apm_compare(op2_i,MM_Zero)==0 && m_apm_is_integer(op2_r)))
-	{
-	  curr->type = HC_VAR_STR;
-	  free(curr->str); free(curr->n->str);
-	  curr->n->str = NULL;
-	  curr->str = str_multiply(op1_type == HC_VAR_STR ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
-	  free(op1_str); op1_str = NULL;
-	  free(op2_str); op2_str = NULL;
-	} else if ((op1_type == HC_VAR_NUM && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_NUM && op1_type == HC_VAR_VEC) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_STR && op1_type == HC_VAR_VEC)) {
-	  curr->type = HC_VAR_VEC;
-	  free(curr->str); free(curr->n->str);
-	  curr->n->str = NULL;
-	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_type == HC_VAR_NUM ? op2_r : NULL, op1_type == HC_VAR_NUM ? op1_i : op2_type == HC_VAR_NUM ? op2_i : NULL, op1_type == HC_VAR_STR ? op1_str : op2_type == HC_VAR_STR ? op2_str : NULL, '*');
-	  if (!curr->str)
-	  {
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  }
-	  free(op1_str); op1_str = NULL;
-	  free(op2_str); op2_str = NULL;
-	} else {
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"* accepts either numbers, an integer and a string, a vector and a number, or an all-integer vector and a string");
-	  return NULL;	  
-	}
-	curr = curr->n; // [sp++]
-	sp -= 1;
-	break;
-	
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"*");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        op2_type = curr->type;
+        if (op2_type == HC_VAR_NUM)
+        {
+          m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+        } else if (op2_type == HC_VAR_STR)
+        {
+          op2_str = get_string(curr->str);
+        } else if (op2_type == HC_VAR_VEC)
+        {
+          op2_str = strdup(curr->str);
+        }
+        curr = curr->p; // [--sp]
+        op1_type = curr->type;
+        if (op1_type == HC_VAR_NUM)
+        {
+          m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+        } else if (op1_type == HC_VAR_STR)
+        {
+          op1_str = get_string(curr->str);
+        } else if (op1_type == HC_VAR_VEC)
+        {
+          op1_str = strdup(curr->str);
+        }
+        if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
+        {
+          m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+        } else if ((op1_type == HC_VAR_NUM && m_apm_compare(op1_i,MM_Zero)==0 && m_apm_is_integer(op1_r) && op2_type == HC_VAR_STR) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_NUM && m_apm_compare(op2_i,MM_Zero)==0 && m_apm_is_integer(op2_r)))
+        {
+          curr->type = HC_VAR_STR;
+          free(curr->str); free(curr->n->str);
+          curr->n->str = NULL;
+          curr->str = str_multiply(op1_type == HC_VAR_STR ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r);
+          free(op1_str); op1_str = NULL;
+          free(op2_str); op2_str = NULL;
+        } else if ((op1_type == HC_VAR_NUM && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_NUM && op1_type == HC_VAR_VEC) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_VEC) || (op2_type == HC_VAR_STR && op1_type == HC_VAR_VEC)) {
+          curr->type = HC_VAR_VEC;
+          free(curr->str); free(curr->n->str);
+          curr->n->str = NULL;
+          curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_type == HC_VAR_NUM ? op2_r : NULL, op1_type == HC_VAR_NUM ? op1_i : op2_type == HC_VAR_NUM ? op2_i : NULL, op1_type == HC_VAR_STR ? op1_str : op2_type == HC_VAR_STR ? op2_str : NULL, '*');
+          if (!curr->str)
+          {
+            hc_postfix_result_cleanup();
+            return NULL;
+          }
+          free(op1_str); op1_str = NULL;
+          free(op2_str); op2_str = NULL;
+        } else {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"* accepts either numbers, an integer and a string, a vector and a number, or an all-integer vector and a string");
+          return NULL;          
+        }
+        curr = curr->n; // [sp++]
+        sp -= 1;
+        break;
+        
       case '/':
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"/");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	op2_type = curr->type;
-	if (curr->type == HC_VAR_NUM)
-	{
-	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	} else if (curr->type == HC_VAR_VEC)
-	{
-	  op2_str = strdup(curr->str);
-	}
-	curr = curr->p; // [--sp]
-	op1_type = curr->type;
-	if (curr->type == HC_VAR_NUM)
-	{
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	} else if (curr->type == HC_VAR_VEC)
-	{
-	  op1_str = strdup(curr->str);
-	}
-	if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
-	{
-	  if (m_apm_sign(op2_r)==0 && m_apm_sign(op2_i)==0)
-	  {
-	    hc_postfix_result_cleanup();
-	    d0_error();
-	    return NULL;
-	  }
-	  if (m_apm_compare(op1_i,MM_Zero)==0 && m_apm_compare(op2_i,MM_Zero)==0)
-	  {
-	    m_apm_set_string(curr->im,"0");
-	    m_apm_divide(curr->re,HC_DEC_PLACES,op1_r,op2_r);
-	  } else {
-	    m_apmc_divide(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
-	  }
-	} else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_NUM )
-	{
-	  curr->type = HC_VAR_VEC;
-	  free(curr->str); free(curr->n->str);
-	  curr->n->str = NULL;
-	  curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i, NULL, '/');
-	  if (!curr->str)
-	  {
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  }
-	  free(op1_str); op1_str = NULL;
-	  free(op2_str); op2_str = NULL;
-	} else {
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"/ accepts only two numbers or a vector and a number (in that order)");
-	  return NULL;
-	}
-	curr = curr->n; // [sp++]
-	sp -= 1;
-	break;
-	
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"/");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        op2_type = curr->type;
+        if (curr->type == HC_VAR_NUM)
+        {
+          m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+        } else if (curr->type == HC_VAR_VEC)
+        {
+          op2_str = strdup(curr->str);
+        }
+        curr = curr->p; // [--sp]
+        op1_type = curr->type;
+        if (curr->type == HC_VAR_NUM)
+        {
+          m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+        } else if (curr->type == HC_VAR_VEC)
+        {
+          op1_str = strdup(curr->str);
+        }
+        if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
+        {
+          if (m_apm_sign(op2_r)==0 && m_apm_sign(op2_i)==0)
+          {
+            hc_postfix_result_cleanup();
+            d0_error();
+            return NULL;
+          }
+          if (m_apm_compare(op1_i,MM_Zero)==0 && m_apm_compare(op2_i,MM_Zero)==0)
+          {
+            m_apm_set_string(curr->im,"0");
+            m_apm_divide(curr->re,HC_DEC_PLACES,op1_r,op2_r);
+          } else {
+            m_apmc_divide(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+          }
+        } else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_NUM )
+        {
+          curr->type = HC_VAR_VEC;
+          free(curr->str); free(curr->n->str);
+          curr->n->str = NULL;
+          curr->str = list_mul_div(op1_type == HC_VAR_VEC ? op1_str : op2_str, op1_type == HC_VAR_NUM ? op1_r : op2_r, op1_type == HC_VAR_NUM ? op1_i : op2_i, NULL, '/');
+          if (!curr->str)
+          {
+            hc_postfix_result_cleanup();
+            return NULL;
+          }
+          free(op1_str); op1_str = NULL;
+          free(op2_str); op2_str = NULL;
+        } else {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"/ accepts only two numbers or a vector and a number (in that order)");
+          return NULL;
+        }
+        curr = curr->n; // [sp++]
+        sp -= 1;
+        break;
+        
       case '%': // Modulo divison; for example 5 % 3 = 2 = mod(5,3)
-	if (sp >= 2)
-	{
-	  curr = curr->p; // [--sp]
-	  if (curr->type != HC_VAR_NUM)
-	  {
-	    hc_postfix_result_cleanup();
-	    hc_error(TYPE,"%% accepts only numbers");
-	    return NULL;
-	  }
-	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	  curr = curr->p; // [--sp]
-	  if (curr->type != HC_VAR_NUM)
-	  {
-	    hc_postfix_result_cleanup();
-	    hc_error(TYPE,"%% accepts only numbers");
-	    return NULL;
-	  }
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	} else {
-	  m_apm_set_string(op1_i,"1"); m_apm_set_string(op2_i,"1");
-	}
-	if (sp < 2 || m_apm_compare(op1_i,MM_Zero)!=0 || m_apm_compare(op2_i,MM_Zero)!=0)
-	{
-	  hc_postfix_result_cleanup();
-	  if (sp < 2)
-	  {
-	    hc_error(NOT_ENOUGH_OPERANDS,"%%");
-	  } else {
-	    arg_error("% : real arguments are required.");
-	  }
-	  return NULL;
-	}
-	M_APM tmp = m_apm_init();
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"%% accepts only numbers");
-	  return NULL;
-	}
-	m_apm_integer_div_rem(tmp,curr->re,op1_r,op2_r);
-	m_apm_set_string(curr->im,"0");
-	m_apm_free(tmp);
-	curr = curr->n; // [sp++]
-	sp -= 1;
-	break;
-	
+        if (sp >= 2)
+        {
+          curr = curr->p; // [--sp]
+          if (curr->type != HC_VAR_NUM)
+          {
+            hc_postfix_result_cleanup();
+            hc_error(TYPE,"%% accepts only numbers");
+            return NULL;
+          }
+          m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+          curr = curr->p; // [--sp]
+          if (curr->type != HC_VAR_NUM)
+          {
+            hc_postfix_result_cleanup();
+            hc_error(TYPE,"%% accepts only numbers");
+            return NULL;
+          }
+          m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+        } else {
+          m_apm_set_string(op1_i,"1"); m_apm_set_string(op2_i,"1");
+        }
+        if (sp < 2 || m_apm_compare(op1_i,MM_Zero)!=0 || m_apm_compare(op2_i,MM_Zero)!=0)
+        {
+          hc_postfix_result_cleanup();
+          if (sp < 2)
+          {
+            hc_error(NOT_ENOUGH_OPERANDS,"%%");
+          } else {
+            arg_error("% : real arguments are required.");
+          }
+          return NULL;
+        }
+        M_APM tmp = m_apm_init();
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"%% accepts only numbers");
+          return NULL;
+        }
+        m_apm_integer_div_rem(tmp,curr->re,op1_r,op2_r);
+        m_apm_set_string(curr->im,"0");
+        m_apm_free(tmp);
+        curr = curr->n; // [sp++]
+        sp -= 1;
+        break;
+        
       case '+':
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"+");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	op2_type = curr->type;
-	if (op2_type == HC_VAR_NUM)
-	{
-	  m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	} else if (op2_type == HC_VAR_STR)
-	{
-	  op2_str = get_string(curr->str);
-	} else if (op2_type == HC_VAR_VEC)
-	{
-	  op2_str = strdup(curr->str);
-	}
-	curr = curr->p; // [--sp]
-	op1_type = curr->type;
-	if (op1_type == HC_VAR_NUM)
-	{
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	} else if (op1_type == HC_VAR_STR) {
-	  op1_str = get_string(curr->str);
-	} else if (op1_type == HC_VAR_VEC) {
-	  op1_str = strdup(curr->str);
-	}
-	if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
-	{
-	  curr->type = HC_VAR_NUM;
-	  m_apmc_add(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
-	} else if (op1_type == HC_VAR_STR && op2_type == HC_VAR_STR)
-	{
-	  curr->type = HC_VAR_STR;
-	  free(curr->str);
-	  free(curr->n->str);
-	  curr->n->str = NULL;
-	  curr->str = malloc(1+strlen(op1_str)+strlen(op2_str)+2);
-	  if (!curr->str)
-	    mem_error();
-	  sprintf(curr->str,"\"%s%s\"",op1_str,op2_str);
-	  free(op1_str); op1_str = NULL;
-	  free(op2_str); op2_str = NULL;
-	} else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_VEC) {
-	  free(curr->str);
-	  free(curr->n->str);
-	  curr->n->str = NULL;
-	  if (!(curr->str = list_add_sub(op1_str, op2_str, '+')))
-	  {
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  }
-	  free(op1_str); op1_str = NULL;
-	  free(op2_str); op2_str = NULL;
-	} else {
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"+ accepts either two numbers, two strings or two vectors");
-	  return NULL;
-	}
-	curr = curr->n; // [sp++]
-	sp -= 1;
-	break;
-	
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"+");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        op2_type = curr->type;
+        if (op2_type == HC_VAR_NUM)
+        {
+          m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+        } else if (op2_type == HC_VAR_STR)
+        {
+          op2_str = get_string(curr->str);
+        } else if (op2_type == HC_VAR_VEC)
+        {
+          op2_str = strdup(curr->str);
+        }
+        curr = curr->p; // [--sp]
+        op1_type = curr->type;
+        if (op1_type == HC_VAR_NUM)
+        {
+          m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+        } else if (op1_type == HC_VAR_STR) {
+          op1_str = get_string(curr->str);
+        } else if (op1_type == HC_VAR_VEC) {
+          op1_str = strdup(curr->str);
+        }
+        if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
+        {
+          curr->type = HC_VAR_NUM;
+          m_apmc_add(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+        } else if (op1_type == HC_VAR_STR && op2_type == HC_VAR_STR)
+        {
+          curr->type = HC_VAR_STR;
+          free(curr->str);
+          free(curr->n->str);
+          curr->n->str = NULL;
+          curr->str = malloc(1+strlen(op1_str)+strlen(op2_str)+2);
+          if (!curr->str)
+            mem_error();
+          sprintf(curr->str,"\"%s%s\"",op1_str,op2_str);
+          free(op1_str); op1_str = NULL;
+          free(op2_str); op2_str = NULL;
+        } else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_VEC) {
+          free(curr->str);
+          free(curr->n->str);
+          curr->n->str = NULL;
+          if (!(curr->str = list_add_sub(op1_str, op2_str, '+')))
+          {
+            hc_postfix_result_cleanup();
+            return NULL;
+          }
+          free(op1_str); op1_str = NULL;
+          free(op2_str); op2_str = NULL;
+        } else {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"+ accepts either two numbers, two strings or two vectors");
+          return NULL;
+        }
+        curr = curr->n; // [sp++]
+        sp -= 1;
+        break;
+        
       case '_':
-	if (e[i+1] && !isdigit(e[i+1]))
-	{
-	  curr = curr->p;
-	  if (curr->type == HC_VAR_NUM)
-	  {
-	    m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	    m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
-	  } else if (curr->type == HC_VAR_VEC) {
-	    char *tmp = curr->str;
-	    curr->str = list_neg(curr->str);
-	    free(tmp);
-	    if (!curr->str)
-	    {
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	  } else {
-	    hc_postfix_result_cleanup();
-	    hc_error(TYPE,"- accepts only numbers or vectors");
-	    return NULL;
-	  }
-	  curr = curr->n;
-	  break;
-	} else {
-	  if (!e[i+1])
-	  {
-	    hc_postfix_result_cleanup();
-	    syntax_error2();
-	    return NULL;
-	  }
-	  e[i] = '@';
-	  i--;
-	  break;
-	}
+        if (e[i+1] && !isdigit(e[i+1]))
+        {
+          curr = curr->p;
+          if (curr->type == HC_VAR_NUM)
+          {
+            m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+            m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
+          } else if (curr->type == HC_VAR_VEC) {
+            char *tmp = curr->str;
+            curr->str = list_neg(curr->str);
+            free(tmp);
+            if (!curr->str)
+            {
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+          } else {
+            hc_postfix_result_cleanup();
+            hc_error(TYPE,"- accepts only numbers or vectors");
+            return NULL;
+          }
+          curr = curr->n;
+          break;
+        } else {
+          if (!e[i+1])
+          {
+            hc_postfix_result_cleanup();
+            syntax_error2();
+            return NULL;
+          }
+          e[i] = '@';
+          i--;
+          break;
+        }
       case '-':
-	if (sp < 2)
-	{
-	  curr = curr->p; // [--sp]
-	  if (curr->type != HC_VAR_NUM)
-	  {
-	    hc_postfix_result_cleanup();
-	    hc_error(TYPE,"- accepts only two numbers or two vectors");
-	    return NULL;
-	  }
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	  m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
-	  curr = curr->n; // [sp++]
-	  // no need to modify sp here
-	} else {
-	  curr = curr->p; // [--sp]
-	  op2_type = curr->type;
-	  if (curr->type == HC_VAR_NUM)
-	  {
-	    m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	  } else if (curr->type == HC_VAR_VEC) {
-	    op2_str = strdup(curr->str);
-	  }
-	  curr = curr->p; // [--sp]
-	  op1_type = curr->type;
-	  if (curr->type == HC_VAR_NUM) {
-	    m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	  } else if (curr->type == HC_VAR_VEC) {
-	    op1_str = strdup(curr->str);
-	  }
-	  if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
-	  {
-	    m_apmc_subtract(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
-	  } else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_VEC) {
-	    free(curr->str);
-	    free(curr->n->str);
-	    curr->n->str = NULL;
-	    if (!(curr->str = list_add_sub(op1_str, op2_str, '-')))
-	    {
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	    free(op1_str); op1_str = NULL;
-	    free(op2_str); op2_str = NULL;
-	  } else {
-	    hc_postfix_result_cleanup();
-	    hc_error(TYPE,"- accepts only two numbers or two vectors");
-	    return NULL;
-	  }
-	  curr = curr->n; // [sp++]
-	  sp -= 1;
-	}
-	break;
-	
+        if (sp < 2)
+        {
+          curr = curr->p; // [--sp]
+          if (curr->type != HC_VAR_NUM)
+          {
+            hc_postfix_result_cleanup();
+            hc_error(TYPE,"- accepts only two numbers or two vectors");
+            return NULL;
+          }
+          m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+          m_apmc_subtract(curr->re,curr->im,MM_Zero,MM_Zero,op1_r,op1_i);
+          curr = curr->n; // [sp++]
+          // no need to modify sp here
+        } else {
+          curr = curr->p; // [--sp]
+          op2_type = curr->type;
+          if (curr->type == HC_VAR_NUM)
+          {
+            m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+          } else if (curr->type == HC_VAR_VEC) {
+            op2_str = strdup(curr->str);
+          }
+          curr = curr->p; // [--sp]
+          op1_type = curr->type;
+          if (curr->type == HC_VAR_NUM) {
+            m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+          } else if (curr->type == HC_VAR_VEC) {
+            op1_str = strdup(curr->str);
+          }
+          if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
+          {
+            m_apmc_subtract(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
+          } else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_VEC) {
+            free(curr->str);
+            free(curr->n->str);
+            curr->n->str = NULL;
+            if (!(curr->str = list_add_sub(op1_str, op2_str, '-')))
+            {
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+            free(op1_str); op1_str = NULL;
+            free(op2_str); op2_str = NULL;
+          } else {
+            hc_postfix_result_cleanup();
+            hc_error(TYPE,"- accepts only two numbers or two vectors");
+            return NULL;
+          }
+          curr = curr->n; // [sp++]
+          sp -= 1;
+        }
+        break;
+        
       case PW_SIGN:
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"%c",PW_SIGN);
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"^ accepts only numbers");
-	  return NULL;
-	}
-	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"^ accepts only numbers");
-	  return NULL;
-	}
-	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op2_r,MM_Two)==0)
-	{
-	  m_apmc_sqr(curr->re,curr->im,op1_r,op1_i);
-	} else {
-	  if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op1_i,MM_Zero)==0)
-	  {
-	    m_apm_set_string(curr->im,"0");
-	    m_apm_pow(curr->re,HC_DEC_PLACES,op1_r,op2_r);
-	  } else {
-	    m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
-	  }
-	}
-	curr = curr->n; // [sp++]
-	sp -= 1;
-	break;
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"%c",PW_SIGN);
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"^ accepts only numbers");
+          return NULL;
+        }
+        m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"^ accepts only numbers");
+          return NULL;
+        }
+        m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+        if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op2_r,MM_Two)==0)
+        {
+          m_apmc_sqr(curr->re,curr->im,op1_r,op1_i);
+        } else {
+          if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op1_i,MM_Zero)==0)
+          {
+            m_apm_set_string(curr->im,"0");
+            m_apm_pow(curr->re,HC_DEC_PLACES,op1_r,op2_r);
+          } else {
+            m_apmc_pow(curr->re,curr->im,HC_DEC_PLACES,op1_r,op1_i,op2_r,op2_i);
+          }
+        }
+        curr = curr->n; // [sp++]
+        sp -= 1;
+        break;
 
       case NOT_SIGN:
-	if (sp < 1)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"! (used as logical NOT)");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"! (used as logical NOT) accepts only numbers");
-	  return NULL;
-	}
-	m_apm_copy(curr->im,MM_Zero);
-	if (m_apm_compare(curr->re,MM_Zero)==0)
-	{
-	  m_apm_copy(curr->re,MM_One);
-	} else {
-	  m_apm_copy(curr->re,MM_Zero);
-	}
-	curr = curr->n; // [sp++]
-	break;
+        if (sp < 1)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"! (used as logical NOT)");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"! (used as logical NOT) accepts only numbers");
+          return NULL;
+        }
+        m_apm_copy(curr->im,MM_Zero);
+        if (m_apm_compare(curr->re,MM_Zero)==0)
+        {
+          m_apm_copy(curr->re,MM_One);
+        } else {
+          m_apm_copy(curr->re,MM_Zero);
+        }
+        curr = curr->n; // [sp++]
+        break;
 
       case '!':
-	switch (e[i+1])
-	{
-	case '=':
-	  // interpret as condition
-	  i++;
-	  if (sp < 2)
-	  {
-	    hc_postfix_result_cleanup();
-	    hc_error(NOT_ENOUGH_OPERANDS,"!=");
-	    return NULL;
-	  }
-	  curr = curr->p; // [--sp]
-	  op2_type = curr->type;
-	  if (op2_type == HC_VAR_NUM)
-	  {
-	    // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	    hc_round(op2_r,hc.precision,curr->re);
-	    hc_round(op2_i,hc.precision,curr->im);
-	  } else if (op2_type == HC_VAR_STR)
-	  {
-	    op2_str = get_string(curr->str);
-	  } else if (op2_type == HC_VAR_VEC)
-	  {
-	    op2_str = strdup(curr->str);
-	  }
-	  curr = curr->p; // [--sp]
-	  op1_type = curr->type;
-	  if (op1_type == HC_VAR_NUM)
-	  {
-	    // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	    hc_round(op1_r,hc.precision,curr->re);
-	    hc_round(op1_i,hc.precision,curr->im);
-	  } else if (op1_type == HC_VAR_STR) {
-	    op1_str = get_string(curr->str);
-	  } else if (op1_type == HC_VAR_VEC) {
-	    op1_str = strdup(curr->str);
-	  }
-	  m_apm_copy(curr->im,MM_Zero);
-	  curr->type = HC_VAR_NUM;
-	  if (op1_type == op2_type)
-	  {
-	    if (op1_type == HC_VAR_NUM)
-	    {
-	      if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
-		m_apm_copy(curr->re,MM_Zero);
-	      else
-		m_apm_copy(curr->re,MM_One);
-	    } else if (op1_type == HC_VAR_STR)
-	    {
-	      if (strcmp(op1_str,op2_str)==0)
-		m_apm_copy(curr->re,MM_Zero);
-	      else
-		m_apm_copy(curr->re,MM_One);
-	    } else if (op1_type == HC_VAR_VEC)
-	    {
-	      if (list_compare(op1_str,op2_str)==0)
-		m_apm_copy(curr->re,MM_Zero);
-	      else
-		m_apm_copy(curr->re,MM_One);
-	    }
-	  } else {
-	    m_apm_copy(curr->re,MM_One);
-	  }
-	  free(op1_str); free(op2_str);
-	  op1_str = op2_str = NULL;
-	  curr = curr->n;
-	  sp -= 1;
-	  break;
-	default:
-	  // interpret as factorial
-	  if (sp < 1)
-	  {
-	    hc_postfix_result_cleanup();
-	    hc_error(NOT_ENOUGH_OPERANDS,"! (used as factorial)");
-	    return NULL;
-	  }
-	  curr = curr->p; // [--sp]
-	  if (curr->type != HC_VAR_NUM)
-	  {
-	    hc_postfix_result_cleanup();
-	    hc_error(TYPE,"! (used as factorial) accepts only numbers");
-	    return NULL;
-	  }
-	  if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
-	  {
-	    hc_postfix_result_cleanup();
-	    arg_error("! : an integer is required.");
-	    return NULL;
-	  }
-	  m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	  m_apm_factorial(curr->re,op1_r);
-	  m_apm_copy(curr->im,MM_Zero);
-	  curr = curr->n; // [sp++]
-	  break;
-	}
-	break;
-	
+        switch (e[i+1])
+        {
+        case '=':
+          // interpret as condition
+          i++;
+          if (sp < 2)
+          {
+            hc_postfix_result_cleanup();
+            hc_error(NOT_ENOUGH_OPERANDS,"!=");
+            return NULL;
+          }
+          curr = curr->p; // [--sp]
+          op2_type = curr->type;
+          if (op2_type == HC_VAR_NUM)
+          {
+            // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+            hc_round(op2_r,hc.precision,curr->re);
+            hc_round(op2_i,hc.precision,curr->im);
+          } else if (op2_type == HC_VAR_STR)
+          {
+            op2_str = get_string(curr->str);
+          } else if (op2_type == HC_VAR_VEC)
+          {
+            op2_str = strdup(curr->str);
+          }
+          curr = curr->p; // [--sp]
+          op1_type = curr->type;
+          if (op1_type == HC_VAR_NUM)
+          {
+            // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+            hc_round(op1_r,hc.precision,curr->re);
+            hc_round(op1_i,hc.precision,curr->im);
+          } else if (op1_type == HC_VAR_STR) {
+            op1_str = get_string(curr->str);
+          } else if (op1_type == HC_VAR_VEC) {
+            op1_str = strdup(curr->str);
+          }
+          m_apm_copy(curr->im,MM_Zero);
+          curr->type = HC_VAR_NUM;
+          if (op1_type == op2_type)
+          {
+            if (op1_type == HC_VAR_NUM)
+            {
+              if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
+                m_apm_copy(curr->re,MM_Zero);
+              else
+                m_apm_copy(curr->re,MM_One);
+            } else if (op1_type == HC_VAR_STR)
+            {
+              if (strcmp(op1_str,op2_str)==0)
+                m_apm_copy(curr->re,MM_Zero);
+              else
+                m_apm_copy(curr->re,MM_One);
+            } else if (op1_type == HC_VAR_VEC)
+            {
+              if (list_compare(op1_str,op2_str)==0)
+                m_apm_copy(curr->re,MM_Zero);
+              else
+                m_apm_copy(curr->re,MM_One);
+            }
+          } else {
+            m_apm_copy(curr->re,MM_One);
+          }
+          free(op1_str); free(op2_str);
+          op1_str = op2_str = NULL;
+          curr = curr->n;
+          sp -= 1;
+          break;
+        default:
+          // interpret as factorial
+          if (sp < 1)
+          {
+            hc_postfix_result_cleanup();
+            hc_error(NOT_ENOUGH_OPERANDS,"! (used as factorial)");
+            return NULL;
+          }
+          curr = curr->p; // [--sp]
+          if (curr->type != HC_VAR_NUM)
+          {
+            hc_postfix_result_cleanup();
+            hc_error(TYPE,"! (used as factorial) accepts only numbers");
+            return NULL;
+          }
+          if (!m_apm_is_integer(curr->re) || m_apm_compare(curr->im,MM_Zero)!=0)
+          {
+            hc_postfix_result_cleanup();
+            arg_error("! : an integer is required.");
+            return NULL;
+          }
+          m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+          m_apm_factorial(curr->re,op1_r);
+          m_apm_copy(curr->im,MM_Zero);
+          curr = curr->n; // [sp++]
+          break;
+        }
+        break;
+        
       case '<':
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"< / <=");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"</<= accepts only numbers");
-	  return NULL;
-	}
-	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	hc_round(op2_r,hc.precision,curr->re);
-	hc_round(op2_i,hc.precision,curr->im);
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"</<= accepts only numbers");
-	  return NULL;
-	}
-	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	hc_round(op1_r,hc.precision,curr->re);
-	hc_round(op1_i,hc.precision,curr->im);
-	m_apm_set_string(curr->im,"0");
-	switch(e[++i])
-	{
-	case '=':
-	  if (m_apmc_le(op1_r,op1_i,op2_r,op2_i))
-	    m_apm_set_string(curr->re,"1");
-	  else
-	    m_apm_set_string(curr->re,"0");
-	  break;
-	default:
-	  i--;
-	  if (m_apmc_lt(op1_r,op1_i,op2_r,op2_i))
-	    m_apm_set_string(curr->re,"1");
-	  else
-	    m_apm_set_string(curr->re,"0");
-	  break;
-	}
-	curr = curr->n;
-	sp -= 1;
-	break;
-	
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"< / <=");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"</<= accepts only numbers");
+          return NULL;
+        }
+        // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+        hc_round(op2_r,hc.precision,curr->re);
+        hc_round(op2_i,hc.precision,curr->im);
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"</<= accepts only numbers");
+          return NULL;
+        }
+        // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+        hc_round(op1_r,hc.precision,curr->re);
+        hc_round(op1_i,hc.precision,curr->im);
+        m_apm_set_string(curr->im,"0");
+        switch(e[++i])
+        {
+        case '=':
+          if (m_apmc_le(op1_r,op1_i,op2_r,op2_i))
+            m_apm_set_string(curr->re,"1");
+          else
+            m_apm_set_string(curr->re,"0");
+          break;
+        default:
+          i--;
+          if (m_apmc_lt(op1_r,op1_i,op2_r,op2_i))
+            m_apm_set_string(curr->re,"1");
+          else
+            m_apm_set_string(curr->re,"0");
+          break;
+        }
+        curr = curr->n;
+        sp -= 1;
+        break;
+        
       case '>':
-	if (sp < 2)
-	{
-	   hc_postfix_result_cleanup();
-	   hc_error(NOT_ENOUGH_OPERANDS,"> / >=");
-	   return NULL;
-	}
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,">/>= accepts only numbers");
-	  return NULL;
-	}
-	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	hc_round(op2_r,hc.precision,curr->re);
-	hc_round(op2_i,hc.precision,curr->im);
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,">/>= accepts only numbers");
-	  return NULL;
-	}
-	// Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	hc_round(op1_r,hc.precision,curr->re);
-	hc_round(op1_i,hc.precision,curr->im);
-	m_apm_set_string(curr->im,"0");
-	switch(e[++i])
-	{
-	case '=':
-	  if (m_apmc_ge(op1_r,op1_i,op2_r,op2_i))
-	    m_apm_set_string(curr->re,"1");
-	  else
-	    m_apm_set_string(curr->re,"0");
-	  break;
-	default:
-	  i--;
-	  if (m_apmc_gt(op1_r,op1_i,op2_r,op2_i))
-	    m_apm_set_string(curr->re,"1");
-	  else
-	    m_apm_set_string(curr->re,"0");
-	  break;
-	}
-	curr = curr->n;
-	sp -= 1;
-	break;
-	
+        if (sp < 2)
+        {
+           hc_postfix_result_cleanup();
+           hc_error(NOT_ENOUGH_OPERANDS,"> / >=");
+           return NULL;
+        }
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,">/>= accepts only numbers");
+          return NULL;
+        }
+        // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+        hc_round(op2_r,hc.precision,curr->re);
+        hc_round(op2_i,hc.precision,curr->im);
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,">/>= accepts only numbers");
+          return NULL;
+        }
+        // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+        hc_round(op1_r,hc.precision,curr->re);
+        hc_round(op1_i,hc.precision,curr->im);
+        m_apm_set_string(curr->im,"0");
+        switch(e[++i])
+        {
+        case '=':
+          if (m_apmc_ge(op1_r,op1_i,op2_r,op2_i))
+            m_apm_set_string(curr->re,"1");
+          else
+            m_apm_set_string(curr->re,"0");
+          break;
+        default:
+          i--;
+          if (m_apmc_gt(op1_r,op1_i,op2_r,op2_i))
+            m_apm_set_string(curr->re,"1");
+          else
+            m_apm_set_string(curr->re,"0");
+          break;
+        }
+        curr = curr->n;
+        sp -= 1;
+        break;
+        
       case '=':
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"==");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	op2_type = curr->type;
-	if (op2_type == HC_VAR_NUM)
-	{
-	  // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	  hc_round(op2_r,hc.precision,curr->re);
-	  hc_round(op2_i,hc.precision,curr->im);
-	} else if (op2_type == HC_VAR_STR)
-	{
-	  op2_str = get_string(curr->str);
-	} else if (op2_type == HC_VAR_VEC)
-	{
-	  op2_str = strdup(curr->str);
-	}
-	curr = curr->p; // [--sp]
-	op1_type = curr->type;
-	if (op1_type == HC_VAR_NUM)
-	{
-	  // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
-	  hc_round(op1_r,hc.precision,curr->re);
-	  hc_round(op1_i,hc.precision,curr->im);
-	} else if (op1_type == HC_VAR_STR) {
-	  op1_str = get_string(curr->str);
-	} else if (op1_type == HC_VAR_VEC) {
-	  op1_str = strdup(curr->str);
-	}
-	m_apm_copy(curr->im,MM_Zero);
-	switch(e[++i])
-	{
-	case '=':
-	  curr->type = HC_VAR_NUM;
-	  if (op1_type == op2_type)
-	  {
-	    if (op1_type == HC_VAR_NUM)
-	    {
-	      if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
-		m_apm_copy(curr->re,MM_One);
-	      else
-		m_apm_copy(curr->re,MM_Zero);
-	    } else if (op1_type == HC_VAR_STR)
-	    {
-	      if (strcmp(op1_str,op2_str)==0)
-		m_apm_copy(curr->re,MM_One);
-	      else
-		m_apm_copy(curr->re,MM_Zero);
-	    } else if (op1_type == HC_VAR_VEC)
-	    {
-	      if (list_compare(op1_str,op2_str)==0)
-		m_apm_copy(curr->re,MM_One);
-	      else
-		m_apm_copy(curr->re,MM_Zero);
-	    }
-	  } else {
-	    m_apm_copy(curr->re,MM_Zero);
-	  }
-	  free(op1_str); free(op2_str);
-	  op1_str = op2_str = NULL;
-	  break;
-	default:
-	  break; // TODO : if this is reached something bad happened (tm)
-	}
-	curr = curr->n;
-	sp -= 1;
-	break;
-	
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"==");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        op2_type = curr->type;
+        if (op2_type == HC_VAR_NUM)
+        {
+          // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+          hc_round(op2_r,hc.precision,curr->re);
+          hc_round(op2_i,hc.precision,curr->im);
+        } else if (op2_type == HC_VAR_STR)
+        {
+          op2_str = get_string(curr->str);
+        } else if (op2_type == HC_VAR_VEC)
+        {
+          op2_str = strdup(curr->str);
+        }
+        curr = curr->p; // [--sp]
+        op1_type = curr->type;
+        if (op1_type == HC_VAR_NUM)
+        {
+          // Avoid errors due to calculating internally with higher precision (HC_DEC_PLACES) and then truncating back to hc.precision
+          hc_round(op1_r,hc.precision,curr->re);
+          hc_round(op1_i,hc.precision,curr->im);
+        } else if (op1_type == HC_VAR_STR) {
+          op1_str = get_string(curr->str);
+        } else if (op1_type == HC_VAR_VEC) {
+          op1_str = strdup(curr->str);
+        }
+        m_apm_copy(curr->im,MM_Zero);
+        switch(e[++i])
+        {
+        case '=':
+          curr->type = HC_VAR_NUM;
+          if (op1_type == op2_type)
+          {
+            if (op1_type == HC_VAR_NUM)
+            {
+              if (m_apmc_eq(op1_r,op1_i,op2_r,op2_i))
+                m_apm_copy(curr->re,MM_One);
+              else
+                m_apm_copy(curr->re,MM_Zero);
+            } else if (op1_type == HC_VAR_STR)
+            {
+              if (strcmp(op1_str,op2_str)==0)
+                m_apm_copy(curr->re,MM_One);
+              else
+                m_apm_copy(curr->re,MM_Zero);
+            } else if (op1_type == HC_VAR_VEC)
+            {
+              if (list_compare(op1_str,op2_str)==0)
+                m_apm_copy(curr->re,MM_One);
+              else
+                m_apm_copy(curr->re,MM_Zero);
+            }
+          } else {
+            m_apm_copy(curr->re,MM_Zero);
+          }
+          free(op1_str); free(op2_str);
+          op1_str = op2_str = NULL;
+          break;
+        default:
+          break; // TODO : if this is reached something bad happened (tm)
+        }
+        curr = curr->n;
+        sp -= 1;
+        break;
+        
       case '|':
-	if (e[i+1]=='|') // both single | and double || are accepted
-	  i++;
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"||");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"|| accepts only numbers");
-	  return NULL;
-	}
-	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"|| accepts only numbers");
-	  return NULL;
-	}
-	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	m_apm_set_string(curr->im,"0");
-	if (e[i+1]==e[i])
-	  i++;
-	if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 || m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
-	  m_apm_set_string(curr->re,"1");
-	else
-	  m_apm_set_string(curr->re,"0");
-	curr = curr->n;
-	sp -= 1;
-	break;
-	
+        if (e[i+1]=='|') // both single | and double || are accepted
+          i++;
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"||");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"|| accepts only numbers");
+          return NULL;
+        }
+        m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"|| accepts only numbers");
+          return NULL;
+        }
+        m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+        m_apm_set_string(curr->im,"0");
+        if (e[i+1]==e[i])
+          i++;
+        if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 || m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
+          m_apm_set_string(curr->re,"1");
+        else
+          m_apm_set_string(curr->re,"0");
+        curr = curr->n;
+        sp -= 1;
+        break;
+        
       case '&':
-	if (e[i+1]=='&') // both single & and double && are accepted
-	  i++;
-	if (sp < 2)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(NOT_ENOUGH_OPERANDS,"&&");
-	  return NULL;
-	}
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"&& accepts only numbers");
-	  return NULL;
-	}
-	m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
-	curr = curr->p; // [--sp]
-	if (curr->type != HC_VAR_NUM)
-	{
-	  hc_postfix_result_cleanup();
-	  hc_error(TYPE,"&& accepts only numbers");
-	  return NULL;
-	}
-	m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
-	m_apm_set_string(curr->im,"0");
-	if (e[i+1]==e[i])
-	  i++;
-	if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 && m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
-	  m_apm_set_string(curr->re,"1");
-	else
-	  m_apm_set_string(curr->re,"0");
-	curr = curr->n;
-	sp -= 1;
-	break;
-	
+        if (e[i+1]=='&') // both single & and double && are accepted
+          i++;
+        if (sp < 2)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(NOT_ENOUGH_OPERANDS,"&&");
+          return NULL;
+        }
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"&& accepts only numbers");
+          return NULL;
+        }
+        m_apm_copy(op2_r,curr->re);m_apm_copy(op2_i,curr->im);
+        curr = curr->p; // [--sp]
+        if (curr->type != HC_VAR_NUM)
+        {
+          hc_postfix_result_cleanup();
+          hc_error(TYPE,"&& accepts only numbers");
+          return NULL;
+        }
+        m_apm_copy(op1_r,curr->re);m_apm_copy(op1_i,curr->im);
+        m_apm_set_string(curr->im,"0");
+        if (e[i+1]==e[i])
+          i++;
+        if (m_apmc_eq(op1_r,op1_i,MM_Zero,MM_Zero)==0 && m_apmc_eq(op2_r,op2_i,MM_Zero,MM_Zero)==0)
+          m_apm_set_string(curr->re,"1");
+        else
+          m_apm_set_string(curr->re,"0");
+        curr = curr->n;
+        sp -= 1;
+        break;
+        
       default:
-	if (e[i]=='@')
-	  e[i] = '_';
-	j = 0;
-	char type;
-	if (isdigit(e[i]) || e[i]=='.' || e[i]=='_')
-	{
-	  type = HC_VAR_NUM;
-	  char tmpsts = 0;
-	  int tmpe = 1;
-	  int tmpi = 1;
-	  char base;
-	  if (e[i]=='0' && tolower(e[i+1])=='x')
-	    base = 16;
-	  else if (e[i]=='0' && tolower(e[i+1])=='b')
-	    base = 2;
-	  else
-	    base = 10;
-	  /*
-	    Base 10:
+        if (e[i]=='@')
+          e[i] = '_';
+        j = 0;
+        char type;
+        if (isdigit(e[i]) || e[i]=='.' || e[i]=='_')
+        {
+          type = HC_VAR_NUM;
+          char tmpsts = 0;
+          int tmpe = 1;
+          int tmpi = 1;
+          char base;
+          if (e[i]=='0' && tolower(e[i+1])=='x')
+            base = 16;
+          else if (e[i]=='0' && tolower(e[i+1])=='b')
+            base = 2;
+          else
+            base = 10;
+          /*
+            Base 10:
 
-	    tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
+            tmpsts holds various states in reading the number. These states are used for checking the syntax of the number -- ie. the allowed characters to occur at a particular state. tmpe and tmpi hold the number of allowed 'e's and 'i's respectively.
 
-	    States
-	    ------
-	    0 : at the beginning of the scan, or after an 'e', or after an 'i'
-	    1 : after a number, allowing for a decimal point
-	    2 : after a number or a decimal point, not allowing for a decimal point
-	    3 : after a negative sign
-	   */
-	  if (base == 10)
-	  {
-	    while ((!isspace(e[i]))&&(!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_')&& e[i])
-	    {
-	      if (hc.rpn) // otherwise, this has already been checked by hc_i2p()
-	      {
-		if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')))
-		{
-		  hc_postfix_result_cleanup();
-		  return NULL;
-		}
-		if (tolower(e[i]) == 'e')
-		{
-		  tmpsts = 0;
-		  tmpe--;
-		} else if (tolower(e[i]) == 'i')
-		{
-		  tmpsts = 0;
-		  tmpi--;
-		  tmpe = 1;
-		} else if (isdigit(e[i]))
-		{
-		  if (tmpsts == 0 || tmpsts == 3)
-		    tmpsts = 1;
-		  // nothing needs to be done otherwise
-		} else if (e[i]=='.')
-		{
-		  tmpsts = 2;
-		} else if (e[i]=='_' || e[i]=='-')
-		{
-		  tmpsts = 3;
-		}
-		if (tmpe < 0 || tmpi < 0)
-		{
-		  hc_postfix_result_cleanup();
-		  return NULL;
-		}
-	      }
-	      tmp_num[j++] = e[i++];
-	    }
-	  } else { // base == 2 or base == 16
-	    /* Base 2 or Base 16:
+            States
+            ------
+            0 : at the beginning of the scan, or after an 'e', or after an 'i'
+            1 : after a number, allowing for a decimal point
+            2 : after a number or a decimal point, not allowing for a decimal point
+            3 : after a negative sign
+           */
+          if (base == 10)
+          {
+            while ((!isspace(e[i]))&&(!isoperator(e[i]) || (i!=0 && tolower(e[i-1])=='e') || e[i]=='_')&& e[i])
+            {
+              if (hc.rpn) // otherwise, this has already been checked by hc_i2p()
+              {
+                if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')))
+                {
+                  hc_postfix_result_cleanup();
+                  return NULL;
+                }
+                if (tolower(e[i]) == 'e')
+                {
+                  tmpsts = 0;
+                  tmpe--;
+                } else if (tolower(e[i]) == 'i')
+                {
+                  tmpsts = 0;
+                  tmpi--;
+                  tmpe = 1;
+                } else if (isdigit(e[i]))
+                {
+                  if (tmpsts == 0 || tmpsts == 3)
+                    tmpsts = 1;
+                  // nothing needs to be done otherwise
+                } else if (e[i]=='.')
+                {
+                  tmpsts = 2;
+                } else if (e[i]=='_' || e[i]=='-')
+                {
+                  tmpsts = 3;
+                }
+                if (tmpe < 0 || tmpi < 0)
+                {
+                  hc_postfix_result_cleanup();
+                  return NULL;
+                }
+              }
+              tmp_num[j++] = e[i++];
+            }
+          } else { // base == 2 or base == 16
+            /* Base 2 or Base 16:
 
-	       tmpsts contains either TRUE, to allow a decimal point, or FALSE, to allow only digits.
-	       No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
-	    */
-	    tmpsts = TRUE;
-	    i+=2; // skip the initial '0x' or '0b'
-	    while (!isspace(e[i]) && (!isoperator(e[i]) || e[i]=='_'))
-	    {
-	      if (hc.rpn && (!isdigitb(e[i],base) && (e[i]!='.' || tmpsts == FALSE))) // hc.rpn : if not true, this has already been checked by hc_i2p() so we can skip this
-	      {
-		hc_postfix_result_cleanup();
-		return NULL;
-	      } else {
-		if (e[i]=='.')
-		  tmpsts = FALSE;
-		tmp_num[j++] = e[i++];
-	      }
-	    }
-	    tmp_num[j] = '\0';
-	    if (!hc_2dec(base,(char *)&tmp_num,MAX_DOUBLE_STRING))
-	    {
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	    j = strlen(tmp_num);
-	  }
-	} else if (e[i]=='\"') {
-	  type = HC_VAR_STR;
-	  tmp_num[j++] = e[i++];
-	  while (e[i]!='\"' && e[i])
-	    tmp_num[j++] = e[i++];
-	  if (e[i] != '\"')
-	  {
-	    hc_postfix_result_cleanup();
-	    hc_error(SYNTAX,"missing end quotes");
-	    return NULL;
-	  }
-	  tmp_num[j++] = e[i++];
-	  while (e[i]=='[') // index
-	  {
-	    tmp_num[j] = 0;
-	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
-	    {
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	    j = strlen(tmp_num);
-	  }
-	} else if (e[i]=='[') {
-	  type = HC_VAR_VEC;
-	  unsigned int pct = 1;
-	  char ignore = FALSE;
-	  tmp_num[j++] = e[i++];
-	  while (pct!=0 && e[i])
-	  {
-	    if (e[i]=='\"')
-	    {
-	      ignore = ignore == FALSE ? TRUE : FALSE;
-	    }
-	    if (e[i]=='[' && !ignore)
-	      pct++;
-	    if (e[i]==']' && !ignore)
-	      pct--;
-	    tmp_num[j++] = e[i++];
-	  }
-	  if (pct!=0)
-	  {
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  }
-	  tmp_num[j]=0;
-	  char *newlist = list_simplify((char *)&tmp_num);
-	  if (!newlist)
-	  {
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  } else if (strlen(newlist) < MAX_DOUBLE_STRING)
-	  {
-	    strcpy(tmp_num,newlist);
-	    free(newlist);
-	  } else {
-	    hc_postfix_result_cleanup();
-	    overflow_error();
-	  }
-	  j = strlen(tmp_num);
-	  while (e[i]=='[') // index
-	  {
-	    tmp_num[j]=0;
-	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
-	    {
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	    j = strlen(tmp_num);
-	  }
-	} else if (e[i]=='\'') { // lambda expression
-	  char *lambda_expr = malloc(MAX_EXPR);
-	  if (!lambda_expr) mem_error();
-	  char *lambda_end = strchr_outofblock((char *)(e + i + 1),'\'');
-	  if (!lambda_end)
-	  {
-	    hc_error(SYNTAX,"single quotes do not match");
-	    hc_postfix_result_cleanup();
-	    free(lambda_expr);
-	    return NULL;
-	  }
-	  if (((char *)(lambda_end + 1))[0] != '(')
-	  {
-	    hc_error(SYNTAX,"( expected after lambda expression");
-	    hc_postfix_result_cleanup();
-	    free(lambda_expr);
-	    return NULL;
-	  }
-	  memcpy(lambda_expr,(char *)(e + i + 1),lambda_end - e - i - 1);
-	  lambda_expr[lambda_end - e - i - 1] = '\0';
-	  i = lambda_end - e + 1;
-	  char *args_end = strchr_outofblock((char *)(e + i),')');
-	  if (!args_end)
-	  {
-	    hc_error(SYNTAX,"('s and )'s do not match");
-	    hc_postfix_result_cleanup();
-	    free(lambda_expr);
-	    return NULL;
-	  }
-	  char *args = malloc(MAX_EXPR); if (!args) mem_error();
-	  memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
-	  args[args_end - e - i - 1] = '\0';
-	  i = args_end - e + 1;
-	  if (!hc_eval_lambda((char *)&tmp_num, MAX_DOUBLE_STRING, &type, lambda_expr, args))
-	  {
-	    free(lambda_expr); free(args);
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  }
-	  free(lambda_expr); free(args);
-	  j = strlen(tmp_num);
-	  while (e[i]=='[')
-	  {
-	    tmp_num[j]=0;
-	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
-	    {
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	    j = strlen(tmp_num);
-	  }
-	  j = strlen(tmp_num);
-	} else {
-	  if (!isalpha(e[i]))
-	  {
-	    hc_postfix_result_cleanup();
-	    syntax_error2();
-	    return NULL;
-	  }
-	  char *v_name = malloc(MAX_V_NAME * sizeof(char));
-	  char *f_expr = malloc(MAX_F_TMP * sizeof(char));
-	  if (!v_name || !f_expr)
-	    mem_error();
-	  f_expr[0] = '\0';
-	  int ti = 0;
-	  while ((isalpha(e[i]) || isdigit(e[i])) && (ti < MAX_V_NAME - 1)) // the first to be checked can't be a digit since that would be caught above
-	  {
-	    v_name[ti++] = e[i++];
-	  }
-	  v_name[ti] = '\0';
-	  if (isalpha(e[i]))
-	  {
-	    hc_error(SYNTAX,"name of variable or function too long (limit is %i characters)",MAX_V_NAME);
-	    free(v_name); free(f_expr);
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  } else if (e[i] == '(') { // function
-	    f_expr[0] = e[i];
-	    ti = 1;
-	    char ignore = FALSE;
-	    int par = 1;
-	    while (par!=0 && e[i])
-	    {
-	      f_expr[ti++] = e[++i];
-	      if (e[i]=='\"')
-	      {
-		ignore = ignore == FALSE ? TRUE : FALSE;
-		continue;
-	      }
-	      if (ignore)
-		continue;
-	      if (e[i]=='(')
-		par++;
-	      else if (e[i]==')')
-		par--;
-	    }
-	    if (par == 0)
-	    {
-	      f_expr[ti] = '\0';
-	      i++; // skip the last ')'
-	    } else {
-	      hc_error(SYNTAX,"('s and )'s do not match");
-	      free(v_name); free(f_expr);
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	  }
-	  if (!hc_value((char *)&tmp_num, MAX_DOUBLE_STRING, &type, v_name, f_expr))
-	  {
-	    free(v_name); free(f_expr);
-	    hc_postfix_result_cleanup();
-	    return NULL;
-	  }
-	  free(v_name); free(f_expr);
-	  j = strlen(tmp_num);
-	  while (e[i]=='[')
-	  {
-	    tmp_num[j]=0;
-	    if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
-	    {
-	      hc_postfix_result_cleanup();
-	      return NULL;
-	    }
-	    j = strlen(tmp_num);
-	  }
-	  j = strlen(tmp_num);
-	}
-	i--;
-	tmp_num[j]=0;
-	curr->type = type;
-	if (curr->type == HC_VAR_NUM)
-	{
-	  char *tmp_num2;
-	  tmp_num2 = hc_real_part(tmp_num);
-	  if (tmp_num2[0]=='_')
-	    tmp_num2[0] = '-';
-	  m_apm_set_string(curr->re,tmp_num2); // set real part
-	  free(tmp_num2);
-	  tmp_num2 = hc_imag_part(tmp_num);
-	  if (tmp_num2)
-	  {
-	    if (tmp_num2[0]=='_')
-	      tmp_num2[0] = '-';
-	    m_apm_set_string(curr->im,tmp_num2); // set imaginary part
-	    free(tmp_num2);
-	  } else {
-	    m_apm_set_string(curr->im,"0"); // set null imaginary part
-	  }
-	} else if (curr->type == HC_VAR_STR)
-	{
-	  curr->str = strdup(tmp_num);
-	} else if (curr->type == HC_VAR_VEC)
-	{
-	  curr->str = strdup(tmp_num);
-	} else if (curr->type == HC_VAR_EMPTY)
-	{
-	  curr->str = strdup(tmp_num);
-	}
-	if (curr->n == NULL)
-	{
-	  curr->n = malloc(sizeof(struct hc_stack_element));
-	  curr->n->re = m_apm_init();
-	  curr->n->im = m_apm_init();
-	  curr->n->str = NULL;
-	  curr->n->n = NULL;
-	}
-	curr->n->p = curr;
-	curr = curr->n;
-	sp++; // only used for syntax checking
-	break;
+               tmpsts contains either TRUE, to allow a decimal point, or FALSE, to allow only digits.
+               No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
+            */
+            tmpsts = TRUE;
+            i+=2; // skip the initial '0x' or '0b'
+            while (!isspace(e[i]) && (!isoperator(e[i]) || e[i]=='_'))
+            {
+              if (hc.rpn && (!isdigitb(e[i],base) && (e[i]!='.' || tmpsts == FALSE))) // hc.rpn : if not true, this has already been checked by hc_i2p() so we can skip this
+              {
+                hc_postfix_result_cleanup();
+                return NULL;
+              } else {
+                if (e[i]=='.')
+                  tmpsts = FALSE;
+                tmp_num[j++] = e[i++];
+              }
+            }
+            tmp_num[j] = '\0';
+            if (!hc_2dec(base,(char *)&tmp_num,MAX_DOUBLE_STRING))
+            {
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+            j = strlen(tmp_num);
+          }
+        } else if (e[i]=='\"') {
+          type = HC_VAR_STR;
+          tmp_num[j++] = e[i++];
+          while (e[i]!='\"' && e[i])
+            tmp_num[j++] = e[i++];
+          if (e[i] != '\"')
+          {
+            hc_postfix_result_cleanup();
+            hc_error(SYNTAX,"missing end quotes");
+            return NULL;
+          }
+          tmp_num[j++] = e[i++];
+          while (e[i]=='[') // index
+          {
+            tmp_num[j] = 0;
+            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            {
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+            j = strlen(tmp_num);
+          }
+        } else if (e[i]=='[') {
+          type = HC_VAR_VEC;
+          unsigned int pct = 1;
+          char ignore = FALSE;
+          tmp_num[j++] = e[i++];
+          while (pct!=0 && e[i])
+          {
+            if (e[i]=='\"')
+            {
+              ignore = ignore == FALSE ? TRUE : FALSE;
+            }
+            if (e[i]=='[' && !ignore)
+              pct++;
+            if (e[i]==']' && !ignore)
+              pct--;
+            tmp_num[j++] = e[i++];
+          }
+          if (pct!=0)
+          {
+            hc_postfix_result_cleanup();
+            return NULL;
+          }
+          tmp_num[j]=0;
+          char *newlist = list_simplify((char *)&tmp_num);
+          if (!newlist)
+          {
+            hc_postfix_result_cleanup();
+            return NULL;
+          } else if (strlen(newlist) < MAX_DOUBLE_STRING)
+          {
+            strcpy(tmp_num,newlist);
+            free(newlist);
+          } else {
+            hc_postfix_result_cleanup();
+            overflow_error();
+          }
+          j = strlen(tmp_num);
+          while (e[i]=='[') // index
+          {
+            tmp_num[j]=0;
+            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            {
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+            j = strlen(tmp_num);
+          }
+        } else if (e[i]=='\'') { // lambda expression
+          char *lambda_expr = malloc(MAX_EXPR);
+          if (!lambda_expr) mem_error();
+          char *lambda_end = strchr_outofblock((char *)(e + i + 1),'\'');
+          if (!lambda_end)
+          {
+            hc_error(SYNTAX,"single quotes do not match");
+            hc_postfix_result_cleanup();
+            free(lambda_expr);
+            return NULL;
+          }
+          if (((char *)(lambda_end + 1))[0] != '(')
+          {
+            hc_error(SYNTAX,"( expected after lambda expression");
+            hc_postfix_result_cleanup();
+            free(lambda_expr);
+            return NULL;
+          }
+          memcpy(lambda_expr,(char *)(e + i + 1),lambda_end - e - i - 1);
+          lambda_expr[lambda_end - e - i - 1] = '\0';
+          i = lambda_end - e + 1;
+          char *args_end = strchr_outofblock((char *)(e + i),')');
+          if (!args_end)
+          {
+            hc_error(SYNTAX,"('s and )'s do not match");
+            hc_postfix_result_cleanup();
+            free(lambda_expr);
+            return NULL;
+          }
+          char *args = malloc(MAX_EXPR); if (!args) mem_error();
+          memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
+          args[args_end - e - i - 1] = '\0';
+          i = args_end - e + 1;
+          if (!hc_eval_lambda((char *)&tmp_num, MAX_DOUBLE_STRING, &type, lambda_expr, args))
+          {
+            free(lambda_expr); free(args);
+            hc_postfix_result_cleanup();
+            return NULL;
+          }
+          free(lambda_expr); free(args);
+          j = strlen(tmp_num);
+          while (e[i]=='[')
+          {
+            tmp_num[j]=0;
+            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            {
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+            j = strlen(tmp_num);
+          }
+          j = strlen(tmp_num);
+        } else {
+          if (!isalpha(e[i]))
+          {
+            hc_postfix_result_cleanup();
+            syntax_error2();
+            return NULL;
+          }
+          char *v_name = malloc(MAX_V_NAME * sizeof(char));
+          char *f_expr = malloc(MAX_F_TMP * sizeof(char));
+          if (!v_name || !f_expr)
+            mem_error();
+          f_expr[0] = '\0';
+          int ti = 0;
+          while ((isalpha(e[i]) || isdigit(e[i])) && (ti < MAX_V_NAME - 1)) // the first to be checked can't be a digit since that would be caught above
+          {
+            v_name[ti++] = e[i++];
+          }
+          v_name[ti] = '\0';
+          if (isalpha(e[i]))
+          {
+            hc_error(SYNTAX,"name of variable or function too long (limit is %i characters)",MAX_V_NAME);
+            free(v_name); free(f_expr);
+            hc_postfix_result_cleanup();
+            return NULL;
+          } else if (e[i] == '(') { // function
+            f_expr[0] = e[i];
+            ti = 1;
+            char ignore = FALSE;
+            int par = 1;
+            while (par!=0 && e[i])
+            {
+              f_expr[ti++] = e[++i];
+              if (e[i]=='\"')
+              {
+                ignore = ignore == FALSE ? TRUE : FALSE;
+                continue;
+              }
+              if (ignore)
+                continue;
+              if (e[i]=='(')
+                par++;
+              else if (e[i]==')')
+                par--;
+            }
+            if (par == 0)
+            {
+              f_expr[ti] = '\0';
+              i++; // skip the last ')'
+            } else {
+              hc_error(SYNTAX,"('s and )'s do not match");
+              free(v_name); free(f_expr);
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+          }
+          if (!hc_value((char *)&tmp_num, MAX_DOUBLE_STRING, &type, v_name, f_expr))
+          {
+            free(v_name); free(f_expr);
+            hc_postfix_result_cleanup();
+            return NULL;
+          }
+          free(v_name); free(f_expr);
+          j = strlen(tmp_num);
+          while (e[i]=='[')
+          {
+            tmp_num[j]=0;
+            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            {
+              hc_postfix_result_cleanup();
+              return NULL;
+            }
+            j = strlen(tmp_num);
+          }
+          j = strlen(tmp_num);
+        }
+        i--;
+        tmp_num[j]=0;
+        curr->type = type;
+        if (curr->type == HC_VAR_NUM)
+        {
+          char *tmp_num2;
+          tmp_num2 = hc_real_part(tmp_num);
+          if (tmp_num2[0]=='_')
+            tmp_num2[0] = '-';
+          m_apm_set_string(curr->re,tmp_num2); // set real part
+          free(tmp_num2);
+          tmp_num2 = hc_imag_part(tmp_num);
+          if (tmp_num2)
+          {
+            if (tmp_num2[0]=='_')
+              tmp_num2[0] = '-';
+            m_apm_set_string(curr->im,tmp_num2); // set imaginary part
+            free(tmp_num2);
+          } else {
+            m_apm_set_string(curr->im,"0"); // set null imaginary part
+          }
+        } else if (curr->type == HC_VAR_STR)
+        {
+          curr->str = strdup(tmp_num);
+        } else if (curr->type == HC_VAR_VEC)
+        {
+          curr->str = strdup(tmp_num);
+        } else if (curr->type == HC_VAR_EMPTY)
+        {
+          curr->str = strdup(tmp_num);
+        }
+        if (curr->n == NULL)
+        {
+          curr->n = malloc(sizeof(struct hc_stack_element));
+          curr->n->re = m_apm_init();
+          curr->n->im = m_apm_init();
+          curr->n->str = NULL;
+          curr->n->n = NULL;
+        }
+        curr->n->p = curr;
+        curr = curr->n;
+        sp++; // only used for syntax checking
+        break;
       }
     i++;
   }
@@ -2174,26 +2111,26 @@ char *hc_plusminus(char *f)
     {
       if (count == 0)
       {
-	if (e[i] == '-')
-	{
-	  e[i]='_';
-	  count++;
-	}
+        if (e[i] == '-')
+        {
+          e[i]='_';
+          count++;
+        }
       } else {
-	if (e[i]=='-')
-	{
-	  if (last_was_op)
-	  {
-	    e[i]='_';
-	  } else {
-	    last_was_op = 1;
-	  }
-	} else {
-	  if (isoperator_np(e[i]) || e[i]=='(')
-	    last_was_op = 1;
-	  else
-	    last_was_op = 0;
-	}
+        if (e[i]=='-')
+        {
+          if (last_was_op)
+          {
+            e[i]='_';
+          } else {
+            last_was_op = 1;
+          }
+        } else {
+          if (isoperator_np(e[i]) || e[i]=='(')
+            last_was_op = 1;
+          else
+            last_was_op = 0;
+        }
       }
       count++;
     }
@@ -2356,20 +2293,20 @@ char *hc_impmul_resolve(char *e)
     {
       if (((isalpha(e[i]) || e[i]=='(') && tolower(e[i])!='i' && tolower(e[i])!='e') && last_was_num && (last_was_num!='0' || (tolower(e[i])!='x' && tolower(e[i])!='b')))
       {
-	e = realloc(e, strlen(e)+2);
-	memmove(e+sizeof(char)*i+sizeof(char), e+sizeof(char)*i, strlen(e)-i+1);
-	e[i] = '*';
-	last_was_num = 0;
+        e = realloc(e, strlen(e)+2);
+        memmove(e+sizeof(char)*i+sizeof(char), e+sizeof(char)*i, strlen(e)-i+1);
+        e[i] = '*';
+        last_was_num = 0;
       }
       if ((isdigit(e[i]) || e[i]=='.') && could_be_num)
       {
-	last_was_num = e[i];
+        last_was_num = e[i];
       } else {
-	last_was_num = 0;
-	could_be_num = 0;
+        last_was_num = 0;
+        could_be_num = 0;
       }
       if (isoperator(e[i]))
-	could_be_num = 1;
+        could_be_num = 1;
     }
   }
 
@@ -2412,49 +2349,49 @@ void hc_load_cfg()
       switch (simple_hash(tmp))
       {
       case HASH_KEYS:
-	    if (buffer[i+1]=='1')
-	      hc.keys = TRUE;
-	    else
-	      hc.keys = FALSE;
-	    break;
+            if (buffer[i+1]=='1')
+              hc.keys = TRUE;
+            else
+              hc.keys = FALSE;
+            break;
       case HASH_RPN:
         if (buffer[i+1]=='1')
-	      hc.rpn = TRUE;
-	    else
-	      hc.rpn = FALSE;
-	    break;
+              hc.rpn = TRUE;
+            else
+              hc.rpn = FALSE;
+            break;
       case HASH_EXPF:
-	    hc.exp = buffer[i+1];
-	    if (hc.exp!='s' && hc.exp!='e' && hc.exp!='n')
+            hc.exp = buffer[i+1];
+            if (hc.exp!='s' && hc.exp!='e' && hc.exp!='n')
         {
-	      warning("configuration file has incorrect exponential format specification. Setting to normal.");
-	      hc.exp = 'n';
-	    }
-	    break;
+              warning("configuration file has incorrect exponential format specification. Setting to normal.");
+              hc.exp = 'n';
+            }
+            break;
       case HASH_PRECISION:
-	    hc.precision = atoi(&buffer[i+1]);
-	    if (hc.precision>HC_MAX_PRECISION)
-	      hc.precision = HC_MAX_PRECISION;
-	    break;
+            hc.precision = atoi(&buffer[i+1]);
+            if (hc.precision>HC_MAX_PRECISION)
+              hc.precision = HC_MAX_PRECISION;
+            break;
       case HASH_ANGLE:
         hc.angle = buffer[i+1];
-	    if (hc.angle!='d' && hc.angle!='r' && hc.angle!='g')
+            if (hc.angle!='d' && hc.angle!='r' && hc.angle!='g')
         {
-	      warning("configuration file has incorrect angle specification. Setting angle format to RAD.");
-	      hc.angle = 'r';
-	    }
-	    break;
+              warning("configuration file has incorrect angle specification. Setting angle format to RAD.");
+              hc.angle = 'r';
+            }
+            break;
       case HASH_PLDEV:
-	    if (buffer[i+1]!='$')
+            if (buffer[i+1]!='$')
         {
-	      hc.plplot_dev_override = malloc(strlen((char *)&buffer[i+1])+1);
-	      if (!hc.plplot_dev_override)
-	        mem_error();
-	      strcpy(hc.plplot_dev_override,(char *)&buffer[i+1]);
+              hc.plplot_dev_override = malloc(strlen((char *)&buffer[i+1])+1);
+              if (!hc.plplot_dev_override)
+                mem_error();
+              strcpy(hc.plplot_dev_override,(char *)&buffer[i+1]);
         } else {
-	      hc.plplot_dev_override = NULL;
+              hc.plplot_dev_override = NULL;
         }
-	    break;
+            break;
       case HASH_BPN:
         if (buffer[i+1]=='1')
           hc.bypass_nested = TRUE;
@@ -2647,7 +2584,7 @@ void hc_load(char *fname_)
     while (!check_completeness(expr))
     {
       if (!fgets(expr+strlen(expr)*sizeof(char),MAX_EXPR + 1 - strlen(expr),fr))
-	break;
+        break;
       line++;
     }
     char *fme = hc_result(expr);

@@ -68,7 +68,7 @@ char *strreplace_(char *in, char *old, char *new)
     while (strstr(result,old)!=NULL && strcmp(tmp,result)!=0)
     {
       if (tmp)
-	free(tmp);
+        free(tmp);
       tmp = result;
       result = strreplace_(result,old,new);
     }
@@ -112,24 +112,24 @@ char *strreplace(char *in, char *old, char *new)
     {
       if ((!isalnum((int)(p-sizeof(char))[0])) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
       {
-	dorpl = TRUE;
+        dorpl = TRUE;
       }
     } else {
       if ((p!=in) && (!isalnum((int)(p-sizeof(char))[0])))
       {
-	dorpl = TRUE;
+        dorpl = TRUE;
       } else {
-	if ((p!=(in+strlen(in)-1)) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
-	{
-	  dorpl = TRUE;
-	} else {
-	  if (p==in && p==(in+strlen(in)-1))
-	  {
-	    dorpl = TRUE;
-	  } else {
-	    dorpl = FALSE;
-	  }
-	}
+        if ((p!=(in+strlen(in)-1)) && (!isalnum((int)(p+(sizeof(char)*strlen(old)))[0])))
+        {
+          dorpl = TRUE;
+        } else {
+          if (p==in && p==(in+strlen(in)-1))
+          {
+            dorpl = TRUE;
+          } else {
+            dorpl = FALSE;
+          }
+        }
       }
     }
     char *p_tmp = in;
@@ -138,7 +138,7 @@ char *strreplace(char *in, char *old, char *new)
     {
       if (p_tmp[0]=='\"')
       {
-	inquotes = inquotes == FALSE ? TRUE : FALSE;
+        inquotes = inquotes == FALSE ? TRUE : FALSE;
       }
       p_tmp++;
     }
@@ -151,7 +151,7 @@ char *strreplace(char *in, char *old, char *new)
     {
       result = malloc(sizeof(char) * (strlen(in)+1-strlen(old)+strlen(new)));
       if (!result)
-	mem_error();
+        mem_error();
       memset(result,0,strlen(in)+1-strlen(old)+strlen(new));
       strncpy(result,in,p-in);
       strcat(result,new);
@@ -161,10 +161,10 @@ char *strreplace(char *in, char *old, char *new)
       strcpy(tmp,"#");
       while (strstr(result,old)!=NULL && strcmp(tmp,result)!=0)
       {
-	if (tmp)
-	  free(tmp);
-	tmp = result;
-	result = strreplace(result,old,new);
+        if (tmp)
+          free(tmp);
+        tmp = result;
+        result = strreplace(result,old,new);
       }
       free(tmp);
       free(tnew);
@@ -217,18 +217,18 @@ char *hc_get_arg(char *e, int pos)
       tmp[i]=0;
       if (p==pos)
       {
-	if (last_pointer!=tmp)
-	{
-	  result = strdup(last_pointer);
-	  if (!result)
-	    mem_error();
-	  free(tmp);
-	  return result;
-	} else {
-	  return last_pointer;
-	}
+        if (last_pointer!=tmp)
+        {
+          result = strdup(last_pointer);
+          if (!result)
+            mem_error();
+          free(tmp);
+          return result;
+        } else {
+          return last_pointer;
+        }
       } else {
-	last_pointer = tmp + sizeof(char)*i + sizeof(char);
+        last_pointer = tmp + sizeof(char)*i + sizeof(char);
       }
     }
   }
@@ -724,7 +724,7 @@ int hc_lbs2kg(M_APM result, char *e)
   if (fme == NULL) return FAIL;
   if (!is_real_num(fme)) {
     free(fme);
-	arg_error("lbstokg() : argument must be a real number.");
+        arg_error("lbstokg() : argument must be a real number.");
   }
   M_APM a = m_apm_init();
   M_APM b = m_apm_init();
@@ -745,7 +745,7 @@ int hc_kg2lbs(M_APM result, char *e)
   if (fme == NULL) return FAIL;
   if (!is_real_num(fme)) {
     free(fme);
-	arg_error("kgtolbs() : argument must be a real number.");
+        arg_error("kgtolbs() : argument must be a real number.");
   }
   M_APM a = m_apm_init();
   M_APM b = m_apm_init();
@@ -1211,9 +1211,9 @@ int hc_totient(M_APM result, char *e)
       m_apm_copy(copy_tmp2,result);
       m_apm_subtract(result,copy_tmp2,copy_tmp);
       do {
-	m_apm_copy(copy_tmp,i);
-	m_apm_divide(i,HC_DEC_PLACES,copy_tmp,j);
-	m_apm_integer_div_rem(copy_tmp2,copy_tmp,i,j);
+        m_apm_copy(copy_tmp,i);
+        m_apm_divide(i,HC_DEC_PLACES,copy_tmp,j);
+        m_apm_integer_div_rem(copy_tmp2,copy_tmp,i,j);
       }
       while (m_apm_sign(copy_tmp)==0) ;
     }
@@ -1266,8 +1266,8 @@ int hc_mmass(M_APM result, char *e)
       tmp = hc_mmass_par(e, &i);
       if (!tmp)
       {
-	free(e);
-	return FAIL;
+        free(e);
+        return FAIL;
       }
       res += tmp;
     }
@@ -1276,8 +1276,8 @@ int hc_mmass(M_APM result, char *e)
       tmp = hc_mmass_el(e, &i);
       if (!tmp)
       {
-	free(e);
-	return FAIL;
+        free(e);
+        return FAIL;
       }
       res += tmp;
     }
@@ -1465,7 +1465,7 @@ char *hc_2sci(char *n)
     {
       digits = 1;
       if (n[i]=='.')
-	i++;
+        i++;
       r[j++] = n[i++];
     }
     if (!digits)
@@ -1506,30 +1506,30 @@ char *hc_2eng(char *n)
     {
       if (isdigit(r[3]))
       {
-	r[2] = r[3];
-	if (isdigit(r[4]))
-	  r[3] = '.';
-	else
-	  memmove(r+3,r+4,strlen(r)-4);
+        r[2] = r[3];
+        if (isdigit(r[4]))
+          r[3] = '.';
+        else
+          memmove(r+3,r+4,strlen(r)-4);
       }
       else
       {
-	memmove(r+3,r+2,strlen(r)-2);
-	r[2] = '0';
+        memmove(r+3,r+2,strlen(r)-2);
+        r[2] = '0';
       }
     } else {
-      if (isdigit(r[2]))
+      if (isdigit(r[2]) && (isdigit(r[1]) || r[1] == '.'))
       {
-	r[1] = r[2];
-	if (isdigit(r[3]))
-	  r[2] = '.';
-	else
-	  memmove(r+2,r+3,strlen(r)-3);
+        r[1] = r[2];
+        if (isdigit(r[3]))
+          r[2] = '.';
+        else
+          memmove(r+2,r+3,strlen(r)-3);
       }
       else
       {
-	memmove(r+2,r+1,strlen(r)-1);
-	r[1] = '0';
+        memmove(r+2,r+1,strlen(r)-1);
+        r[1] = '0';
       }
     }
     x = malloc(hc_need_space_int(exp-1)+1);
@@ -1549,46 +1549,46 @@ char *hc_2eng(char *n)
     {
       if (r[2]=='.' && isdigit(r[3]) && isdigit(r[4]))
       {
-	r[2] = r[3];
-	r[3] = r[4];
-	if (isdigit(r[5]))
-	  r[4] = '.';
-	else
-	  memmove(r+4,r+5,strlen(r)-5);
+        r[2] = r[3];
+        r[3] = r[4];
+        if (isdigit(r[5]))
+          r[4] = '.';
+        else
+          memmove(r+4,r+5,strlen(r)-5);
       }
       else
       {
-	if (r[2]=='.' && isdigit(r[3]))
-	{
-	  r[2] = r[3];
-	  r[3] = '0';
-	} else {
-	  memmove(r+4,r+2,strlen(r)-2);
-	  r[2] = '0';
-	  r[3] = '0';
-	}
+        if (r[2]=='.' && isdigit(r[3]))
+        {
+          r[2] = r[3];
+          r[3] = '0';
+        } else {
+          memmove(r+4,r+2,strlen(r)-2);
+          r[2] = '0';
+          r[3] = '0';
+        }
       }
     } else {
       if (r[1]=='.' && isdigit(r[2]) && isdigit(r[3]))
       {
-	r[1] = r[2];
-	r[2] = r[3];
-	if (isdigit(r[4]))
-	  r[3] = '.';
-	else
-	  memmove(r+3,r+4,strlen(r)-4);
+        r[1] = r[2];
+        r[2] = r[3];
+        if (isdigit(r[4]))
+          r[3] = '.';
+        else
+          memmove(r+3,r+4,strlen(r)-4);
       }
       else
       {
-	if (r[1]=='.' && isdigit(r[2]))
-	{
-	  r[1] = r[2];
-	  r[2] = '0';
-	} else {
-	  memmove(r+3,r+1,strlen(r)-1);
-	  r[1] = '0';
-	  r[2] = '0';
-	}
+        if (r[1]=='.' && isdigit(r[2]))
+        {
+          r[1] = r[2];
+          r[2] = '0';
+        } else {
+          memmove(r+3,r+1,strlen(r)-1);
+          r[1] = '0';
+          r[2] = '0';
+        }
       }
     }
     x = malloc(hc_need_space_int(exp-2)+1);
@@ -1641,9 +1641,9 @@ char *hc_strip_0s(char *e)
     {
       i = strlen(im)-1;
       while (im[i]=='0')
-	im[i--]=0;
+        im[i--]=0;
       if (im[i]=='.')
-	im[i]=0;
+        im[i]=0;
     }
   }
   i = strlen(re)+1;
@@ -1659,6 +1659,81 @@ char *hc_strip_0s(char *e)
     strcat(r,im);
   }
   free(re); free(im);
+  return r;
+}
+
+
+// Returns a version of r ready to output to screen.
+// Frees r.
+// if save_as_last_result is TRUE, saves r as the last result
+char *hc_format_num(char *r, char save_as_last_result)
+{
+  char *r_re = hc_real_part(r);
+  char *r_im = hc_imag_part(r);
+  free(r);
+  if (save_as_last_result)
+  {
+    m_apm_set_string(hc_lans_mapm_re,r_re);
+    if (r_im)
+      m_apm_set_string(hc_lans_mapm_im,r_im);
+  }
+  if (!r_im)
+  {
+    r = r_re;
+    int i=strlen(r)-1;
+    while (i && r[i]=='0')
+      r[i--]=0;
+    if (i && r[i]=='.')
+      r[i]=0;
+    switch (hc.exp)
+    {
+    case 's':
+      r = hc_2sci(r);
+      break;
+
+    case 'e':
+      r = hc_2eng(r);
+      break;
+
+    default:
+      break;
+    }
+  } else {
+    int i=strlen(r_re)-1;
+    while (r_re[i]=='0')
+      r_re[i--]=0;
+    if (r_re[i]=='.')
+      r_re[i]=0;
+    
+    i = strlen(r_im)-1;
+    while (r_im[i]=='0')
+      r_im[i--]=0;
+    if (r_im[i]=='.')
+      r_im[i]=0;
+    
+    switch (hc.exp)
+    {
+    case 's': // SCI
+      r_re = hc_2sci(r_re);
+      r_im = hc_2sci(r_im);
+      break;
+    
+    case 'e': // ENG
+      r_re = hc_2eng(r_re);
+      r_im = hc_2eng(r_im);
+      break;
+    
+    default:
+      break;
+    }
+    
+    r = malloc(strlen(r_re)+1+strlen(r_im)+1);
+    // r_re i r_im \0
+    strcpy(r,r_re);
+    strcat(r,"i");
+    strcat(r,r_im);
+    free(r_re); free(r_im);
+  }
   return r;
 }
 
@@ -1679,12 +1754,12 @@ int hc_rand(M_APM res, char *f_expr)
       tmp = hc_result_(t1);
       free(t1);
       if (!tmp)
-	return FAIL;
+        return FAIL;
       t1 = hc_imag_part(tmp);
       if (t1)
       {
-	free(t1);
-	arg_error("rand() : if provided, argument must be a real, strictly positive integer.");
+        free(t1);
+        arg_error("rand() : if provided, argument must be a real, strictly positive integer.");
       }
     }
   }
@@ -1991,7 +2066,7 @@ int hc_input(M_APM re, M_APM im, char *f_expr)
   if (r_im)
   {
     m_apm_set_string(im,r_im);
-	free(r_im);
+        free(r_im);
   } else {
     m_apm_set_string(im,"0");
   }
@@ -2060,14 +2135,14 @@ int hc_output(int mode, char *f_expr)
       free(tmp); // no need to do anything, just reuse the old file descriptor
     } else {
       if (fw)
-	fclose(fw);
+        fclose(fw);
       fw = fopen(tmp,"a");
       free(fname);
       fname = tmp;
       if (!fw)
       {
-	error_nq("write() : Error, can't open file for writing!\n");
-	return FAIL;
+        error_nq("write() : Error, can't open file for writing!\n");
+        return FAIL;
       }
     }
     pos = 2;
@@ -2094,24 +2169,24 @@ int hc_output(int mode, char *f_expr)
     } else {
       if (is_string(t1))
       {
-	tmp = get_string(t1);
+        tmp = get_string(t1);
       } else {
-	tmp = hc_strip_0s(t1);
+        tmp = hc_strip_0s(t1);
       }
       free(t1);
       if (!tmp)
       {
-	free(printme);
-	return FAIL;
+        free(printme);
+        return FAIL;
       } else {
-	t1 = malloc(strlen(tmp)+2);
-	strcpy(t1,tmp);
-	strcat(t1," ");
-	alloc += strlen(t1) + 1;
-	printme = realloc(printme,alloc);
-	strcat(printme,t1);
-	free(t1);
-	free(tmp);
+        t1 = malloc(strlen(tmp)+2);
+        strcpy(t1,tmp);
+        strcat(t1," ");
+        alloc += strlen(t1) + 1;
+        printme = realloc(printme,alloc);
+        strcat(printme,t1);
+        free(t1);
+        free(tmp);
       }
     }
     t1 = hc_get_arg_r(f_expr,++pos);
@@ -2157,17 +2232,17 @@ int hc_length(M_APM result, char *e)
     {
       if (tmp[i]=='\"')
       {
-	ignore = ignore == FALSE ? TRUE : FALSE;
-	continue;
+        ignore = ignore == FALSE ? TRUE : FALSE;
+        continue;
       }
       if (ignore)
-	continue;
+        continue;
       if (tmp[i] == '[')
-	par++;
+        par++;
       if (tmp[i] == ']')
-	par--;
+        par--;
       if (!par && tmp[i] == ',')
-	len++;
+        len++;
     }
     m_apm_set_long(result,len);
     free(e);
@@ -2331,15 +2406,15 @@ char *strchr_outofblock(char *e, char c)
     if (!ignore)
     {
       if (e[0]=='[')
-	par++;
+        par++;
       if (e[0]==']')
-	par--;
+        par--;
       if (e[0]=='(')
-	par2++;
+        par2++;
       if (e[0]==')')
-	par2--;
+        par2--;
       if (par==0 && par2==0&& e[0]==c)
-	return e;
+        return e;
     }
     e++;
   }
@@ -2494,10 +2569,10 @@ char is_int(char *str)
     if (!sawradix)
     {
       if (!isdigit(str[i]) && str[i]!='.' && str[i]!='+' && str[i]!='-')
-	return FALSE;
+        return FALSE;
     } else {
       if (str[i]!='0')
-	return FALSE;
+        return FALSE;
     }
   }
   return TRUE;
