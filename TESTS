@@ -79,5 +79,8 @@ showfibolambda(n) = map('fibo(~+1)',range(n))
 test("showfibo with lambda", showfibolambda(10) == showfibo(10))
 test("lambda",'(~^~2)^~1'(2,5)== 512*2)
 test("linear regression",linreg([[1*0+1,1.5],[2^2-2,1.6],[3-3+3,2.1],[2+2,3.0]])==[0.5,0.8])
+slash = [1,4,2,meh,"hi","wtf","hi",pi,2^2]
+test("count()",count([1,4,2,meh,"hi","wtf","hi",pi,2^2],"hi") == count(slash, 4))
+test("count() 2",count([[1,2],[2,3],[1,2],[3,4],slash],[1,2]) == 2)
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

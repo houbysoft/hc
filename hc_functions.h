@@ -64,6 +64,7 @@ extern char *hc_crossp(char *);
 extern char *hc_join(char *);
 extern char *hc_sort(char *);
 extern int hc_length(M_APM, char *);
+extern int hc_count(M_APM, char *);
 extern char *hc_constantlist(char *e, char *el);
 extern char *hc_range(char *e);
 

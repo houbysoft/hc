@@ -1279,6 +1279,11 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
+    case HASH_COUNT:
+      if (hc_count(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
     case HASH_MAP:
       if ((f_result_str = hc_map(f_expr)) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}

@@ -2261,13 +2261,61 @@ int hc_length(M_APM result, char *e)
 }
 
 
+int hc_count(M_APM result, char *e)
+{
+  char *list_orig = hc_get_arg_r(e,1);
+  char *element = hc_get_arg_r(e,2);
+  if (!list_orig || !is_list(list_orig))
+  {
+    free(element);
+    arg_error("count() : first argument needs to be a list");
+  }
+  if (!element)
+  {
+    free(list_orig);
+    arg_error("count() : second argument (element) required");
+  }
+  char *list = list_clean(list_orig);
+
+  char *cur = NULL;
+  unsigned long int idx = 0;
+  long occurences = 0;
+  unsigned int elementlen = strlen(element);
+
+  while ((cur = hc_get_arg(list,++idx)) != NULL)
+  {
+    char *tmpexpr = malloc(elementlen + 2 + strlen(cur) + 1);
+    if (!tmpexpr) mem_error();
+    sprintf(tmpexpr, "%s==%s", element, cur);
+    char *tmpres = hc_result_(tmpexpr);
+    free(tmpexpr);
+    if (!tmpres)
+    {
+      free(cur); free(list_orig); free(element);
+      return FAIL;
+    }
+    if (tmpres[0]=='1' && tmpres[1]=='.')
+    {
+      occurences += 1;
+    }
+    free(tmpres);
+    free(cur);
+  }
+
+  free(list_orig);
+  free(element);
+  m_apm_set_long(result, occurences);
+  return SUCCESS;
+}
+
+
 char *hc_range(char *e)
 {
   char *a = hc_get_arg_r(e,1);
   if (!a || !is_positive_int(a))
   {
     free(a);
-    arg_error("hc_range() : first argument needs to be a positive integer");
+    arg_error("range() : first argument needs to be a positive integer");
   }
   char *b = hc_get_arg_r(e,2);
   if (b && !is_positive_int(b))

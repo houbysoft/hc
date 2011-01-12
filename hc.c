@@ -64,6 +64,7 @@ const char *hc_names[][5] = {
   {"codetochar","func:x","Conversions","converts an ASCII code to a character","converts x, an ASCII code, to the corresponding character. For example, codetochar(65) will return \"A\"."},
   {"cos","func:x","Functions/Trigonometry","cosine of x",""},
   {"cosh","func:x","Functions/Trigonometry","hyperbolic cosine of x",""},
+  {"count","func:list,x","Functions/Misc", "number of occurences of x in list",""},
   {"crossp","func:a,b","Functions/Vectors","vector cross product - a X b","Returns the vector cross product of a X b. For example, if a is the vector [1,2,3] and b is the vector [-1,-2,-3], the result would is [0,0,0] -- crossp([1,2,3],[-1,-2,-3]) = [0,0,0]"},
   {"ctof","func:x","Conversions","converts d. Celsius to d. Fahrenheit","converts x, which has to be in degrees Celsius, to Fahrenheit"},
   {"ctok","func:x","Conversions","converts d. Celsius to Kelvin","converts x, which has to be in degrees Celsius, to Kelvin"},
