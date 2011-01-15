@@ -53,6 +53,7 @@ class HCGScriptWindow : public HCGBaseWindow {
   void saveFile(QString fname);
   void updateTitle();
   void createFileMenu();
+  bool maybeSave();
 
 
   public slots:

@@ -28,6 +28,7 @@
 #include <QFileInfo>
 #include <QTimer>
 #include <QMenuBar>
+#include <QMessageBox>
 #include "hcgscriptwindow.hpp"
 #include "main.hpp"
 
@@ -77,7 +78,7 @@ void HCGScriptWindow::readFile(QString fname)
   QFile file(fname);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    notify_error((char *)"Cannot open file.");
+    notify_error_slot((char *)"Cannot open file.");
     return;
   }
 
@@ -94,13 +95,13 @@ void HCGScriptWindow::saveFile(QString fname)
   QFile file(fname);
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    notify_error((char *)"Cannot write file.");
+    notify_error_slot((char *)"Cannot write file.");
     return;
   }
 
   if (file.write(scripteditor->document()->toPlainText().toAscii().data()) == -1)
   {
-    notify_error((char *)"Cannot write file");
+    notify_error_slot((char *)"Cannot write file");
     file.close();
     return;
   }
@@ -222,9 +223,34 @@ void HCGScriptWindow::writeSettings() {
 }
 
 
+bool HCGScriptWindow::maybeSave()
+{
+  if (scripteditor->document()->isModified())
+  {
+    QMessageBox::StandardButton ret;
+    ret = QMessageBox::warning(this, "", "Save changes?", QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    if (ret == QMessageBox::Save)
+    {
+      saveScript();
+      return !scripteditor->document()->isModified();
+    } else if (ret == QMessageBox::Discard)
+      return true;
+    else
+      return false;
+  } else {
+    return true;
+  }
+}
+
+
 void HCGScriptWindow::closeEvent(QCloseEvent *event) {
-  writeSettings();
-  event->accept();
+  if (maybeSave())
+  {
+    writeSettings();
+    event->accept();
+  } else {
+    event->ignore();
+  }
 }
 
 
