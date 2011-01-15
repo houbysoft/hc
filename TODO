@@ -5,4 +5,3 @@ TODO list
 - improve graphs in GUI (zooming, etc.)
 - grab/import -- have a central repository to download functions from (?)
 - save() -- have a central file (on user's computer) that HC will load automatically every start; save() would save a user-defined function/variable to that file
-- create script editor to avoid need for launching a notepad etc.

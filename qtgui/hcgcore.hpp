@@ -17,21 +17,42 @@
 /*     <http://www.gnu.org/licenses/>.                                        */
 
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
+#ifndef HCGCORE_HPP
+#define HCGCORE_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <QObject>
+#include <QString>
+#include <QMutex>
 
-#define HC_NAMES 111 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
 
-extern const char *hc_names[][5];
+class HCGCore : public QObject {
+  Q_OBJECT
 
-#ifdef __cplusplus
-}
-#endif
+
+  public:
+  HCGCore();
+  ~HCGCore();
+  char *result(QString expr);
+  void load(QString filename);
+  void emitSignals();
+
+  public slots:
+  void setPrecision(int precision);
+  void setAngleMode(QString mode);
+  void setExpMode(QString mode);
+  void setRPN(bool enabled);
+  void cleanup();
+
+
+  private:
+  QMutex hc_mutex;
+
+
+  signals:
+  void precisionChanged(int precision);
+  void angleModeChanged(QString mode);
+  void expModeChanged(QString mode);
+  void RPNChanged(bool rpn_enabled);
+};
 
 #endif

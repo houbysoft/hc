@@ -17,21 +17,20 @@
 /*     <http://www.gnu.org/licenses/>.                                        */
 
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
+#ifndef MAIN_HPP
+#define MAIN_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "hcgwindow.hpp"
+#include "hcgcore.hpp"
 
-#define HC_NAMES 111 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
-
-extern const char *hc_names[][5];
-
-#ifdef __cplusplus
-}
-#endif
+extern HCGCore *hcgcore;
+extern HCGWindow *hcg;
+extern "C" void notify(char *str);
+extern "C" void notify_error(char *str);
+extern "C" char *prompt(char *str);
+extern "C" char *hc_result(char *);
+extern "C" void hc_load(char *fname_);
+extern "C" void hc_load_cfg();
+extern "C" void hc_save_cfg();
 
 #endif

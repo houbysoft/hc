@@ -16,22 +16,60 @@
 /*     along with HC (HoubySoft Calculator). If not, see                      */
 /*     <http://www.gnu.org/licenses/>.                                        */
 
+#include <QObject>
+#include <QTextEdit>
+#include <QCloseEvent>
+#include <QSettings>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include "hcgbasewindow.hpp"
+#include "hcgthreads.hpp"
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
+#ifndef HCGSCRIPTWINDOW_HPP
+#define HCGSCRIPTWINDOW_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-#define HC_NAMES 111 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
+class HCGScriptWindow : public HCGBaseWindow {
+  Q_OBJECT
 
-extern const char *hc_names[][5];
 
-#ifdef __cplusplus
-}
-#endif
+  protected:
+  void closeEvent(QCloseEvent *event);
+
+
+  private:
+  QWidget *vbox;
+  QPushButton *runbutton;
+  QVBoxLayout *vbox_layout;
+  QTextEdit *scripteditor;
+  QSettings *settings;
+  QString filename;
+  HCGScriptThread *runThread;
+  void setRunning(bool running);
+
+  void loadSettings();
+  void writeSettings();
+  void readFile(QString fname);
+  void saveFile(QString fname);
+  void updateTitle();
+  void createFileMenu();
+
+
+  public slots:
+  void resetFont(const QTextCharFormat f = QTextCharFormat());
+  void textChanged();
+  void insert(QString string);
+  void openScript();
+  void saveScript();
+  void saveScriptAs();
+  void runScript();
+  void threadFinished();
+  void resetRunButton();
+
+
+  public:
+  HCGScriptWindow(QString fname = "");
+  ~HCGScriptWindow();
+};
 
 #endif

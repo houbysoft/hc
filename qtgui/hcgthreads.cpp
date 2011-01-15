@@ -16,22 +16,31 @@
 /*     along with HC (HoubySoft Calculator). If not, see                      */
 /*     <http://www.gnu.org/licenses/>.                                        */
 
+#include <QObject>
+#include <QThread>
+#include "hcgthreads.hpp"
+#include "main.hpp"
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#define HC_NAMES 111 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
-
-extern const char *hc_names[][5];
-
-#ifdef __cplusplus
+HCGScriptThread::HCGScriptThread(QString fname)
+{
+  filename = fname;
 }
-#endif
 
-#endif
+
+void HCGScriptThread::run()
+{
+  hcgcore->load(filename);
+}
+
+
+HCGResultThread::HCGResultThread(QString e)
+{
+  expr = e;
+}
+
+
+void HCGResultThread::run()
+{
+  emit computation_finished(expr, hcgcore->result(expr));
+}

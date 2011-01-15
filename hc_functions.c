@@ -1236,6 +1236,28 @@ int hc_totient(M_APM result, char *e)
 }
 
 
+int hc_atomicnumber(M_APM result, char *e)
+{
+  char *tmp_e = hc_result_(e);
+  if (!tmp_e || !(e = get_string(tmp_e)))
+  {
+    free(tmp_e);
+    arg_error("atomicnumber() : argument has to be a string.");
+  }
+
+  free(tmp_e);
+
+  double Z = hc_get_element_info(e, ATOMIC_NUMBER);
+  free(e);
+  if (!Z)
+  {
+    return FAIL;
+  } else {
+    m_apm_set_double(result, Z);
+    return SUCCESS;
+  }
+}
+
 
 int hc_mmass(M_APM result, char *e)
 {

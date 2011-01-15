@@ -16,22 +16,36 @@
 /*     along with HC (HoubySoft Calculator). If not, see                      */
 /*     <http://www.gnu.org/licenses/>.                                        */
 
+#include <QObject>
+#include <QLineEdit>
+#include <QKeyEvent>
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef HCGINPUTLINE_HPP
+#define HCGINPUTLINE_HPP
 
-#define HC_NAMES 111 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
+#define HCG_IL_BACK 1
+#define HCG_IL_FORWARD 2
+#define HCG_IL_MAXITEMS 100
 
-extern const char *hc_names[][5];
+class HCGinputline : public QLineEdit {
+  Q_OBJECT
 
-#ifdef __cplusplus
-}
-#endif
+  protected:
+  void keyPressEvent(QKeyEvent *event);
+
+  private:
+  QStringList history_list;
+  int history_cur;
+  QString history(char direction);
+
+  public:
+  HCGinputline(QWidget *parent);
+  ~HCGinputline();
+  void history_insert(QString text, int index = -1);
+
+  public slots:
+  void insert(QString text);
+};
 
 #endif

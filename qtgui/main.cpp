@@ -16,22 +16,30 @@
 /*     along with HC (HoubySoft Calculator). If not, see                      */
 /*     <http://www.gnu.org/licenses/>.                                        */
 
+#include <QApplication>
+#include <QCoreApplication>
+#include <QObject>
+#include "hcgwindow.hpp"
+#include "hcgcore.hpp"
+#include "main.hpp"
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+extern "C" void hc_load_cfg();
 
-#define HC_NAMES 111 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
 
-extern const char *hc_names[][5];
+HCGWindow *hcg;
+HCGCore *hcgcore;
 
-#ifdef __cplusplus
+
+int main(int argc, char *argv[])
+{
+  hc_load_cfg();
+  QApplication app(argc, argv);
+  QCoreApplication::setOrganizationName("HoubySoft");
+  QCoreApplication::setOrganizationDomain("houbysoft.com");
+  QCoreApplication::setApplicationName("HCG");
+  hcgcore = new HCGCore;
+  hcg = new HCGWindow;
+  QObject::connect(&app, SIGNAL(aboutToQuit()), hcgcore, SLOT(cleanup()));
+  return app.exec();
 }
-#endif
-
-#endif

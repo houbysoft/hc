@@ -16,22 +16,56 @@
 /*     along with HC (HoubySoft Calculator). If not, see                      */
 /*     <http://www.gnu.org/licenses/>.                                        */
 
+#ifndef HCGWINDOW_HPP
+#define HCGWINDOW_HPP
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
+#include <QObject>
+#include <QWidget>
+#include <QVBoxLayout>
+#include <QTextEdit>
+#include <QSettings>
+#include <QCloseEvent>
+#include <QList>
+#include "hcgbasewindow.hpp"
+#include "hcginputline.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-#define HC_NAMES 111 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 83 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 89 // last field with a constant in the hc_names array
+#define PLAIN 0
+#define HTML 1
 
-extern const char *hc_names[][5];
 
-#ifdef __cplusplus
-}
-#endif
+class HCGWindow : public HCGBaseWindow {
+  Q_OBJECT
+
+
+  protected:
+  void closeEvent(QCloseEvent *event);
+
+
+  private:
+  QWidget *vbox;
+  QVBoxLayout *vbox_layout;
+  QTextEdit *scrollback;
+  HCGinputline *inputline;
+  QSettings *settings;
+
+  void loadSettings();
+  void writeSettings();
+  void createFileMenu();
+  void setRunning(bool running);
+
+
+  public slots:
+  void getInputResult();
+  void insert(QString string);
+  void openScript();
+  void computation_finished(QString, char *);
+
+
+  public:
+  HCGWindow();
+  ~HCGWindow();
+  void insertAtEnd(char type, QString text);
+};
 
 #endif

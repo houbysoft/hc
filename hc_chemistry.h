@@ -21,6 +21,7 @@
 #define HC_CHEMISTRY
 
 #define ATOMIC_WEIGHT 1
+#define ATOMIC_NUMBER 2
 
 #define EL_H 104
 #define EL_HE 3325

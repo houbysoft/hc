@@ -55,6 +55,7 @@ const char *hc_names[][5] = {
   {"acos","func:x","Functions/Trigonometry","arc cosine of x",""},
   {"asin","func:x","Functions/Trigonometry","arc sine of x",""},
   {"atan","func:x","Functions/Trigonometry","arc tangent of x",""},
+  {"atomicnumber","func:str","Functions/Chemistry","atomic number (Z) of element in str","returns the atomic number (Z) of element in string str. For example, to get the atomic number of Oxygen, type atomicnumber(\"O\")"},
   {"boxplot","func:[v_1,v_2,...,v_n]","Stats","draws a boxplot of values v_1...v_n","draw a boxplot of values v1...vn Each of these values can either be a single number, or a list containing two elements : the number and its frequency. For examples, view help for \"stats\" which has the same argument format."},
   {"cbrt","func:x","Functions/Math","cube root of x (=x^(1/3))","returns the cube root of x (you can also use x^(1/3))"},
   {"ceil","func:x","Functions/Math","rounds x up to nearest integer",""},
