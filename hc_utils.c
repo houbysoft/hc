@@ -30,7 +30,7 @@
 
 void hc_error(char type, char *xformat, ...)
 {
-  char *format;
+  char *format = NULL;
   switch (type)
   {
   case SYNTAX:

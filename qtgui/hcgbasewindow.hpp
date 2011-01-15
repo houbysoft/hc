@@ -61,6 +61,7 @@ class HCGBaseWindow : public QMainWindow {
   void disp_rgb(unsigned int x, unsigned int y, void *data);
 
   public slots:
+  void newEval();
   void newScript();
   void checkUpdates();
   void about();

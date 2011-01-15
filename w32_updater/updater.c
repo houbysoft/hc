@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <hul.h>
-#include "../hc.h"
+#include "../hc_info.h"
 
 
 void printstatus(int status)

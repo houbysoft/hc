@@ -154,7 +154,7 @@ void HCGScriptWindow::setRunning(bool running)
     runbutton->setText("Running");
     runbutton->setEnabled(false);
   } else {
-    runbutton->setText("Script terminated successfully -- &Run Script Again?");
+    runbutton->setText("Script finished -- &Run Script Again?");
     runbutton->setEnabled(true);
     QTimer::singleShot(10000, this, SLOT(resetRunButton()));
   }
@@ -206,7 +206,6 @@ void HCGScriptWindow::textChanged() {
 void HCGScriptWindow::loadSettings() {
   settings->beginGroup("ScriptWindow");
   resize(settings->value("size", QSize(500,500)).toSize());
-  move(settings->value("pos", QPoint(50,50)).toPoint());
   opendir = settings->value("opendir", "").toString();
   savedir = settings->value("savedir", "").toString();
   settings->endGroup();
@@ -216,7 +215,6 @@ void HCGScriptWindow::loadSettings() {
 void HCGScriptWindow::writeSettings() {
   settings->beginGroup("ScriptWindow");
   settings->setValue("size",size());
-  settings->setValue("pos",pos());
   settings->setValue("opendir",opendir);
   settings->setValue("savedir",savedir);
   settings->endGroup();
@@ -277,6 +275,9 @@ void HCGScriptWindow::openScript() {
 void HCGScriptWindow::createFileMenu() {
   struct SubMenu newmenu;
   newmenu.menu = menuBar()->addMenu("&File");
+  QAction *newEval = new QAction("&New Evaluation Window", newmenu.menu);
+  connect(newEval, SIGNAL(triggered()), this, SLOT(newEval()));
+  newmenu.menu->addAction(newEval);
   QAction *newAct = new QAction("&New Script", newmenu.menu);
   connect(newAct, SIGNAL(triggered()), this, SLOT(newScript()));
   newmenu.menu->addAction(newAct);

@@ -35,6 +35,7 @@ class HCGCore : public QObject {
   char *result(QString expr);
   void load(QString filename);
   void emitSignals();
+  void closeAll();
 
   public slots:
   void setPrecision(int precision);
@@ -53,6 +54,7 @@ class HCGCore : public QObject {
   void angleModeChanged(QString mode);
   void expModeChanged(QString mode);
   void RPNChanged(bool rpn_enabled);
+  void closeAll_signal();
 };
 
 #endif

@@ -45,13 +45,13 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(this, SIGNAL(notify_error_signal(QString)), this, SLOT(notify_error_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(prompt_signal(QString, QString *)), this, SLOT(prompt_slot(QString, QString *)), Qt::BlockingQueuedConnection);
+  connect(hcgcore, SIGNAL(closeAll_signal()), this, SLOT(close()));
   createShortcut("Ctrl+O", this, SLOT(openScript()));
   createShortcut("Ctrl+N", this, SLOT(newScript()));
 }
 
 
 HCGBaseWindow::~HCGBaseWindow() {
-
 }
 
 
@@ -240,6 +240,11 @@ void HCGBaseWindow::newScript() {
 }
 
 
+void HCGBaseWindow::newEval() {
+  new HCGWindow();
+}
+
+
 void HCGBaseWindow::about() {
   QMessageBox::about(this,"About HC","HC "+QString(VERSION)+"\n\nA high-precision scientific programmable calculator.\n\nAvailable under the terms of the GNU GPL v3 License.\n(c) Jan Dlabal, 2010-2011.\n\nhttp://houbysoft.com/hc/");
 }
@@ -249,8 +254,9 @@ void HCGBaseWindow::checkUpdates() {
   HUL *update = hul_checkupdates((char *)VERSION,(char *)STATUS_URL_GUI);
   if (update && update->version)
   {
-    if (QMessageBox::question(hcg, "Update", "An update is available, would you like to download it?\n(Selecting Yes will start the updater and close HC)", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+    if (QMessageBox::question(hcg, "Update", "An update is available, would you like to download it?\n(Warning: this will close HC, please save your work)", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
     {
+      hcgcore->closeAll();
       system("start updater.exe");
       QCoreApplication::exit(0);
     }

@@ -634,11 +634,11 @@ double hc_mmass_el(char *e, int *i)
   count[0]=0;
   while (e[*i] && e[*i+1] && isdigit(e[*i+1]) && tmp < 32)
     count[tmp++] = e[++*i];
-  count[tmp]=0;
   if (tmp>=32)
   {
     arg_error("mmass() : integer too big, please use a lower value.");
   }
+  count[tmp]=0;
   if (strlen(count))
     tmp = atoi(count);
   else

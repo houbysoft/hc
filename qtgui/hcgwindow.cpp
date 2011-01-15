@@ -70,7 +70,6 @@ HCGWindow::~HCGWindow() {
 void HCGWindow::loadSettings() {
   settings->beginGroup("Window");
   resize(settings->value("size", QSize(500,500)).toSize());
-  move(settings->value("pos", QPoint(50,50)).toPoint());
   opendir = settings->value("opendir", "").toString();
   settings->endGroup();
 }
@@ -79,7 +78,6 @@ void HCGWindow::loadSettings() {
 void HCGWindow::writeSettings() {
   settings->beginGroup("Window");
   settings->setValue("size",size());
-  settings->setValue("pos",pos());
   settings->setValue("opendir",opendir);
   settings->endGroup();
 }
@@ -158,6 +156,9 @@ void HCGWindow::openScript() {
 void HCGWindow::createFileMenu() {
   struct SubMenu newmenu;
   newmenu.menu = menuBar()->addMenu("&File");
+  QAction *newEval = new QAction("&New Evaluation Window", newmenu.menu);
+  newmenu.menu->addAction(newEval);
+  connect(newEval, SIGNAL(triggered()), this, SLOT(newEval()));
   QAction *newAct = new QAction("&New Script", newmenu.menu);
   connect(newAct, SIGNAL(triggered()), this, SLOT(newScript()));
   newmenu.menu->addAction(newAct);

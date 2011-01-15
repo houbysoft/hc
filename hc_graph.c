@@ -111,8 +111,8 @@ static void cmap1_init()
 {
   PLFLT i[2], h[2], l[2], s[2];
 
-  i[0] = 0.0;		/* left boundary */
-  i[1] = 1.0;		/* right boundary */
+  i[0] = 0.0;                /* left boundary */
+  i[1] = 1.0;                /* right boundary */
 
   h[0] = 240; /* blue -> green -> yellow -> */
   h[1] = 0;   /* -> red */
@@ -181,7 +181,7 @@ char hc_graph(char *e)
   double step = (xmax-xmin) / HC_GRAPH_POINTS;
   double curx = xmin;
   char discont = 1;
-  PLFLT x1,x2,y1,y2;
+  PLFLT x1=0,x2=0,y1=0,y2=0;
 
   hc_init_plplot();
   plenv(xmin,xmax,ymin,ymax,0,1);
@@ -207,15 +207,15 @@ char hc_graph(char *e)
     {
       if (discont)
       {
-	x1 = curx;
-	y1 = strtod(tmp_2,NULL);
-	discont = 0;
+        x1 = curx;
+        y1 = strtod(tmp_2,NULL);
+        discont = 0;
       } else {
-	x2 = curx;
-	y2 = strtod(tmp_2,NULL);
-	pljoin(x1,y1,x2,y2);
-	x1 = x2;
-	y1 = y2;
+        x2 = curx;
+        y2 = strtod(tmp_2,NULL);
+        pljoin(x1,y1,x2,y2);
+        x1 = x2;
+        y1 = y2;
       }
     } else {
       discont = 1;
@@ -269,7 +269,7 @@ char hc_graph_n(char *e)
   graphing_ignore_errors = TRUE;
 
   unsigned int k=j;
-  PLFLT x1,y1,x2,y2;
+  PLFLT x1=0,y1=0,x2=0,y2=0;
   char discont = 1;
 
   hc_init_plplot();
@@ -311,29 +311,29 @@ char hc_graph_n(char *e)
       char *tmp_2 = hc_result_(tmp_expr);
       char *tmp_3 = NULL;
       if (tmp_2)
-	tmp_3 = hc_imag_part(tmp_2);
+        tmp_3 = hc_imag_part(tmp_2);
       if (!tmp_3 && tmp_2 && strlen(tmp_2))
       {
-	if (discont)
-	{
-	  x1 = curx;
-	  y1 = strtod(tmp_2,NULL);
-	  discont = 0;
-	} else {
-	  x2 = curx;
-	  y2 = strtod(tmp_2,NULL);
-	  pljoin(x1,y1,x2,y2);
-	  x1 = x2;
-	  y1 = y2;
-	}
+        if (discont)
+        {
+          x1 = curx;
+          y1 = strtod(tmp_2,NULL);
+          discont = 0;
+        } else {
+          x2 = curx;
+          y2 = strtod(tmp_2,NULL);
+          pljoin(x1,y1,x2,y2);
+          x1 = x2;
+          y1 = y2;
+        }
       } else {
-	discont = 1;
+        discont = 1;
       }
       free(tmp_expr);
       if (tmp_2)
-	free(tmp_2);
+        free(tmp_2);
       if (tmp_3)
-	free(tmp_3);
+        free(tmp_3);
     }
   }
   graphing_ignore_errors = FALSE;
@@ -428,26 +428,26 @@ char hc_graph3d(char *e)
       char *tmp_2 = hc_result_(tmp_expr);
       char *tmp_3 = NULL;
       if (tmp_2)
-	tmp_3 = hc_imag_part(tmp_2);
+        tmp_3 = hc_imag_part(tmp_2);
       if (!tmp_3 && tmp_2)
       {
-	a[i][ii] = strtod(tmp_2,NULL);
-	if (a[i][ii]<zmin || a[i][ii]>zmax || errno==ERANGE)
-	{
-	  a_hasval[i][ii] = 'n';
-	  discont = TRUE;
-	} else {
-	  a_hasval[i][ii] = 'y';
-	}
+        a[i][ii] = strtod(tmp_2,NULL);
+        if (a[i][ii]<zmin || a[i][ii]>zmax || errno==ERANGE)
+        {
+          a_hasval[i][ii] = 'n';
+          discont = TRUE;
+        } else {
+          a_hasval[i][ii] = 'y';
+        }
       } else {
-	a_hasval[i][ii] = 'n';
-	discont = TRUE; // we have at least one discontinuity/absence of value - this will switch to the slow-but-safe plotting mode
+        a_hasval[i][ii] = 'n';
+        discont = TRUE; // we have at least one discontinuity/absence of value - this will switch to the slow-but-safe plotting mode
       }
       free(tmp_expr);
       if (tmp_2)
-	free(tmp_2);
+        free(tmp_2);
       if (tmp_3)
-	free(tmp_3);
+        free(tmp_3);
     }
   }
   graphing_ignore_errors = FALSE;
@@ -481,19 +481,19 @@ char hc_graph3d(char *e)
     {
       for (j=0; j<HC_GRAPH_POINTS_3D-1; j++)
       {
-	if (a_hasval[i][j]=='y' && a_hasval[i+1][j]=='y' && a_hasval[i+1][j+1]=='y' && a_hasval[i][j+1]=='y')
-	{
-	  // All points in the square have a value, plot them!
-	  a_x1[0] = a_x[i];
-	  a_x1[1] = a_x[i+1];
-	  a_y1[0] = a_y[j];
-	  a_y1[1] = a_y[j+1];
-	  a1[0][0] = a[i][j];
-	  a1[0][1] = a[i][j+1];
-	  a1[1][0] = a[i+1][j];
-	  a1[1][1] = a[i+1][j+1];
-	  plmesh(a_x1,a_y1,a1,2,2,DRAW_LINEXY | MAG_COLOR);
-	}
+        if (a_hasval[i][j]=='y' && a_hasval[i+1][j]=='y' && a_hasval[i+1][j+1]=='y' && a_hasval[i][j+1]=='y')
+        {
+          // All points in the square have a value, plot them!
+          a_x1[0] = a_x[i];
+          a_x1[1] = a_x[i+1];
+          a_y1[0] = a_y[j];
+          a_y1[1] = a_y[j+1];
+          a1[0][0] = a[i][j];
+          a1[0][1] = a[i][j+1];
+          a1[1][0] = a[i+1][j];
+          a1[1][1] = a[i+1][j+1];
+          plmesh(a_x1,a_y1,a1,2,2,DRAW_LINEXY | MAG_COLOR);
+        }
       }
     }
     free(a_x1);
@@ -594,24 +594,24 @@ char hc_graph_slpfld(char *e)
       char *tmp_2 = hc_result_(tmp_expr);
       char *tmp_3 = NULL;
       if (tmp_2)
-	tmp_3 = hc_imag_part(tmp_2);
+        tmp_3 = hc_imag_part(tmp_2);
       if (!tmp_3 && tmp_2)
       {
-	a[i][ii] = strtod(tmp_2,NULL);
-	if (errno==ERANGE)
-	{
-	  a_hasval[i][ii] = 'n';
-	} else {
-	  a_hasval[i][ii] = 'y';
-	}
+        a[i][ii] = strtod(tmp_2,NULL);
+        if (errno==ERANGE)
+        {
+          a_hasval[i][ii] = 'n';
+        } else {
+          a_hasval[i][ii] = 'y';
+        }
       } else {
-	a_hasval[i][ii] = 'n';
+        a_hasval[i][ii] = 'n';
       }
       free(tmp_expr);
       if (tmp_2)
-	free(tmp_2);
+        free(tmp_2);
       if (tmp_3)
-	free(tmp_3);
+        free(tmp_3);
     }
   }
   graphing_ignore_errors = FALSE;
@@ -632,7 +632,7 @@ char hc_graph_slpfld(char *e)
     for (ii=0; ii<HC_GRAPH_POINTS_SF; ii++)
     {
       if (a_hasval[i][ii]=='y')
-	pljoin(a_x[i] + sqrt((pow(r_x,2))/(1 + (pow(a[i][ii],2)))),a_y[ii] + a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))),a_x[i] - sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_y[ii] - a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))));
+        pljoin(a_x[i] + sqrt((pow(r_x,2))/(1 + (pow(a[i][ii],2)))),a_y[ii] + a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))),a_x[i] - sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_y[ii] - a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))));
     }
   }
 
@@ -717,7 +717,7 @@ char hc_graph_peq(char *e)
   double stept = HC_GRAPH_PEQ_T_STEP;
   double curt = tmin;
   graphing_ignore_errors = TRUE;
-  PLFLT x1,x2,y1,y2;
+  PLFLT x1=0,x2=0,y1=0,y2=0;
   char discont = 1;
   for (; curt <= tmax; curt+=stept)
   {
@@ -736,15 +736,15 @@ char hc_graph_peq(char *e)
     } else {
       if (discont)
       {
-	x1 = strtod(tmp_x,NULL);
-	y1 = strtod(tmp_y,NULL);
-	discont = 0;
+        x1 = strtod(tmp_x,NULL);
+        y1 = strtod(tmp_y,NULL);
+        discont = 0;
       } else {
-	x2 = strtod(tmp_x,NULL);
-	y2 = strtod(tmp_y,NULL);
-	pljoin(x1,y1,x2,y2);
-	x1 = x2;
-	y1 = y2;
+        x2 = strtod(tmp_x,NULL);
+        y2 = strtod(tmp_y,NULL);
+        pljoin(x1,y1,x2,y2);
+        x1 = x2;
+        y1 = y2;
       }
     }
     free(tmp_exprx); free(tmp_expry);
@@ -778,9 +778,9 @@ char hc_graph_values(char *e)
     arg_error("graphvalues() : argument needs to be a list of point coordinates");
   }
   char *points = list_clean(points_orig);
-  double xmin,xmax,ymin,ymax;
-  double lastpointx;
-  PLFLT x1,x2,y1,y2;
+  double xmin=0,xmax=0,ymin=0,ymax=0;
+  double lastpointx=0;
+  PLFLT x1=0,x2=0,y1=0,y2=0;
   char mode = 0;
 
   unsigned int idx = 0;
@@ -805,14 +805,14 @@ char hc_graph_values(char *e)
     {
       if (idx == 1)
       {
-	xmin = xmax = 0;
-	ymin = ymax = strtod(cur,NULL);
+        xmin = xmax = 0;
+        ymin = ymax = strtod(cur,NULL);
       } else {
-	xmax = idx - 1;
-	if (strtod(cur,NULL) < ymin)
-	  ymin = strtod(cur,NULL);
-	if (strtod(cur,NULL) > ymax)
-	  ymax = strtod(cur,NULL);
+        xmax = idx - 1;
+        if (strtod(cur,NULL) < ymin)
+          ymin = strtod(cur,NULL);
+        if (strtod(cur,NULL) > ymax)
+          ymax = strtod(cur,NULL);
       }
     } else { // mode == 2
       char *curtmp = list_clean(cur);
@@ -820,22 +820,22 @@ char hc_graph_values(char *e)
       char *cury = hc_get_arg(curtmp,2);
       if (idx == 1)
       {
-	xmin = xmax = lastpointx = strtod(curx,NULL);
-	ymin = ymax = strtod(cury,NULL);
+        xmin = xmax = lastpointx = strtod(curx,NULL);
+        ymin = ymax = strtod(cury,NULL);
       } else {
-	if (strtod(curx,NULL) <= lastpointx)
-	{
-	  free(curx); free(cury); free(cur); free(points_orig);
-	  arg_error("graphvalues() : invalid point list. x values are not in ascending order.");
-	} else {
-	  lastpointx = strtod(curx,NULL);
-	  if (lastpointx > xmax)
-	    xmax = lastpointx;
-	  if (strtod(cury,NULL) < ymin)
-	    ymin = strtod(cury,NULL);
-	  if (strtod(cury,NULL) > ymax)
-	    ymax = strtod(cury,NULL);
-	}
+        if (strtod(curx,NULL) <= lastpointx)
+        {
+          free(curx); free(cury); free(cur); free(points_orig);
+          arg_error("graphvalues() : invalid point list. x values are not in ascending order.");
+        } else {
+          lastpointx = strtod(curx,NULL);
+          if (lastpointx > xmax)
+            xmax = lastpointx;
+          if (strtod(cury,NULL) < ymin)
+            ymin = strtod(cury,NULL);
+          if (strtod(cury,NULL) > ymax)
+            ymax = strtod(cury,NULL);
+        }
       }
       free(curx); free(cury);
     }

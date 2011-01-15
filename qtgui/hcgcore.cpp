@@ -99,3 +99,9 @@ void HCGCore::cleanup()
 {
   hc_save_cfg();
 }
+
+
+void HCGCore::closeAll()
+{
+  emit closeAll_signal();
+}
