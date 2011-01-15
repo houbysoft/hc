@@ -1,0 +1,13 @@
+IDI_ICON1               ICON    DISCARDABLE     "hcg.ico"
+
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "HoubySoft.com\0"
+            VALUE "LegalCopyright",   "(c) 2011 Jan Dlabal\0"
+            VALUE "ProductName",      "HoubySoft Calculator\0"
+        END
+    END
+END

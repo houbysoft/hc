@@ -3,10 +3,11 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = HCG
 DEPENDPATH += .
 INCLUDEPATH += .
-CONFIG += console
+#CONFIG += console
+win32:RC_FILE = hcg.rc
 
 # Input
 HEADERS += hcgwindow.hpp hcginputline.hpp hcgscriptwindow.hpp hcgbasewindow.hpp hcgthreads.hpp hcgcore.hpp
