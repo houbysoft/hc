@@ -42,12 +42,15 @@
 
 HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(this, SIGNAL(notify_signal(QString)), this, SLOT(notify_slot(QString)), Qt::BlockingQueuedConnection);
+  connect(this, SIGNAL(notify_console_signal(QString)), this, SLOT(notify_console_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(notify_error_signal(QString)), this, SLOT(notify_error_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(prompt_signal(QString, QString *)), this, SLOT(prompt_slot(QString, QString *)), Qt::BlockingQueuedConnection);
   connect(hcgcore, SIGNAL(closeAll_signal()), this, SLOT(close()));
   createShortcut("Ctrl+O", this, SLOT(openScript()));
   createShortcut("Ctrl+N", this, SLOT(newScript()));
+
+  log_edit = NULL;
 }
 
 
@@ -311,9 +314,29 @@ void HCGBaseWindow::createShortcut(const char *seq, const QObject *rec, const ch
 }
 
 
+void HCGBaseWindow::createLogEdit()
+{
+  log_edit = new QTextEdit();
+  log_edit->setReadOnly(true);
+  log_edit->show();
+}
+
+
 void HCGBaseWindow::notify_slot(QString str)
 {
   QMessageBox::information(0, "", str);
+}
+
+
+void HCGBaseWindow::notify_console_slot(QString str)
+{
+  if (!log_edit)
+    createLogEdit();
+  if (!log_edit->isVisible())
+    log_edit->show();
+  log_edit->moveCursor(QTextCursor::End);
+  log_edit->insertPlainText(str);
+  log_edit->moveCursor(QTextCursor::End);
 }
 
 
@@ -342,6 +365,12 @@ void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data)
 void HCGBaseWindow::notify(QString str)
 {
   emit notify_signal(str);
+}
+
+
+void HCGBaseWindow::notify_console(QString str)
+{
+  emit notify_console_signal(str);
 }
 
 

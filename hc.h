@@ -99,10 +99,12 @@ extern void unknown_var_error(char *var, char type);
 #define error_nq(str) {printf("%s\n",str);}
 #if !defined(HCG) && !defined(HCG_E)
 #define notify(str) printf("%s",str)
+#define notify_console(str) notify(str)
 #define notify_error(str) notify(str)
 #define prompt(str) readline(str)
 #else
 extern void notify(char *);
+extern void notify_console(char *);
 extern void notify_error(char *);
 extern char *prompt(char *);
 #endif

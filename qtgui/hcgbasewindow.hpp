@@ -23,6 +23,7 @@
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QTextEdit>
 
 #define COMPLETER 0
 #define ENTER_PRESSED 1
@@ -49,13 +50,16 @@ class HCGBaseWindow : public QMainWindow {
   void help(char caller);
   virtual void createFileMenu() = 0;
   void createOptionMenu();
+  void createLogEdit();
   QSpinBox *prec_spinbox;
   QAction *rad,*grad,*deg,*normal,*sci,*eng,*rpn;
+  QTextEdit *log_edit;
 
   public:
   HCGBaseWindow();
   ~HCGBaseWindow();
   void notify(QString str);
+  void notify_console(QString str);
   void notify_error(QString str);
   void prompt(QString str, QString *answer);
   void disp_rgb(unsigned int x, unsigned int y, void *data);
@@ -69,6 +73,7 @@ class HCGBaseWindow : public QMainWindow {
   void enterHelp();
   void generalHelp();
   void notify_slot(QString str);
+  void notify_console_slot(QString str);
   void notify_error_slot(QString str);
   void prompt_slot(QString str, QString *answer);
   void disp_rgb_slot(unsigned int x, unsigned int y, void *data);
@@ -82,6 +87,7 @@ class HCGBaseWindow : public QMainWindow {
 
   signals:
   void notify_signal(QString str);
+  void notify_console_signal(QString str);
   void notify_error_signal(QString str);
   void prompt_signal(QString str, QString *answer);
   void disp_rgb_signal(unsigned int x, unsigned int y, void *data);

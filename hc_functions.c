@@ -2216,18 +2216,15 @@ int hc_output(int mode, char *f_expr)
   if (mode==PRINT)
   {
     if (strlen(printme))
-      notify(printme);
+      notify_console(printme);
   }
   else
     fwrite(printme,sizeof(char),strlen(printme),fw);
   free(printme);
-#if !defined(HCG) && !defined(HCG_E)
   if (mode==PRINT)
-    notify("\n");
-  else
-#else
-  if (mode!=PRINT)
-#endif
+  {
+    notify_console("\n");
+  } else if (mode!=PRINT)
   {
     fprintf(fw,"\n");
   }

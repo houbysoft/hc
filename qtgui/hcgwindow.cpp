@@ -177,6 +177,12 @@ void notify(char *str)
 }
 
 
+void notify_console(char *str)
+{
+  hcg->notify_console(QString(str));
+}
+
+
 void notify_error(char *str)
 {
   hcg->notify_error(QString(str));
