@@ -32,7 +32,9 @@
 #include <QPixmap>
 #include <QImage>
 #include <QSpinBox>
+#ifdef WIN32
 #include <hul.h>
+#endif
 #include "hcgbasewindow.hpp"
 #include "hcgscriptwindow.hpp"
 #include "main.hpp"
@@ -254,6 +256,7 @@ void HCGBaseWindow::about() {
 
 
 void HCGBaseWindow::checkUpdates() {
+#ifdef WIN32
   HUL *update = hul_checkupdates((char *)VERSION,(char *)STATUS_URL_GUI);
   if (update && update->version)
   {
@@ -268,6 +271,7 @@ void HCGBaseWindow::checkUpdates() {
   } else {
     notify_error_slot((char *)"An error occured while checking for updates.");
   }
+#endif
 }
 
 

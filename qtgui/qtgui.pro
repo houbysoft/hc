@@ -14,11 +14,7 @@ HEADERS += hcgwindow.hpp hcginputline.hpp hcgscriptwindow.hpp hcgbasewindow.hpp 
 SOURCES += ../hc.c ../hc_functions.c ../hc_varassign.c ../hc_graph.c ../hc_complex.c ../m_apmc.c ../hc_stats.c ../hc_programming.c ../hc_chemistry.c ../hc_list.c ../hc_help.c ../hc_utils.c ../hc_fnp.c
 SOURCES += hcgwindow.cpp hcginputline.cpp main.cpp hcgscriptwindow.cpp hcgbasewindow.cpp hcgthreads.cpp hcgcore.cpp
 
-
-# linux
-#LIBS += /usr/lib/libmapm.so.0 `pkg-config gtk+-2.0 plplotd --cflags --libs`
-
-# w32
-LIBS += -mwindows I:/Qt/2010.05/mingw/lib/libmapm.a I:/Qt/2010.05/mingw/lib/libhul.a I:/Qt/2010.05/mingw/lib/libplplotd.a I:/Qt/2010.05/mingw/lib/libqsastime.a -lwininet
+!win32:LIBS += /usr/lib/libmapm.so.0 `pkg-config gtk+-2.0 plplotd --cflags --libs`
+win32:LIBS += -mwindows I:/Qt/2010.05/mingw/lib/libmapm.a I:/Qt/2010.05/mingw/lib/libhul.a I:/Qt/2010.05/mingw/lib/libplplotd.a I:/Qt/2010.05/mingw/lib/libqsastime.a -lwininet
 
 DEFINES += HCG_E HCG MEM_DRIVER
