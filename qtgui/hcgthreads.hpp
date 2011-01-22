@@ -18,6 +18,9 @@
 
 #include <QObject>
 #include <QThread>
+#ifdef WIN32
+#include <hul.h>
+#endif
 
 #ifndef HCGTHREADS_HPP
 #define HCGTHREADS_HPP
@@ -52,5 +55,21 @@ class HCGResultThread : public QThread {
   HCGResultThread(QString e);
   ~HCGResultThread() {};
 };
+
+#ifdef WIN32
+class HCGUpdateThread : public QThread {
+  Q_OBJECT
+
+  protected:
+  void run();
+
+  signals:
+  void checking_finished(HUL *update);
+
+  public:
+  HCGUpdateThread() {};
+  ~HCGUpdateThread() {};
+};
+#endif
 
 #endif

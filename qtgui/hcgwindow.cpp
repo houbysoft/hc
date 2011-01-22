@@ -38,6 +38,7 @@ extern "C" void hcg_disp_rgb(unsigned int x, unsigned int y, void *data);
 HCGWindow::HCGWindow() : HCGBaseWindow() {
   vbox = new QWidget(this);
   scrollback = new QTextEdit("Welcome to HC! To evaluate an expression, type it below and press enter.",vbox);
+  scrollback->document()->setMaximumBlockCount(MAX_SCROLLBACK_BLOCKS);
   scrollback->setReadOnly(TRUE);
   insertAtEnd(PLAIN,"\n");
   inputline = new HCGinputline(vbox);

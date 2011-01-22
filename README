@@ -10,6 +10,17 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+5.0
+  - complete rewrite of GUI now using Qt instead of GTK
+    - cleaner interface
+    - improved help system
+    - possibility to open more than one window (only one thread can run at any one time though, for now)
+    - added a script editor
+    - other small improvements
+    - better responsiveness, as Qt threads are now used for doing computation, update checking, etc.
+  - added count() to count number of occurences of an element in an array
+  - added kgtolbs() and lbstokg()
+  - various small fixes
 4.0.1
   - added history support with up/down arrows to the GTK GUI
   - small code improvements

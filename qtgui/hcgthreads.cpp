@@ -18,6 +18,10 @@
 
 #include <QObject>
 #include <QThread>
+#ifdef WIN32
+#include <hul.h>
+#endif
+#include "../hc_info.h"
 #include "hcgthreads.hpp"
 #include "main.hpp"
 
@@ -44,3 +48,11 @@ void HCGResultThread::run()
 {
   emit computation_finished(expr, hcgcore->result(expr));
 }
+
+
+#ifdef WIN32
+void HCGUpdateThread::run()
+{
+  emit checking_finished(hul_checkupdates((char *)VERSION,(char *)STATUS_URL_GUI));
+}
+#endif

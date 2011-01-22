@@ -32,6 +32,7 @@
 
 #define PLAIN 0
 #define HTML 1
+#define MAX_SCROLLBACK_BLOCKS 2500
 
 
 class HCGWindow : public HCGBaseWindow {

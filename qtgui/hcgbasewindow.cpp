@@ -255,9 +255,9 @@ void HCGBaseWindow::about() {
 }
 
 
-void HCGBaseWindow::checkUpdates() {
 #ifdef WIN32
-  HUL *update = hul_checkupdates((char *)VERSION,(char *)STATUS_URL_GUI);
+void HCGBaseWindow::processUpdate(HUL *update)
+{
   if (update && update->version)
   {
     if (QMessageBox::question(hcg, "Update", "An update is available, would you like to download it?\n(Warning: this will close HC, please save your work)", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
@@ -271,6 +271,15 @@ void HCGBaseWindow::checkUpdates() {
   } else {
     notify_error_slot((char *)"An error occured while checking for updates.");
   }
+}
+#endif
+
+
+void HCGBaseWindow::checkUpdates() {
+#ifdef WIN32
+  HCGUpdateThread *upThread = new HCGUpdateThread();
+  connect(upThread, SIGNAL(checking_finished(HUL *)), this, SLOT(processUpdate(HUL *)));
+  upThread->start();
 #endif
 }
 
@@ -322,6 +331,7 @@ void HCGBaseWindow::createLogEdit()
 {
   log_edit = new QTextEdit();
   log_edit->setReadOnly(true);
+  log_edit->document()->setMaximumBlockCount(MAX_LOG_BLOCKS);
   log_edit->show();
 }
 

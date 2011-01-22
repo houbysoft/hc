@@ -24,9 +24,13 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QTextEdit>
+#ifdef WIN32
+#include <hul.h>
+#endif
 
 #define COMPLETER 0
 #define ENTER_PRESSED 1
+#define MAX_LOG_BLOCKS 2000
 
 
 struct SubMenu {
@@ -82,6 +86,9 @@ class HCGBaseWindow : public QMainWindow {
   void setAngleMode(QString mode);
   void setExpMode(QString mode);
   void setRPN(bool enabled);
+#ifdef WIN32
+  void processUpdate(HUL *update);
+#endif
   virtual void insert(QString string) = 0;
   virtual void openScript() = 0;
 
