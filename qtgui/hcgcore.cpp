@@ -29,6 +29,7 @@
 
 HCGCore::HCGCore() : QObject() {
   hc_load_cfg();
+  free(hc_result((char *)"0"));
 }
 
 

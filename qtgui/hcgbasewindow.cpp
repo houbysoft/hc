@@ -161,7 +161,9 @@ void HCGBaseWindow::setRPN(bool enabled)
 
 void HCGBaseWindow::setPrecision(int precision)
 {
+  prec_spinbox->blockSignals(true);
   prec_spinbox->setValue(precision);
+  prec_spinbox->blockSignals(false);
 }
 
 
