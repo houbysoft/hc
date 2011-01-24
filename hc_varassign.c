@@ -1381,11 +1381,26 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
 	  if (f_result_tmp_im[0]=='-')
 	    f_result_tmp_im[0] = '_';
 	  // re i im \0
+      if (strlen(f_result_tmp_re) + 1 + strlen(f_result_tmp_im) > MAXRESULT - 1)
+      {
+        hc_error(ERROR,"Overflow");
+        free(f_result_tmp_re);
+        free(f_result_tmp_im);
+	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        return 0;
+      }
 	  strcpy(result,f_result_tmp_re);
 	  strcat(result,"i");
 	  strcat(result,f_result_tmp_im);
 	  free(f_result_tmp_re); free(f_result_tmp_im);
 	} else {
+      if (strlen(f_result_tmp_re) > MAXRESULT - 1)
+      {
+        hc_error(ERROR,"Overflow");
+        free(f_result_tmp_re);
+	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        return 0;
+      }
 	  strcpy(result,f_result_tmp_re);
 	  free(f_result_tmp_re);
 	}
