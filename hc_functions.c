@@ -27,9 +27,6 @@
 #include "hc_functions.h"
 #include "hc_complex.h"
 #include "hc_list.h"
-#ifdef HCG_E
-#include "gui_utils.h"
-#endif
 
 
 #define b10(c) (isdigit(c) ? c - 48 : tolower(c) - 87) // '0' == 48, 'a' == 97
