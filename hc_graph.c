@@ -768,8 +768,8 @@ char hc_graph_peq(char *e)
 }
 
 
-// Draw a graph using the values specified
-char hc_graph_values(char *e)
+// Draw a graph using the values specified. If draw_lines is 0, the points are not connected with lines; if it is 1, they are connected with lines.
+char hc_graph_values(char *e, char draw_lines)
 {
   char *points_orig = hc_get_arg_r(e,1);
   if (!points_orig || !is_list(points_orig))
@@ -875,7 +875,13 @@ char hc_graph_values(char *e)
     } else {
       x2 = cx;
       y2 = cy;
-      pljoin(x1,y1,x2,y2);
+      if (draw_lines)
+        pljoin(x1,y1,x2,y2);
+      else
+      {
+        plpoin(1,&x1,&y1,2); // the last argument is the type of symbol to use
+        plpoin(1,&x2,&y2,2);
+      }
       x1 = x2;
       y1 = y2;
     }

@@ -27,7 +27,7 @@ extern char hc_graph_n(char *e);
 extern char hc_graph3d(char *e);
 extern char hc_graph_slpfld(char *e);
 extern char hc_graph_peq(char *e);
-extern char hc_graph_values(char *e);
+extern char hc_graph_values(char *e, char draw_lines);
 
 #if (defined(HCG) || defined(HCG_E)) && !defined(WIN32)
 extern void hcg_disp_graph(char *);
