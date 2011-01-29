@@ -1332,7 +1332,7 @@ char *hc_postfix_result(char *e)
         {
           m_apmc_sqr(curr->re,curr->im,op1_r,op1_i);
         } else {
-          if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op1_i,MM_Zero)==0)
+          if (m_apm_compare(op2_i,MM_Zero)==0 && m_apm_compare(op1_i,MM_Zero)==0 && (m_apm_compare(op1_r,MM_Zero)!=-1 || m_apm_is_integer(op2_r) == TRUE))
           {
             m_apm_set_string(curr->im,"0");
             m_apm_pow(curr->re,HC_DEC_PLACES,op1_r,op2_r);
