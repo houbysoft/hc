@@ -20,10 +20,13 @@
 #ifndef HC_UTILS_H
 #define HC_UTILS_H
 
+#include <m_apm.h>
+
 typedef enum {
   SYNTAX, NOT_ENOUGH_OPERANDS, TYPE, LOAD, WARNING, ERROR
 } HC_ERRORS;
 
 extern void hc_error(char type, char *xformat, ...);
+extern void hc_set_from_string(M_APM re, M_APM im, char *num);
 
 #endif

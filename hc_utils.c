@@ -24,8 +24,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <m_apm.h>
 #include "hc.h"
 #include "hc_utils.h"
+#include "hc_complex.h"
 
 
 void hc_error(char type, char *xformat, ...)
@@ -93,4 +95,17 @@ void hc_error(char type, char *xformat, ...)
   if (!graphing_ignore_errors)
     notify_error(line);
   free(line); free(format);
+}
+
+
+void hc_set_from_string(M_APM re, M_APM im, char *num)
+{
+  char *rp = hc_real_part(num);
+  char *ip = hc_imag_part(num);
+  if (ip)
+    m_apm_set_string(im, ip);
+  else
+    m_apm_copy(im, MM_Zero);
+  m_apm_set_string(re, rp);
+  free(rp); free(ip);
 }

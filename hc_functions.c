@@ -27,9 +27,13 @@
 #include "hc_functions.h"
 #include "hc_complex.h"
 #include "hc_list.h"
+#include "hc_utils.h"
 
 
 #define b10(c) (isdigit(c) ? c - 48 : tolower(c) - 87) // '0' == 48, 'a' == 97
+
+char *gamma_coefficients = NULL;
+unsigned int gamma_coefficients_lp = 0;
 
 
 double hc_strtod(const char *e, char *unused)
@@ -603,6 +607,157 @@ int hc_product(M_APM result_re, M_APM result_im, char *e)
   m_apm_copy(result_im,res_im);
   m_apm_free(min); m_apm_free(max); m_apm_free(res_re); m_apm_free(res_im); m_apm_free(copy_tmp_re); m_apm_free(copy_tmp_im); m_apm_free(copy_tmp2_re); m_apm_free(copy_tmp2_im);
   return SUCCESS;
+}
+
+
+int hc_gamma(M_APM result_re, M_APM result_im, char *e)
+{
+  char *arg = hc_get_arg_r(e,1);
+  if (!arg || !is_num(arg))
+    arg_error("gamma() needs a number argument");
+
+  // This code uses the Spouge approximation method to calculate the Gamma function
+  // First of all, we check whether it is necessary to use the reflection formula:
+  //  pi/(sin(pi*z)*gamma(1 - z))
+  char *real = hc_real_part(arg);
+  char *imag = hc_imag_part(arg);
+  if (real[0] == '-') { // -> real part is negative, reflection formula needs to be used
+    if (!imag && is_int(real))
+    {
+      free(real);
+      free(arg);
+      arg_error("gamma() : complex infinity result");
+    }
+    free(real);
+    free(imag);
+    char *r_expr = malloc(strlen("pi/(sin(pi*)*gamma(1-))") + 2 * strlen(arg) + 1); if (!r_expr) mem_error();
+    sprintf(r_expr, "pi/(sin(pi*%s)*gamma(1-%s))", arg, arg);
+    char *r = hc_result_(r_expr);
+    free(r_expr);
+    free(arg);
+    if (!r)
+      return FAIL;
+    else {
+      hc_set_from_string(result_re, result_im, r);
+      free(r);
+      return SUCCESS;
+    }
+  }
+  free(real);
+  free(imag);
+
+  char *argMone_expr = malloc(strlen(arg)+3); if (!argMone_expr) mem_error();
+  sprintf(argMone_expr,"%s-1",arg);
+  char *argMone = hc_result_(argMone_expr);
+  free(argMone_expr);
+  if (!argMone)
+  {
+    free(arg);
+    return FAIL;
+  }
+
+  // If this is reached, reflection formula is not used.
+  // First, the parameter is calculated from the desired precision using the formula : parameter(n) = ceil(n/log10(2pi))
+  char *par_expr = malloc(hc_need_space_int(hc.precision) + strlen("ceil(/log10(2pi))") + 1); if (!par_expr) mem_error();
+  sprintf(par_expr,"ceil(%i/log10(2pi))",hc.precision);
+  char *par = hc_result_(par_expr);
+  free(par_expr);
+  if (!par)
+  {
+    free(arg); free(argMone);
+    return FAIL;
+  }
+
+  // Second, the coefficients cache is prepared, if necessary
+  // The format for the caching string (coefficients) is coef_1:...:coef_n
+  if (!gamma_coefficients || hc.precision != gamma_coefficients_lp)
+  {
+    free(gamma_coefficients);
+    gamma_coefficients = malloc(1);
+    gamma_coefficients[0] = '\0';
+    gamma_coefficients_lp = hc.precision;
+  }
+
+  // Then, the series are computed, computing & caching additional coefficients as necessary
+  char *coef = NULL;
+  unsigned int coef_idx = 0;
+  unsigned int k = 1;
+  unsigned int last_k = atoi(par) - 1;
+  char *series_expr = malloc(2); if (!series_expr) mem_error();
+  strcpy(series_expr, "1");
+  while (k <= last_k)
+  {
+    coef = gamma_coefficients + coef_idx;
+    if (coef[0] == ':')
+    {
+      coef_idx += 1;
+      coef = gamma_coefficients + coef_idx;
+    }
+    if (coef[0] == '\0')
+    {
+      // Generate the kth coefficient
+      char *c_expr = malloc(strlen("(2pi)^(-1/2)*(-1)^(-1)/(-1)!*(-+)^(-1/2)*exp(-+)") + 5*hc_need_space_int(k) + 2*strlen(par) + 1); if (!c_expr) mem_error();
+      sprintf(c_expr,"(2pi)^(-1/2)*(-1)^(%i-1)/(%i-1)!*(-%i+%s)^(%i-1/2)*exp(-%i+%s)",k,k,k,par,k,k,par);
+      char *c_new = hc_result_(c_expr);
+      free(c_expr);
+      if (!c_new)
+      {
+        free(series_expr); free(arg); free(argMone); free(par);
+        return FAIL;
+      }
+      gamma_coefficients = realloc(gamma_coefficients, strlen(gamma_coefficients) + 1 + strlen(c_new) + 1); if (!gamma_coefficients) mem_error();
+      if (gamma_coefficients[0] != '\0')
+        strcat(gamma_coefficients,":");
+      strcat(gamma_coefficients,c_new);
+      free(c_new);
+      coef = gamma_coefficients + coef_idx;
+      if (coef[0] == ':') {
+        coef_idx++;
+        coef = gamma_coefficients + coef_idx;
+      }
+    }
+    unsigned int i=0;
+    while (coef[i] && coef[i]!=':')
+      i++;
+    char *el = malloc(strlen("/(+)") + i + strlen(arg) + hc_need_space_int(k) + 1); if (!el) mem_error();
+    strncpy(el,coef,i);
+    sprintf(el + i,"/(%s+%i)",argMone,k);
+    char *el_r = hc_result_(el);
+    free(el);
+    if (!el_r)
+    {
+      free(series_expr); free(arg); free(argMone); free(par);
+      return FAIL;
+    }
+    series_expr = realloc(series_expr,strlen(series_expr)+1+strlen(el_r)+1); if (!series_expr) mem_error();
+    strcat(series_expr,"+");
+    strcat(series_expr,el_r);
+    free(el_r);
+    coef_idx += i;
+    k++;
+  }
+
+  char *series_result = hc_result_(series_expr);
+  free(series_expr);
+  if (!series_result)
+  {
+    free(par); free(arg); free(argMone);
+    return FAIL;
+  }
+
+  // Finally, we return the result according to the formula (where z is the argument):
+  // (z-1+par)^(z-1/2)*exp(-z+1-par)*sqrt(2pi)*series_result
+  char *r_expr = malloc(strlen("(-1+)^(-1/2)*exp(-()+1-())*sqrt(2pi)*") + 3*strlen(arg) + 2*strlen(par) + strlen(series_result) + 1); if (!r_expr) mem_error();
+  sprintf(r_expr,"(%s-1+%s)^(%s-1/2)*exp(-(%s)+1-(%s))*sqrt(2pi)*%s",arg,par,arg,arg,par,series_result);
+  char *r = hc_result_(r_expr);
+  free(r_expr); free(par); free(series_result); free(arg); free(argMone);
+  if (!r)
+    return FAIL;
+  else {
+    hc_set_from_string(result_re, result_im, r);
+    free(r);
+    return SUCCESS;
+  }
 }
 
 

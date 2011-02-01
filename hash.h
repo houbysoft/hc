@@ -171,5 +171,6 @@
 #define HASH_GRAPHP 21713
 #define HASH_LINREG 34828
 #define HASH_COUNT 92330
+#define HASH_GAMMA 2346
 
 #endif

@@ -30,6 +30,7 @@ extern int hc_binomc(M_APM, char *);
 extern int hc_permutations(M_APM, char *);
 extern int hc_sum(M_APM, M_APM, char *);
 extern int hc_product(M_APM, M_APM, char *);
+extern int hc_gamma(M_APM, M_APM, char *);
 extern int hc_modulus(M_APM, char *);
 extern int hc_gcd(M_APM, char *);
 extern int hc_lcm(M_APM, char *);
@@ -111,5 +112,7 @@ extern char *strchr_outofblock(char *, char);
 extern char hc_get_type(char *e);
 
 extern char hc_reim(char part, M_APM re, M_APM im, char *e);
+
+extern char *gamma_coefficients;
 
 #endif

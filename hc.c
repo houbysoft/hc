@@ -79,6 +79,7 @@ const char *hc_names[][5] = {
   {"ftoc","func:x","Conversions","converts d. Fahrenheit to d. Celsius","converts x, which has to be in Fahrenheit, to degrees Celsius"},
   {"ftok","func:x","Conversions","converts d. Fahrenheit to Kelvin","converts x, which has to be in Fahrenheit, to Kelvin"},
   {"fttom","func:x","Conversions","converts feet to meters","converts x, which has to be in feet, to meters"},
+  {"gamma","func:z","Functions/Math","Euler Gamma function",""},
   {"gcd","func:x,y","Functions/Math","greatest common denominator of x and y","finds the greatest common divisor / denominator of x and y"},
   {"graph","func:expr,xmin,xmax,ymin,ymax","Graphs","draw a 2D graph. xmin,...,ymax are optional","draw a graph (generate a PNG file if in command-line), example syntax:\n    graph(x^2,-10,10,-100,100)\n    Note:\n     * the xmin, xmax, ymin and ymax arguments are optional; if not provided, the last will be used (ie after a call of the example, graph(something) would use -10, 10, -100 and 100\n     * to draw multiple functions on one graph, pass them as a list for expr. For example, if you want to draw x, x^2, and x^3 on the same graph, you can use something like:\n       graph([x,x^2,x^3],-10,10,-100,100)"},
   {"graphpeq","func:expr_x,expr_y,tmin,tmax,xmin,xmax,ymin,ymax","Graphs","draw a parametric graph. tmin,...,ymax are optional","draw the parametric equation modeled by expr_x and expr_y (use t as the variable)\n    Note:\n     * the tmin, tmax, xmin, xmax, ymin and ymax arguments are optional"},
@@ -2530,6 +2531,7 @@ void hc_cleanup()
 {
   hc_output(PRINT,""); // make it close file descriptors (if any)
   is_zero_free(); // free is_zero()'s M_APM if allocated
+  free(gamma_coefficients);
   hc_save_cfg();
 }
 
