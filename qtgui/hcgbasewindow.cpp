@@ -51,6 +51,7 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(hcgcore, SIGNAL(closeAll_signal()), this, SLOT(close()));
   createShortcut("Ctrl+O", this, SLOT(openScript()));
   createShortcut("Ctrl+N", this, SLOT(newScript()));
+  createShortcut("Ctrl+Q", this, SLOT(close()));
 
   log_edit = NULL;
 }
