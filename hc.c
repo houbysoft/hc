@@ -71,7 +71,7 @@ const char *hc_names[][5] = {
   {"ctok","func:x","Conversions","converts d. Celsius to Kelvin","converts x, which has to be in degrees Celsius, to Kelvin"},
   {"dotp","func:a,b","Functions/Vectors","vector dot product - a . b","return the vector dot product of a . b; it is also sometimes called scalar product, as the result is a scalar. For example, dotp([1,2,3],[4,5,6]) = 32"},
   {"exp","func:x","Functions/Math","exponential function",""},
-  {"factorial","func:x","Functions/Math","factorial of x (=x!)","factorial of x (you could also use the '!' notation"},
+  {"factorial","func:x","Functions/Math","factorial of x (=x!)","factorial of x (you could also use the '!' notation)"},
   {"fibo","func:n","Functions/Math","gives the nth Fibonacci number",""},
   {"floor","func:x","Functions/Math","rounds x down to the nearest integer",""},
   {"floztoml","func:x","Conversions","converts US fluid ounces to mililiters","converts x, which has to be in US fluid ounces, to ml"},
