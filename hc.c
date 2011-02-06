@@ -24,7 +24,7 @@
 #include <math.h>
 #include <m_apm.h>
 #include <locale.h>
-#ifndef WIN32
+#if !defined(WIN32) && !defined(NO_WORDEXP)
 #include <wordexp.h>
 #endif
 #include "m_apmc.h"
@@ -2553,7 +2553,7 @@ char hc_is_predef(char *var)
 
 void hc_load(char *fname_)
 {
-#ifndef WIN32
+#if !defined(WIN32) && !defined(NO_WORDEXP)
   wordexp_t expanded_fname;
   FILE *fr = NULL;
   if (!wordexp(fname_, &expanded_fname, 0))
