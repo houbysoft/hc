@@ -20,8 +20,10 @@
 #ifndef HC_GRAPH_H
 #define HC_GRAPH_H
 
-extern void hc_init_plplot();
-extern void hc_finish_plplot();
+extern void hc_graph_init();
+extern void hc_graph_init2d(char *label_top, char *label_x, char *label_y, double xmin, double xmax, double ymin, double ymax);
+extern void hc_graph_finish();
+
 extern char hc_graph(char *e);
 extern char hc_graph_n(char *e);
 extern char hc_graph3d(char *e);

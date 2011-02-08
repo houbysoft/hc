@@ -50,7 +50,7 @@ void *driver_memory = NULL;
 #endif
 
 
-void hc_init_plplot()
+void hc_graph_init()
 {
 #if defined(MEM_DRIVER)
   plsdev("mem");
@@ -92,20 +92,6 @@ void hc_init_plplot()
 }
 
 
-void hc_finish_plplot()
-{
-  plend();
-#if defined(HCG) && !defined(WIN32) && !defined(MEM_DRIVER)
-  hcg_disp_graph("tmp-graph.png");
-  remove("tmp-graph.png");
-#elif defined(MEM_DRIVER)
-  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
-  free(driver_memory);
-  driver_memory = NULL;
-#endif
-}
-
-
 // Taken from example 11, to setup the color palette for 3D graphs
 static void cmap1_init()
 {
@@ -125,6 +111,43 @@ static void cmap1_init()
 
   plscmap1n(256);
   c_plscmap1l(0, 2, i, h, l, s, NULL);
+}
+
+
+void hc_graph_init2d(char *label_top, char *label_x, char *label_y, double xmin, double xmax, double ymin, double ymax)
+{
+  hc_graph_init();
+  plenv(xmin,xmax,ymin,ymax,0,1);
+  pllab(label_x,label_y,label_top);
+  plcol0(1);
+}
+
+
+void hc_graph_init3d(char *label_top, char *label_x, char *label_y, char *label_z, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)
+{
+  hc_graph_init();
+  pladv(0);
+  plvpor(0,1.0,-0.2,0.9);
+  plwind(-1.0,1.0,-1.0,1.5);
+  plw3d(1.0,1.0,1.0,xmin,xmax,ymin,ymax,zmin,zmax,33,24);
+  plmtex("t",0.5,0.5,0.5,label_top);
+  plbox3("bnstu",label_x,0,0,"bnstu",label_y,0,0,"bcdmnstuv",label_z,0,0);
+  plcol0(0);
+  cmap1_init();
+}
+
+
+void hc_graph_finish()
+{
+  plend();
+#if defined(HCG) && !defined(WIN32) && !defined(MEM_DRIVER)
+  hcg_disp_graph("tmp-graph.png");
+  remove("tmp-graph.png");
+#elif defined(MEM_DRIVER)
+  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
+  free(driver_memory);
+  driver_memory = NULL;
+#endif
 }
 
 
@@ -183,15 +206,13 @@ char hc_graph(char *e)
   char discont = 1;
   PLFLT x1=0,x2=0,y1=0,y2=0;
 
-  hc_init_plplot();
-  plenv(xmin,xmax,ymin,ymax,0,1);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
   if (!graph_top_label)
     mem_error();
   strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
   strcat(graph_top_label,func_expr);
-  pllab("x","y",graph_top_label);
-  plcol0(1);
+  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
+  free(graph_top_label);
 
   graphing_ignore_errors = TRUE;
   for (; curx<=xmax; curx+=step)
@@ -228,14 +249,13 @@ char hc_graph(char *e)
   }
   graphing_ignore_errors = FALSE;
 
-  free(graph_top_label);
   free(func_expr);
   free(arg_xmin);
   free(arg_xmax);
   free(arg_ymin);
   free(arg_ymax);
 
-  hc_finish_plplot();
+  hc_graph_finish();
   
   return SUCCESS;
 }
@@ -272,8 +292,6 @@ char hc_graph_n(char *e)
   PLFLT x1=0,y1=0,x2=0,y2=0;
   char discont = 1;
 
-  hc_init_plplot();
-  plenv(xmin,xmax,ymin,ymax,0,1);
   int mallocme = strlen("HC - ")+1;
   for (j=0; j<k; j++)
   {
@@ -291,7 +309,7 @@ char hc_graph_n(char *e)
     if (j<k-1)
       strcat(lbl,"; ");
   }
-  pllab("x","y",lbl);
+  hc_graph_init2d(lbl, "x", "y", xmin, xmax, ymin, ymax);
   free(lbl);
   int color=1;
 
@@ -344,7 +362,7 @@ char hc_graph_n(char *e)
   }
   free(func_expr);
     
-  hc_finish_plplot();
+  hc_graph_finish();
   
   return SUCCESS;
 }
@@ -452,20 +470,13 @@ char hc_graph3d(char *e)
   }
   graphing_ignore_errors = FALSE;
 
-  hc_init_plplot();
-  pladv(0);
-  plvpor(0,1.0,-0.2,0.9);
-  plwind(-1.0,1.0,-1.0,1.5);
-  plw3d(1.0,1.0,1.0,xmin,xmax,ymin,ymax,zmin,zmax,33,24);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
   if (!graph_top_label)
     mem_error();
   strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
   strcat(graph_top_label,func_expr);
-  plmtex("t",0.5,0.5,0.5,graph_top_label);
-  plbox3("bnstu","x",0,0,"bnstu","y",0,0,"bcdmnstuv","z",0,0);
-  plcol0(0);
-  cmap1_init();
+  hc_graph_init3d(graph_top_label, "x", "y", "z", xmin, xmax, ymin, ymax, zmin, zmax);
+  free(graph_top_label);
   if (!discont)
     plmesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY | MAG_COLOR);
   else
@@ -502,7 +513,6 @@ char hc_graph3d(char *e)
     free(a1[1]);
     free(a1);
   }
-  free(graph_top_label);
   free(func_expr);
   free(arg_xmin);
   free(arg_ymin);
@@ -519,8 +529,8 @@ char hc_graph3d(char *e)
   }
   free(a);
 
-  hc_finish_plplot();
-  
+  hc_graph_finish();
+
   return SUCCESS; 
 }
 
@@ -616,16 +626,13 @@ char hc_graph_slpfld(char *e)
   }
   graphing_ignore_errors = FALSE;
 
-  hc_init_plplot();
-  plenv(xmin,xmax,ymin,ymax,0,1);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Slope Field - dy/dx = ")+strlen(func_expr)+1);
   if (!graph_top_label)
     mem_error();
   strcpy(graph_top_label,"HoubySoft Calculator - Slope Field - dy/dx = ");
   strcat(graph_top_label,func_expr);
-  plcol0(15);
-  pllab("x","y",graph_top_label);
-  plcol0(1);
+  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
+  free(graph_top_label);
 
   for (i=0; i<HC_GRAPH_POINTS_SF; i++)
   {
@@ -636,7 +643,6 @@ char hc_graph_slpfld(char *e)
     }
   }
 
-  free(graph_top_label);
   free(func_expr);
   free(arg_xmin);
   free(arg_ymin);
@@ -651,7 +657,7 @@ char hc_graph_slpfld(char *e)
   }
   free(a);
 
-  hc_finish_plplot();
+  hc_graph_finish();
   
   return SUCCESS; 
 }
@@ -701,8 +707,6 @@ char hc_graph_peq(char *e)
     hc.tmaxpeq = tmax = strtod(arg_tmax,NULL);
   }
 
-  hc_init_plplot();
-  plenv(xmin,xmax,ymin,ymax,0,1);
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Parametric Function - x = , y = ")+strlen(func_exprx)+strlen(func_expry)+1);
   if (!graph_top_label)
     mem_error();
@@ -710,9 +714,8 @@ char hc_graph_peq(char *e)
   strcat(graph_top_label,func_exprx);
   strcat(graph_top_label,", y = ");
   strcat(graph_top_label,func_expry);
-  plcol0(15);
-  pllab("x","y",graph_top_label);
-  plcol0(1);
+  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
+  free(graph_top_label);
 
   double stept = HC_GRAPH_PEQ_T_STEP;
   double curt = tmin;
@@ -753,7 +756,6 @@ char hc_graph_peq(char *e)
 
   graphing_ignore_errors = FALSE;
 
-  free(graph_top_label);
   free(func_exprx); free(func_expry);
   free(arg_xmin);
   free(arg_ymin);
@@ -762,7 +764,7 @@ char hc_graph_peq(char *e)
   free(arg_tmin);
   free(arg_tmax);
 
-  hc_finish_plplot();
+  hc_graph_finish();
 
   return SUCCESS;
 }
@@ -843,10 +845,7 @@ char hc_graph_values(char *e, char draw_lines)
     free(cur);
   }
 
-  hc_init_plplot();
-  plenv(xmin,xmax,ymin,ymax,0,1);
-  pllab("x","y","HoubySoft Calculator - Graph");
-  plcol0(1);
+  hc_graph_init2d("HoubySoft Calculator - Graph", "x", "y", xmin, xmax, ymin, ymax);
 
   graphing_ignore_errors = TRUE;
   cur = NULL;
@@ -893,7 +892,7 @@ char hc_graph_values(char *e, char draw_lines)
 
   free(points_orig);
 
-  hc_finish_plplot();
+  hc_graph_finish();
 
   return SUCCESS;
 }

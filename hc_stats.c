@@ -600,10 +600,10 @@ char hc_stats(char *f, char g)
 
   if (g)
   {
-    hc_init_plplot();
+    hc_graph_init();
     pladv(0);
     plvsta();
-    
+
     plwind(-2, 5, pl_min - (pl_max - pl_min) * 0.1, pl_max + (pl_max - pl_min) * 0.1);
     plcol0(15);
     plbox("bc", 1.0, 0, "bcgnst", 0, 0);
@@ -611,7 +611,7 @@ char hc_stats(char *f, char g)
     plcol0(9);
     plfbox(1, pl_q1, pl_q2, pl_q3, pl_min, pl_max);
   
-    hc_finish_plplot();
+    hc_graph_finish();
   } else {
     notify(out_string);
     free(out_string);
