@@ -151,6 +151,12 @@ void hc_graph_finish()
 }
 
 
+#define hc_graph_line2d(x1,y1,x2,y2) pljoin(x1,y1,x2,y2)
+#define hc_graph_mesh(x,y,z,nx,ny) plmesh(x,y,z,nx,ny,DRAW_LINEXY | MAG_COLOR)
+#define hc_graph_point(x,y) plpoin(1,x,y,2) // last argument is a code for the character to use
+#define hc_graph_set_color(color) plcol0(color)
+
+
 // Draw a defined function
 // Arguments : func_name, xmin, xmax, ymin, ymax
 char hc_graph(char *e)
@@ -204,7 +210,7 @@ char hc_graph(char *e)
   double step = (xmax-xmin) / HC_GRAPH_POINTS;
   double curx = xmin;
   char discont = 1;
-  PLFLT x1=0,x2=0,y1=0,y2=0;
+  double x1=0,x2=0,y1=0,y2=0;
 
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
   if (!graph_top_label)
@@ -234,7 +240,7 @@ char hc_graph(char *e)
       } else {
         x2 = curx;
         y2 = strtod(tmp_2,NULL);
-        pljoin(x1,y1,x2,y2);
+        hc_graph_line2d(x1,y1,x2,y2);
         x1 = x2;
         y1 = y2;
       }
@@ -289,7 +295,7 @@ char hc_graph_n(char *e)
   graphing_ignore_errors = TRUE;
 
   unsigned int k=j;
-  PLFLT x1=0,y1=0,x2=0,y2=0;
+  double x1=0,y1=0,x2=0,y2=0;
   char discont = 1;
 
   int mallocme = strlen("HC - ")+1;
@@ -317,7 +323,7 @@ char hc_graph_n(char *e)
   {
     curx = xmin;
     discont = 1;
-    plcol0(color);
+    hc_graph_set_color(color);
     color++;
     if (color==15) // 15 is white, 0 is black, 1 is red, details on page 131/153 of plplot-5.9.5.pdf (get it on plplot.sf.net)
       color = 1;
@@ -340,7 +346,7 @@ char hc_graph_n(char *e)
         } else {
           x2 = curx;
           y2 = strtod(tmp_2,NULL);
-          pljoin(x1,y1,x2,y2);
+          hc_graph_line2d(x1,y1,x2,y2);
           x1 = x2;
           y1 = y2;
         }
@@ -412,15 +418,15 @@ char hc_graph3d(char *e)
   }
 
   unsigned int i = 0, j = 0;
-  PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS_3D);
+  double **a= malloc(sizeof(double *)*HC_GRAPH_POINTS_3D);
   char **a_hasval = malloc(sizeof(char *)*HC_GRAPH_POINTS_3D);
   for (i=0; i<HC_GRAPH_POINTS_3D; i++)
   {
-    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
+    a[i] = malloc(sizeof(double)*HC_GRAPH_POINTS_3D);
     a_hasval[i] = malloc(sizeof(char)*HC_GRAPH_POINTS_3D);
   }
-  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
-  PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_3D);
+  double *a_x = malloc(sizeof(double)*HC_GRAPH_POINTS_3D);
+  double *a_y = malloc(sizeof(double)*HC_GRAPH_POINTS_3D);
   double stepx = fabs(xmax-xmin) / (HC_GRAPH_POINTS_3D - 1);
   double stepy = fabs(ymax-ymin) / (HC_GRAPH_POINTS_3D - 1);
   double curx = xmin;
@@ -478,15 +484,15 @@ char hc_graph3d(char *e)
   hc_graph_init3d(graph_top_label, "x", "y", "z", xmin, xmax, ymin, ymax, zmin, zmax);
   free(graph_top_label);
   if (!discont)
-    plmesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D,DRAW_LINEXY | MAG_COLOR);
+    hc_graph_mesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D);
   else
   {
     // Discontinuity present
-    PLFLT **a1 = malloc(sizeof(PLFLT *)*2);
-    a1[0] = malloc(sizeof(PLFLT)*2);
-    a1[1] = malloc(sizeof(PLFLT)*2);
-    PLFLT *a_x1 = malloc(sizeof(PLFLT)*2);
-    PLFLT *a_y1 = malloc(sizeof(PLFLT)*2);
+    double **a1 = malloc(sizeof(double *)*2);
+    a1[0] = malloc(sizeof(double)*2);
+    a1[1] = malloc(sizeof(double)*2);
+    double *a_x1 = malloc(sizeof(double)*2);
+    double *a_y1 = malloc(sizeof(double)*2);
     // Check 2x2 squares, if all have a value, plot them, otherwise skip
     for (i=0; i<HC_GRAPH_POINTS_3D-1; i++)
     {
@@ -503,7 +509,7 @@ char hc_graph3d(char *e)
           a1[0][1] = a[i][j+1];
           a1[1][0] = a[i+1][j];
           a1[1][1] = a[i+1][j+1];
-          plmesh(a_x1,a_y1,a1,2,2,DRAW_LINEXY | MAG_COLOR);
+          hc_graph_mesh(a_x1, a_y1, a1, 2, 2);
         }
       }
     }
@@ -569,15 +575,15 @@ char hc_graph_slpfld(char *e)
   }
 
   unsigned int i = 0;
-  PLFLT **a= malloc(sizeof(PLFLT *)*HC_GRAPH_POINTS_SF);
+  double **a= malloc(sizeof(double *)*HC_GRAPH_POINTS_SF);
   char **a_hasval = malloc(sizeof(char *)*HC_GRAPH_POINTS_SF);
   for (i=0; i<HC_GRAPH_POINTS_SF; i++)
   {
-    a[i] = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_SF);
+    a[i] = malloc(sizeof(double)*HC_GRAPH_POINTS_SF);
     a_hasval[i] = malloc(sizeof(char)*HC_GRAPH_POINTS_SF);
   }
-  PLFLT *a_x = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_SF);
-  PLFLT *a_y = malloc(sizeof(PLFLT)*HC_GRAPH_POINTS_SF);
+  double *a_x = malloc(sizeof(double)*HC_GRAPH_POINTS_SF);
+  double *a_y = malloc(sizeof(double)*HC_GRAPH_POINTS_SF);
   double r_x = ((xmax-xmin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)));
   double r_y = ((ymax-ymin) / (0.5*(HC_GRAPH_POINTS_SF+1) + 2*(HC_GRAPH_POINTS_SF)));
   double stepx = (5*r_x) / 2;
@@ -639,7 +645,7 @@ char hc_graph_slpfld(char *e)
     for (ii=0; ii<HC_GRAPH_POINTS_SF; ii++)
     {
       if (a_hasval[i][ii]=='y')
-        pljoin(a_x[i] + sqrt((pow(r_x,2))/(1 + (pow(a[i][ii],2)))),a_y[ii] + a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))),a_x[i] - sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_y[ii] - a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))));
+        hc_graph_line2d(a_x[i] + sqrt((pow(r_x,2))/(1 + (pow(a[i][ii],2)))),a_y[ii] + a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))),a_x[i] - sqrt(pow(r_x,2)/(1 + pow(a[i][ii],2))),a_y[ii] - a[i][ii] * sqrt(pow(r_y,2)/(1 + pow(a[i][ii],2))));
     }
   }
 
@@ -720,7 +726,7 @@ char hc_graph_peq(char *e)
   double stept = HC_GRAPH_PEQ_T_STEP;
   double curt = tmin;
   graphing_ignore_errors = TRUE;
-  PLFLT x1=0,x2=0,y1=0,y2=0;
+  double x1=0,x2=0,y1=0,y2=0;
   char discont = 1;
   for (; curt <= tmax; curt+=stept)
   {
@@ -745,7 +751,7 @@ char hc_graph_peq(char *e)
       } else {
         x2 = strtod(tmp_x,NULL);
         y2 = strtod(tmp_y,NULL);
-        pljoin(x1,y1,x2,y2);
+        hc_graph_line2d(x1,y1,x2,y2);
         x1 = x2;
         y1 = y2;
       }
@@ -782,7 +788,7 @@ char hc_graph_values(char *e, char draw_lines)
   char *points = list_clean(points_orig);
   double xmin=0,xmax=0,ymin=0,ymax=0;
   double lastpointx=0;
-  PLFLT x1=0,x2=0,y1=0,y2=0;
+  double x1=0,x2=0,y1=0,y2=0;
   char mode = 0;
 
   unsigned int idx = 0;
@@ -875,11 +881,11 @@ char hc_graph_values(char *e, char draw_lines)
       x2 = cx;
       y2 = cy;
       if (draw_lines)
-        pljoin(x1,y1,x2,y2);
+        hc_graph_line2d(x1,y1,x2,y2);
       else
       {
-        plpoin(1,&x1,&y1,2); // the last argument is the type of symbol to use
-        plpoin(1,&x2,&y2,2);
+        hc_graph_point(&x1,&y1);
+        hc_graph_point(&x2,&y2);
       }
       x1 = x2;
       y1 = y2;
