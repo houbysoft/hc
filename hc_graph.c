@@ -50,6 +50,9 @@ void *driver_memory = NULL;
 #endif
 
 
+void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
+
+
 void hc_graph_init()
 {
 #if defined(MEM_DRIVER)
@@ -137,6 +140,23 @@ void hc_graph_init3d(char *label_top, char *label_x, char *label_y, char *label_
 }
 
 
+void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, double min, double max, double q1, double q2, double q3)
+{
+  hc_graph_init();
+  pladv(0);
+  plvsta();
+
+  plwind(-2, 5, min - (max - min) * 0.1, max + (max - min) * 0.1);
+  plcol0(15);
+  plbox("bc", 1.0, 0, "bcgnst", 0, 0);
+  pllab(label_x, label_y, label_top);
+  plcol0(9);
+  plfbox(1, q1, q2, q3, min, max);
+
+  hc_graph_finish();
+}
+
+
 void hc_graph_finish()
 {
   plend();
@@ -148,6 +168,86 @@ void hc_graph_finish()
   free(driver_memory);
   driver_memory = NULL;
 #endif
+}
+
+
+void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw)
+{
+    PLFLT px[5], py[5], mx[2], my[2], wx[2], wy[2], barx[2], bary[2];
+    PLFLT spacing;
+    PLFLT xmin, xmax;
+    PLFLT xmid, xwidth;
+
+    spacing = .4; /* in x axis units */
+
+    xmin = x + spacing / 2.;
+    xmax = x + 1. - spacing / 2.;
+
+    /* box */
+    
+    px[0] = xmin;
+    py[0] = y25;
+    px[1] = xmin;
+    py[1] = y75;
+    px[2] = xmax;
+    py[2] = y75;
+    px[3] = xmax;
+    py[3] = y25;
+    px[4] = xmin;
+    py[4] = y25;
+
+    plpsty(0);
+    plfill(4, px, py);
+    plcol0(1);
+    pllsty(1);
+    plline(5, px, py);
+
+
+    /* median */
+
+    mx[0] = xmin;
+    my[0] = y50;
+    mx[1] = xmax;
+    my[1] = y50;
+
+    pllsty(1);
+    plline(2, mx, my);
+    
+    /* lower whisker */
+
+    xmid = (xmin + xmax) / 2.;
+    xwidth = xmax - xmin;
+    wx[0] = xmid;
+    wy[0] = lw;
+    wx[1] = xmid;
+    wy[1] = y25;
+   
+    pllsty(2); /* short dashes and gaps */
+    plline(2, wx, wy);
+    
+    barx[0] = xmid - xwidth / 4.;
+    bary[0] = lw;
+    barx[1] = xmid + xwidth / 4.;
+    bary[1] = lw;
+
+    pllsty(1);
+    plline(2, barx, bary);
+
+    /* upper whisker */
+    
+    xmid = (xmin + xmax) / 2.;
+    xwidth = xmax - xmin;
+    wy[0] = y75;
+    wy[1] = uw;
+   
+    pllsty(2); /* short dashes and gaps */
+    plline(2, wx, wy);
+    
+    bary[0] = uw;
+    bary[1] = uw;
+
+    pllsty(1);
+    plline(2, barx, bary);
 }
 
 
