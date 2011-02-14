@@ -105,6 +105,7 @@ const char *hc_names[][5] = {
   {"length","func:x","Functions/Misc","length of x","return the length of x. For example, length(\"hello\") = 5. Another example, length([42,27,69]) = 3"},
   {"linreg","func:[v_1,v_2,...,v_n]","Stats","returns slope and y-intercept of best-fit line through v_1,...,v_n","returns a list of two values; the first one being the slope and the second the intercept of the \"best fit\" line through the data points\n    Example:\n     * linreg([[1,3],[2,6],[3,8.95]]) would return [2.975,0.0333333333333333] which means that the best fit line would have the equation 2.975x + 0.0333333333333333"},
   {"ln","func:x","Functions/Math","natural logarithm of x",""},
+  {"log","func:b,x","Functions/Math","base b logarithm of x","gives the base b logarithm of x. For example, to get the base-5 logarithm of 4, use log(5,4)"},
   {"log10","func:x","Functions/Math","common logarithm of x",""},
   {"map","func:f,list","Programming","maps f to each element in list","map f to each element in list; ie. return a list of the form [f(list[0]),f(list[1]),...]\n    Examples:\n     * create a function that will show the n first fibonacci numbers:\n       > showfibo(n) = map(fibo,range(1,n+1))\n       > showfibo(10)\n        [1,1,2,3,5,8,13,21,34,55]"},
   {"mitokm","func:x","Conversions","converts miles to kilometers","converts x, which has to be in miles, to km"},

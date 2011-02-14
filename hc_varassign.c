@@ -75,12 +75,12 @@ void hc_varassign(char *e)
     } else {
       if (var[i]=='[')
       {
-	if (!indexed)
-	  indexed = i;
-	par++;
+        if (!indexed)
+          indexed = i;
+        par++;
       } else if (var[i]==']')
       {
-	par--;
+        par--;
       }
       i++;
     }
@@ -102,11 +102,11 @@ void hc_varassign(char *e)
     } else {
       // function
       if (special)
-	var_nospecial_error();
+        var_nospecial_error();
       if (indexed)
       {
-	hc_error(ERROR, "you can't index a function.");
-	return;
+        hc_error(ERROR, "you can't index a function.");
+        return;
       }
       char *name = strtok(var,"(");
       unsigned int name_hash = simple_hash(name);
@@ -114,7 +114,7 @@ void hc_varassign(char *e)
       args[strlen(args)-1]=0;
 
       if (!hc_check_not_recursive(name,expr))
-	hc_error(WARNING,"recursive definition");
+        hc_error(WARNING,"recursive definition");
 
 #ifdef DBG
       printf("[%s] [%s]\n",name,args);
@@ -122,37 +122,37 @@ void hc_varassign(char *e)
 
       struct hc_ventry *tmp = hc_var_first;
       while ((tmp->next) && (tmp->name!=NULL) && (tmp->hash!=name_hash))
-	tmp = tmp->next;
+        tmp = tmp->next;
       if ((tmp->name!=NULL) && tmp->hash!=name_hash)
       {
-	tmp->next = malloc(sizeof (struct hc_ventry));
-	if (!tmp->next)
-	  mem_error();
-	tmp = tmp->next;
-	tmp->next = NULL;
-	tmp->name = NULL;
+        tmp->next = malloc(sizeof (struct hc_ventry));
+        if (!tmp->next)
+          mem_error();
+        tmp = tmp->next;
+        tmp->next = NULL;
+        tmp->name = NULL;
       }
       
       tmp->type = HC_USR_FUNC;
       if ((tmp->name==NULL) || (tmp->hash!=name_hash))
       {
-	// new function name
-	tmp->name = strdup(name);
-	if (!tmp->name)
-	  mem_error();
-	tmp->hash = name_hash;
+        // new function name
+        tmp->name = strdup(name);
+        if (!tmp->name)
+          mem_error();
+        tmp->hash = name_hash;
       } else {
-	// function name already defined, just changing expression
-	free(tmp->value);
-	free(tmp->args);
+        // function name already defined, just changing expression
+        free(tmp->value);
+        free(tmp->args);
       }
       tmp->args = strdup(args);
       if (!tmp->args)
-	mem_error();
+        mem_error();
       tmp->value = strdup(expr);
       tmp->value = hc_impmul_resolve(tmp->value);
       if (!tmp->value)
-	mem_error();
+        mem_error();
     }
 
   } else {
@@ -173,7 +173,7 @@ void hc_varassign(char *e)
       value = hc_result_(tmp);
       free(tmp);
       if (!value)
-	return;
+        return;
     }
 
     struct hc_ventry *tmp = hc_var_first;
@@ -183,7 +183,7 @@ void hc_varassign(char *e)
     {
       tmp->next = malloc(sizeof (struct hc_ventry));
       if (!tmp->next)
-	mem_error();
+        mem_error();
       tmp = tmp->next;
       tmp->next = NULL;
       tmp->name = NULL;
@@ -196,14 +196,14 @@ void hc_varassign(char *e)
       // new variable name
       if (indexed)
       {
-	tmp->name = NULL;
-	free(value);
-	hc_error(ERROR, "Variable %s does not exist yet you are trying to index it.",var);
-	return;
+        tmp->name = NULL;
+        free(value);
+        hc_error(ERROR, "Variable %s does not exist yet you are trying to index it.",var);
+        return;
       }
       tmp->name = malloc((strlen(var)+1) * sizeof(char));
       if (!tmp->name)
-	mem_error();
+        mem_error();
       strcpy(tmp->name,var);
       tmp->hash = name_hash;
       tmp->value = value;
@@ -218,8 +218,8 @@ void hc_varassign(char *e)
       free(value);
       if (newvalue)
       {
-	free(tmp->value);
-	tmp->value = newvalue;
+        free(tmp->value);
+        tmp->value = newvalue;
       }
     }
   }
@@ -249,20 +249,20 @@ char *hc_varassign_replace_index(char *oldvalue, char **indexes, char *value)
       curindex = 0;
       while (curindex != changeindex)
       {
-	if (oldvalue[i+1] == '\"') // since i is ++'d below
-	{
-	  hc_error(ERROR, "Index out of range.");
-	  return NULL;
-	} else {
-	  i++; curindex++;
-	}
+        if (oldvalue[i+1] == '\"') // since i is ++'d below
+        {
+          hc_error(ERROR, "Index out of range.");
+          return NULL;
+        } else {
+          i++; curindex++;
+        }
       }
       char *tmpval = get_string(value);
       if (!tmpval || tmpval[1]!='\0')
       {
-	hc_error(ERROR, "You can only replace a character in a string by another character");
-	free(tmpval);
-	return NULL;
+        hc_error(ERROR, "You can only replace a character in a string by another character");
+        free(tmpval);
+        return NULL;
       }
       newvalue = strdup(oldvalue);
       newvalue[i] = tmpval[0];
@@ -278,36 +278,36 @@ char *hc_varassign_replace_index(char *oldvalue, char **indexes, char *value)
       unsigned long starts_at = 0, ends_at = 0;
       while (curindex != changeindex && oldvalue[i])
       {
-	if (oldvalue[i] == '\"')
-	  ignore = ignore == FALSE ? TRUE : FALSE;
-	else if (oldvalue[i] == '[' && !ignore)
-	  par++;
-	else if (oldvalue[i] == ']' && !ignore)
-	  par--;
-	else if (oldvalue[i] == ',' && !ignore && par == 1)
-	  curindex++;
-	i++;
+        if (oldvalue[i] == '\"')
+          ignore = ignore == FALSE ? TRUE : FALSE;
+        else if (oldvalue[i] == '[' && !ignore)
+          par++;
+        else if (oldvalue[i] == ']' && !ignore)
+          par--;
+        else if (oldvalue[i] == ',' && !ignore && par == 1)
+          curindex++;
+        i++;
       }
       if (curindex != changeindex)
       {
-	hc_error(SYNTAX, "malformed index(es)");
-	return NULL;
+        hc_error(SYNTAX, "malformed index(es)");
+        return NULL;
       }
       starts_at = i;
       ignore = FALSE;
       while (!ends_at)
       {
-	if (oldvalue[i] == '\"')
-	  ignore = ignore == FALSE ? TRUE : FALSE;
-	else if (oldvalue[i] == '[' && !ignore)
-	  par++;
-	else if (oldvalue[i] == ']' && !ignore)
-	  par--;
+        if (oldvalue[i] == '\"')
+          ignore = ignore == FALSE ? TRUE : FALSE;
+        else if (oldvalue[i] == '[' && !ignore)
+          par++;
+        else if (oldvalue[i] == ']' && !ignore)
+          par--;
 
-	if ((oldvalue[i] == ',' && !ignore && par == 1) || (oldvalue[i] == ']' && par == 0))
-	  ends_at = i;
+        if ((oldvalue[i] == ',' && !ignore && par == 1) || (oldvalue[i] == ']' && par == 0))
+          ends_at = i;
 
-	i++;
+        i++;
       }
       char *newold = malloc(ends_at - starts_at + 1);
       if (!newold) mem_error();
@@ -317,7 +317,7 @@ char *hc_varassign_replace_index(char *oldvalue, char **indexes, char *value)
       free(newold);
       if (!tmp)
       {
-	return NULL;
+        return NULL;
       }
       newvalue = malloc(starts_at + 1 + strlen(tmp) + strlen(oldvalue) - ends_at);
       if (!newvalue) mem_error();
@@ -402,7 +402,7 @@ char hc_check_varname(char *e)
       return 0;
     else
       if (!isalnum(e[i]))
-	return 0;
+        return 0;
     i++;
   }
 
@@ -447,7 +447,7 @@ int hc_clear(char *e)
     {
       hc_var_first = malloc(sizeof (struct hc_ventry));
       if (!hc_var_first)
-	mem_error();
+        mem_error();
       hc_var_first->next = NULL;
       hc_var_first->type = 0;
       hc_var_first->value = NULL;
@@ -461,14 +461,14 @@ int hc_clear(char *e)
     {
       if (hash == curr->next->hash)
       {
-	free(curr->next->name);
-	free(curr->next->value);
-	free(curr->next->args);
-	tmp = curr->next->next;
-	free(curr->next);
-	curr->next = tmp;
-	done = TRUE;
-	break;
+        free(curr->next->name);
+        free(curr->next->value);
+        free(curr->next->args);
+        tmp = curr->next->next;
+        free(curr->next);
+        curr->next = tmp;
+        done = TRUE;
+        break;
       }
       curr = curr->next;
     }
@@ -496,11 +496,11 @@ int hc_get_first_index(char **indexes, unsigned long *index)
     {
       tmp[i++] = *indexes[0];
       if (*indexes[0] == '\"')
-	ignore = ignore == FALSE ? TRUE : FALSE;
+        ignore = ignore == FALSE ? TRUE : FALSE;
       else if (*indexes[0] == '[' && !ignore)
-	par++;
+        par++;
       else if (*indexes[0] == ']' && !ignore)
-	par--;
+        par--;
       *indexes += 1;
     }
     if (par != 0)
@@ -544,12 +544,12 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
     for (; i <= HC_NAMES_CNST_STOP; i++) // check built-in constants
     {
       if (hc_hashes[i]==0)
-	hc_hashes[i] = simple_hash((char *)hc_names[i][0]);
+        hc_hashes[i] = simple_hash((char *)hc_names[i][0]);
       if (v_hash == hc_hashes[i])
       {
-	*type = HC_VAR_NUM; // all hc constants are numbers
-	strcpy(result,(char *)hc_names[i][1] + strlen("cnst:") * sizeof(char));
-	return 1;
+        *type = HC_VAR_NUM; // all hc constants are numbers
+        strcpy(result,(char *)hc_names[i][1] + strlen("cnst:") * sizeof(char));
+        return 1;
       }
     }
 
@@ -558,18 +558,18 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
     {
       if (var_tmp->type == HC_USR_VAR && var_tmp->hash == v_hash)
       {
-	strcpy(result,var_tmp->value);
-	if (is_num(result))
-	  *type = HC_VAR_NUM;
-	else if (is_string(result))
-	  *type = HC_VAR_STR;
-	else if (is_vector(result))
-	  *type = HC_VAR_VEC;
-	else {
-	  notify("Invalid variable type. This is most likely a bug, please report it.\n");
-	  return 0;
-	}
-	return 1;
+        strcpy(result,var_tmp->value);
+        if (is_num(result))
+          *type = HC_VAR_NUM;
+        else if (is_string(result))
+          *type = HC_VAR_STR;
+        else if (is_vector(result))
+          *type = HC_VAR_VEC;
+        else {
+          notify("Invalid variable type. This is most likely a bug, please report it.\n");
+          return 0;
+        }
+        return 1;
       }
       var_tmp = var_tmp->next;
     }
@@ -605,13 +605,13 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
-	m_apm_copy(f_result_im,MM_Zero);
-	m_apmc_abs(f_result_re,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
+        m_apm_copy(f_result_im,MM_Zero);
+        m_apmc_abs(f_result_re,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       } else {
-	m_apm_copy(f_result_im,MM_Zero);
-	m_apm_absolute_value(f_result_re,tmp_num_re);
+        m_apm_copy(f_result_im,MM_Zero);
+        m_apm_absolute_value(f_result_re,tmp_num_re);
       }
       break;
 
@@ -625,10 +625,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_copy(f_result_im,MM_Zero);
+        m_apm_copy(f_result_im,MM_Zero);
       }
       m_apmc_floor(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
       break;
@@ -643,10 +643,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_copy(f_result_im,MM_Zero);
+        m_apm_copy(f_result_im,MM_Zero);
       }
       m_apmc_ceil(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
       break;
@@ -661,10 +661,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_copy(f_result_im,MM_Zero);
+        m_apm_copy(f_result_im,MM_Zero);
       }
       m_apmc_round(f_result_re,f_result_im,tmp_num_re,tmp_num_im);
       break;
@@ -672,11 +672,11 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
     case HASH_ANS:
       if (hc_lans_type == HC_VAR_NUM)
       {
-	m_apm_copy(f_result_re,hc_lans_mapm_re);
-	m_apm_copy(f_result_im,hc_lans_mapm_im);
+        m_apm_copy(f_result_re,hc_lans_mapm_re);
+        m_apm_copy(f_result_im,hc_lans_mapm_im);
       } else if (hc_lans_type == HC_VAR_VEC || hc_lans_type == HC_VAR_STR) {
-	*type = hc_lans_type;
-	f_result_str = strdup(hc_lans_strvec);
+        *type = hc_lans_type;
+        f_result_str = strdup(hc_lans_strvec);
       }
       break;
 
@@ -691,23 +691,23 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)==0 && m_apm_compare(tmp_num_re,MM_One)!=1 && m_apm_compare(tmp_num_re,MM_MOne)!=-1)
-	m_apm_acos(f_result_re,HC_DEC_PLACES,tmp_num_re);
+        m_apm_acos(f_result_re,HC_DEC_PLACES,tmp_num_re);
       else
-	m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+        m_apmc_acos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
 
       if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("acos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("acos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
-	hc_from_rad(f_result_re);
+        hc_from_rad(f_result_re);
       }
       break;
 
@@ -722,23 +722,23 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)==0 && m_apm_compare(tmp_num_re,MM_One)!=1 && m_apm_compare(tmp_num_re,MM_MOne)!=-1)
-	m_apm_asin(f_result_re,HC_DEC_PLACES,tmp_num_re);
+        m_apm_asin(f_result_re,HC_DEC_PLACES,tmp_num_re);
       else
-	m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+        m_apmc_asin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
 
       if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("asin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("asin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
-	hc_from_rad(f_result_re);
+        hc_from_rad(f_result_re);
       }
       break;
 
@@ -753,22 +753,22 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)==0)
-	m_apm_atan(f_result_re,HC_DEC_PLACES,tmp_num_re);
+        m_apm_atan(f_result_re,HC_DEC_PLACES,tmp_num_re);
       else
-	m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+        m_apmc_atan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       if (m_apm_compare(f_result_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("atan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("atan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
-	hc_from_rad(f_result_re);
+        hc_from_rad(f_result_re);
       }
       break;
 
@@ -782,18 +782,18 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("cos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("cos() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
-	hc_to_rad(tmp_num_re);
+        hc_to_rad(tmp_num_re);
         m_apmc_cos(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       }
       break;
@@ -808,10 +808,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_exp(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
@@ -826,10 +826,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (!m_apm_is_integer(tmp_num_re) || m_apm_compare(tmp_num_im,MM_Zero)!=0)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); arg_error("factorial() : an integer is required."); return 0;}
@@ -857,12 +857,17 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_log(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
+      break;
+
+    case HASH_LOG:
+      if (hc_log(f_result_re, f_result_im, f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
     case HASH_LOG10:
@@ -875,10 +880,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_log10(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
@@ -893,18 +898,18 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("sin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("sin() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
-	hc_to_rad(tmp_num_re);
+        hc_to_rad(tmp_num_re);
         m_apmc_sin(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       }
       break;
@@ -919,18 +924,18 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("tan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("tan() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
-	hc_to_rad(tmp_num_re);
+        hc_to_rad(tmp_num_re);
         m_apmc_tan(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       }
       break;
@@ -955,16 +960,16 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("cosh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("cosh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
         m_apmc_cosh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       }
@@ -980,16 +985,16 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("sinh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("sinh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
         m_apmc_sinh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       }
@@ -1005,16 +1010,16 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       if (m_apm_compare(tmp_num_im,MM_Zero)!=0 && hc.angle!='r')
       {
-	m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	m_apm_free(f_result_re); m_apm_free(f_result_im);
-	arg_error("tanh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
+        m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+        m_apm_free(f_result_re); m_apm_free(f_result_im);
+        arg_error("tanh() : Domain error. Please switch to RAD mode with \\rad for complex results.");
       } else {
         m_apmc_tanh(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       }
@@ -1030,10 +1035,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_sqrt(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
@@ -1048,10 +1053,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       free(fme);
       if (tmp_ri)
       {
-	m_apm_set_string(tmp_num_im,tmp_ri);
-	free(tmp_ri);
+        m_apm_set_string(tmp_num_im,tmp_ri);
+        free(tmp_ri);
       } else {
-	m_apm_set_string(tmp_num_im,"0");
+        m_apm_set_string(tmp_num_im,"0");
       }
       m_apmc_root(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im,3,3);
       break;
@@ -1382,84 +1387,84 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
     {
       if (*type == HC_VAR_NUM)
       {
-	char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
-	if (f_result_tmp_re[0]=='-')
-	  f_result_tmp_re[0] = '_';
-	char *f_result_tmp_im;
-	if (m_apm_compare(f_result_im,MM_Zero)!=0)
-	{
-	  f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
-	  if (f_result_tmp_im[0]=='-')
-	    f_result_tmp_im[0] = '_';
-	  // re i im \0
+        char *f_result_tmp_re = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_re,'.',0,0);
+        if (f_result_tmp_re[0]=='-')
+          f_result_tmp_re[0] = '_';
+        char *f_result_tmp_im;
+        if (m_apm_compare(f_result_im,MM_Zero)!=0)
+        {
+          f_result_tmp_im = m_apm_to_fixpt_stringexp(HC_DEC_PLACES,f_result_im,'.',0,0);
+          if (f_result_tmp_im[0]=='-')
+            f_result_tmp_im[0] = '_';
+          // re i im \0
       if (strlen(f_result_tmp_re) + 1 + strlen(f_result_tmp_im) > MAXRESULT - 1)
       {
         hc_error(ERROR,"Overflow");
         free(f_result_tmp_re);
         free(f_result_tmp_im);
-	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+            m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
         return 0;
       }
-	  strcpy(result,f_result_tmp_re);
-	  strcat(result,"i");
-	  strcat(result,f_result_tmp_im);
-	  free(f_result_tmp_re); free(f_result_tmp_im);
-	} else {
+          strcpy(result,f_result_tmp_re);
+          strcat(result,"i");
+          strcat(result,f_result_tmp_im);
+          free(f_result_tmp_re); free(f_result_tmp_im);
+        } else {
       if (strlen(f_result_tmp_re) > MAXRESULT - 1)
       {
         hc_error(ERROR,"Overflow");
         free(f_result_tmp_re);
-	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+            m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
         return 0;
       }
-	  strcpy(result,f_result_tmp_re);
-	  free(f_result_tmp_re);
-	}
+          strcpy(result,f_result_tmp_re);
+          free(f_result_tmp_re);
+        }
       } else if (*type == HC_VAR_STR)
       {
-	if (strlen(f_result_str) > MAXRESULT - 1)
-	{
-	  hc_error(ERROR,"Overflow");
-	  free(f_result_str);
-	  m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	  return 0;
-	}
-	strcpy(result,f_result_str);
-	free(f_result_str);
+        if (strlen(f_result_str) > MAXRESULT - 1)
+        {
+          hc_error(ERROR,"Overflow");
+          free(f_result_str);
+          m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+          return 0;
+        }
+        strcpy(result,f_result_str);
+        free(f_result_str);
       } else if (*type == HC_VAR_VEC) {
-	if (!f_result_is_simplified)
-	{
-	  char *newlist = list_simplify(f_result_str);
-	  if (newlist)
-	  {
-	    if (strlen(newlist) > MAXRESULT - 1)
-	    {
-	      hc_error(ERROR,"Overflow");
-	      free(f_result_str); free(newlist);
-	      m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	      return 0;
-	    }
-	    strcpy(result,newlist);
-	    free(f_result_str); free(newlist);
-	  } else {
-	    free(f_result_str); free(newlist);
-	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	    return 0;
-	  }
-	} else {
-	  if (strlen(f_result_str) > MAXRESULT - 1)
-	  {
-	    hc_error(ERROR,"Overflow");
-	    free(f_result_str);
-	    m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-	    return 0;
-	  }
-	  strcpy(result,f_result_str);
-	  free(f_result_str);
-	}
+        if (!f_result_is_simplified)
+        {
+          char *newlist = list_simplify(f_result_str);
+          if (newlist)
+          {
+            if (strlen(newlist) > MAXRESULT - 1)
+            {
+              hc_error(ERROR,"Overflow");
+              free(f_result_str); free(newlist);
+              m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+              return 0;
+            }
+            strcpy(result,newlist);
+            free(f_result_str); free(newlist);
+          } else {
+            free(f_result_str); free(newlist);
+            m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+            return 0;
+          }
+        } else {
+          if (strlen(f_result_str) > MAXRESULT - 1)
+          {
+            hc_error(ERROR,"Overflow");
+            free(f_result_str);
+            m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
+            return 0;
+          }
+          strcpy(result,f_result_str);
+          free(f_result_str);
+        }
       } else if (*type == HC_VAR_EMPTY)
       {
-	strcpy(result,"");
+        strcpy(result,"");
       }
       m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
       return 1;
@@ -1469,56 +1474,56 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       struct hc_ventry *var_tmp = hc_var_first;
       while (var_tmp && var_tmp->name)
       {
-	if (var_tmp->type == HC_USR_FUNC && var_tmp->hash == v_hash)
-	{
-	  // f_expr
-	  char *t1, *t2;
-	  unsigned int k=1;
-	  t1 = hc_get_arg_r(f_expr,k);
-	  t2 = hc_get_arg(var_tmp->args,k);
-	  char *res_expr = strdup(var_tmp->value);
-	  if (!res_expr)
-	    mem_error();
-	  while (t1 && t2)
-	  {
-	    char *fme = res_expr;
-	    res_expr = strreplace(res_expr,t2,t1);
-	    free(fme);
-	    free(t1); free(t2);
-	    k++;
-	    t1 = hc_get_arg(f_expr,k);
-	    t2 = hc_get_arg(var_tmp->args,k);
-	  }
-	  if (t1 || t2)
-	  {
-	    arg_error_custom();
-	    free(t1); free(t2); free(res_expr);
-	    return 0;
-	  } else {
-	    char *res_of_expr = hc_result_(res_expr);
-	    free(res_expr);
-	    if (!res_of_expr)
-	      return 0;
-	    else {
-	      strcpy(result,res_of_expr);
-	      free(res_of_expr);
-	      if (is_num(result))
-		*type = HC_VAR_NUM;
-	      else if (is_string(result))
-		*type = HC_VAR_STR;
-	      else if (is_vector(result))
-		*type = HC_VAR_VEC;
-	      else if (!strlen(result))
+        if (var_tmp->type == HC_USR_FUNC && var_tmp->hash == v_hash)
+        {
+          // f_expr
+          char *t1, *t2;
+          unsigned int k=1;
+          t1 = hc_get_arg_r(f_expr,k);
+          t2 = hc_get_arg(var_tmp->args,k);
+          char *res_expr = strdup(var_tmp->value);
+          if (!res_expr)
+            mem_error();
+          while (t1 && t2)
+          {
+            char *fme = res_expr;
+            res_expr = strreplace(res_expr,t2,t1);
+            free(fme);
+            free(t1); free(t2);
+            k++;
+            t1 = hc_get_arg(f_expr,k);
+            t2 = hc_get_arg(var_tmp->args,k);
+          }
+          if (t1 || t2)
+          {
+            arg_error_custom();
+            free(t1); free(t2); free(res_expr);
+            return 0;
+          } else {
+            char *res_of_expr = hc_result_(res_expr);
+            free(res_expr);
+            if (!res_of_expr)
+              return 0;
+            else {
+              strcpy(result,res_of_expr);
+              free(res_of_expr);
+              if (is_num(result))
+                *type = HC_VAR_NUM;
+              else if (is_string(result))
+                *type = HC_VAR_STR;
+              else if (is_vector(result))
+                *type = HC_VAR_VEC;
+              else if (!strlen(result))
         *type = HC_VAR_EMPTY;
           else {
-		notify("Invalid variable type. This is most likely a bug, please report it.\n");
-		return 0;
-	      }
-	      return 1;
-	    }
-	  }
-	}
-	var_tmp = var_tmp->next;
+                notify("Invalid variable type. This is most likely a bug, please report it.\n");
+                return 0;
+              }
+              return 1;
+            }
+          }
+        }
+        var_tmp = var_tmp->next;
       }
 
       hc_error(ERROR, "Function %s is undefined.", v_name);

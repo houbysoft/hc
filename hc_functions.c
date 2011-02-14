@@ -1963,6 +1963,30 @@ int hc_rand(M_APM res, char *f_expr)
 }
 
 
+int hc_log(M_APM re, M_APM im, char *e)
+{
+  char *base = hc_get_arg_r(e,1);
+  char *x = hc_get_arg_r(e,2);
+  if (!base || !x || !is_num(base) || !is_num(x))
+  {
+    free(base); free(x);
+    arg_error("log() : two number arguments (base, x) are required");
+  }
+  char *r_expr = malloc(strlen(base)+strlen(x)+8+1+1); // ln(x)/ln(base)
+  if (!r_expr) mem_error();
+  sprintf(r_expr, "ln(%s)/ln(%s)", x, base);
+  char *r = hc_result_(r_expr);
+  free(r_expr); free(base); free(x);
+  if (!r)
+    return FAIL;
+  else
+  {
+    hc_set_from_string(re, im, r);
+    return SUCCESS;
+  }
+}
+
+
 int hc_dotp(M_APM re, M_APM im, char *f_expr)
 {
   char *v1_orig = hc_get_arg(f_expr,1);

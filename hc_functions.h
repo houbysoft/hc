@@ -56,6 +56,7 @@ extern int hc_char2code(M_APM, char *);
 extern char *hc_code2char(char *);
 extern int hc_rand(M_APM, char *);
 extern int hc_input(M_APM, M_APM, char *);
+extern int hc_log(M_APM, M_APM, char *);
 #define PRINT 0
 #define WRITE 1
 extern int hc_output(int, char *);
