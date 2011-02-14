@@ -10,6 +10,12 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+5.0.1
+  - added gamma() function (feature request #0015/1)
+  - added Ctrl+Q shortcut to quit GUI (muunleit's feature request)
+  - added graphpoints()
+  - added log(base, x) function (feature request #0017/2)
+  - small bugfixes and adjustments, code improvements
 5.0
   - complete rewrite of GUI now using Qt instead of GTK
     - cleaner interface

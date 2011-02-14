@@ -1850,6 +1850,8 @@ char *hc_format_num(char *r, char save_as_last_result)
     m_apm_set_string(hc_lans_mapm_re,r_re);
     if (r_im)
       m_apm_set_string(hc_lans_mapm_im,r_im);
+    else
+      m_apm_set_string(hc_lans_mapm_im,"0");
   }
   if (!r_im)
   {
