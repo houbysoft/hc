@@ -6,6 +6,8 @@ TEMPLATE = app
 TARGET = HCG
 DEPENDPATH += .
 INCLUDEPATH += .
+win32:MINGWROOT = I:/Qt/2010.05/mingw/
+#win32:MINGWROOT = C:/MinGW/
 #CONFIG += console
 win32:RC_FILE = hcg.rc
 
@@ -15,6 +17,6 @@ SOURCES += ../hc.c ../hc_functions.c ../hc_varassign.c ../hc_graph.c ../hc_compl
 SOURCES += hcgwindow.cpp hcginputline.cpp main.cpp hcgscriptwindow.cpp hcgbasewindow.cpp hcgthreads.cpp hcgcore.cpp
 
 !win32:LIBS += /usr/lib/libmapm.so.0 `pkg-config gtk+-2.0 plplotd --cflags --libs`
-win32:LIBS += -mwindows I:/Qt/2010.05/mingw/lib/libmapm.a I:/Qt/2010.05/mingw/lib/libhul.a I:/Qt/2010.05/mingw/lib/libplplotd.a I:/Qt/2010.05/mingw/lib/libqsastime.a -lwininet
+win32:LIBS += -mwindows $$MINGWROOT/lib/libmapm.a $$MINGWROOT/lib/libhul.a $$MINGWROOT/lib/libplplotd.a $$MINGWROOT/lib/libqsastime.a -lwininet
 
 DEFINES += HCG_E HCG MEM_DRIVER
