@@ -1016,7 +1016,7 @@ char *hc_postfix_result(char *e)
         if (op1_type == HC_VAR_NUM && op2_type == HC_VAR_NUM)
         {
           m_apmc_multiply(curr->re,curr->im,op1_r,op1_i,op2_r,op2_i);
-        } else if ((op1_type == HC_VAR_NUM && m_apm_compare(op1_i,MM_Zero)==0 && m_apm_is_integer(op1_r) && op2_type == HC_VAR_STR) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_NUM && m_apm_compare(op2_i,MM_Zero)==0 && m_apm_is_integer(op2_r)))
+        } else if ((op1_type == HC_VAR_NUM && m_apm_compare(op1_i,MM_Zero)==0 && m_apm_is_integer(op1_r) && m_apm_compare(op1_r,MM_Zero)!=-1 && op2_type == HC_VAR_STR) || (op1_type == HC_VAR_STR && op2_type == HC_VAR_NUM && m_apm_compare(op2_i,MM_Zero)==0 && m_apm_is_integer(op2_r) && m_apm_compare(op1_r,MM_Zero)!=-1))
         {
           curr->type = HC_VAR_STR;
           free(curr->str); free(curr->n->str);
