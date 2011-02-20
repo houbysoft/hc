@@ -199,7 +199,7 @@ unsigned int simple_hash(char *p)
 #define iscontrolstruct(x) ((strstr(x,"if ")==x) || (strstr(x,"while")==x) || (strstr(x,"for")==x))
 #define isdigitb(c,b) ((b==16 && isxdigit(c)) || (b==2 && (c=='0' || c=='1')) || (b==10 && isdigit(c)))
 
-#define hc_postfix_result_cleanup() {m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str); while (first->n) {m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);} m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);}
+#define hc_postfix_result_cleanup() {m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str); while (first->n) {m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);} m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);free(tmp_num);}
 
 
 char *hc_i2p(char *f);
@@ -966,7 +966,8 @@ char *hc_postfix_result(char *e)
 
   char op1_type,op2_type;
   
-  char tmp_num[MAX_DOUBLE_STRING]; // this is used below, do not change
+  char *tmp_num = malloc(MAX_DOUBLE_STRING); // this is used below, do not change
+  if (!tmp_num) mem_error();
   int i=0,j=0;
   
   op1_r = m_apm_init();
@@ -1799,7 +1800,7 @@ char *hc_postfix_result(char *e)
               }
             }
             tmp_num[j] = '\0';
-            if (!hc_2dec(base,(char *)&tmp_num,MAX_DOUBLE_STRING))
+            if (!hc_2dec(base,tmp_num,MAX_DOUBLE_STRING))
             {
               hc_postfix_result_cleanup();
               return NULL;
@@ -1821,7 +1822,7 @@ char *hc_postfix_result(char *e)
           while (e[i]=='[') // index
           {
             tmp_num[j] = 0;
-            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
               hc_postfix_result_cleanup();
               return NULL;
@@ -1851,7 +1852,7 @@ char *hc_postfix_result(char *e)
             return NULL;
           }
           tmp_num[j]=0;
-          char *newlist = list_simplify((char *)&tmp_num);
+          char *newlist = list_simplify(tmp_num);
           if (!newlist)
           {
             hc_postfix_result_cleanup();
@@ -1868,7 +1869,7 @@ char *hc_postfix_result(char *e)
           while (e[i]=='[') // index
           {
             tmp_num[j]=0;
-            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
               hc_postfix_result_cleanup();
               return NULL;
@@ -1908,7 +1909,7 @@ char *hc_postfix_result(char *e)
           memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
           args[args_end - e - i - 1] = '\0';
           i = args_end - e + 1;
-          if (!hc_eval_lambda((char *)&tmp_num, MAX_DOUBLE_STRING, &type, lambda_expr, args))
+          if (!hc_eval_lambda(tmp_num, MAX_DOUBLE_STRING, &type, lambda_expr, args))
           {
             free(lambda_expr); free(args);
             hc_postfix_result_cleanup();
@@ -1919,7 +1920,7 @@ char *hc_postfix_result(char *e)
           while (e[i]=='[')
           {
             tmp_num[j]=0;
-            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
               hc_postfix_result_cleanup();
               return NULL;
@@ -1982,7 +1983,7 @@ char *hc_postfix_result(char *e)
               return NULL;
             }
           }
-          if (!hc_value((char *)&tmp_num, MAX_DOUBLE_STRING, &type, v_name, f_expr))
+          if (!hc_value(tmp_num, MAX_DOUBLE_STRING, &type, v_name, f_expr))
           {
             free(v_name); free(f_expr);
             hc_postfix_result_cleanup();
@@ -1993,7 +1994,7 @@ char *hc_postfix_result(char *e)
           while (e[i]=='[')
           {
             tmp_num[j]=0;
-            if (!hc_get_by_index((char *)&tmp_num,&type,e,&i))
+            if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
               hc_postfix_result_cleanup();
               return NULL;
@@ -2074,6 +2075,7 @@ char *hc_postfix_result(char *e)
   m_apm_free(first->re);m_apm_free(first->im);
   free(first->str);
   free(first);
+  free(tmp_num);
 
   return result;
 }
