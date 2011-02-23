@@ -28,6 +28,9 @@ extern HCGWindow *hcg;
 extern "C" void notify(char *str);
 extern "C" void notify_console(char *str);
 extern "C" void notify_error(char *str);
+#ifdef WIN32
+extern "C" void updateStatusCallback(int status);
+#endif
 extern "C" char *prompt(char *str);
 extern "C" char *hc_result(char *);
 extern "C" void hc_load(char *fname_);

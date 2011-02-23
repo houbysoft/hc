@@ -32,6 +32,7 @@
 #include <QPixmap>
 #include <QImage>
 #include <QSpinBox>
+#include <QProgressBar>
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -48,12 +49,18 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(this, SIGNAL(notify_error_signal(QString)), this, SLOT(notify_error_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(prompt_signal(QString, QString *)), this, SLOT(prompt_slot(QString, QString *)), Qt::BlockingQueuedConnection);
+#ifdef WIN32
+  connect(this, SIGNAL(updateStatus_signal(int)), this, SLOT(updateStatus_slot(int)), Qt::QueuedConnection);
+#endif
   connect(hcgcore, SIGNAL(closeAll_signal()), this, SLOT(close()));
   createShortcut("Ctrl+O", this, SLOT(openScript()));
   createShortcut("Ctrl+N", this, SLOT(newScript()));
   createShortcut("Ctrl+Q", this, SLOT(close()));
 
   log_edit = NULL;
+#ifdef WIN32
+  updateBar = NULL;
+#endif
 }
 
 
@@ -292,16 +299,28 @@ void HCGBaseWindow::processUpdate(HUL *update, bool silent)
 {
   if (update && update->version)
   {
-    if (QMessageBox::question(hcg, "Update", "An update is available, would you like to download it?\n(Warning: this will close HC, please save your work)", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+    if (QMessageBox::question(hcg, "Update", "An update is available, would you like to download it?\n(You will need to close HC when the update is downloaded)", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
     {
-      hcgcore->closeAll();
-      system("start updater.exe");
-      QCoreApplication::exit(0);
+      HCGApplyUpdateThread *applyThread = new HCGApplyUpdateThread(update);
+      connect(applyThread, SIGNAL(finished(bool)), this, SLOT(applyUpdateThreadFinished(bool)));
+      applyThread->start();
     }
   } else if (!silent && update) {
     notify_slot((char *)"You have the latest version.");
   } else if (!silent) {
     notify_error_slot((char *)"An error occured while checking for updates.");
+  }
+}
+
+
+void HCGBaseWindow::applyUpdateThreadFinished(bool success)
+{
+  if (!success)
+  {
+    notify_slot((char *)"An error occured while downloading or verifying the update. Please try again later.\n");
+  } else {
+    hcgcore->closeAll();
+    QCoreApplication::exit(0);
   }
 }
 
@@ -405,6 +424,28 @@ void HCGBaseWindow::prompt_slot(QString str, QString *answer)
 }
 
 
+#ifdef WIN32
+void HCGBaseWindow::updateStatus_slot(int status)
+{
+  if (!updateBar)
+  {
+    updateBar = new QProgressBar();
+    updateBar->setRange(0,100);
+    updateBar->show();
+  }
+  if (status <= 100 && status >= 0) {
+    updateBar->setValue(status);
+  } else if (status == HUL_STATUS_DOWNLOAD_FINISHED) {
+    updateBar->setValue(100);
+  } else if (status == HUL_STATUS_CONNECTING) {
+    updateBar->setValue(0);
+  } else if (status == HUL_STATUS_DOWNLOAD_IN_PROGRESS) {
+    updateBar->setRange(0,0);
+  }
+}
+#endif
+
+
 void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data)
 {
   QImage graph((uchar *)data, x, y, QImage::Format_RGB888);
@@ -436,6 +477,12 @@ void HCGBaseWindow::notify_error(QString str)
 void HCGBaseWindow::prompt(QString str, QString *answer)
 {
   emit prompt_signal(str, answer);
+}
+
+
+void HCGBaseWindow::updateStatus(int status)
+{
+  emit updateStatus_signal(status);
 }
 
 

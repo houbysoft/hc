@@ -70,6 +70,24 @@ class HCGUpdateThread : public QThread {
   HCGUpdateThread() {};
   ~HCGUpdateThread() {};
 };
+
+
+class HCGApplyUpdateThread : public QThread {
+  Q_OBJECT
+
+  private:
+  HUL *u;
+
+  protected:
+  void run();
+
+  signals:
+  void finished(bool success);
+
+  public:
+  HCGApplyUpdateThread(HUL *update);
+  ~HCGApplyUpdateThread() {};
+};
 #endif
 
 #endif

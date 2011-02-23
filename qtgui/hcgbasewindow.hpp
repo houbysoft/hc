@@ -24,6 +24,7 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QTextEdit>
+#include <QProgressBar>
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -58,6 +59,9 @@ class HCGBaseWindow : public QMainWindow {
   QSpinBox *prec_spinbox;
   QAction *rad,*grad,*deg,*normal,*sci,*eng,*rpn,*autoupdate;
   QTextEdit *log_edit;
+#ifdef WIN32
+  QProgressBar *updateBar;
+#endif
 
   public:
   HCGBaseWindow();
@@ -66,6 +70,9 @@ class HCGBaseWindow : public QMainWindow {
   void notify_console(QString str);
   void notify_error(QString str);
   void prompt(QString str, QString *answer);
+#ifdef WIN32
+  void updateStatus(int status);
+#endif
   void disp_rgb(unsigned int x, unsigned int y, void *data);
 
   public slots:
@@ -81,6 +88,9 @@ class HCGBaseWindow : public QMainWindow {
   void notify_console_slot(QString str);
   void notify_error_slot(QString str);
   void prompt_slot(QString str, QString *answer);
+#ifdef WIN32
+  void updateStatus_slot(int status);
+#endif
   void disp_rgb_slot(unsigned int x, unsigned int y, void *data);
   void freeResult(QString expr, char *result);
   void setPrecision(int precision);
@@ -92,6 +102,7 @@ class HCGBaseWindow : public QMainWindow {
   void processUpdateSilent(HUL *update);
   void processUpdateLoud(HUL *update);
   void processUpdate(HUL *update, bool silent);
+  void applyUpdateThreadFinished(bool success);
 #endif
   virtual void insert(QString string) = 0;
   virtual void openScript() = 0;
@@ -101,6 +112,9 @@ class HCGBaseWindow : public QMainWindow {
   void notify_console_signal(QString str);
   void notify_error_signal(QString str);
   void prompt_signal(QString str, QString *answer);
+#ifdef WIN32
+  void updateStatus_signal(int status);
+#endif
   void disp_rgb_signal(unsigned int x, unsigned int y, void *data);
 };
 

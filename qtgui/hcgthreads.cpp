@@ -55,4 +55,16 @@ void HCGUpdateThread::run()
 {
   emit checking_finished(hul_checkupdates((char *)VERSION,(char *)STATUS_URL_GUI));
 }
+
+
+HCGApplyUpdateThread::HCGApplyUpdateThread(HUL *update)
+{
+  u = update;
+}
+
+
+void HCGApplyUpdateThread::run()
+{
+  emit finished(hul_applyupdate(u, updateStatusCallback));
+}
 #endif

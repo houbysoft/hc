@@ -194,6 +194,14 @@ void notify_error(char *str)
 }
 
 
+#ifdef WIN32
+void updateStatusCallback(int status)
+{
+  hcg->updateStatus(status);
+}
+#endif
+
+
 char *prompt(char *str)
 {
   QString answer;
