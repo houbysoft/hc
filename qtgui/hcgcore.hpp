@@ -36,17 +36,24 @@ class HCGCore : public QObject {
   void load(QString filename);
   void emitSignals();
   void closeAll();
+#ifdef WIN32
+  bool tryUpdate();
+#endif
 
   public slots:
   void setPrecision(int precision);
   void setAngleMode(QString mode);
   void setExpMode(QString mode);
   void setRPN(bool enabled);
+  void setAutoUpdate(bool enabled);
   void cleanup();
 
 
   private:
   QMutex hc_mutex;
+#ifdef WIN32
+  bool try_update;
+#endif
 
 
   signals:
@@ -54,6 +61,7 @@ class HCGCore : public QObject {
   void angleModeChanged(QString mode);
   void expModeChanged(QString mode);
   void RPNChanged(bool rpn_enabled);
+  void autoUpdateChanged(bool enabled);
   void closeAll_signal();
 };
 

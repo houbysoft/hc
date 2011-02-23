@@ -30,6 +30,9 @@
 HCGCore::HCGCore() : QObject() {
   hc_load_cfg();
   free(hc_result((char *)"0"));
+#ifdef WIN32
+  try_update = bool(hc.autoupdate);
+#endif
 }
 
 
@@ -87,12 +90,24 @@ void HCGCore::setRPN(bool enabled)
 }
 
 
+void HCGCore::setAutoUpdate(bool enabled)
+{
+  QMutexLocker locker(&hc_mutex);
+  if (enabled)
+    hc.autoupdate = 1;
+  else
+    hc.autoupdate = 0;
+  emit autoUpdateChanged(bool(hc.autoupdate));
+}
+
+
 void HCGCore::emitSignals()
 {
   emit RPNChanged(bool(hc.rpn));
   emit expModeChanged(QString(hc.exp));
   emit angleModeChanged(QString(hc.angle));
   emit precisionChanged(hc.precision);
+  emit autoUpdateChanged(bool(hc.autoupdate));
 }
 
 
@@ -105,4 +120,16 @@ void HCGCore::cleanup()
 void HCGCore::closeAll()
 {
   emit closeAll_signal();
+}
+
+
+bool HCGCore::tryUpdate()
+{
+  if (try_update)
+  {
+    try_update = 0;
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }

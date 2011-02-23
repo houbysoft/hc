@@ -160,6 +160,14 @@ void HCGBaseWindow::setRPN(bool enabled)
 }
 
 
+#ifdef WIN32
+void HCGBaseWindow::setAutoUpdate(bool enabled)
+{
+  autoupdate->setChecked(enabled);
+}
+#endif
+
+
 void HCGBaseWindow::setPrecision(int precision)
 {
   prec_spinbox->blockSignals(true);
@@ -227,6 +235,12 @@ void HCGBaseWindow::createOptionMenu() {
   connect(rpn, SIGNAL(triggered(bool)), hcgcore, SLOT(setRPN(bool)));
   optmenu->addAction(rpn);
 
+#ifdef WIN32
+  autoupdate = new QAction("Check updates on launch", optmenu); autoupdate->setCheckable(true);
+  connect(autoupdate, SIGNAL(triggered(bool)), hcgcore, SLOT(setAutoUpdate(bool)));
+  optmenu->addAction(autoupdate);
+#endif
+
   QMenu *prec_menu = optmenu->addMenu("Precision digits");
   QWidgetAction *prec = new QWidgetAction(prec_menu);
   prec_spinbox = new QSpinBox(prec_menu);
@@ -239,6 +253,9 @@ void HCGBaseWindow::createOptionMenu() {
   connect(hcgcore, SIGNAL(angleModeChanged(QString)), this, SLOT(setAngleMode(QString)));
   connect(hcgcore, SIGNAL(expModeChanged(QString)), this, SLOT(setExpMode(QString)));
   connect(hcgcore, SIGNAL(RPNChanged(bool)), this, SLOT(setRPN(bool)));
+#ifdef WIN32
+  connect(hcgcore, SIGNAL(autoUpdateChanged(bool)), this, SLOT(setAutoUpdate(bool)));
+#endif
   hcgcore->emitSignals();
 }
 
@@ -259,7 +276,19 @@ void HCGBaseWindow::about() {
 
 
 #ifdef WIN32
-void HCGBaseWindow::processUpdate(HUL *update)
+void HCGBaseWindow::processUpdateSilent(HUL *update)
+{
+  processUpdate(update, TRUE);
+}
+
+
+void HCGBaseWindow::processUpdateLoud(HUL *update)
+{
+  processUpdate(update, FALSE);
+}
+
+
+void HCGBaseWindow::processUpdate(HUL *update, bool silent)
 {
   if (update && update->version)
   {
@@ -269,11 +298,18 @@ void HCGBaseWindow::processUpdate(HUL *update)
       system("start updater.exe");
       QCoreApplication::exit(0);
     }
-  } else if (update) {
+  } else if (!silent && update) {
     notify_slot((char *)"You have the latest version.");
-  } else {
+  } else if (!silent) {
     notify_error_slot((char *)"An error occured while checking for updates.");
   }
+}
+
+
+void HCGBaseWindow::checkUpdatesSilent() {
+  HCGUpdateThread *upThread = new HCGUpdateThread();
+  connect(upThread, SIGNAL(checking_finished(HUL *)), this, SLOT(processUpdateSilent(HUL *)));
+  upThread->start();
 }
 #endif
 
@@ -281,7 +317,7 @@ void HCGBaseWindow::processUpdate(HUL *update)
 void HCGBaseWindow::checkUpdates() {
 #ifdef WIN32
   HCGUpdateThread *upThread = new HCGUpdateThread();
-  connect(upThread, SIGNAL(checking_finished(HUL *)), this, SLOT(processUpdate(HUL *)));
+  connect(upThread, SIGNAL(checking_finished(HUL *)), this, SLOT(processUpdateLoud(HUL *)));
   upThread->start();
 #endif
 }

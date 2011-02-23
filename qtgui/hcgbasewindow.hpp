@@ -56,7 +56,7 @@ class HCGBaseWindow : public QMainWindow {
   void createOptionMenu();
   void createLogEdit();
   QSpinBox *prec_spinbox;
-  QAction *rad,*grad,*deg,*normal,*sci,*eng,*rpn;
+  QAction *rad,*grad,*deg,*normal,*sci,*eng,*rpn,*autoupdate;
   QTextEdit *log_edit;
 
   public:
@@ -72,6 +72,7 @@ class HCGBaseWindow : public QMainWindow {
   void newEval();
   void newScript();
   void checkUpdates();
+  void checkUpdatesSilent();
   void about();
   void completerHelp(const QString text);
   void enterHelp();
@@ -87,7 +88,10 @@ class HCGBaseWindow : public QMainWindow {
   void setExpMode(QString mode);
   void setRPN(bool enabled);
 #ifdef WIN32
-  void processUpdate(HUL *update);
+  void setAutoUpdate(bool enabled);
+  void processUpdateSilent(HUL *update);
+  void processUpdateLoud(HUL *update);
+  void processUpdate(HUL *update, bool silent);
 #endif
   virtual void insert(QString string) = 0;
   virtual void openScript() = 0;

@@ -2326,6 +2326,7 @@ void hc_load_cfg()
 {
   FILE *fr = fopen(HC_CFG_FILE,"r");
   hc.angle = 'r';
+  hc.autoupdate = TRUE;
   hc.graph_points_3d = HC_GP3D_DEFAULT;
   hc.peqstep = HC_PEQSTEP_DEFAULT;
   hc.xmin2d = hc.ymin2d = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xminsf = hc.yminsf = hc.xminpeq = hc.yminpeq = -10;
@@ -2367,6 +2368,12 @@ void hc_load_cfg()
               hc.rpn = TRUE;
             else
               hc.rpn = FALSE;
+            break;
+      case HASH_AUTOUPDATE:
+        if (buffer[i+1]=='1')
+              hc.autoupdate = TRUE;
+            else
+              hc.autoupdate = FALSE;
             break;
       case HASH_EXPF:
             hc.exp = buffer[i+1];
@@ -2495,6 +2502,7 @@ void hc_save_cfg()
 {
   FILE *fw = fopen(HC_CFG_FILE,"w");
   fprintf(fw,"rpn=%i\n",hc.rpn==0 ? FALSE : TRUE);
+  fprintf(fw,"autoupdate=%i\n",hc.autoupdate==0 ? FALSE : TRUE);
   fprintf(fw,"precision=%i\n",hc.precision);
   fprintf(fw,"keys=%i\n",hc.keys==0 ? FALSE : TRUE);
   fprintf(fw,"bpn=%i\n",hc.bypass_nested==0 ? FALSE : TRUE);

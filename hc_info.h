@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#define VERSION "5.0.1"
+#define VERSION "1beta"
 #define STATUS_URL_GUI "http://houbysoft.com/status/hcg_w32"
 
 // hc_config's hc.flags
@@ -33,6 +33,7 @@ extern "C" {
 typedef struct hc_config {
   char announce; // used when command line options are supplied to supress configuration notice
   char rpn;
+  char autoupdate;
   int precision;
   char output_format;
   char exp;
