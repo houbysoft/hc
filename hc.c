@@ -2194,13 +2194,7 @@ void hc_process_direction(char *d)
       break;
     }
     hc.precision = atoi(&d[i+1]);
-    /*if (hc.precision>HC_MAX_PRECISION)
-    {
-      printf("Precision is limited to %i, setting to this value.",HC_MAX_PRECISION);
-      hc.precision = HC_MAX_PRECISION;
-    } else {*/
-      printf("Precision is now set to %i decimal places.\n",hc.precision);
-      //}
+    printf("Precision is now set to %i decimal places.\n",hc.precision);
     break;
   case HASH_3DPOINTS:
     if (atoi(&d[i+1]) < 2)
@@ -2385,8 +2379,6 @@ void hc_load_cfg()
             break;
       case HASH_PRECISION:
             hc.precision = atoi(&buffer[i+1]);
-            if (hc.precision>HC_MAX_PRECISION)
-              hc.precision = HC_MAX_PRECISION;
             break;
       case HASH_ANGLE:
         hc.angle = buffer[i+1];
