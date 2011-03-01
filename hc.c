@@ -464,18 +464,19 @@ char *hc_i2p(char *f)
     overflow_error_nq();
     return NULL;
   }
+  char *tmp = malloc(MAX_EXPR*sizeof(char));
+  if (!tmp)
+    mem_error();
+  strcpy(tmp,f);
+  if (hc.rpn)
+    return tmp;
+  tmp[strlen(tmp)+1]=0;
+  tmp[strlen(tmp)]='$';
+  char stack[MAX_OP_STACK][2];
+  int sp=0;
   char *e = malloc(MAX_EXPR*sizeof(char));
   if (!e)
     mem_error();
-  strcpy(e,f);
-  if (hc.rpn)
-    return e;
-  e[strlen(e)+1]=0;
-  e[strlen(e)]='$';
-  char tmp[MAX_EXPR];
-  char stack[MAX_OP_STACK][2];
-  int sp=0;
-  strcpy(tmp,e);
   memset(e,0,MAX_EXPR);
   int i=0,j=0;
 
@@ -508,6 +509,7 @@ char *hc_i2p(char *f)
             if (stack[sp][1])
               e[j++] = stack[sp][1];
           }
+          free(tmp);
           return e;
 
         case '(':
@@ -522,7 +524,7 @@ char *hc_i2p(char *f)
           if (sp < 0)
           {
             hc_error(SYNTAX,"('s and )'s do not match");
-            free(e);
+            free(e); free(tmp);
             return NULL;
           }
           while (stack[sp][0]!='(')
@@ -534,7 +536,7 @@ char *hc_i2p(char *f)
             if (sp < 0)
             {
               hc_error(SYNTAX,"('s and )'s do not match");
-              free(e);
+              free(e); free(tmp);
               return NULL;
             }
           }
@@ -724,7 +726,7 @@ char *hc_i2p(char *f)
               if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
               {
                 hc_error(SYNTAX,"invalid number encountered");
-                free(e);
+                free(e); free(tmp);
                 return NULL;
               }
               if (tolower(tmp[i]) == 'e')
@@ -751,7 +753,7 @@ char *hc_i2p(char *f)
               if (tmpe < 0 || tmpi < 0)
               {
                 hc_error(SYNTAX,"too many e's or i's encountered in number");
-                free(e);
+                free(e); free(tmp);
                 return NULL;
               }
               e[j++] = tmp[i++];
@@ -770,7 +772,7 @@ char *hc_i2p(char *f)
               if (!isdigitb(tmp[i],base) && (tmp[i]!='.' || tmpsts == FALSE))
               {
                 hc_error(SYNTAX, "invalid binary or hex number encountered");
-                free(e);
+                free(e); free(tmp);
                 return NULL;
               } else {
                 if (tmp[i]=='.')
@@ -786,7 +788,7 @@ char *hc_i2p(char *f)
           if (tmp[i] != '\"')
           {
             hc_error(SYNTAX,"missing end quotes");
-            free(e);
+            free(e); free(tmp);
             return NULL;
           }
           e[j++] = tmp[i++];
@@ -811,7 +813,7 @@ char *hc_i2p(char *f)
             if (pct!=0)
             {
               hc_error(SYNTAX, "['s and ]'s do not match");
-              free(e);
+              free(e); free(tmp);
               return NULL;
             }
           }
@@ -820,7 +822,7 @@ char *hc_i2p(char *f)
           if (!endoffunc)
           {
             hc_error(SYNTAX,"single quotes do not match");
-            free(e);
+            free(e); free(tmp);
             return NULL;
           }
           memcpy((char *)(e + j),(char *)(tmp + i),endoffunc - tmp - i + 1);
@@ -849,7 +851,7 @@ char *hc_i2p(char *f)
             if (par != 0)
             {
               hc_error(SYNTAX,"('s and )'s do not match");
-              free(e);
+              free(e); free(tmp);
               return NULL;
             } else {
               i++; // skip the last ')'
@@ -859,7 +861,7 @@ char *hc_i2p(char *f)
           if (!isalpha(tmp[i]))
           {
             hc_error(SYNTAX, "at character %i : %c", i+1, tmp[i]);
-            free(e);
+            free(e); free(tmp);
             return NULL;
           }
           while (isalpha(tmp[i]) || isdigit(tmp[i])) // the first to be checked can't be a digit since that would be caught above
@@ -889,7 +891,7 @@ char *hc_i2p(char *f)
             if (par != 0)
             {
               hc_error(SYNTAX,"('s and )'s do not match");
-              free(e);
+              free(e); free(tmp);
               return NULL;
             } else {
               i++; // skip the last ')'
@@ -917,7 +919,7 @@ char *hc_i2p(char *f)
           if (pct!=0)
           {
             hc_error(SYNTAX,"['s and ]'s do not match");
-            free(e);
+            free(e); free(tmp);
             return NULL;
           }
         }
@@ -931,10 +933,11 @@ char *hc_i2p(char *f)
   if (j >= MAX_EXPR)
   {
     overflow_error_nq();
-    free(e);
+    free(e); free(tmp);
     return NULL;
   }
 
+  free(tmp);
   return e;
 }
 
