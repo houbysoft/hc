@@ -969,7 +969,7 @@ char *hc_postfix_result(char *e)
 
   char op1_type,op2_type;
   
-  char *tmp_num = malloc(MAX_DOUBLE_STRING); // this is used below, do not change
+  char *tmp_num = malloc(MAX_EXPR); // this is used below, do not change
   if (!tmp_num) mem_error();
   int i=0,j=0;
   
@@ -1803,7 +1803,7 @@ char *hc_postfix_result(char *e)
               }
             }
             tmp_num[j] = '\0';
-            if (!hc_2dec(base,tmp_num,MAX_DOUBLE_STRING))
+            if (!hc_2dec(base,tmp_num,MAX_EXPR))
             {
               hc_postfix_result_cleanup();
               return NULL;
@@ -1860,7 +1860,7 @@ char *hc_postfix_result(char *e)
           {
             hc_postfix_result_cleanup();
             return NULL;
-          } else if (strlen(newlist) < MAX_DOUBLE_STRING)
+          } else if (strlen(newlist) < MAX_EXPR)
           {
             strcpy(tmp_num,newlist);
             free(newlist);
@@ -1912,7 +1912,7 @@ char *hc_postfix_result(char *e)
           memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
           args[args_end - e - i - 1] = '\0';
           i = args_end - e + 1;
-          if (!hc_eval_lambda(tmp_num, MAX_DOUBLE_STRING, &type, lambda_expr, args))
+          if (!hc_eval_lambda(tmp_num, MAX_EXPR, &type, lambda_expr, args))
           {
             free(lambda_expr); free(args);
             hc_postfix_result_cleanup();
@@ -1986,7 +1986,7 @@ char *hc_postfix_result(char *e)
               return NULL;
             }
           }
-          if (!hc_value(tmp_num, MAX_DOUBLE_STRING, &type, v_name, f_expr))
+          if (!hc_value(tmp_num, MAX_EXPR, &type, v_name, f_expr))
           {
             free(v_name); free(f_expr);
             hc_postfix_result_cleanup();

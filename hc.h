@@ -118,7 +118,6 @@ extern char is_positive_int(char *); // positive or zero
 #define MAX_EXPR 16384
 #define MAX_F_TMP (MAX_EXPR / 2)
 #define MAX_V_NAME 64 // maximum length of variable / function name
-#define MAX_DOUBLE_STRING MAX_EXPR // To make the routines to check overflows work properly, do not change this (but you can change MAX_EXPR, obviously)
 #define MAX_OP_STACK (MAX_EXPR / 2)
 #define MAX_LAMBDA_ARGS 100
 //#define MAX_DOUBLE_STACK MAX_EXPR

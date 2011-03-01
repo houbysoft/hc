@@ -59,7 +59,7 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
   //*i += strlen((char *)(scan + *i));
   // FIXME : hc_result() is expensive, should use hc_result_() instead, but this needs the result to be nicely parsed (ie. the radix and zeroes after an integer stripped)
   // scan[*i] points at the '[' of the beginning of the index
-  char tmp_idx[MAX_DOUBLE_STRING];
+  char tmp_idx[MAX_EXPR];
   int j=0,k=1;
   for (; scanres[k]!=']'; k++)
   {
