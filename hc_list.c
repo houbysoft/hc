@@ -24,6 +24,7 @@
 #include "hc.h"
 #include "hc_functions.h"
 #include "hc_list.h"
+#include "hc_utils.h"
 
 
 // returns 0 (FAIL) on error
@@ -59,18 +60,27 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
   //*i += strlen((char *)(scan + *i));
   // FIXME : hc_result() is expensive, should use hc_result_() instead, but this needs the result to be nicely parsed (ie. the radix and zeroes after an integer stripped)
   // scan[*i] points at the '[' of the beginning of the index
-  char tmp_idx[MAX_EXPR];
+  unsigned int tmp_idx_alloc = MAX_EXPR;
+  char *tmp_idx = malloc(tmp_idx_alloc);
   int j=0,k=1;
   for (; scanres[k]!=']'; k++)
   {
     if (!isdigit(scanres[k]))
     {
-      free(scanres);
+      free(scanres); free(tmp_idx);
       arg_error("only integer indexes are accepted.");
+    }
+    if (j >= tmp_idx_alloc)
+    {
+      tmp_idx = hc_enlarge_buffer(tmp_idx, &tmp_idx_alloc);
     }
     tmp_idx[j++] = scanres[k];
   }
   k++;
+  if (j >= tmp_idx_alloc)
+  {
+    tmp_idx = hc_enlarge_buffer(tmp_idx, &tmp_idx_alloc);
+  }
   tmp_idx[j] = 0;
   free(scanres);
   char *res = NULL;
@@ -79,7 +89,10 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
     data = strip_spaces(data);
     data[strlen(data)-1] = '\0'; // delete the last '"'
     if (atoi(tmp_idx) >= strlen((char *)(data + 1)))
+    {
+      free(tmp_idx);
       arg_error("index out of range.");
+    }
     res = malloc(4);
     if (!res)
       mem_error();
@@ -93,9 +106,11 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
     res = hc_get_arg((char *)(data + 1), atoi(tmp_idx) + 1);
     if (!res)
     {
+      free(tmp_idx);
       arg_error("index out of range.");
     }
   } else {
+    free(tmp_idx);
     arg_error("only vectors/lists and strings can be indexed.");
   }
 
@@ -108,6 +123,7 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
 
   strcpy(data, res);
   free(res);
+  free(tmp_idx);
 
   return 1;
 }

@@ -109,3 +109,12 @@ void hc_set_from_string(M_APM re, M_APM im, char *num)
   m_apm_set_string(re, rp);
   free(rp); free(ip);
 }
+
+
+char *hc_enlarge_buffer(char *buffer, unsigned int *sz)
+{
+  *sz += MAX_EXPR;
+  buffer = realloc(buffer, *sz);
+  if (!buffer) mem_error();
+  return buffer;
+}

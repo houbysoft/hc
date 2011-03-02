@@ -28,5 +28,6 @@ typedef enum {
 
 extern void hc_error(char type, char *xformat, ...);
 extern void hc_set_from_string(M_APM re, M_APM im, char *num);
+extern char *hc_enlarge_buffer(char *buffer, unsigned int *sz);
 
 #endif

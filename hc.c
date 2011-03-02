@@ -200,8 +200,6 @@ unsigned int simple_hash(char *p)
 #define isdigitb(c,b) ((b==16 && isxdigit(c)) || (b==2 && (c=='0' || c=='1')) || (b==10 && isdigit(c)))
 
 #define hc_postfix_result_cleanup() {m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str); while (first->n) {m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);} m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);free(tmp_num);}
-#define tmp_num_enlarge_buffer() {tmp_num_alloc += MAX_EXPR;tmp_num = realloc(tmp_num, tmp_num_alloc);if (!tmp_num) mem_error();}
-#define i2pe_enlarge_buffer() {e_alloc += MAX_EXPR;e = realloc(e, e_alloc);if (!e) mem_error();}
 
 
 char *hc_i2p(char *f);
@@ -502,12 +500,12 @@ char *hc_i2p(char *f)
         case '$': // terminating character
           while (stack[sp-1][0]!='$')
           {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
           }
-          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+          if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
           e[j] = 0;
           free(tmp);
           return e;
@@ -529,7 +527,7 @@ char *hc_i2p(char *f)
           }
           while (stack[sp][0]!='(')
           {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -543,7 +541,7 @@ char *hc_i2p(char *f)
           }
           if (neg)
           {
-            if (j + 1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j + 1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = '_';
             e[j++] = ' '; // otherwise following number is treated as a negative
             neg=0;
@@ -556,7 +554,7 @@ char *hc_i2p(char *f)
             stack[sp][0] = tmp[i];
             stack[sp++][1] = 0;
           } else {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -574,7 +572,7 @@ char *hc_i2p(char *f)
               stack[sp++][1] = '=';
               i++;
             } else {
-              if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+              if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
               e[j++] = stack[--sp][0];
               if (stack[sp][1])
                 e[j++] = stack[sp][1];
@@ -587,7 +585,7 @@ char *hc_i2p(char *f)
               stack[sp][0] = tmp[i];
               stack[sp++][1] = 0;
             } else {
-              if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+              if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
               e[j++] = stack[--sp][0];
               if (stack[sp][1])
                 e[j++] = stack[sp][1];
@@ -600,7 +598,7 @@ char *hc_i2p(char *f)
               stack[sp][0] = NOT_SIGN;
               stack[sp++][1] = 0;
             } else {
-              if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+              if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
               e[j++] = stack[--sp][0];
               if (stack[sp][1])
                 e[j++] = stack[sp][1];
@@ -617,7 +615,7 @@ char *hc_i2p(char *f)
             stack[sp][0] = tmp[i];
             stack[sp++][1] = 0;
           } else {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -633,7 +631,7 @@ char *hc_i2p(char *f)
             stack[sp][0] = tmp[i];
             stack[sp++][1] = 0;
           } else {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -655,7 +653,7 @@ char *hc_i2p(char *f)
             else
               stack[sp++][1] = 0;
           } else {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -674,7 +672,7 @@ char *hc_i2p(char *f)
             } else
               stack[sp++][1] = 0;
           } else {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -693,7 +691,7 @@ char *hc_i2p(char *f)
             } else
               stack[sp++][1] = 0;
           } else {
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -767,7 +765,7 @@ char *hc_i2p(char *f)
                 free(e); free(tmp);
                 return NULL;
               }
-              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+              if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
               e[j++] = tmp[i++];
             }
           } else { // base == 2 or base == 16
@@ -777,7 +775,7 @@ char *hc_i2p(char *f)
                No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
             */
             tmpsts = TRUE;
-            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = tmp[i++]; // write down the '0'
             e[j++] = tmp[i++]; // write down the either 'x' (base 16) or 'b' (base 2)
             while (!isspace(tmp[i]) && (!isoperator(tmp[i]) || tmp[i]=='_'))
@@ -790,17 +788,17 @@ char *hc_i2p(char *f)
               } else {
                 if (tmp[i]=='.')
                   tmpsts = FALSE;
-                if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+                if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
                 e[j++] = tmp[i++];
               }
             }
           }
         } else if (tmp[i]=='\"') {
-          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+          if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
           e[j++] = tmp[i++];
           while (tmp[i]!='\"' && tmp[i]!='$')
           {
-            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = tmp[i++];
           }
           if (tmp[i] != '\"')
@@ -809,14 +807,14 @@ char *hc_i2p(char *f)
             free(e); free(tmp);
             return NULL;
           }
-          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+          if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
           e[j++] = tmp[i++];
         } else if (tmp[i]=='[') {
           while (tmp[i]=='[')
           {
             unsigned int pct = 1;
             char ignore = FALSE;
-            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = tmp[i++];
             while (pct!=0 && tmp[i])
             {
@@ -828,7 +826,7 @@ char *hc_i2p(char *f)
                 pct++;
               if (tmp[i]==']' && !ignore)
                 pct--;
-              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+              if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
               e[j++] = tmp[i++];
             }
             if (pct!=0)
@@ -846,19 +844,19 @@ char *hc_i2p(char *f)
             free(e); free(tmp);
             return NULL;
           }
-          while (j+endoffunc-tmp-i+1 >= e_alloc) { i2pe_enlarge_buffer(); }
+          while (j+endoffunc-tmp-i+1 >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
           memcpy((char *)(e + j),(char *)(tmp + i),endoffunc - tmp - i + 1);
           j += endoffunc - tmp - i + 1;
           i = endoffunc - tmp + 1;
           if (tmp[i]=='(') // called
           {
-            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = tmp[i];
             int par = 1;
             char ignore = FALSE;
             while (par!=0 && tmp[i]!='$' && tmp[i])
             {
-              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+              if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
               e[j++] = tmp[++i];
               if (tmp[i]=='\"')
               {
@@ -890,18 +888,18 @@ char *hc_i2p(char *f)
           }
           while (isalpha(tmp[i]) || isdigit(tmp[i])) // the first to be checked can't be a digit since that would be caught above
           {
-            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = tmp[i++];
           }
           if (tmp[i]=='(') // function
           {
-            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = tmp[i];
             int par = 1;
             char ignore = FALSE;
             while (par!=0 && tmp[i]!='$' && tmp[i])
             {
-              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+              if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
               e[j++] = tmp[++i];
               if (tmp[i]=='\"')
               {
@@ -930,7 +928,7 @@ char *hc_i2p(char *f)
         {
           unsigned int pct = 1;
           char ignore = FALSE;
-          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+          if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
           e[j++] = tmp[i++];
           while (pct!=0 && tmp[i])
           {
@@ -942,7 +940,7 @@ char *hc_i2p(char *f)
               pct++;
             if (tmp[i]==']' && !ignore)
               pct--;
-            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+            if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
             e[j++] = tmp[i++];
           }
           if (pct!=0)
@@ -953,7 +951,7 @@ char *hc_i2p(char *f)
           }
         }
 
-        if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+        if (j >= e_alloc) { e = hc_enlarge_buffer(e, &e_alloc); }
         e[j++] = ' ';
         i--;
       }
@@ -1744,9 +1742,9 @@ char *hc_postfix_result(char *e)
         if (isdigit(e[i]) || e[i]=='.' || e[i]=='_')
         {
           type = HC_VAR_NUM;
-          tmp_num = malloc(MAX_EXPR);
-          if (!tmp_num) mem_error();
           tmp_num_alloc = MAX_EXPR;
+          tmp_num = malloc(tmp_num_alloc);
+          if (!tmp_num) mem_error();
           char tmpsts = 0;
           int tmpe = 1;
           int tmpi = 1;
@@ -1807,7 +1805,7 @@ char *hc_postfix_result(char *e)
                   return NULL;
                 }
               }
-              if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+              if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
               tmp_num[j++] = e[i++];
             }
           } else { // base == 2 or base == 16
@@ -1827,11 +1825,11 @@ char *hc_postfix_result(char *e)
               } else {
                 if (e[i]=='.')
                   tmpsts = FALSE;
-                if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+                if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
                 tmp_num[j++] = e[i++];
               }
             }
-            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
             tmp_num[j] = '\0';
             char *tmp_num2;
             if (!(tmp_num2 = hc_2dec(base,tmp_num)))
@@ -1851,7 +1849,7 @@ char *hc_postfix_result(char *e)
           tmp_num[j++] = e[i++];
           while (e[i]!='\"' && e[i])
           {
-            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
             tmp_num[j++] = e[i++];
           }
           if (e[i] != '\"')
@@ -1860,11 +1858,11 @@ char *hc_postfix_result(char *e)
             hc_error(SYNTAX,"missing end quotes");
             return NULL;
           }
-          if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+          if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
           tmp_num[j++] = e[i++];
           while (e[i]=='[') // index
           {
-            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
             tmp_num[j] = 0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -1878,7 +1876,7 @@ char *hc_postfix_result(char *e)
           unsigned int pct = 1;
           char ignore = FALSE;
           tmp_num_alloc = MAX_EXPR;
-          tmp_num = malloc(MAX_EXPR);
+          tmp_num = malloc(tmp_num_alloc);
           if (!tmp_num) mem_error();
           tmp_num[j++] = e[i++];
           while (pct!=0 && e[i])
@@ -1891,7 +1889,7 @@ char *hc_postfix_result(char *e)
               pct++;
             if (e[i]==']' && !ignore)
               pct--;
-            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
             tmp_num[j++] = e[i++];
           }
           if (pct!=0)
@@ -1899,7 +1897,7 @@ char *hc_postfix_result(char *e)
             hc_postfix_result_cleanup();
             return NULL;
           }
-          if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+          if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
           tmp_num[j]=0;
           char *newlist = list_simplify(tmp_num);
           if (!newlist)
@@ -1914,7 +1912,7 @@ char *hc_postfix_result(char *e)
           j = strlen(tmp_num);
           while (e[i]=='[') // index
           {
-            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
             tmp_num[j]=0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -1950,7 +1948,7 @@ char *hc_postfix_result(char *e)
             free(lambda_expr);
             return NULL;
           }
-          char *args = malloc(MAX_EXPR); if (!args) mem_error();
+          char *args = malloc(args_end - e - i + 1); if (!args) mem_error();
           memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
           args[args_end - e - i - 1] = '\0';
           i = args_end - e + 1;
@@ -1965,7 +1963,7 @@ char *hc_postfix_result(char *e)
           tmp_num_alloc = j + 1;
           while (e[i]=='[')
           {
-            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
             tmp_num[j]=0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -2008,9 +2006,7 @@ char *hc_postfix_result(char *e)
             while (par!=0 && e[i])
             {
               if (ti >= f_expr_alloc) {
-                f_expr_alloc += MAX_EXPR;
-                f_expr = realloc(f_expr, f_expr_alloc);
-                if (!f_expr) mem_error();
+                f_expr = hc_enlarge_buffer(f_expr, &f_expr_alloc);
               }
               f_expr[ti++] = e[++i];
               if (e[i]=='\"')
@@ -2028,9 +2024,7 @@ char *hc_postfix_result(char *e)
             if (par == 0)
             {
               if (ti >= f_expr_alloc) {
-                f_expr_alloc += MAX_EXPR;
-                f_expr = realloc(f_expr, f_expr_alloc);
-                if (!f_expr) mem_error();
+                f_expr = hc_enlarge_buffer(f_expr, &f_expr_alloc);
               }
               f_expr[ti] = '\0';
               i++; // skip the last ')'
@@ -2052,7 +2046,7 @@ char *hc_postfix_result(char *e)
           tmp_num_alloc = j + 1;
           while (e[i]=='[')
           {
-            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
             tmp_num[j]=0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -2064,7 +2058,7 @@ char *hc_postfix_result(char *e)
           j = strlen(tmp_num);
         }
         i--;
-        if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+        if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
         tmp_num[j]=0; // continue here
         curr->type = type;
         if (curr->type == HC_VAR_NUM)
