@@ -141,8 +141,6 @@ int main(int argc, char *argv[])
       free(expr2);
     }
 
-    if (strlen(expr)>=MAX_EXPR)
-      overflow_error();
     if (strcmp(expr,"exit")==0 || strcmp(expr,"quit")==0)
       exit(0);
     fme = hc_result(expr);

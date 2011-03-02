@@ -201,6 +201,7 @@ unsigned int simple_hash(char *p)
 
 #define hc_postfix_result_cleanup() {m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str); while (first->n) {m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);} m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);free(tmp_num);}
 #define tmp_num_enlarge_buffer() {tmp_num_alloc += MAX_EXPR;tmp_num = realloc(tmp_num, tmp_num_alloc);if (!tmp_num) mem_error();}
+#define i2pe_enlarge_buffer() {e_alloc += MAX_EXPR;e = realloc(e, e_alloc);if (!e) mem_error();}
 
 
 char *hc_i2p(char *f);
@@ -460,12 +461,7 @@ char *hc_result_normal(char *f)
 
 char *hc_i2p(char *f)
 {
-  if (strlen(f) >= MAX_EXPR)
-  {
-    overflow_error_nq();
-    return NULL;
-  }
-  char *tmp = malloc(MAX_EXPR*sizeof(char));
+  char *tmp = malloc(strlen(f)+2);
   if (!tmp)
     mem_error();
   strcpy(tmp,f);
@@ -475,10 +471,10 @@ char *hc_i2p(char *f)
   tmp[strlen(tmp)]='$';
   char stack[MAX_OP_STACK][2];
   int sp=0;
-  char *e = malloc(MAX_EXPR*sizeof(char));
+  unsigned int e_alloc = MAX_EXPR;
+  char *e = malloc(e_alloc);
   if (!e)
     mem_error();
-  memset(e,0,MAX_EXPR);
   int i=0,j=0;
 
   char neg=0;
@@ -487,7 +483,7 @@ char *hc_i2p(char *f)
   stack[sp][0] = '$';
   stack[sp++][1] = 0;
 
-  while (tmp[i]!=0 && j < MAX_EXPR)
+  while (tmp[i]!=0)
   {
     if (!isspace(tmp[i]))
     {
@@ -506,10 +502,13 @@ char *hc_i2p(char *f)
         case '$': // terminating character
           while (stack[sp-1][0]!='$')
           {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
           }
+          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
+          e[j] = 0;
           free(tmp);
           return e;
 
@@ -530,6 +529,7 @@ char *hc_i2p(char *f)
           }
           while (stack[sp][0]!='(')
           {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -543,6 +543,7 @@ char *hc_i2p(char *f)
           }
           if (neg)
           {
+            if (j + 1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = '_';
             e[j++] = ' '; // otherwise following number is treated as a negative
             neg=0;
@@ -555,6 +556,7 @@ char *hc_i2p(char *f)
             stack[sp][0] = tmp[i];
             stack[sp++][1] = 0;
           } else {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -572,6 +574,7 @@ char *hc_i2p(char *f)
               stack[sp++][1] = '=';
               i++;
             } else {
+              if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
               e[j++] = stack[--sp][0];
               if (stack[sp][1])
                 e[j++] = stack[sp][1];
@@ -584,10 +587,11 @@ char *hc_i2p(char *f)
               stack[sp][0] = tmp[i];
               stack[sp++][1] = 0;
             } else {
+              if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
               e[j++] = stack[--sp][0];
-            if (stack[sp][1])
-              e[j++] = stack[sp][1];
-            i--;
+              if (stack[sp][1])
+                e[j++] = stack[sp][1];
+              i--;
             }
           } else {
             // interpret as logical NOT and replace the ! with a NOT_SIGN, so that hc_postfix_result interprets this correctly
@@ -596,6 +600,7 @@ char *hc_i2p(char *f)
               stack[sp][0] = NOT_SIGN;
               stack[sp++][1] = 0;
             } else {
+              if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
               e[j++] = stack[--sp][0];
               if (stack[sp][1])
                 e[j++] = stack[sp][1];
@@ -612,6 +617,7 @@ char *hc_i2p(char *f)
             stack[sp][0] = tmp[i];
             stack[sp++][1] = 0;
           } else {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -627,6 +633,7 @@ char *hc_i2p(char *f)
             stack[sp][0] = tmp[i];
             stack[sp++][1] = 0;
           } else {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -648,6 +655,7 @@ char *hc_i2p(char *f)
             else
               stack[sp++][1] = 0;
           } else {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -666,6 +674,7 @@ char *hc_i2p(char *f)
             } else
               stack[sp++][1] = 0;
           } else {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -684,6 +693,7 @@ char *hc_i2p(char *f)
             } else
               stack[sp++][1] = 0;
           } else {
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = stack[--sp][0];
             if (stack[sp][1])
               e[j++] = stack[sp][1];
@@ -757,6 +767,7 @@ char *hc_i2p(char *f)
                 free(e); free(tmp);
                 return NULL;
               }
+              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
               e[j++] = tmp[i++];
             }
           } else { // base == 2 or base == 16
@@ -766,6 +777,7 @@ char *hc_i2p(char *f)
                No more complexity is required as the exponents and complex numbers are not used, available, and for the case of the 'e' in hex, impossible to implement.
             */
             tmpsts = TRUE;
+            if (j+1 >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = tmp[i++]; // write down the '0'
             e[j++] = tmp[i++]; // write down the either 'x' (base 16) or 'b' (base 2)
             while (!isspace(tmp[i]) && (!isoperator(tmp[i]) || tmp[i]=='_'))
@@ -778,26 +790,33 @@ char *hc_i2p(char *f)
               } else {
                 if (tmp[i]=='.')
                   tmpsts = FALSE;
+                if (j >= e_alloc) { i2pe_enlarge_buffer(); }
                 e[j++] = tmp[i++];
               }
             }
           }
         } else if (tmp[i]=='\"') {
+          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
           e[j++] = tmp[i++];
           while (tmp[i]!='\"' && tmp[i]!='$')
+          {
+            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = tmp[i++];
+          }
           if (tmp[i] != '\"')
           {
             hc_error(SYNTAX,"missing end quotes");
             free(e); free(tmp);
             return NULL;
           }
+          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
           e[j++] = tmp[i++];
         } else if (tmp[i]=='[') {
           while (tmp[i]=='[')
           {
             unsigned int pct = 1;
             char ignore = FALSE;
+            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = tmp[i++];
             while (pct!=0 && tmp[i])
             {
@@ -809,6 +828,7 @@ char *hc_i2p(char *f)
                 pct++;
               if (tmp[i]==']' && !ignore)
                 pct--;
+              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
               e[j++] = tmp[i++];
             }
             if (pct!=0)
@@ -826,16 +846,19 @@ char *hc_i2p(char *f)
             free(e); free(tmp);
             return NULL;
           }
+          while (j+endoffunc-tmp-i+1 >= e_alloc) { i2pe_enlarge_buffer(); }
           memcpy((char *)(e + j),(char *)(tmp + i),endoffunc - tmp - i + 1);
           j += endoffunc - tmp - i + 1;
           i = endoffunc - tmp + 1;
           if (tmp[i]=='(') // called
           {
+            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = tmp[i];
             int par = 1;
             char ignore = FALSE;
             while (par!=0 && tmp[i]!='$' && tmp[i])
             {
+              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
               e[j++] = tmp[++i];
               if (tmp[i]=='\"')
               {
@@ -867,15 +890,18 @@ char *hc_i2p(char *f)
           }
           while (isalpha(tmp[i]) || isdigit(tmp[i])) // the first to be checked can't be a digit since that would be caught above
           {
+            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = tmp[i++];
           }
           if (tmp[i]=='(') // function
           {
+            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = tmp[i];
             int par = 1;
             char ignore = FALSE;
             while (par!=0 && tmp[i]!='$' && tmp[i])
             {
+              if (j >= e_alloc) { i2pe_enlarge_buffer(); }
               e[j++] = tmp[++i];
               if (tmp[i]=='\"')
               {
@@ -904,6 +930,7 @@ char *hc_i2p(char *f)
         {
           unsigned int pct = 1;
           char ignore = FALSE;
+          if (j >= e_alloc) { i2pe_enlarge_buffer(); }
           e[j++] = tmp[i++];
           while (pct!=0 && tmp[i])
           {
@@ -915,6 +942,7 @@ char *hc_i2p(char *f)
               pct++;
             if (tmp[i]==']' && !ignore)
               pct--;
+            if (j >= e_alloc) { i2pe_enlarge_buffer(); }
             e[j++] = tmp[i++];
           }
           if (pct!=0)
@@ -925,17 +953,12 @@ char *hc_i2p(char *f)
           }
         }
 
+        if (j >= e_alloc) { i2pe_enlarge_buffer(); }
         e[j++] = ' ';
         i--;
       }
     }
     i++;
-  }
-  if (j >= MAX_EXPR)
-  {
-    overflow_error_nq();
-    free(e); free(tmp);
-    return NULL;
   }
 
   free(tmp);
@@ -980,7 +1003,7 @@ char *hc_postfix_result(char *e)
   op2_i = m_apm_init();
 
   i = 0;
-  
+
   while (e[i]!=0)
   {
     if (!isspace(e[i]))
@@ -1901,23 +1924,21 @@ char *hc_postfix_result(char *e)
             j = strlen(tmp_num);
           }
         } else if (e[i]=='\'') { // lambda expression
-          char *lambda_expr = malloc(MAX_EXPR);
-          if (!lambda_expr) mem_error();
           char *lambda_end = strchr_outofblock((char *)(e + i + 1),'\'');
           if (!lambda_end)
           {
             hc_error(SYNTAX,"single quotes do not match");
             hc_postfix_result_cleanup();
-            free(lambda_expr);
             return NULL;
           }
           if (((char *)(lambda_end + 1))[0] != '(')
           {
             hc_error(SYNTAX,"( expected after lambda expression");
             hc_postfix_result_cleanup();
-            free(lambda_expr);
             return NULL;
           }
+          char *lambda_expr = malloc(lambda_end - e - i + 1);
+          if (!lambda_expr) mem_error();
           memcpy(lambda_expr,(char *)(e + i + 1),lambda_end - e - i - 1);
           lambda_expr[lambda_end - e - i - 1] = '\0';
           i = lambda_end - e + 1;
@@ -1962,7 +1983,8 @@ char *hc_postfix_result(char *e)
             return NULL;
           }
           char *v_name = malloc(MAX_V_NAME * sizeof(char));
-          char *f_expr = malloc(MAX_F_TMP * sizeof(char));
+          char *f_expr = malloc(MAX_EXPR * sizeof(char));
+          unsigned int f_expr_alloc = MAX_EXPR;
           if (!v_name || !f_expr)
             mem_error();
           f_expr[0] = '\0';
@@ -1985,6 +2007,11 @@ char *hc_postfix_result(char *e)
             int par = 1;
             while (par!=0 && e[i])
             {
+              if (ti >= f_expr_alloc) {
+                f_expr_alloc += MAX_EXPR;
+                f_expr = realloc(f_expr, f_expr_alloc);
+                if (!f_expr) mem_error();
+              }
               f_expr[ti++] = e[++i];
               if (e[i]=='\"')
               {
@@ -2000,6 +2027,11 @@ char *hc_postfix_result(char *e)
             }
             if (par == 0)
             {
+              if (ti >= f_expr_alloc) {
+                f_expr_alloc += MAX_EXPR;
+                f_expr = realloc(f_expr, f_expr_alloc);
+                if (!f_expr) mem_error();
+              }
               f_expr[ti] = '\0';
               i++; // skip the last ')'
             } else {
@@ -2129,17 +2161,9 @@ char *hc_plusminus(char *f)
     f = strreplace_(f," -"," _");
     free(f2);
   }
-  if (strlen(f)>=MAX_EXPR)
-  {
-    free(f);
-    overflow_error_nq();
-    return NULL;
-  }
-  char *e = malloc(MAX_EXPR);
+  char *e = f;
   if (!e)
     mem_error();
-  strcpy(e,f);
-  free(f);
 
   int i=0;
   int count=0;
@@ -2606,27 +2630,41 @@ void hc_load(char *fname_)
     error_nq("Error: Cannot open file.");
     return;
   }
-  char *expr = malloc(sizeof(char) * MAX_EXPR + sizeof(char));
+  unsigned int expr_alloc = MAX_EXPR + 1;
+  char *expr = malloc(expr_alloc);
   if (!expr)
     mem_error();
-  memset(expr,0,MAX_EXPR+1);
   unsigned int line = 1;
-  while (fgets(expr,MAX_EXPR+1,fr))
+  char end_of_line = FALSE;
+  while (fgets(expr,expr_alloc,fr))
   {
+    end_of_line = FALSE;
     if (strcmp(expr,"\n")==0)
       continue;
     if (expr[strlen(expr)-1]=='\n')
+    {
       expr[strlen(expr)-1]=0;
-    if (strlen(expr)>=MAX_EXPR)
-    {
-      overflow_error_nq();
-      break;
+      end_of_line = TRUE;
     }
-    while (!check_completeness(expr))
+    while (!end_of_line || !check_completeness(expr))
     {
-      if (!fgets(expr+strlen(expr)*sizeof(char),MAX_EXPR + 1 - strlen(expr),fr))
+      end_of_line = FALSE;
+      while (expr_alloc - strlen(expr) < MAX_EXPR)
+      {
+        expr_alloc += MAX_EXPR;
+        expr = realloc(expr, expr_alloc);
+      }
+      if (!fgets(expr+strlen(expr),expr_alloc - strlen(expr),fr))
         break;
-      line++;
+      if (expr[strlen(expr)-1]=='\n')
+      {
+        expr[strlen(expr)-1]=0;
+        end_of_line = TRUE;
+      }
+      if (end_of_line)
+        line++;
+      if (feof(fr))
+        end_of_line = TRUE;
     }
     char *fme = hc_result(expr);
     if (!fme)
