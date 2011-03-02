@@ -534,7 +534,7 @@ int hc_get_first_index(char **indexes, unsigned long *index)
 }
 
 
-char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_expr)
+char *hc_value(char *type, char *v_name, char *f_expr)
 {
   unsigned int v_hash = simple_hash(v_name);
 
@@ -548,8 +548,7 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       if (v_hash == hc_hashes[i])
       {
         *type = HC_VAR_NUM; // all hc constants are numbers
-        strcpy(result,(char *)hc_names[i][1] + strlen("cnst:") * sizeof(char));
-        return 1;
+        return strdup((char *)hc_names[i][1] + strlen("cnst:") * sizeof(char));
       }
     }
 
@@ -558,7 +557,7 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
     {
       if (var_tmp->type == HC_USR_VAR && var_tmp->hash == v_hash)
       {
-        strcpy(result,var_tmp->value);
+        char *result = strdup(var_tmp->value);
         if (is_num(result))
           *type = HC_VAR_NUM;
         else if (is_string(result))
@@ -567,9 +566,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
           *type = HC_VAR_VEC;
         else {
           notify("Invalid variable type. This is most likely a bug, please report it.\n");
-          return 0;
+          free(result);
+          return NULL;
         }
-        return 1;
+        return result;
       }
       var_tmp = var_tmp->next;
     }
@@ -1383,6 +1383,7 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       break;
     }
 
+    char *result = NULL;
     if (success)
     {
       if (*type == HC_VAR_NUM)
@@ -1397,77 +1398,38 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
           if (f_result_tmp_im[0]=='-')
             f_result_tmp_im[0] = '_';
           // re i im \0
-      if (strlen(f_result_tmp_re) + 1 + strlen(f_result_tmp_im) > MAXRESULT - 1)
-      {
-        hc_error(ERROR,"Overflow");
-        free(f_result_tmp_re);
-        free(f_result_tmp_im);
-            m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-        return 0;
-      }
-          strcpy(result,f_result_tmp_re);
-          strcat(result,"i");
-          strcat(result,f_result_tmp_im);
+          result = malloc(strlen(f_result_tmp_re) + 1 + strlen(f_result_tmp_im) + 1);
+          if (!result) mem_error();
+          sprintf(result,"%si%s", f_result_tmp_re, f_result_tmp_im);
           free(f_result_tmp_re); free(f_result_tmp_im);
         } else {
-      if (strlen(f_result_tmp_re) > MAXRESULT - 1)
-      {
-        hc_error(ERROR,"Overflow");
-        free(f_result_tmp_re);
-            m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-        return 0;
-      }
-          strcpy(result,f_result_tmp_re);
-          free(f_result_tmp_re);
+          result = f_result_tmp_re;
         }
       } else if (*type == HC_VAR_STR)
       {
-        if (strlen(f_result_str) > MAXRESULT - 1)
-        {
-          hc_error(ERROR,"Overflow");
-          free(f_result_str);
-          m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-          return 0;
-        }
-        strcpy(result,f_result_str);
-        free(f_result_str);
+        result = f_result_str;
       } else if (*type == HC_VAR_VEC) {
         if (!f_result_is_simplified)
         {
           char *newlist = list_simplify(f_result_str);
           if (newlist)
           {
-            if (strlen(newlist) > MAXRESULT - 1)
-            {
-              hc_error(ERROR,"Overflow");
-              free(f_result_str); free(newlist);
-              m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-              return 0;
-            }
-            strcpy(result,newlist);
-            free(f_result_str); free(newlist);
+            result = newlist;
+            free(f_result_str);
           } else {
             free(f_result_str); free(newlist);
             m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-            return 0;
+            return NULL;
           }
         } else {
-          if (strlen(f_result_str) > MAXRESULT - 1)
-          {
-            hc_error(ERROR,"Overflow");
-            free(f_result_str);
-            m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-            return 0;
-          }
-          strcpy(result,f_result_str);
-          free(f_result_str);
+          result = f_result_str;
         }
       } else if (*type == HC_VAR_EMPTY)
       {
-        strcpy(result,"");
+        result = strdup("");
       }
       m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
-      return 1;
+      return result;
     } else { // check if not a user-defined function
       m_apm_free(f_result_re); m_apm_free(f_result_im); m_apm_free(tmp_num_re); m_apm_free(tmp_num_im);
 
@@ -1498,15 +1460,14 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
           {
             arg_error_custom();
             free(t1); free(t2); free(res_expr);
-            return 0;
+            return NULL;
           } else {
             char *res_of_expr = hc_result_(res_expr);
             free(res_expr);
             if (!res_of_expr)
-              return 0;
+              return NULL;
             else {
-              strcpy(result,res_of_expr);
-              free(res_of_expr);
+              result = res_of_expr;
               if (is_num(result))
                 *type = HC_VAR_NUM;
               else if (is_string(result))
@@ -1517,9 +1478,10 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
         *type = HC_VAR_EMPTY;
           else {
                 notify("Invalid variable type. This is most likely a bug, please report it.\n");
-                return 0;
+                free(result);
+                return NULL;
               }
-              return 1;
+              return result;
             }
           }
         }
@@ -1527,7 +1489,7 @@ char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_exp
       }
 
       hc_error(ERROR, "Function %s is undefined.", v_name);
-      return 0;
+      return NULL;
     }
   }
 }

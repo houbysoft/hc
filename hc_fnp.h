@@ -21,6 +21,6 @@
 #define HC_FNP_H
 
 extern char *hc_map(char *);
-extern char hc_eval_lambda(char *result, int MAXRESULT, char *type, char *lambda, char *args);
+extern char *hc_eval_lambda(char *type, char *lambda, char *args);
 
 #endif

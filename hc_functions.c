@@ -2835,7 +2835,7 @@ char is_positive_int(char *str)
 }
 
 
-char hc_2dec(char base, char *in, int BUFSIZE)
+char *hc_2dec(char base, char *in)
 {
   int i = strlen(in)-1;
   int power = 0;
@@ -2870,13 +2870,8 @@ char hc_2dec(char base, char *in, int BUFSIZE)
     m_apm_divide(res,HC_DEC_PLACES,t2,t3);
   }
   char *tmp = m_apm_to_fixpt_stringexp(HC_DEC_PLACES, res, '.', 0, 0);
-  strncpy(in,tmp,BUFSIZE);
-  free(tmp);
   m_apm_free(t1); m_apm_free(t2); m_apm_free(t3); m_apm_free(res);
-  if (strlen(in)==BUFSIZE - 1)
-    return FALSE;
-  else
-    return TRUE;
+  return tmp;
 }
 
 

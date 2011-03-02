@@ -70,7 +70,7 @@ char *hc_map(char *e)
 }
 
 
-char hc_eval_lambda(char *result, int MAXRESULT, char *type, char *lambda, char *args)
+char *hc_eval_lambda(char *type, char *lambda, char *args)
 {
   unsigned int argc = 0;
   char *curarg = NULL;
@@ -81,7 +81,7 @@ char hc_eval_lambda(char *result, int MAXRESULT, char *type, char *lambda, char 
     {
       hc_error(ERROR,"Too many lambda arguments (maximum is %i).",MAX_LAMBDA_ARGS);
       free(curarg); free(lambda2); free(old);
-      return FAIL;
+      return NULL;
     }
     sprintf(old,"~%u",argc);
     lambda = strreplace(lambda2,old,curarg);
@@ -99,17 +99,8 @@ char hc_eval_lambda(char *result, int MAXRESULT, char *type, char *lambda, char 
   char *r = hc_result_(lambda2);
   free(lambda2);
   if (!r)
-    return FAIL;
+    return NULL;
 
-  if (strlen(r) >= MAXRESULT)
-  {
-    hc_error(ERROR,"Overflow");
-    free(r);
-    return FAIL;
-  }
-
-  strcpy(result,r);
-  *type = hc_get_type(result);
-  free(r);
-  return SUCCESS;
+  *type = hc_get_type(r);
+  return r;
 }

@@ -213,6 +213,6 @@ extern char *hc_exec_struct(char *);
 extern char hc_check_varname(char *);
 extern unsigned int simple_hash(char *p);
 extern char hc_is_predef(char *var);
-extern char hc_value(char *result, int MAXRESULT, char *type, char *v_name, char *f_expr);
+extern char *hc_value(char *type, char *v_name, char *f_expr);
 
 #endif

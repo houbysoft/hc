@@ -200,6 +200,7 @@ unsigned int simple_hash(char *p)
 #define isdigitb(c,b) ((b==16 && isxdigit(c)) || (b==2 && (c=='0' || c=='1')) || (b==10 && isdigit(c)))
 
 #define hc_postfix_result_cleanup() {m_apm_free(op1_r);m_apm_free(op1_i);m_apm_free(op2_r);m_apm_free(op2_i);free(op1_str);free(op2_str); while (first->n) {m_apm_free(first->re);m_apm_free(first->im);free(first->str);first = first->n;free(first->p);} m_apm_free(first->re);m_apm_free(first->im);free(first->str);free(first);free(tmp_num);}
+#define tmp_num_enlarge_buffer() {tmp_num_alloc += MAX_EXPR;tmp_num = realloc(tmp_num, tmp_num_alloc);if (!tmp_num) mem_error();}
 
 
 char *hc_i2p(char *f);
@@ -969,8 +970,8 @@ char *hc_postfix_result(char *e)
 
   char op1_type,op2_type;
   
-  char *tmp_num = malloc(MAX_EXPR); // this is used below, do not change
-  if (!tmp_num) mem_error();
+  char *tmp_num = NULL;
+  unsigned tmp_num_alloc = 0;
   int i=0,j=0;
   
   op1_r = m_apm_init();
@@ -1720,6 +1721,9 @@ char *hc_postfix_result(char *e)
         if (isdigit(e[i]) || e[i]=='.' || e[i]=='_')
         {
           type = HC_VAR_NUM;
+          tmp_num = malloc(MAX_EXPR);
+          if (!tmp_num) mem_error();
+          tmp_num_alloc = MAX_EXPR;
           char tmpsts = 0;
           int tmpe = 1;
           int tmpi = 1;
@@ -1780,6 +1784,7 @@ char *hc_postfix_result(char *e)
                   return NULL;
                 }
               }
+              if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
               tmp_num[j++] = e[i++];
             }
           } else { // base == 2 or base == 16
@@ -1799,31 +1804,44 @@ char *hc_postfix_result(char *e)
               } else {
                 if (e[i]=='.')
                   tmpsts = FALSE;
+                if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
                 tmp_num[j++] = e[i++];
               }
             }
+            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
             tmp_num[j] = '\0';
-            if (!hc_2dec(base,tmp_num,MAX_EXPR))
+            char *tmp_num2;
+            if (!(tmp_num2 = hc_2dec(base,tmp_num)))
             {
               hc_postfix_result_cleanup();
               return NULL;
             }
+            free(tmp_num);
+            tmp_num = tmp_num2;
             j = strlen(tmp_num);
           }
         } else if (e[i]=='\"') {
           type = HC_VAR_STR;
+          tmp_num = malloc(MAX_EXPR);
+          if (!tmp_num) mem_error();
+          tmp_num_alloc = MAX_EXPR;
           tmp_num[j++] = e[i++];
           while (e[i]!='\"' && e[i])
+          {
+            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
             tmp_num[j++] = e[i++];
+          }
           if (e[i] != '\"')
           {
             hc_postfix_result_cleanup();
             hc_error(SYNTAX,"missing end quotes");
             return NULL;
           }
+          if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
           tmp_num[j++] = e[i++];
           while (e[i]=='[') // index
           {
+            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
             tmp_num[j] = 0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -1836,6 +1854,9 @@ char *hc_postfix_result(char *e)
           type = HC_VAR_VEC;
           unsigned int pct = 1;
           char ignore = FALSE;
+          tmp_num_alloc = MAX_EXPR;
+          tmp_num = malloc(MAX_EXPR);
+          if (!tmp_num) mem_error();
           tmp_num[j++] = e[i++];
           while (pct!=0 && e[i])
           {
@@ -1847,6 +1868,7 @@ char *hc_postfix_result(char *e)
               pct++;
             if (e[i]==']' && !ignore)
               pct--;
+            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
             tmp_num[j++] = e[i++];
           }
           if (pct!=0)
@@ -1854,23 +1876,22 @@ char *hc_postfix_result(char *e)
             hc_postfix_result_cleanup();
             return NULL;
           }
+          if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
           tmp_num[j]=0;
           char *newlist = list_simplify(tmp_num);
           if (!newlist)
           {
             hc_postfix_result_cleanup();
             return NULL;
-          } else if (strlen(newlist) < MAX_EXPR)
-          {
-            strcpy(tmp_num,newlist);
-            free(newlist);
           } else {
-            hc_postfix_result_cleanup();
-            overflow_error();
+            free(tmp_num);
+            tmp_num = newlist;
+            tmp_num_alloc = strlen(tmp_num) + 1;
           }
           j = strlen(tmp_num);
           while (e[i]=='[') // index
           {
+            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
             tmp_num[j]=0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -1912,7 +1933,7 @@ char *hc_postfix_result(char *e)
           memcpy(args,(char *)(e + i + 1),args_end - e - i - 1);
           args[args_end - e - i - 1] = '\0';
           i = args_end - e + 1;
-          if (!hc_eval_lambda(tmp_num, MAX_EXPR, &type, lambda_expr, args))
+          if (!(tmp_num = hc_eval_lambda(&type, lambda_expr, args)))
           {
             free(lambda_expr); free(args);
             hc_postfix_result_cleanup();
@@ -1920,8 +1941,10 @@ char *hc_postfix_result(char *e)
           }
           free(lambda_expr); free(args);
           j = strlen(tmp_num);
+          tmp_num_alloc = j + 1;
           while (e[i]=='[')
           {
+            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
             tmp_num[j]=0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -1986,7 +2009,7 @@ char *hc_postfix_result(char *e)
               return NULL;
             }
           }
-          if (!hc_value(tmp_num, MAX_EXPR, &type, v_name, f_expr))
+          if (!(tmp_num = hc_value(&type, v_name, f_expr)))
           {
             free(v_name); free(f_expr);
             hc_postfix_result_cleanup();
@@ -1994,8 +2017,10 @@ char *hc_postfix_result(char *e)
           }
           free(v_name); free(f_expr);
           j = strlen(tmp_num);
+          tmp_num_alloc = j + 1;
           while (e[i]=='[')
           {
+            if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
             tmp_num[j]=0;
             if (!hc_get_by_index(tmp_num,&type,e,&i))
             {
@@ -2007,7 +2032,8 @@ char *hc_postfix_result(char *e)
           j = strlen(tmp_num);
         }
         i--;
-        tmp_num[j]=0;
+        if (j >= tmp_num_alloc) { tmp_num_enlarge_buffer(); }
+        tmp_num[j]=0; // continue here
         curr->type = type;
         if (curr->type == HC_VAR_NUM)
         {
@@ -2027,16 +2053,19 @@ char *hc_postfix_result(char *e)
           } else {
             m_apm_set_string(curr->im,"0"); // set null imaginary part
           }
+          free(tmp_num);
         } else if (curr->type == HC_VAR_STR)
         {
-          curr->str = strdup(tmp_num);
+          curr->str = tmp_num;
         } else if (curr->type == HC_VAR_VEC)
         {
-          curr->str = strdup(tmp_num);
+          curr->str = tmp_num;
         } else if (curr->type == HC_VAR_EMPTY)
         {
-          curr->str = strdup(tmp_num);
+          curr->str = tmp_num;
         }
+        tmp_num = NULL;
+        tmp_num_alloc = 0;
         if (curr->n == NULL)
         {
           curr->n = malloc(sizeof(struct hc_stack_element));
