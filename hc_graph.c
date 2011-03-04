@@ -28,6 +28,7 @@
 #include "hc_graph.h"
 #include "hc_complex.h"
 #include "hc_list.h"
+#include "hc_utils.h"
 
 
 #define HC_GRAPH_POINTS 300

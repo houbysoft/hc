@@ -23,6 +23,7 @@
 #include "hc.h"
 #include "hc_functions.h"
 #include "hash.h"
+#include "hc_utils.h"
 
 
 inline char *allocline(char *line)

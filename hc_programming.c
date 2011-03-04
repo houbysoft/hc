@@ -26,6 +26,7 @@
 #include "hc_functions.h"
 #include "hc.h"
 #include "hc_programming.h"
+#include "hc_utils.h"
 
 
 #define return_result(r) {\

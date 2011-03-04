@@ -849,7 +849,7 @@ char *hc_value(char *type, char *v_name, char *f_expr)
 
     case HASH_LN:
       fme = hc_result_(f_expr);
-      if (!fme) { m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      if (!fme) {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
             tmp_ri = hc_real_part(fme);
       m_apm_set_string(tmp_num_re,tmp_ri);
       free(tmp_ri);
@@ -861,6 +861,11 @@ char *hc_value(char *type, char *v_name, char *f_expr)
         free(tmp_ri);
       } else {
         m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_re,MM_Zero) == 0 && m_apm_compare(tmp_num_im,MM_Zero) == 0)
+      {
+        hc_error(ARG, "ln(0) - negative infinity result encountered");
+        {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       }
       m_apmc_log(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;
@@ -884,6 +889,11 @@ char *hc_value(char *type, char *v_name, char *f_expr)
         free(tmp_ri);
       } else {
         m_apm_set_string(tmp_num_im,"0");
+      }
+      if (m_apm_compare(tmp_num_re,MM_Zero) == 0 && m_apm_compare(tmp_num_im,MM_Zero) == 0)
+      {
+        hc_error(ARG, "ln(0) - negative infinity result encountered");
+        {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       }
       m_apmc_log10(f_result_re,f_result_im,HC_DEC_PLACES,tmp_num_re,tmp_num_im);
       break;

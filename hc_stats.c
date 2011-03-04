@@ -26,6 +26,7 @@
 #include "hc_complex.h"
 #include "hc_graph.h"
 #include "hc_list.h"
+#include "hc_utils.h"
 #ifdef HCG_E
 #undef notify
 #endif

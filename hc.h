@@ -57,11 +57,10 @@
 #else
 #define d0_error() {if (!graphing_ignore_errors){notify_error("Division by zero error.\n");}}
 #endif
+#define arg_error(str) {if (!graphing_ignore_errors){hc_error(ARG, str);}return FAIL;}
 #ifndef HCG_E
-#define arg_error(str) {if (!graphing_ignore_errors){printf("Argument Error : %s\n",str);}return FAIL;}
 #define arg_error_custom() {printf("User-defined function argument error.\n");}
 #else
-#define arg_error(str) {if (!graphing_ignore_errors){char *tmp = malloc(strlen(str)+strlen("Argument Error : \n")+1);if (!tmp) mem_error();sprintf(tmp,"Argument Error : %s\n",str);notify_error(tmp);free(tmp);}return FAIL;}
 #define arg_error_custom() {notify_error("User-defined function argument error.\n");}
 #endif
 #ifndef HCG_E

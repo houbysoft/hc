@@ -23,7 +23,7 @@
 #include <m_apm.h>
 
 typedef enum {
-  SYNTAX, NOT_ENOUGH_OPERANDS, TYPE, LOAD, WARNING, ERROR
+  SYNTAX, NOT_ENOUGH_OPERANDS, TYPE, LOAD, ARG, WARNING, ERROR
 } HC_ERRORS;
 
 extern void hc_error(char type, char *xformat, ...);

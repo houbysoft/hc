@@ -59,6 +59,12 @@ void hc_error(char type, char *xformat, ...)
     sprintf(format,"Load Error : %s",xformat);
     break;
 
+  case ARG:
+    format = malloc(strlen("Argument Error : ")+strlen(xformat)+1);
+    if (!format) mem_error();
+    sprintf(format,"Argument Error : %s",xformat);
+    break;
+
   case WARNING:
     format = malloc(strlen("Warning : ")+strlen(xformat)+1);
     if (!format) mem_error();
