@@ -33,6 +33,7 @@ HCGCore::HCGCore() : QObject() {
 #ifdef WIN32
   try_update = bool(hc.autoupdate);
 #endif
+  warn_precision = true;
 }
 
 
@@ -128,6 +129,18 @@ bool HCGCore::tryUpdate()
   if (try_update)
   {
     try_update = 0;
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
+
+
+bool HCGCore::warnPrecision()
+{
+  if (warn_precision)
+  {
+    warn_precision = 0;
     return TRUE;
   } else {
     return FALSE;

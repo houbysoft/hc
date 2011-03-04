@@ -2238,9 +2238,9 @@ void hc_process_direction(char *d)
     break;
   case HASH_PRECISION:
   case HASH_P:
-    if (atoi(&d[i+1]) < 0)
+    if (atoi(&d[i+1]) <= 0)
     {
-      error_nq("Precision needs to be zero or a positive number.");
+      error_nq("Precision needs to be a positive number.");
       break;
     }
     hc.precision = atoi(&d[i+1]);

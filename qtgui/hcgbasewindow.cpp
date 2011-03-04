@@ -179,6 +179,10 @@ void HCGBaseWindow::setPrecision(int precision)
 {
   prec_spinbox->blockSignals(true);
   prec_spinbox->setValue(precision);
+  if (precision > 1000 && hcgcore->warnPrecision())
+  {
+    notify_error_slot("Warning : Precision has been set at a value higher than 1000 digits; some calculations may be slower.");
+  }
   prec_spinbox->blockSignals(false);
 }
 
@@ -251,7 +255,7 @@ void HCGBaseWindow::createOptionMenu() {
   QMenu *prec_menu = optmenu->addMenu("Precision digits");
   QWidgetAction *prec = new QWidgetAction(prec_menu);
   prec_spinbox = new QSpinBox(prec_menu);
-  prec_spinbox->setMinimum(1); prec_spinbox->setMaximum(8192);
+  prec_spinbox->setRange(1, 100000);
   connect(prec_spinbox, SIGNAL(valueChanged(int)), hcgcore, SLOT(setPrecision(int)));
   prec->setDefaultWidget(prec_spinbox);
   prec_menu->addAction(prec);

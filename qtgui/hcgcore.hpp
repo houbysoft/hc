@@ -39,6 +39,7 @@ class HCGCore : public QObject {
 #ifdef WIN32
   bool tryUpdate();
 #endif
+  bool warnPrecision();
 
   public slots:
   void setPrecision(int precision);
@@ -54,6 +55,7 @@ class HCGCore : public QObject {
 #ifdef WIN32
   bool try_update;
 #endif
+  bool warn_precision;
 
 
   signals:
