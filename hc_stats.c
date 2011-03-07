@@ -136,7 +136,7 @@ char hc_stats(char *f, char g)
       tmp_num_re = hc_real_part(tmp_res_eff);
       tmp_num_im = hc_imag_part(tmp_res_eff);
       free(tmp_res_eff);
-      if (tmp_num_im)
+      if (tmp_num_im || !is_int(tmp_num_re))
       {
 	free(tmp_num_re); free(tmp_num_im);
 	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
@@ -148,6 +148,7 @@ char hc_stats(char *f, char g)
 	}
 	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
 	free(first);
+        hc_error(ARG, "stats() : coefficients must be positive integers");
 	return FAIL;
       }
       m_apm_set_string(curr->ef,tmp_num_re);
