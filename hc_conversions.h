@@ -17,21 +17,18 @@
 /*     <http://www.gnu.org/licenses/>.                                        */
 
 
-#ifndef HC_NAMES_H
-#define HC_NAMES_H
+#include <m_apm.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-#define HC_NAMES 113 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 85 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 91 // last field with a constant in the hc_names array
+#ifndef HC_CONVERSIONS_H
+#define HC_CONVERSIONS_H
 
-extern const char *hc_names[][5];
+#define MAX_CONVERSION_FIELDS 10
+#define HC_CONVERSIONS_BASE_UNIT 1
+#define HC_CONVERSIONS_NORMAL_UNIT 2
 
-#ifdef __cplusplus
-}
-#endif
+extern const char *hc_conversions[][MAX_CONVERSION_FIELDS];
+extern const char *hc_conversions_basenames[][MAX_CONVERSION_FIELDS];
+extern int hc_convert(M_APM result, char *e);
 
 #endif

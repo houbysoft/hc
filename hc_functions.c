@@ -868,48 +868,6 @@ int hc_fibo(M_APM result, char *e)
 }
 
 
-int hc_lbs2kg(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("lbstokg() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL) return FAIL;
-  if (!is_real_num(fme)) {
-    free(fme);
-        arg_error("lbstokg() : argument must be a real number.");
-  }
-  M_APM a = m_apm_init();
-  M_APM b = m_apm_init();
-  m_apm_set_string(a,fme);
-  m_apm_set_string(b,"2.20462262185");
-  m_apm_divide(result,HC_DEC_PLACES,a,b);
-
-  free(fme); m_apm_free(a); m_apm_free(b);
-  return SUCCESS;
-}
-
-
-int hc_kg2lbs(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("kgtolbs() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL) return FAIL;
-  if (!is_real_num(fme)) {
-    free(fme);
-        arg_error("kgtolbs() : argument must be a real number.");
-  }
-  M_APM a = m_apm_init();
-  M_APM b = m_apm_init();
-  m_apm_set_string(a,fme);
-  m_apm_set_string(b,"2.20462262185");
-  m_apm_multiply(result,a,b);
-
-  free(fme); m_apm_free(a); m_apm_free(b);
-  return SUCCESS;
-}
-
-
 int hc_f2c(M_APM result, char *e)
 {
   if (strlen(e)==0)
@@ -1192,56 +1150,6 @@ int hc_cm2inch(M_APM result, char *e)
 
   m_apm_set_string(tmp,fme);
   m_apm_set_string(x,"2.54");
-  m_apm_divide(result,HC_DEC_PLACES,tmp,x);
-
-  m_apm_free(x); m_apm_free(tmp); free(fme);
-  return SUCCESS;
-}
-
-
-int hc_ft2m(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("fttom() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL)
-    return FAIL;
-  char *ipart = hc_imag_part(fme);
-  if (ipart)
-  {
-    free(ipart); free(fme);
-    arg_error("fttom() : argument must be a real number.");
-  }
-  M_APM tmp = m_apm_init();
-  M_APM x = m_apm_init();
-
-  m_apm_set_string(tmp,fme);
-  m_apm_set_string(x,"0.3048");
-  m_apm_multiply(result,tmp,x);
-
-  m_apm_free(x); m_apm_free(tmp); free(fme);
-  return SUCCESS;
-}
-
-
-int hc_m2ft(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("mtoft() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL)
-    return FAIL;
-  char *ipart = hc_imag_part(fme);
-  if (ipart)
-  {
-    free(ipart); free(fme);
-    arg_error("mtoft() : argument must be a real number.");
-  }
-  M_APM tmp = m_apm_init();
-  M_APM x = m_apm_init();
-
-  m_apm_set_string(tmp,fme);
-  m_apm_set_string(x,"0.3048");
   m_apm_divide(result,HC_DEC_PLACES,tmp,x);
 
   m_apm_free(x); m_apm_free(tmp); free(fme);

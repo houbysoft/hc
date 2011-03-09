@@ -24,6 +24,7 @@
 #include "m_apmc.h"
 #include "hc_names.h"
 #include "hc_info.h"
+#include "hc_utils.h"
 #ifndef HCG_E
 #include <readline/readline.h>
 #endif

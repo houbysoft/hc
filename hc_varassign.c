@@ -34,6 +34,7 @@
 #include "hc_programming.h"
 #include "hc_utils.h"
 #include "hc_fnp.h"
+#include "hc_conversions.h"
 
 
 struct hc_ventry *hc_var_first;
@@ -1140,6 +1141,11 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
+    case HASH_CONVERT:
+      if (hc_convert(f_result_re,f_expr) == FAIL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
     case HASH_CHARTOCODE:
       if (hc_char2code(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
@@ -1168,16 +1174,6 @@ char *hc_value(char *type, char *v_name, char *f_expr)
 
     case HASH_KTOC:
       if (hc_k2c(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_LBSTOKG:
-      if (hc_lbs2kg(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_KGTOLBS:
-      if (hc_kg2lbs(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
@@ -1218,16 +1214,6 @@ char *hc_value(char *type, char *v_name, char *f_expr)
 
     case HASH_CMTOINCH:
       if (hc_cm2inch(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_FTTOM:
-      if (hc_ft2m(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_MTOFT:
-      if (hc_m2ft(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
