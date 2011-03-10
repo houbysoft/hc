@@ -27,13 +27,19 @@
 /* hc_conversions fields
  * ---------------------
  * [x][0] : base unit type
- * [x][1] : factor (ie. factor * 1 base_unit = 1 output unit)
+ * [x][1] : factor (ie. 1 base_unit = factor output units)
  * [x][2] : output unit name 
  * [x][3 to MAX_CONVERSION_FIELDS-1] : synonyms for the output unit name. Last entry is always NULL.
  */
-#define HC_CONVERSIONS 2
+#define HC_CONVERSIONS 8
 const char *hc_conversions[][MAX_CONVERSION_FIELDS] = {
   {"length", "(1/0.3048)", "feet", "ft", NULL},
+  {"length", "1000", "milimeters", "mm", NULL},
+  {"length", "100", "centimeters", "cm", NULL},
+  {"length", "10", "decimeters", "dm", NULL},
+  {"length", "0.001", "kilometers", "km", NULL},
+  {"length", "0.000621371192", "miles", "mi", NULL},
+  {"length", "(1/0.0254)", "inches", "inch", NULL},
   {"weight", "2.20462262185", "pounds", "lbs", NULL},
 };
 

@@ -1011,52 +1011,6 @@ int hc_k2f(M_APM result, char *e)
 }
 
 
-int hc_km2mi(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("kmtomi() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL)
-    return FAIL;
-  char *ipart = hc_imag_part(fme);
-  if (ipart)
-  {
-    free(ipart); free(fme);
-    arg_error("kmtomi() : argument must be a real number.");
-  }
-  M_APM tmp = m_apm_init();
-  M_APM x = m_apm_init();
-  m_apm_set_string(x,"0.621371192"); // Source : Google calculator
-  m_apm_set_string(tmp,fme);
-  m_apm_multiply(result,tmp,x);
-  m_apm_free(x); m_apm_free(tmp); free(fme);
-  return SUCCESS;
-}
-
-
-int hc_mi2km(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("mitokm() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL)
-    return FAIL;
-  char *ipart = hc_imag_part(fme);
-  if (ipart)
-  {
-    free(ipart); free(fme);
-    arg_error("mitokm() : argument must be a real number.");
-  }
-  M_APM tmp = m_apm_init();
-  M_APM x = m_apm_init();
-  m_apm_set_string(x,"0.621371192"); // Source : Google calculator
-  m_apm_set_string(tmp,fme);
-  m_apm_divide(result,HC_DEC_PLACES,tmp,x);
-  m_apm_free(x); m_apm_free(tmp); free(fme);
-  return SUCCESS;
-}
-
-
 int hc_floz2ml(M_APM result, char *e)
 {
   if (strlen(e)==0)
@@ -1100,56 +1054,6 @@ int hc_ml2floz(M_APM result, char *e)
 
   m_apm_set_string(tmp,fme);
   m_apm_set_string(x,"29.5735296875");
-  m_apm_divide(result,HC_DEC_PLACES,tmp,x);
-
-  m_apm_free(x); m_apm_free(tmp); free(fme);
-  return SUCCESS;
-}
-
-
-int hc_inch2cm(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("inchtocm() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL)
-    return FAIL;
-  char *ipart = hc_imag_part(fme);
-  if (ipart)
-  {
-    free(ipart); free(fme);
-    arg_error("inchtocm() : argument must be a real number.");
-  }
-  M_APM tmp = m_apm_init();
-  M_APM x = m_apm_init();
-
-  m_apm_set_string(tmp,fme);
-  m_apm_set_string(x,"2.54");
-  m_apm_multiply(result,tmp,x);
-
-  m_apm_free(x); m_apm_free(tmp); free(fme);
-  return SUCCESS;
-}
-
-
-int hc_cm2inch(M_APM result, char *e)
-{
-  if (strlen(e)==0)
-    arg_error("cmtoinch() needs an argument.");
-  char *fme = hc_result_(e);
-  if (fme == NULL)
-    return FAIL;
-  char *ipart = hc_imag_part(fme);
-  if (ipart)
-  {
-    free(ipart); free(fme);
-    arg_error("cmtoinch() : argument must be a real number.");
-  }
-  M_APM tmp = m_apm_init();
-  M_APM x = m_apm_init();
-
-  m_apm_set_string(tmp,fme);
-  m_apm_set_string(x,"2.54");
   m_apm_divide(result,HC_DEC_PLACES,tmp,x);
 
   m_apm_free(x); m_apm_free(tmp); free(fme);
