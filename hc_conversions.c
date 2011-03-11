@@ -31,7 +31,7 @@
  * [x][2] : output unit name 
  * [x][3 to MAX_CONVERSION_FIELDS-1] : synonyms for the output unit name. Last entry is always NULL.
  */
-#define HC_CONVERSIONS 8
+#define HC_CONVERSIONS 11
 const char *hc_conversions[][MAX_CONVERSION_FIELDS] = {
   {"length", "(1/0.3048)", "feet", "ft", NULL},
   {"length", "1000", "milimeters", "mm", NULL},
@@ -41,6 +41,9 @@ const char *hc_conversions[][MAX_CONVERSION_FIELDS] = {
   {"length", "0.000621371192", "miles", "mi", NULL},
   {"length", "(1/0.0254)", "inches", "inch", NULL},
   {"weight", "2.20462262185", "pounds", "lbs", NULL},
+  {"volume", "1000", "liters", "L", NULL},
+  {"volume", "1000000", "mililiters", "mL", NULL},
+  {"volume", "(1000000*(1/29.5735296875))", "US fluid ounces", "fl oz", "floz", "fluid ounces", NULL}
 };
 
 /* hc_conversions_basenames fields
@@ -48,10 +51,11 @@ const char *hc_conversions[][MAX_CONVERSION_FIELDS] = {
  * [x][0] : base unit type
  * [x][1 to MAX_CONVERSION_FIELDS-1] : synonyms for the base unit name. Last entry is always NULL.
  */
-#define HC_CONVERSIONS_BASENAMES 2
+#define HC_CONVERSIONS_BASENAMES 3
 const char *hc_conversions_basenames[][MAX_CONVERSION_FIELDS] = {
   {"length", "meters", "m", NULL},
-  {"weight", "kilograms", "kg", NULL}
+  {"weight", "kilograms", "kg", NULL},
+  {"volume", "cubic meters", "m^3", NULL}
 };
 
 

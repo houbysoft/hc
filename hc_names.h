@@ -24,9 +24,9 @@
 extern "C" {
 #endif
 
-#define HC_NAMES 109 // number of fields in the hc_names array
-#define HC_NAMES_CNST_START 81 // first field with a constant in the hc_names array
-#define HC_NAMES_CNST_STOP 87 // last field with a constant in the hc_names array
+#define HC_NAMES 107 // number of fields in the hc_names array
+#define HC_NAMES_CNST_START 79 // first field with a constant in the hc_names array
+#define HC_NAMES_CNST_STOP 85 // last field with a constant in the hc_names array
 
 extern const char *hc_names[][5];
 

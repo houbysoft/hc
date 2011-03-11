@@ -1187,16 +1187,6 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
-    case HASH_MLTOFLOZ:
-      if (hc_ml2floz(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_FLOZTOML:
-      if (hc_floz2ml(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
     case HASH_NCR:
       if (hc_binomc(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
