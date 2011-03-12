@@ -708,16 +708,17 @@ char *hc_i2p(char *f)
 
             States
             ------
-            0 : at the beginning of the scan, or after an 'e', or after an 'i'
+            0 : at the beginning of the scan, or after an 'i'
             1 : after a number, allowing for a decimal point
             2 : after a number or a decimal point, not allowing for a decimal point
             3 : after a negative sign
+            4 : after an 'e'
            */
           if (base == 10)
           {
             while ((!isspace(tmp[i]))&&(!isoperator(tmp[i]) || (i!=0 && tolower(tmp[i-1])=='e') || tmp[i]=='_'))
             {
-              if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')))
+              if (((tmpsts == 0) && (!isdigit(tmp[i]) && tmp[i]!='.' && tmp[i]!='_' && tmp[i]!='-')) || ((tmpsts == 1) && (!isdigit(tmp[i]) && tmp[i]!='.' && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 2) && (!isdigit(tmp[i]) && tolower(tmp[i])!='e' && tolower(tmp[i])!='i')) || ((tmpsts == 3) && (!isdigit(tmp[i]) && tmp[i]!='.')) || ((tmpsts == 4) && (!isdigit(tmp[i]) && tmp[i]!='-' && tmp[i]!='+')))
               {
                 hc_error(SYNTAX,"invalid number encountered");
                 free(e); free(tmp);
@@ -725,7 +726,7 @@ char *hc_i2p(char *f)
               }
               if (tolower(tmp[i]) == 'e')
               {
-                tmpsts = 0;
+                tmpsts = 4;
                 tmpe--;
               } else if (tolower(tmp[i]) == 'i')
               {
@@ -1747,10 +1748,11 @@ char *hc_postfix_result(char *e)
 
             States
             ------
-            0 : at the beginning of the scan, or after an 'e', or after an 'i'
+            0 : at the beginning of the scan, or after an 'i'
             1 : after a number, allowing for a decimal point
             2 : after a number or a decimal point, not allowing for a decimal point
             3 : after a negative sign
+            4 : after an 'e'
            */
           if (base == 10)
           {
@@ -1758,14 +1760,14 @@ char *hc_postfix_result(char *e)
             {
               if (hc.rpn) // otherwise, this has already been checked by hc_i2p()
               {
-                if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')))
+                if (((tmpsts == 0) && (!isdigit(e[i]) && e[i]!='.' && e[i]!='_' && e[i]!='-')) || ((tmpsts == 1) && (!isdigit(e[i]) && e[i]!='.' && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 2) && (!isdigit(e[i]) && tolower(e[i])!='e' && tolower(e[i])!='i')) || ((tmpsts == 3) && (!isdigit(e[i]) && e[i]!='.')) || ((tmpsts == 4) && (!isdigit(e[i]) && e[i]!='-' && e[i]!='+')))
                 {
                   hc_postfix_result_cleanup();
                   return NULL;
                 }
                 if (tolower(e[i]) == 'e')
                 {
-                  tmpsts = 0;
+                  tmpsts = 4;
                   tmpe--;
                 } else if (tolower(e[i]) == 'i')
                 {

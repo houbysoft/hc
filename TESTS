@@ -86,4 +86,6 @@ test("complex powers",ceil(imag((-2)^(9.5))) == -724)
 test("the gamma function",gamma(2.5i-3.4) == -0.1499930329649253i0.0322288112273389)
 test("the gamma function 2", gamma(-4.5i4.2) == -6.89196923e-7i-8.597672133e-7)
 
+test("convert() K to F", convert(32.67, "K", "F") == -400 - .864)
+
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")
