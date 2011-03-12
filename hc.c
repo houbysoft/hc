@@ -62,7 +62,7 @@ const char *hc_names[][5] = {
   {"chartocode","func:x","Conversions","converts a character to its ASCII code","converts x, a single-character string, to its ASCII code. For example, to get the ascii value of an uppercase A, type chartocode(\"A\")"},
   {"clear","func:var","Functions/Misc","clears variable named var","clears (undefines) var. You can also use \\clear to clear (undefine) all user-defined variables and functions."},
   {"codetochar","func:x","Conversions","converts an ASCII code to a character","converts x, an ASCII code, to the corresponding character. For example, codetochar(65) will return \"A\"."},
-  {"convert","func:x,in_unit,out_unit","Conversions","converts x in_units to out_units","TODO"},
+  {"convert","func:x,in_unit,out_unit","Conversions","converts x in_units to out_units","Converts x in_units to out_units. You can also just type convert() without arguments, and it will print the supported units on the console. Example:\n    - say you want to convert 20 centimeters into feet; type convert(20, \"centimeters\", \"feet\"). Note that synonyms like \"cm\" instead of \"centimeters\" can also be used."},
   {"cos","func:x","Functions/Trigonometry","cosine of x",""},
   {"cosh","func:x","Functions/Trigonometry","hyperbolic cosine of x",""},
   {"count","func:list,x","Functions/Misc", "number of occurences of x in list",""},

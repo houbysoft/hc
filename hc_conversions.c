@@ -19,6 +19,7 @@
 
 #include <m_apm.h>
 #include <stdlib.h>
+#include <string.h>
 #include "hc.h"
 #include "hc_conversions.h"
 #include "hc_functions.h"
@@ -63,15 +64,23 @@ const char *hc_conversions_basenames[HC_CONVERSIONS_BASENAMES][MAX_CONVERSION_FI
 };
 
 
+void hc_convert_showunits();
+
+
 int hc_convert(M_APM result, char *e)
 {
   char *qty = hc_get_arg_r(e,1);
   char *in_unit1 = hc_get_arg_r(e,2);
   char *out_unit1 = hc_get_arg_r(e,3);
+  if ((!qty || !strlen(qty))&& !in_unit1 && !out_unit1)
+  {
+    hc_convert_showunits();
+    return SUCCESS;
+  }
   if (!qty || !is_num(qty) || !in_unit1 || !is_string(in_unit1) || !out_unit1 || !is_string(out_unit1))
   {
     free(qty); free(in_unit1); free(out_unit1);
-    arg_error("convert() : three arguments are required : x, in_unit, and out_unit. See help(\"convert\") for details.");
+    arg_error("convert() : three arguments are required : x, in_unit, and out_unit. Or, just call convert() to get a list of supported units. See help(\"convert\") for details.");
   }
   char *in_unit = get_string(strip_spaces(in_unit1));
   char *out_unit = get_string(strip_spaces(out_unit1));
@@ -204,4 +213,31 @@ int hc_convert(M_APM result, char *e)
 
   free(qty); free(in_unit); free(out_unit);
   return SUCCESS;
+}
+
+
+void hc_convert_showunits()
+{
+  unsigned int i=0;
+  notify_console("Supported units (synonyms also listed): \n");
+  for (; i < HC_CONVERSIONS; i++)
+  {
+    unsigned int j = HC_CONVERSIONS_NAME_START_IDX;
+    while (hc_conversions[i][j])
+    {
+      notify_console((char *)hc_conversions[i][j]);
+      notify_console(" ");
+      j++;
+    }
+  }
+  for (; i < HC_CONVERSIONS_BASENAMES; i++)
+  {
+    unsigned int j = 1;
+    while (hc_conversions_basenames[i][j])
+    {
+      notify_console((char *)hc_conversions_basenames[i][j]);
+      notify_console(" ");
+      j++;
+    }
+  }
 }
