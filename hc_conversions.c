@@ -27,12 +27,13 @@
 /* hc_conversions fields
  * ---------------------
  * [x][0] : base unit type
- * [x][1] : factor (ie. 1 base_unit = factor output units)
+ * [x][1] : factor (ie. 1 base_unit = factor output units), except for temperature
  * [x][2] : output unit name 
  * [x][3 to MAX_CONVERSION_FIELDS-1] : synonyms for the output unit name. Last entry is always NULL.
  */
-#define HC_CONVERSIONS 11
-const char *hc_conversions[][MAX_CONVERSION_FIELDS] = {
+#define HC_CONVERSIONS 14
+#define HC_CONVERSIONS_NAME_START_IDX 2
+const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"length", "(1/0.3048)", "feet", "ft", NULL},
   {"length", "1000", "milimeters", "mm", NULL},
   {"length", "100", "centimeters", "cm", NULL},
@@ -42,8 +43,11 @@ const char *hc_conversions[][MAX_CONVERSION_FIELDS] = {
   {"length", "(1/0.0254)", "inches", "inch", NULL},
   {"weight", "2.20462262185", "pounds", "lbs", NULL},
   {"volume", "1000", "liters", "L", NULL},
-  {"volume", "1000000", "mililiters", "mL", NULL},
-  {"volume", "(1000000*(1/29.5735296875))", "US fluid ounces", "fl oz", "floz", "fluid ounces", NULL}
+  {"volume", "1000000", "mililiters", "mL", "ml", NULL},
+  {"volume", "(1000000*(1/29.5735296875))", "US fluid ounces", "fl oz", "floz", "fluid ounces", NULL},
+  {"temperature", "", "C", "degree Celsius", "Celsius", NULL},
+  {"temperature", "", "F", "degree Fahrenheit", "Fahrenheit", NULL},
+  {"temperature", "", "K", "degree Kelvin", "Kelvin", NULL}
 };
 
 /* hc_conversions_basenames fields
@@ -52,7 +56,7 @@ const char *hc_conversions[][MAX_CONVERSION_FIELDS] = {
  * [x][1 to MAX_CONVERSION_FIELDS-1] : synonyms for the base unit name. Last entry is always NULL.
  */
 #define HC_CONVERSIONS_BASENAMES 3
-const char *hc_conversions_basenames[][MAX_CONVERSION_FIELDS] = {
+const char *hc_conversions_basenames[HC_CONVERSIONS_BASENAMES][MAX_CONVERSION_FIELDS] = {
   {"length", "meters", "m", NULL},
   {"weight", "kilograms", "kg", NULL},
   {"volume", "cubic meters", "m^3", NULL}
@@ -81,7 +85,7 @@ int hc_convert(M_APM result, char *e)
   {
     if (!found_in_unit_idx)
     {
-      j = 2;
+      j = HC_CONVERSIONS_NAME_START_IDX;
       while (!found_in_unit_idx && hc_conversions[i][j]) {
         if (strcmp(in_unit, hc_conversions[i][j]) == 0)
         {
@@ -94,7 +98,7 @@ int hc_convert(M_APM result, char *e)
     }
     if (!found_out_unit_idx)
     {
-      j = 2;
+      j = HC_CONVERSIONS_NAME_START_IDX;
       while (!found_out_unit_idx && hc_conversions[i][j]) {
         if (strcmp(out_unit, hc_conversions[i][j]) == 0)
         {
@@ -167,6 +171,28 @@ int hc_convert(M_APM result, char *e)
     if (strcmp(hc_conversions[out_unit_idx][0],hc_conversions[in_unit_idx][0]) != 0) {
       free(qty); free(in_unit); free(out_unit);
       arg_error("convert() : incompatible units");
+    } else if (strcmp(hc_conversions[out_unit_idx][0], "temperature") == 0) {
+      int ret = FAIL;
+      if (strcmp(hc_conversions[in_unit_idx][2], "C") == 0) {
+        if (strcmp(hc_conversions[out_unit_idx][2], "F") == 0) {
+          ret = hc_c2f(result, qty);
+        } else if (strcmp(hc_conversions[out_unit_idx][2], "K") == 0) {
+          ret = hc_c2k(result, qty);
+        }
+      } else if (strcmp(hc_conversions[in_unit_idx][2], "F") == 0) {
+        if (strcmp(hc_conversions[out_unit_idx][2], "C") == 0) {
+          ret = hc_f2c(result, qty);
+        } else if (strcmp(hc_conversions[out_unit_idx][2], "K") == 0) {
+          ret = hc_f2k(result, qty);
+        }
+      } else if (strcmp(hc_conversions[in_unit_idx][2], "K") == 0) {
+        if (strcmp(hc_conversions[out_unit_idx][2], "C") == 0) {
+          ret = hc_k2c(result, qty);
+        } else if (strcmp(hc_conversions[out_unit_idx][2], "F") == 0) {
+          ret = hc_k2f(result, qty);
+        }
+      }
+      if (ret == FAIL) { free(qty); free(in_unit); free(out_unit); return FAIL; }
     } else {
       char *tmp = malloc(1 + strlen(qty) + 1 + strlen(hc_conversions[in_unit_idx][1]) + 2 + strlen(hc_conversions[out_unit_idx][1]) + 1); if (!tmp) mem_error();
       sprintf(tmp, "(%s/%s)*%s", qty, hc_conversions[in_unit_idx][1], hc_conversions[out_unit_idx][1]);

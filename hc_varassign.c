@@ -1157,36 +1157,6 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
-    case HASH_CTOF:
-      if (hc_c2f(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_FTOC:
-      if (hc_f2c(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_CTOK:
-      if (hc_c2k(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_KTOC:
-      if (hc_k2c(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_FTOK:
-      if (hc_f2k(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
-    case HASH_KTOF:
-      if (hc_k2f(f_result_re,f_expr) == FAIL)
-      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
-      break;
-
     case HASH_NCR:
       if (hc_binomc(f_result_re,f_expr) == FAIL)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
