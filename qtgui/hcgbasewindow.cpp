@@ -142,6 +142,7 @@ void HCGBaseWindow::createMenus() {
           QWidgetAction *conversion = new QWidgetAction(newmenu.menu);
           conversion->setDefaultWidget(convert_box);
           newmenu.menu->addAction(conversion);
+          conversionMenu = newmenu.menu;
         }
         top = (QList<struct SubMenu> *)&(top->at(top->size()-1).menus);
       }
@@ -491,6 +492,7 @@ void HCGBaseWindow::updateStatus_slot(int status)
 void HCGBaseWindow::doConversion()
 {
   insert("convert(" + convert_input->text() + ", \"" + convert_unit_in->currentText() + "\", \"" + convert_unit_out->currentText() + "\")");
+  conversionMenu->hide();
   getInputResult();
 }
 

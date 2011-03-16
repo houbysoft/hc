@@ -27,6 +27,7 @@
 #include <QProgressBar>
 #include <QComboBox>
 #include <QPushButton>
+#include <QMenu>
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -68,6 +69,7 @@ class HCGBaseWindow : public QMainWindow {
 #ifdef WIN32
   QProgressBar *updateBar;
 #endif
+  QMenu *conversionMenu;
 
   public:
   HCGBaseWindow();
