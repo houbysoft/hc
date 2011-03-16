@@ -60,6 +60,8 @@ class HCGScriptWindow : public HCGBaseWindow {
   void resetFont(const QTextCharFormat f = QTextCharFormat());
   void textChanged();
   void insert(QString string);
+  void getInputResult() {} ;
+  void focusInput();
   void openScript();
   void saveScript();
   void saveScriptAs();

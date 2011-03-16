@@ -148,6 +148,12 @@ void HCGWindow::insert(QString string)
 }
 
 
+void HCGWindow::focusInput()
+{
+  inputline->setFocus();
+}
+
+
 void HCGWindow::openScript() {
   QString filename = QFileDialog::getOpenFileName(this, "Open File", opendir);
   if (!filename.isNull())

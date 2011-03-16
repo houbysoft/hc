@@ -257,6 +257,11 @@ void HCGScriptWindow::insert(QString string) {
 }
 
 
+void HCGScriptWindow::focusInput() {
+  scripteditor->setFocus();
+}
+
+
 void HCGScriptWindow::openScript() {
   QString filename = QFileDialog::getOpenFileName(this, "Open File", opendir);
   if (!filename.isNull())

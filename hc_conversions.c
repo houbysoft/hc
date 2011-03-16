@@ -32,8 +32,6 @@
  * [x][2] : output unit name 
  * [x][3 to MAX_CONVERSION_FIELDS-1] : synonyms for the output unit name. Last entry is always NULL.
  */
-#define HC_CONVERSIONS 14
-#define HC_CONVERSIONS_NAME_START_IDX 2
 const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"length", "(1/0.3048)", "feet", "ft", NULL},
   {"length", "1000", "milimeters", "mm", NULL},
@@ -56,7 +54,6 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
  * [x][0] : base unit type
  * [x][1 to MAX_CONVERSION_FIELDS-1] : synonyms for the base unit name. Last entry is always NULL.
  */
-#define HC_CONVERSIONS_BASENAMES 3
 const char *hc_conversions_basenames[HC_CONVERSIONS_BASENAMES][MAX_CONVERSION_FIELDS] = {
   {"length", "meters", "m", NULL},
   {"weight", "kilograms", "kg", NULL},

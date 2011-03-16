@@ -33,6 +33,8 @@
 #include <QImage>
 #include <QSpinBox>
 #include <QProgressBar>
+#include <QComboBox>
+#include <QPushButton>
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -41,6 +43,7 @@
 #include "main.hpp"
 #include "../hc_names.h"
 #include "../hc_info.h"
+#include "../hc_conversions.h"
 
 
 HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
@@ -105,6 +108,41 @@ void HCGBaseWindow::createMenus() {
         else
           newmenu.menu = menu = topmenu = topmenu->addMenu(curpath);
         top->append(newmenu);
+        if (curpath == "Conversions")
+        {
+          QWidget *convert_box = new QWidget(this);
+          QHBoxLayout *convert_layout = new QHBoxLayout(convert_box);
+          convert_layout->setSpacing(0);
+          convert_layout->setContentsMargins(1,1,1,1);
+          convert_layout->addWidget(new QLabel(" Convert "));
+          convert_input = new QLineEdit(convert_box);
+          convert_layout->addWidget(convert_input);
+          QStringList units;
+          int i = 0;
+          for (; i < HC_CONVERSIONS; i++)
+          {
+            units << hc_conversions[i][HC_CONVERSIONS_NAME_START_IDX];
+          }
+          for (i=0; i < HC_CONVERSIONS_BASENAMES; i++)
+          {
+            units << hc_conversions_basenames[i][1];
+          }
+          units.sort();
+          convert_unit_in = new QComboBox(convert_box);
+          convert_unit_in->insertItems(0, units);
+          convert_layout->addWidget(convert_unit_in);
+          convert_layout->addWidget(new QLabel(" to "));
+          convert_unit_out = new QComboBox(convert_box);
+          convert_unit_out->insertItems(0, units);
+          convert_layout->addWidget(convert_unit_out);
+          convert_go = new QPushButton("OK", convert_box);
+          connect(convert_go, SIGNAL(clicked()), this, SLOT(doConversion()));
+          convert_layout->addWidget(convert_go);
+          convert_box->setLayout(convert_layout);
+          QWidgetAction *conversion = new QWidgetAction(newmenu.menu);
+          conversion->setDefaultWidget(convert_box);
+          newmenu.menu->addAction(conversion);
+        }
         top = (QList<struct SubMenu> *)&(top->at(top->size()-1).menus);
       }
       nested++;
@@ -448,6 +486,13 @@ void HCGBaseWindow::updateStatus_slot(int status)
   }
 }
 #endif
+
+
+void HCGBaseWindow::doConversion()
+{
+  insert("convert(" + convert_input->text() + ", \"" + convert_unit_in->currentText() + "\", \"" + convert_unit_out->currentText() + "\")");
+  getInputResult();
+}
 
 
 void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data)

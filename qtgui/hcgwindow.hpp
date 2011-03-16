@@ -59,6 +59,7 @@ class HCGWindow : public HCGBaseWindow {
   public slots:
   void getInputResult();
   void insert(QString string);
+  void focusInput();
   void openScript();
   void computation_finished(QString, char *);
 

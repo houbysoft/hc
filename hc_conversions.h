@@ -27,6 +27,11 @@
 #define HC_CONVERSIONS_BASE_UNIT 1
 #define HC_CONVERSIONS_NORMAL_UNIT 2
 
+#define HC_CONVERSIONS 14
+#define HC_CONVERSIONS_NAME_START_IDX 2
+
+#define HC_CONVERSIONS_BASENAMES 3
+
 extern const char *hc_conversions[][MAX_CONVERSION_FIELDS];
 extern const char *hc_conversions_basenames[][MAX_CONVERSION_FIELDS];
 extern int hc_convert(M_APM result, char *e);

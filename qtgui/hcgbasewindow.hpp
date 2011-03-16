@@ -25,6 +25,8 @@
 #include <QSpinBox>
 #include <QTextEdit>
 #include <QProgressBar>
+#include <QComboBox>
+#include <QPushButton>
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -50,6 +52,10 @@ class HCGBaseWindow : public QMainWindow {
   QString opendir;
   QString savedir;
   QLineEdit *helpline;
+  QLineEdit *convert_input;
+  QComboBox *convert_unit_in;
+  QComboBox *convert_unit_out;
+  QPushButton *convert_go;
 
   private:
   void help(char caller);
@@ -104,7 +110,10 @@ class HCGBaseWindow : public QMainWindow {
   void processUpdate(HUL *update, bool silent);
   void applyUpdateThreadFinished(bool success);
 #endif
+  void doConversion();
   virtual void insert(QString string) = 0;
+  virtual void focusInput() = 0;
+  virtual void getInputResult() = 0;
   virtual void openScript() = 0;
 
   signals:
