@@ -35,6 +35,7 @@
 #include <QProgressBar>
 #include <QComboBox>
 #include <QPushButton>
+#include <QMap>
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -127,7 +128,11 @@ void HCGBaseWindow::createMenus() {
           {
             units << hc_conversions_basenames[i][1];
           }
-          units.sort();
+          QMap<QString, QString> strMap;
+          foreach (QString unit, units) {
+            strMap.insert(unit.toLower(), unit);
+          }
+          units = strMap.values();
           convert_unit_in = new QComboBox(convert_box);
           convert_unit_in->insertItems(0, units);
           convert_layout->addWidget(convert_unit_in);
