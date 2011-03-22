@@ -36,9 +36,7 @@ class HCGCore : public QObject {
   void load(QString filename);
   void emitSignals();
   void closeAll();
-#ifdef WIN32
   bool tryUpdate();
-#endif
   bool warnPrecision();
 
   public slots:
@@ -52,9 +50,7 @@ class HCGCore : public QObject {
 
   private:
   QMutex hc_mutex;
-#ifdef WIN32
   bool try_update;
-#endif
   bool warn_precision;
 
 

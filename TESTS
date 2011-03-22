@@ -88,4 +88,9 @@ test("the gamma function 2", gamma(-4.5i4.2) == -6.89196923e-7i-8.597672133e-7)
 
 test("convert() K to F", convert(32.67, "K", "F") == -400 - .864)
 
+\p 8000
+test("phi - high precision", str(phi)[7998] == "0")
+test("phi - high precision 2", str(phi)[7999] == str(phi)[8000])
+\p 16
+
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

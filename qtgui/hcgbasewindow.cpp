@@ -537,10 +537,12 @@ void HCGBaseWindow::prompt(QString str, QString *answer)
 }
 
 
+#ifdef WIN32
 void HCGBaseWindow::updateStatus(int status)
 {
   emit updateStatus_signal(status);
 }
+#endif
 
 
 void HCGBaseWindow::disp_rgb(unsigned int x, unsigned int y, void *data)

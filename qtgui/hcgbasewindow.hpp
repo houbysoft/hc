@@ -87,7 +87,9 @@ class HCGBaseWindow : public QMainWindow {
   void newEval();
   void newScript();
   void checkUpdates();
+#ifdef WIN32
   void checkUpdatesSilent();
+#endif
   void about();
   void completerHelp(const QString text);
   void enterHelp();

@@ -32,6 +32,8 @@ HCGCore::HCGCore() : QObject() {
   free(hc_result((char *)"0"));
 #ifdef WIN32
   try_update = bool(hc.autoupdate);
+#else
+  try_update = FALSE;
 #endif
   warn_precision = true;
 }

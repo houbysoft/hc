@@ -61,10 +61,12 @@ HCGWindow::HCGWindow() : HCGBaseWindow() {
   setWindowTitle("HoubySoft Calculator");
   inputline->setFocus();
   show();
+#ifdef WIN32
   if (hcgcore->tryUpdate())
   {
     this->checkUpdatesSilent();
   }
+#endif
 }
 
 
