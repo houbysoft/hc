@@ -117,6 +117,7 @@ void HCGBaseWindow::createMenus() {
           convert_layout->setContentsMargins(1,1,1,1);
           convert_layout->addWidget(new QLabel(" Convert "));
           convert_input = new QLineEdit(convert_box);
+          connect(convert_input, SIGNAL(returnPressed()), this, SLOT(doConversion()));
           convert_layout->addWidget(convert_input);
           QStringList units;
           int i = 0;

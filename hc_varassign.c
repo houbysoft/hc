@@ -549,7 +549,11 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       if (v_hash == hc_hashes[i])
       {
         *type = HC_VAR_NUM; // all hc constants are numbers
-        return strdup((char *)hc_names[i][1] + strlen("cnst:") * sizeof(char));
+        if (isdigit(hc_names[i][1][6]))
+          return strdup((char *)hc_names[i][1] + strlen("cnst:"));
+        else {
+          return hc_result_((char *)hc_names[i][1] + strlen("cnst:"));
+        }
       }
     }
 

@@ -123,11 +123,11 @@ const char *hc_names[][5] = {
   {"while","func:condition,body","Programming","evaluates body while condition is true","executes body while condition holds.\n    Example:\n     * for a prime number x, totient(x)==x-1. We can use this property to find the first prime number starting from 1001:\n       n = 1001; while(totient(n)!=n-1, n+=2); n\n       The result would be 1009."},
   {"write","func:filename,element_1,element_2,...,element_n","Functions/Misc","same as print, but writes to file specified with filename","behaves like the print function (run help(\"print\") to learn more), but writes to the file specified with filename."},
   {"zeros","func:n","Functions/Misc","returns an array containing n zeros","generate a list containing n zeros. See also ones()"},
-  // CONSTANTS
+  // CONSTANTS; use raw number or (expr) in parentheses
   {"pi","cnst:3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384461","Constants","3.14159...",""},
   {"c","cnst:299792458","Constants","speed of light in vacuum",""},
   {"e","cnst:2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174136","Constants","Euler's number",""},
-  {"phi","cnst:1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475408807538689175212663386","Constants","golden ratio",""},
+  {"phi","cnst:((1+sqrt(5))/2)","Constants","golden ratio",""},
   {"g","cnst:9.80655","Constants","std gravitational acceleration on Earth",""},
   {"answer","cnst:42","Constants","H2G2","The Answer to Life, the Universe, and Everything. A constant that needs no explanation."},
   {"na","cnst:6.0221415e23","Constants","Avogadro constant",""},
