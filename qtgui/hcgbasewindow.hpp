@@ -28,6 +28,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QMenu>
+#include "hcggraphwindow.hpp"
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -57,6 +58,7 @@ class HCGBaseWindow : public QMainWindow {
   QComboBox *convert_unit_in;
   QComboBox *convert_unit_out;
   QPushButton *convert_go;
+  HCGGraphWindow *graph_window;
 
   private:
   void help(char caller);
@@ -81,7 +83,7 @@ class HCGBaseWindow : public QMainWindow {
 #ifdef WIN32
   void updateStatus(int status);
 #endif
-  void disp_rgb(unsigned int x, unsigned int y, void *data);
+  void disp_rgb(unsigned int x, unsigned int y, void *data, char *args);
 
   public slots:
   void newEval();
@@ -101,7 +103,7 @@ class HCGBaseWindow : public QMainWindow {
 #ifdef WIN32
   void updateStatus_slot(int status);
 #endif
-  void disp_rgb_slot(unsigned int x, unsigned int y, void *data);
+  void disp_rgb_slot(unsigned int x, unsigned int y, void *data, char *args);
   void freeResult(QString expr, char *result);
   void setPrecision(int precision);
   void setAngleMode(QString mode);
@@ -128,7 +130,7 @@ class HCGBaseWindow : public QMainWindow {
 #ifdef WIN32
   void updateStatus_signal(int status);
 #endif
-  void disp_rgb_signal(unsigned int x, unsigned int y, void *data);
+  void disp_rgb_signal(unsigned int x, unsigned int y, void *data, char *args);
 };
 
 #endif

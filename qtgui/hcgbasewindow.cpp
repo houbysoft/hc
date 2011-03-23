@@ -42,6 +42,7 @@
 #include "hcgbasewindow.hpp"
 #include "hcgscriptwindow.hpp"
 #include "main.hpp"
+#include "hcggraphwindow.hpp"
 #include "../hc_names.h"
 #include "../hc_info.h"
 #include "../hc_conversions.h"
@@ -51,7 +52,7 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(this, SIGNAL(notify_signal(QString)), this, SLOT(notify_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(notify_console_signal(QString)), this, SLOT(notify_console_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(notify_error_signal(QString)), this, SLOT(notify_error_slot(QString)), Qt::BlockingQueuedConnection);
-  connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *)), Qt::BlockingQueuedConnection);
+  connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *, char *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *, char *)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(prompt_signal(QString, QString *)), this, SLOT(prompt_slot(QString, QString *)), Qt::BlockingQueuedConnection);
 #ifdef WIN32
   connect(this, SIGNAL(updateStatus_signal(int)), this, SLOT(updateStatus_slot(int)), Qt::QueuedConnection);
@@ -62,6 +63,7 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   createShortcut("Ctrl+Q", this, SLOT(close()));
 
   log_edit = NULL;
+  graph_window = NULL;
 #ifdef WIN32
   updateBar = NULL;
 #endif
@@ -503,13 +505,14 @@ void HCGBaseWindow::doConversion()
 }
 
 
-void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data)
+void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data, char *args)
 {
   QImage graph((uchar *)data, x, y, QImage::Format_RGB888);
-  QLabel *label = new QLabel();
-  label->setPixmap(QPixmap::fromImage(graph));
-  label->setFixedSize(x, y);
-  label->show();
+  if (!graph_window)
+  {
+    graph_window = new HCGGraphWindow();
+  }
+  graph_window->updateGraph(QPixmap::fromImage(graph), x, y, args);
 }
 
 
@@ -545,7 +548,7 @@ void HCGBaseWindow::updateStatus(int status)
 #endif
 
 
-void HCGBaseWindow::disp_rgb(unsigned int x, unsigned int y, void *data)
+void HCGBaseWindow::disp_rgb(unsigned int x, unsigned int y, void *data, char *args)
 {
-  emit disp_rgb_signal(x, y, data);
+  emit disp_rgb_signal(x, y, data, args);
 }

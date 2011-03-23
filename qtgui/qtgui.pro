@@ -12,9 +12,9 @@ win32:MINGWROOT = I:/Qt/2010.05/mingw/
 win32:RC_FILE = hcg.rc
 
 # Input
-HEADERS += hcgwindow.hpp hcginputline.hpp hcgscriptwindow.hpp hcgbasewindow.hpp hcgthreads.hpp hcgcore.hpp
+HEADERS += hcgwindow.hpp hcginputline.hpp hcgscriptwindow.hpp hcgbasewindow.hpp hcgthreads.hpp hcgcore.hpp hcggraphwindow.hpp
 SOURCES += ../hc.c ../hc_functions.c ../hc_varassign.c ../hc_graph.c ../hc_complex.c ../m_apmc.c ../hc_stats.c ../hc_programming.c ../hc_chemistry.c ../hc_list.c ../hc_help.c ../hc_utils.c ../hc_fnp.c ../hc_conversions.c
-SOURCES += hcgwindow.cpp hcginputline.cpp main.cpp hcgscriptwindow.cpp hcgbasewindow.cpp hcgthreads.cpp hcgcore.cpp
+SOURCES += hcgwindow.cpp hcginputline.cpp main.cpp hcgscriptwindow.cpp hcgbasewindow.cpp hcgthreads.cpp hcgcore.cpp hcggraphwindow.cpp
 
 !win32:LIBS += /usr/lib/libmapm.so.0 `pkg-config gtk+-2.0 plplotd --cflags --libs`
 win32:LIBS += -mwindows $$MINGWROOT/lib/libmapm.a $$MINGWROOT/lib/libhul.a $$MINGWROOT/lib/libplplotd.a $$MINGWROOT/lib/libqsastime.a -lwininet

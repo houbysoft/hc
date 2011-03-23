@@ -154,18 +154,18 @@ void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, double min,
   plcol0(9);
   plfbox(1, q1, q2, q3, min, max);
 
-  hc_graph_finish();
+  hc_graph_finish("TODO");
 }
 
 
-void hc_graph_finish()
+void hc_graph_finish(char *args)
 {
   plend();
 #if defined(HCG) && !defined(WIN32) && !defined(MEM_DRIVER)
   hcg_disp_graph("tmp-graph.png");
   remove("tmp-graph.png");
 #elif defined(MEM_DRIVER)
-  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
+  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory, args);
   free(driver_memory);
   driver_memory = NULL;
 #endif
@@ -356,13 +356,13 @@ char hc_graph(char *e)
   }
   graphing_ignore_errors = FALSE;
 
-  free(func_expr);
   free(arg_xmin);
   free(arg_xmax);
   free(arg_ymin);
   free(arg_ymax);
 
-  hc_graph_finish();
+  hc_graph_finish(func_expr);
+  free(func_expr);
   
   return SUCCESS;
 }
@@ -469,7 +469,7 @@ char hc_graph_n(char *e)
   }
   free(func_expr);
     
-  hc_graph_finish();
+  hc_graph_finish("TODO");
   
   return SUCCESS;
 }
@@ -620,7 +620,6 @@ char hc_graph3d(char *e)
     free(a1[1]);
     free(a1);
   }
-  free(func_expr);
   free(arg_xmin);
   free(arg_ymin);
   free(arg_zmin);
@@ -636,7 +635,8 @@ char hc_graph3d(char *e)
   }
   free(a);
 
-  hc_graph_finish();
+  hc_graph_finish(func_expr);
+  free(func_expr);
 
   return SUCCESS; 
 }
@@ -750,7 +750,6 @@ char hc_graph_slpfld(char *e)
     }
   }
 
-  free(func_expr);
   free(arg_xmin);
   free(arg_ymin);
   free(arg_xmax);
@@ -764,8 +763,9 @@ char hc_graph_slpfld(char *e)
   }
   free(a);
 
-  hc_graph_finish();
-  
+  hc_graph_finish(func_expr);
+  free(func_expr);
+
   return SUCCESS; 
 }
 
@@ -871,7 +871,7 @@ char hc_graph_peq(char *e)
   free(arg_tmin);
   free(arg_tmax);
 
-  hc_graph_finish();
+  hc_graph_finish("TODO");
 
   return SUCCESS;
 }
@@ -999,7 +999,7 @@ char hc_graph_values(char *e, char draw_lines)
 
   free(points_orig);
 
-  hc_graph_finish();
+  hc_graph_finish("TODO");
 
   return SUCCESS;
 }

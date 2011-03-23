@@ -37,7 +37,7 @@ extern void hcg_disp_graph(char *);
 #endif
 
 #if defined(MEM_DRIVER)
-extern void hcg_disp_rgb(unsigned int x, unsigned int y, void *data);
+extern void hcg_disp_rgb(unsigned int x, unsigned int y, void *data, char *args);
 #endif
 
 #endif
