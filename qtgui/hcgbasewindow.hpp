@@ -58,7 +58,6 @@ class HCGBaseWindow : public QMainWindow {
   QComboBox *convert_unit_in;
   QComboBox *convert_unit_out;
   QPushButton *convert_go;
-  HCGGraphWindow *graph_window;
 
   private:
   void help(char caller);
@@ -117,6 +116,7 @@ class HCGBaseWindow : public QMainWindow {
   void applyUpdateThreadFinished(bool success);
 #endif
   void doConversion();
+  void showGraph();
   virtual void insert(QString string) = 0;
   virtual void focusInput() = 0;
   virtual void getInputResult() = 0;

@@ -28,6 +28,9 @@
 #include <QVBoxLayout>
 #include <QPixmap>
 #include <QLineEdit>
+#include <QComboBox>
+#include <QPushButton>
+#include <QStackedWidget>
 
 
 class HCGGraphDisplay : public QLabel {
@@ -51,6 +54,12 @@ class HCGGraphWindow : public QMainWindow {
   QHBoxLayout *hbox_layout;
   QVBoxLayout *vbox_layout;
   QLineEdit *lineedit;
+  QComboBox *gtypes;
+  QPushButton *go;
+  QStackedWidget *options;
+
+  public slots:
+  void typechanged(QString &t);
 
   public:
   HCGGraphWindow();

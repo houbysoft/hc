@@ -26,12 +26,30 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   vbox = new QWidget(this);
   gdisp = new HCGGraphDisplay();
   lineedit = new QLineEdit(this);
-  
+
   vbox_layout = new QVBoxLayout(vbox);
   vbox_layout->setSpacing(0);
   vbox_layout->setContentsMargins(1,1,1,1);
-  vbox_layout->addWidget(new QLabel("Expression"));
+  vbox_layout->setAlignment(Qt::AlignTop);
+
+  vbox_layout->addWidget(new QLabel(" Graph type"));
+  gtypes = new QComboBox(this);
+  QStringList gtypeslist;
+  gtypeslist << "2D" << "Parametric" << "Values (points)" << "Values (xyline)" << "3D" << "Slope Field";
+  gtypes->insertItems(0, gtypeslist);
+  connect(gtypes, SIGNAL(activated(QString &)), this, SLOT(typechanged(QString &)));
+  vbox_layout->addWidget(gtypes);
+
+  options = new QStackedWidget(this);
+  options->addWidget(new QLabel("TODO"));
+  vbox_layout->addWidget(options);
+
+  vbox_layout->addWidget(new QLabel(" Expression"));
   vbox_layout->addWidget(lineedit);
+
+  go = new QPushButton(" OK ", this);
+  vbox_layout->addWidget(go);
+
   vbox->setLayout(vbox_layout);
 
   hbox_layout = new QHBoxLayout(hbox);
@@ -54,6 +72,12 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, ch
   show();
   activateWindow();
   raise();
+}
+
+
+void HCGGraphWindow::typechanged(QString &t)
+{
+
 }
 
 

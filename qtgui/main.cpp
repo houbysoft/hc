@@ -21,6 +21,7 @@
 #include <QObject>
 #include "hcgwindow.hpp"
 #include "hcgcore.hpp"
+#include "hcggraphwindow.hpp"
 #include "main.hpp"
 
 
@@ -29,6 +30,7 @@ extern "C" void hc_load_cfg();
 
 HCGWindow *hcg;
 HCGCore *hcgcore;
+HCGGraphWindow *graph_window = NULL;
 
 
 int main(int argc, char *argv[])

@@ -63,7 +63,6 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   createShortcut("Ctrl+Q", this, SLOT(close()));
 
   log_edit = NULL;
-  graph_window = NULL;
 #ifdef WIN32
   updateBar = NULL;
 #endif
@@ -151,6 +150,11 @@ void HCGBaseWindow::createMenus() {
           conversion->setDefaultWidget(convert_box);
           newmenu.menu->addAction(conversion);
           conversionMenu = newmenu.menu;
+        } else if (curpath == "Graphs")
+        {
+          QAction *showGraphAction = new QAction("Show Graph Window", newmenu.menu);
+          connect(showGraphAction, SIGNAL(triggered()), this, SLOT(showGraph()));
+          newmenu.menu->addAction(showGraphAction);
         }
         top = (QList<struct SubMenu> *)&(top->at(top->size()-1).menus);
       }
@@ -502,6 +506,18 @@ void HCGBaseWindow::doConversion()
   insert("convert(" + convert_input->text() + ", \"" + convert_unit_in->currentText() + "\", \"" + convert_unit_out->currentText() + "\")");
   conversionMenu->hide();
   getInputResult();
+}
+
+
+void HCGBaseWindow::showGraph()
+{
+  if (!graph_window)
+  {
+    graph_window = new HCGGraphWindow();
+  }
+  graph_window->show();
+  graph_window->activateWindow();
+  graph_window->raise();
 }
 
 

@@ -25,6 +25,7 @@
 
 extern HCGCore *hcgcore;
 extern HCGWindow *hcg;
+extern HCGGraphWindow *graph_window;
 extern "C" void notify(char *str);
 extern "C" void notify_console(char *str);
 extern "C" void notify_error(char *str);
