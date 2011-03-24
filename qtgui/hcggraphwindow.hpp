@@ -31,6 +31,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QGroupBox>
 
 
 class HCGGraphDisplay : public QLabel {
@@ -57,6 +58,26 @@ class HCGGraphWindow : public QMainWindow {
   QComboBox *gtypes;
   QPushButton *go;
   QStackedWidget *options;
+  QLineEdit *xmin2D;
+  QLineEdit *xmax2D;
+  QLineEdit *ymin2D;
+  QLineEdit *ymax2D;
+  QLineEdit *tminP;
+  QLineEdit *tmaxP;
+  QLineEdit *xminP;
+  QLineEdit *xmaxP;
+  QLineEdit *yminP;
+  QLineEdit *ymaxP;
+  QLineEdit *xmin3D;
+  QLineEdit *xmax3D;
+  QLineEdit *ymin3D;
+  QLineEdit *ymax3D;
+  QLineEdit *zmin3D;
+  QLineEdit *zmax3D;
+  QLineEdit *xminS;
+  QLineEdit *xmaxS;
+  QLineEdit *yminS;
+  QLineEdit *ymaxS;
 
   public slots:
   void typechanged(QString &t);

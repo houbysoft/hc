@@ -300,70 +300,14 @@ char hc_graph(char *e)
   if (is_vector(func_expr))
   {
     hc_graph_n(list_clean(func_expr));
-    free(func_expr);
-    free(arg_xmin);
-    free(arg_xmax);
-    free(arg_ymin);
-    free(arg_ymax);
-    return SUCCESS;
+  } else {
+    hc_graph_n(func_expr);
   }
-
-  double step = (xmax-xmin) / HC_GRAPH_POINTS;
-  double curx = xmin;
-  char discont = 1;
-  double x1=0,x2=0,y1=0,y2=0;
-
-  char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
-  if (!graph_top_label)
-    mem_error();
-  strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
-  strcat(graph_top_label,func_expr);
-  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
-  free(graph_top_label);
-
-  graphing_ignore_errors = TRUE;
-  for (; curx<=xmax; curx+=step)
-  {
-    char tmp_curx[256];
-    sprintf(tmp_curx,"%f",curx);
-    char *tmp_expr = strreplace(func_expr,"x",tmp_curx);
-    char *tmp_2 = hc_result_(tmp_expr);
-    char *tmp_3 = NULL;
-    if (tmp_2)
-      tmp_3 = hc_imag_part(tmp_2);
-    if (!tmp_3 && tmp_2 && strlen(tmp_2))
-    {
-      if (discont)
-      {
-        x1 = curx;
-        y1 = strtod(tmp_2,NULL);
-        discont = 0;
-      } else {
-        x2 = curx;
-        y2 = strtod(tmp_2,NULL);
-        hc_graph_line2d(x1,y1,x2,y2);
-        x1 = x2;
-        y1 = y2;
-      }
-    } else {
-      discont = 1;
-    }
-    free(tmp_expr);
-    if (tmp_2)
-      free(tmp_2);
-    if (tmp_3)
-      free(tmp_3);
-  }
-  graphing_ignore_errors = FALSE;
-
+  free(func_expr);
   free(arg_xmin);
   free(arg_xmax);
   free(arg_ymin);
   free(arg_ymax);
-
-  hc_graph_finish(func_expr);
-  free(func_expr);
-  
   return SUCCESS;
 }
 
@@ -468,9 +412,9 @@ char hc_graph_n(char *e)
     free(func_expr[j]);
   }
   free(func_expr);
-    
-  hc_graph_finish("TODO");
-  
+
+  hc_graph_finish(e);
+
   return SUCCESS;
 }
 
