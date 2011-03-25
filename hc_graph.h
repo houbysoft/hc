@@ -24,7 +24,7 @@
 
 extern void hc_graph_init();
 extern void hc_graph_init2d(char *label_top, char *label_x, char *label_y, double xmin, double xmax, double ymin, double ymax);
-extern void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, double min, double max, double q1, double q2, double q3);
+extern void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, char *args, double min, double max, double q1, double q2, double q3);
 extern void hc_graph_finish(int type, char *args);
 
 extern char hc_graph(char *e);

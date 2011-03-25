@@ -145,7 +145,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   vbox_layout->addWidget(optionsBox);
   connect(gtypes, SIGNAL(activated(int)), options, SLOT(setCurrentIndex(int)));
 
-  go = new QPushButton(" OK ", this);
+  go = new QPushButton(" Go ", this);
   vbox_layout->addWidget(go);
 
   vbox->setLayout(vbox_layout);

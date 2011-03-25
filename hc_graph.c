@@ -141,7 +141,7 @@ void hc_graph_init3d(char *label_top, char *label_x, char *label_y, char *label_
 }
 
 
-void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, double min, double max, double q1, double q2, double q3)
+void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, char *args, double min, double max, double q1, double q2, double q3)
 {
   hc_graph_init();
   pladv(0);
@@ -154,7 +154,7 @@ void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, double min,
   plcol0(9);
   plfbox(1, q1, q2, q3, min, max);
 
-  hc_graph_finish(HCGT_BOXPLOT, "TODO");
+  hc_graph_finish(HCGT_BOXPLOT, args);
 }
 
 
@@ -807,7 +807,6 @@ char hc_graph_peq(char *e)
 
   graphing_ignore_errors = FALSE;
 
-  free(func_exprx); free(func_expry);
   free(arg_xmin);
   free(arg_ymin);
   free(arg_xmax);
@@ -815,8 +814,11 @@ char hc_graph_peq(char *e)
   free(arg_tmin);
   free(arg_tmax);
 
-  hc_graph_finish(HCGT_PARAMETRIC, "TODO");
-
+  char *exprtmp = malloc(strlen(func_exprx) + 1 + strlen(func_expry) + 1);
+  if (!exprtmp) mem_error();
+  sprintf(exprtmp, "%s,%s", func_exprx, func_expry);
+  hc_graph_finish(HCGT_PARAMETRIC, exprtmp);
+  free(func_exprx); free(func_expry); free(exprtmp);
   return SUCCESS;
 }
 
@@ -943,7 +945,7 @@ char hc_graph_values(char *e, char draw_lines)
 
   free(points_orig);
 
-  hc_graph_finish(draw_lines ? HCGT_VALUESLINE : HCGT_VALUESPOINTS, "TODO");
+  hc_graph_finish(draw_lines ? HCGT_VALUESLINE : HCGT_VALUESPOINTS, e);
 
   return SUCCESS;
 }

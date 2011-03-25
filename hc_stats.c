@@ -39,11 +39,13 @@
 //     - g : passed by the internal functions, TRUE if we should draw a boxplot, FALSE if we only should display information
 char hc_stats(char *f, char g)
 {
-  if (!is_list(f))
+  char *f_tmp = hc_result_(f);
+  if (!f_tmp || !is_list(f_tmp))
   {
+    free(f_tmp);
     arg_error("stats() : argument must be a list of values");
   }
-  char *e = list_clean(f);
+  char *e = list_clean(f_tmp);
   struct hc_stack_element_stats *first = malloc(sizeof(struct hc_stack_element_stats));
   struct hc_stack_element_stats *curr;
 
@@ -81,7 +83,7 @@ char hc_stats(char *f, char g)
     char *tmp_res = hc_result_(tmp);
     if (!tmp_res)
     {
-      free(tmp);
+      free(tmp); free(f_tmp);
       m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
       while (first->n)
       {
@@ -138,7 +140,7 @@ char hc_stats(char *f, char g)
       free(tmp_res_eff);
       if (tmp_num_im || !is_int(tmp_num_re))
       {
-	free(tmp_num_re); free(tmp_num_im);
+	free(tmp_num_re); free(tmp_num_im); free(f_tmp);
 	m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
 	while (first->n)
 	{
@@ -207,6 +209,7 @@ char hc_stats(char *f, char g)
   // n (number of elements)
   if (m_apm_compare(n,MM_Zero)==0)
   {
+    free(f_tmp);
     m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
     while (first->n)
     {
@@ -590,6 +593,7 @@ char hc_stats(char *f, char g)
   
   m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
   free(first);
+  free(f_tmp);
 
   m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4);
   m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im);
@@ -599,7 +603,7 @@ char hc_stats(char *f, char g)
 
   if (g)
   {
-    hc_graph_boxplot("#frHC - Box plot", "", "", pl_min, pl_max, pl_q1, pl_q2, pl_q3);
+    hc_graph_boxplot("#frHC - Box plot", "", "", f, pl_min, pl_max, pl_q1, pl_q2, pl_q3);
   } else {
     notify(out_string);
     free(out_string);
