@@ -19,6 +19,7 @@
 
 #include "main.hpp"
 #include "hcggraphwindow.hpp"
+#include "hcgthreads.hpp"
 #include "../hc_info.h"
 
 
@@ -146,6 +147,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   connect(gtypes, SIGNAL(activated(int)), options, SLOT(setCurrentIndex(int)));
 
   go = new QPushButton(" Go ", this);
+  connect(go, SIGNAL(clicked()), this, SLOT(drawGraph()));
   vbox_layout->addWidget(go);
 
   vbox->setLayout(vbox_layout);
@@ -171,6 +173,50 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
   show();
   activateWindow();
   raise();
+}
+
+
+void HCGGraphWindow::drawGraph()
+{
+  QString cmd;
+  switch (gtypes->currentIndex() + 1)
+  {
+  case HCGT_2D:
+    cmd += "graph(";
+    break;
+
+  case HCGT_PARAMETRIC:
+    cmd += "graphpeq(";
+    break;
+
+  case HCGT_VALUESPOINTS:
+    cmd += "graphpoints(";
+    break;
+
+  case HCGT_VALUESLINE:
+    cmd += "graphvalues(";
+    break;
+
+  case HCGT_3D:
+    cmd += "graph3(";
+    break;
+
+  case HCGT_SLPFLD:
+    cmd += "slpfld(";
+    break;
+
+  case HCGT_BOXPLOT:
+    cmd += "boxplot(";
+    break;
+
+  default:
+    break;
+  }
+  cmd += lineedit->text();
+  cmd += ")";
+  HCGResultThread *resThread = new HCGResultThread(cmd);
+  //connect(resThread, SIGNAL(computation_finished(QString, char *)), this, SLOT(computation_finished(QString, char *)));
+  resThread->start();
 }
 
 

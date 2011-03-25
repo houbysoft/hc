@@ -85,6 +85,9 @@ class HCGGraphWindow : public QMainWindow {
   HCGGraphWindow();
   ~HCGGraphWindow() {};
   void updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args);
+
+  public slots:
+  void drawGraph();
 };
 
 #endif
