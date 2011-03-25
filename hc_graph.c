@@ -154,18 +154,18 @@ void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, double min,
   plcol0(9);
   plfbox(1, q1, q2, q3, min, max);
 
-  hc_graph_finish("TODO");
+  hc_graph_finish(HCGT_BOXPLOT, "TODO");
 }
 
 
-void hc_graph_finish(char *args)
+void hc_graph_finish(int type, char *args)
 {
   plend();
 #if defined(HCG) && !defined(WIN32) && !defined(MEM_DRIVER)
   hcg_disp_graph("tmp-graph.png");
   remove("tmp-graph.png");
 #elif defined(MEM_DRIVER)
-  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory, args);
+  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory, type, args);
   free(driver_memory);
   driver_memory = NULL;
 #endif
@@ -413,7 +413,7 @@ char hc_graph_n(char *e)
   }
   free(func_expr);
 
-  hc_graph_finish(e);
+  hc_graph_finish(HCGT_2D, e);
 
   return SUCCESS;
 }
@@ -579,7 +579,7 @@ char hc_graph3d(char *e)
   }
   free(a);
 
-  hc_graph_finish(func_expr);
+  hc_graph_finish(HCGT_3D, func_expr);
   free(func_expr);
 
   return SUCCESS; 
@@ -707,7 +707,7 @@ char hc_graph_slpfld(char *e)
   }
   free(a);
 
-  hc_graph_finish(func_expr);
+  hc_graph_finish(HCGT_SLPFLD, func_expr);
   free(func_expr);
 
   return SUCCESS; 
@@ -815,7 +815,7 @@ char hc_graph_peq(char *e)
   free(arg_tmin);
   free(arg_tmax);
 
-  hc_graph_finish("TODO");
+  hc_graph_finish(HCGT_PARAMETRIC, "TODO");
 
   return SUCCESS;
 }
@@ -943,7 +943,7 @@ char hc_graph_values(char *e, char draw_lines)
 
   free(points_orig);
 
-  hc_graph_finish("TODO");
+  hc_graph_finish(draw_lines ? HCGT_VALUESLINE : HCGT_VALUESPOINTS, "TODO");
 
   return SUCCESS;
 }

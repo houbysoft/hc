@@ -71,6 +71,15 @@ typedef struct hc_config {
 
 extern struct hc_config hc;
 
+// Graph types -- do not change order or numbers; the GUI relies on these values
+#define HCGT_2D 1
+#define HCGT_PARAMETRIC 2
+#define HCGT_VALUESPOINTS 3
+#define HCGT_VALUESLINE 4
+#define HCGT_3D 5
+#define HCGT_SLPFLD 6
+#define HCGT_BOXPLOT 7
+
 #ifdef __cplusplus
 }
 #endif

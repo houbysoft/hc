@@ -32,7 +32,7 @@
 #include "hcgscriptwindow.hpp"
 
 
-extern "C" void hcg_disp_rgb(unsigned int x, unsigned int y, void *data, char *args);
+extern "C" void hcg_disp_rgb(unsigned int x, unsigned int y, void *data, int type, char *args);
 
 
 HCGWindow::HCGWindow() : HCGBaseWindow() {
@@ -218,7 +218,7 @@ char *prompt(char *str)
 }
 
 
-void hcg_disp_rgb(unsigned int x, unsigned int y, void *data, char *args)
+void hcg_disp_rgb(unsigned int x, unsigned int y, void *data, int type, char *args)
 {
-  hcg->disp_rgb(x, y, data, args);
+  hcg->disp_rgb(x, y, data, type, args);
 }

@@ -49,6 +49,7 @@ class HCGGraphDisplay : public QLabel {
 class HCGGraphWindow : public QMainWindow {
   Q_OBJECT
   private:
+  void updateOptions(int type);
   HCGGraphDisplay *gdisp;
   QWidget *hbox;
   QWidget *vbox;
@@ -79,13 +80,11 @@ class HCGGraphWindow : public QMainWindow {
   QLineEdit *yminS;
   QLineEdit *ymaxS;
 
-  public slots:
-  void typechanged(QString &t);
 
   public:
   HCGGraphWindow();
   ~HCGGraphWindow() {};
-  void updateGraph(QPixmap map, unsigned int x, unsigned int y, char *args);
+  void updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args);
 };
 
 #endif

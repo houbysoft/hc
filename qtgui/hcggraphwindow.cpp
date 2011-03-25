@@ -19,6 +19,7 @@
 
 #include "main.hpp"
 #include "hcggraphwindow.hpp"
+#include "../hc_info.h"
 
 
 HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
@@ -35,7 +36,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   vbox_layout->addWidget(new QLabel(" Graph type"));
   gtypes = new QComboBox(this);
   QStringList gtypeslist;
-  gtypeslist << "2D" << "Parametric" << "Values (points)" << "Values (xyline)" << "3D" << "Slope Field";
+  gtypeslist << "2D" << "Parametric" << "Values (points)" << "Values (xyline)" << "3D" << "Slope Field" << "Boxplot";
   gtypes->insertItems(0, gtypeslist);
   vbox_layout->addWidget(gtypes);
 
@@ -138,6 +139,9 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   oSbox->addWidget(ymaxS);
   options->addWidget(oS);
 
+  // Boxplot options
+  options->addWidget(new QLabel("No options available for this graph type"));
+
   vbox_layout->addWidget(optionsBox);
   connect(gtypes, SIGNAL(activated(int)), options, SLOT(setCurrentIndex(int)));
 
@@ -158,20 +162,47 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
 }
 
 
-void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, char *args)
+void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args)
 {
   gdisp->setPixmap(map);
   gdisp->setFixedSize(x,y);
   lineedit->setText(QString(args));
+  updateOptions(type);
   show();
   activateWindow();
   raise();
 }
 
 
-void HCGGraphWindow::typechanged(QString &t)
+void HCGGraphWindow::updateOptions(int type)
 {
+  options->setCurrentIndex(type - 1);
+  gtypes->setCurrentIndex(type - 1);
+  switch (type)
+  {
+  case HCGT_2D:
+    break;
 
+  case HCGT_PARAMETRIC:
+    break;
+
+  case HCGT_VALUESPOINTS:
+    break;
+
+  case HCGT_VALUESLINE:
+    break;
+
+  case HCGT_3D:
+    break;
+
+  case HCGT_SLPFLD:
+    break;
+
+  case HCGT_BOXPLOT:
+    break;
+  default:
+    break;
+  }
 }
 
 
