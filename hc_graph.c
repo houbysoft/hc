@@ -278,7 +278,7 @@ char hc_graph(char *e)
 
   if (!func_expr || !strlen(func_expr))
   {
-    free(func_expr);
+    free(func_expr); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
     arg_error("graph() needs at least one argument (expr).");
   }
 
@@ -295,6 +295,12 @@ char hc_graph(char *e)
     hc.xmax2d = xmax = strtod(arg_xmax,NULL);
     hc.ymin2d = ymin = strtod(arg_ymin,NULL);
     hc.ymax2d = ymax = strtod(arg_ymax,NULL);
+  }
+
+  if (xmin == xmax)
+  {
+    free(func_expr); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
+    arg_error("graph() : xmin and xmax are set to the same value");
   }
 
   if (is_vector(func_expr))
@@ -441,7 +447,10 @@ char hc_graph3d(char *e)
   double xmin,xmax,ymin,ymax,zmin,zmax;
 
   if (!func_expr)
+  {
+    free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_zmin); free(arg_zmax);
     arg_error("graph3() needs at least one argument (expr).");
+  }
 
   if (!arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax || !arg_zmin || !arg_zmax)
   {
@@ -460,6 +469,11 @@ char hc_graph3d(char *e)
     hc.ymax3d = ymax = strtod(arg_ymax,NULL);
     hc.zmin3d = zmin = strtod(arg_zmin,NULL);
     hc.zmax3d = zmax = strtod(arg_zmax,NULL);
+  }
+  if (xmin == xmax || ymin == ymax)
+  {
+    free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_zmin); free(arg_zmax);
+    arg_error("graph3() : xmin and xmax or ymin and ymax are set to the same value");
   }
 
   unsigned int i = 0, j = 0;

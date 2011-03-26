@@ -26,8 +26,9 @@
 HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   hbox = new QWidget(this);
   vbox = new QWidget(this);
-  gdisp = new HCGGraphDisplay();
+  gdisp = new HCGGraphDisplay(this);
   lineedit = new QLineEdit(this);
+  connect(lineedit, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
 
   vbox_layout = new QVBoxLayout(vbox);
   vbox_layout->setSpacing(0);
@@ -144,7 +145,12 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   options->addWidget(new QLabel("No options available for this graph type"));
 
   vbox_layout->addWidget(optionsBox);
-  connect(gtypes, SIGNAL(activated(int)), options, SLOT(setCurrentIndex(int)));
+  connect(gtypes, SIGNAL(activated(int)), this, SLOT(setCurrentIndex(int)));
+
+  fullform = new QLineEdit(this);
+  fullform->setReadOnly(true);
+  vbox_layout->addWidget(fullform);
+  updateFullForm();
 
   go = new QPushButton(" Go ", this);
   connect(go, SIGNAL(clicked()), this, SLOT(drawGraph()));
@@ -160,7 +166,15 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   hbox->setLayout(hbox_layout);
 
   setCentralWidget(hbox);
+  setCurrentIndex(0);
   show();
+}
+
+
+void HCGGraphWindow::setCurrentIndex(int i)
+{
+  updateOptions(i + 1);
+  updateFullForm();
 }
 
 
@@ -170,13 +184,20 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
   gdisp->setFixedSize(x,y);
   lineedit->setText(QString(args));
   updateOptions(type);
+  updateFullForm();
   show();
   activateWindow();
   raise();
 }
 
 
-void HCGGraphWindow::drawGraph()
+void HCGGraphWindow::updateFullForm()
+{
+  fullform->setText("Full form : " + getFullForm());
+}
+
+
+QString HCGGraphWindow::getFullForm()
 {
   QString cmd;
   switch (gtypes->currentIndex() + 1)
@@ -213,9 +234,36 @@ void HCGGraphWindow::drawGraph()
     break;
   }
   cmd += lineedit->text();
+  switch (gtypes->currentIndex() + 1)
+  {
+  case HCGT_2D:
+    cmd += "," + xmin2D->text() + "," + xmax2D->text() + "," + ymin2D->text() + "," + ymax2D->text();
+    break;
+
+  case HCGT_PARAMETRIC:
+    cmd += "," + tminP->text() + "," + tmaxP->text() + "," + xminP->text() + "," + xmaxP->text() + "," + yminP->text() + "," + ymaxP->text();
+    break;
+
+  case HCGT_3D:
+    cmd += "," + xmin3D->text() + "," + xmax3D->text() + "," + ymin3D->text() + "," + ymax3D->text() + "," + zmin3D->text() + "," + zmax3D->text();
+    break;
+
+  case HCGT_SLPFLD:
+    cmd += "," + xminS->text() + "," + xmaxS->text() + "," + yminS->text() + "," + ymaxS->text();
+    break;
+
+  default:
+    break;  
+  }
   cmd += ")";
-  HCGResultThread *resThread = new HCGResultThread(cmd);
-  //connect(resThread, SIGNAL(computation_finished(QString, char *)), this, SLOT(computation_finished(QString, char *)));
+  return cmd;
+}
+
+
+void HCGGraphWindow::drawGraph()
+{
+  updateFullForm();
+  HCGResultThread *resThread = new HCGResultThread(getFullForm());
   resThread->start();
 }
 
@@ -227,28 +275,77 @@ void HCGGraphWindow::updateOptions(int type)
   switch (type)
   {
   case HCGT_2D:
+    xmin2D->setText(QString().setNum(hc.xmin2d, 'g', hc.precision));
+    xmax2D->setText(QString().setNum(hc.xmax2d, 'g', hc.precision));
+    ymin2D->setText(QString().setNum(hc.ymin2d, 'g', hc.precision));
+    ymax2D->setText(QString().setNum(hc.ymax2d, 'g', hc.precision));
     break;
 
   case HCGT_PARAMETRIC:
-    break;
-
-  case HCGT_VALUESPOINTS:
-    break;
-
-  case HCGT_VALUESLINE:
+    tminP->setText(QString().setNum(hc.tminpeq, 'g', hc.precision));
+    tmaxP->setText(QString().setNum(hc.tmaxpeq, 'g', hc.precision));
+    xminP->setText(QString().setNum(hc.xminpeq, 'g', hc.precision));
+    xmaxP->setText(QString().setNum(hc.xmaxpeq, 'g', hc.precision));
+    yminP->setText(QString().setNum(hc.yminpeq, 'g', hc.precision));
+    ymaxP->setText(QString().setNum(hc.ymaxpeq, 'g', hc.precision));  
     break;
 
   case HCGT_3D:
+    xmin3D->setText(QString().setNum(hc.xmin3d, 'g', hc.precision));
+    xmax3D->setText(QString().setNum(hc.xmax3d, 'g', hc.precision));
+    ymin3D->setText(QString().setNum(hc.ymin3d, 'g', hc.precision));
+    ymax3D->setText(QString().setNum(hc.ymax3d, 'g', hc.precision));
+    zmin3D->setText(QString().setNum(hc.zmin3d, 'g', hc.precision));
+    zmax3D->setText(QString().setNum(hc.zmax3d, 'g', hc.precision));
     break;
 
   case HCGT_SLPFLD:
+    xminS->setText(QString().setNum(hc.xminsf, 'g', hc.precision));
+    xmaxS->setText(QString().setNum(hc.xmaxsf, 'g', hc.precision));
+    yminS->setText(QString().setNum(hc.yminsf, 'g', hc.precision));
+    ymaxS->setText(QString().setNum(hc.ymaxsf, 'g', hc.precision));
     break;
 
-  case HCGT_BOXPLOT:
-    break;
   default:
     break;
   }
+}
+
+
+void HCGGraphWindow::zoom(double x, double y, double factor)
+{
+  switch (gtypes->currentIndex() + 1)
+  {
+  case HCGT_2D:
+    hc.xmin2d += ((hc.xmax2d - hc.xmin2d) - ((hc.xmax2d - hc.xmin2d) / factor)) / 2.0;
+    hc.xmax2d -= ((hc.xmax2d - hc.xmin2d) - ((hc.xmax2d - hc.xmin2d) / factor)) / 2.0;
+    hc.ymin2d += ((hc.ymax2d - hc.ymin2d) - ((hc.ymax2d - hc.ymin2d) / factor)) / 2.0;
+    hc.ymax2d -= ((hc.ymax2d - hc.ymin2d) - ((hc.ymax2d - hc.ymin2d) / factor)) / 2.0;
+    break;
+
+  case HCGT_PARAMETRIC:
+    hc.xminpeq += ((hc.xmaxpeq - hc.xminpeq) - ((hc.xmaxpeq - hc.xminpeq) / factor)) / 2.0;
+    hc.xmaxpeq -= ((hc.xmaxpeq - hc.xminpeq) - ((hc.xmaxpeq - hc.xminpeq) / factor)) / 2.0;
+    hc.yminpeq += ((hc.ymaxpeq - hc.yminpeq) - ((hc.ymaxpeq - hc.yminpeq) / factor)) / 2.0;
+    hc.ymaxpeq -= ((hc.ymaxpeq - hc.yminpeq) - ((hc.ymaxpeq - hc.yminpeq) / factor)) / 2.0;
+    break;
+
+  case HCGT_3D:
+    // TODO
+    break;
+
+  case HCGT_SLPFLD:
+    hc.xminsf += ((hc.xmaxsf - hc.xminsf) - ((hc.xmaxsf - hc.xminsf) / factor)) / 2.0;
+    hc.xmaxsf -= ((hc.xmaxsf - hc.xminsf) - ((hc.xmaxsf - hc.xminsf) / factor)) / 2.0;
+    hc.yminsf += ((hc.ymaxsf - hc.yminsf) - ((hc.ymaxsf - hc.yminsf) / factor)) / 2.0;
+    hc.ymaxsf -= ((hc.ymaxsf - hc.yminsf) - ((hc.ymaxsf - hc.yminsf) / factor)) / 2.0;
+    break;
+
+  default:
+    return;
+  }
+  updateOptions(gtypes->currentIndex() + 1);
+  drawGraph();
 }
 
 
@@ -257,11 +354,11 @@ void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
   switch (event->button())
   {
   case Qt::LeftButton:
-    hcg->notify_slot("Should zoom in!");
+    parentWindow->zoom(0,0,1.25); // x & y -> TODO
     break;
   
   case Qt::RightButton:
-    hcg->notify_slot("Should zoom out!");
+    parentWindow->zoom(0,0,0.8);
     break;
 
   default:

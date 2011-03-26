@@ -34,14 +34,20 @@
 #include <QGroupBox>
 
 
+class HCGGraphWindow;
+
+
 class HCGGraphDisplay : public QLabel {
   Q_OBJECT
+
+  private:
+  HCGGraphWindow *parentWindow;
 
   protected:
   void mousePressEvent(QMouseEvent *event);
   
   public:
-  HCGGraphDisplay() {};
+  HCGGraphDisplay(HCGGraphWindow *pW) {parentWindow = pW;};
   ~HCGGraphDisplay() {};
 };
 
@@ -50,7 +56,10 @@ class HCGGraphWindow : public QMainWindow {
   Q_OBJECT
   private:
   void updateOptions(int type);
+  void updateFullForm();
+  QString getFullForm();
   HCGGraphDisplay *gdisp;
+  QLineEdit *fullform;
   QWidget *hbox;
   QWidget *vbox;
   QHBoxLayout *hbox_layout;
@@ -88,6 +97,8 @@ class HCGGraphWindow : public QMainWindow {
 
   public slots:
   void drawGraph();
+  void setCurrentIndex(int i);
+  void zoom(double x, double y, double factor);
 };
 
 #endif
