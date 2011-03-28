@@ -17,6 +17,7 @@
 /*     <http://www.gnu.org/licenses/>.                                        */
 
 
+#include <math.h>
 #include "main.hpp"
 #include "hcggraphwindow.hpp"
 #include "hcgthreads.hpp"
@@ -312,11 +313,19 @@ void HCGGraphWindow::updateOptions(int type)
 }
 
 
+// x and y are relative to hc_graph.c's MEM_DRIVER_X and MEM_DRIVER_Y
 void HCGGraphWindow::zoom(double x, double y, double factor)
 {
+  double tmp;
   switch (gtypes->currentIndex() + 1)
   {
   case HCGT_2D:
+    tmp = hc.xmax2d - hc.xmin2d;
+    hc.xmin2d += x * (tmp / 494) - fabs(tmp) / 2;
+    hc.xmax2d = hc.xmin2d + fabs(tmp);
+    tmp = hc.ymax2d - hc.ymin2d;
+    hc.ymin2d += y * (tmp / 368) - fabs(tmp) / 2;
+    hc.ymax2d = hc.ymin2d + fabs(tmp);
     hc.xmin2d += ((hc.xmax2d - hc.xmin2d) - ((hc.xmax2d - hc.xmin2d) / factor)) / 2.0;
     hc.xmax2d -= ((hc.xmax2d - hc.xmin2d) - ((hc.xmax2d - hc.xmin2d) / factor)) / 2.0;
     hc.ymin2d += ((hc.ymax2d - hc.ymin2d) - ((hc.ymax2d - hc.ymin2d) / factor)) / 2.0;
@@ -324,6 +333,12 @@ void HCGGraphWindow::zoom(double x, double y, double factor)
     break;
 
   case HCGT_PARAMETRIC:
+    tmp = hc.xmaxpeq - hc.xminpeq;
+    hc.xminpeq += x * (tmp / 494) - fabs(tmp) / 2;
+    hc.xmaxpeq = hc.xminpeq + fabs(tmp);
+    tmp = hc.ymaxpeq - hc.yminpeq;
+    hc.yminpeq += y * (tmp / 368) - fabs(tmp) / 2;
+    hc.ymaxpeq = hc.yminpeq + fabs(tmp);
     hc.xminpeq += ((hc.xmaxpeq - hc.xminpeq) - ((hc.xmaxpeq - hc.xminpeq) / factor)) / 2.0;
     hc.xmaxpeq -= ((hc.xmaxpeq - hc.xminpeq) - ((hc.xmaxpeq - hc.xminpeq) / factor)) / 2.0;
     hc.yminpeq += ((hc.ymaxpeq - hc.yminpeq) - ((hc.ymaxpeq - hc.yminpeq) / factor)) / 2.0;
@@ -335,6 +350,12 @@ void HCGGraphWindow::zoom(double x, double y, double factor)
     break;
 
   case HCGT_SLPFLD:
+    tmp = hc.xmaxsf - hc.xminsf;
+    hc.xminsf += x * (tmp / 494) - fabs(tmp) / 2;
+    hc.xmaxsf = hc.xminsf + fabs(tmp);
+    tmp = hc.ymaxsf - hc.yminsf;
+    hc.yminsf += y * (tmp / 368) - fabs(tmp) / 2;
+    hc.ymaxsf = hc.yminsf + fabs(tmp);
     hc.xminsf += ((hc.xmaxsf - hc.xminsf) - ((hc.xmaxsf - hc.xminsf) / factor)) / 2.0;
     hc.xmaxsf -= ((hc.xmaxsf - hc.xminsf) - ((hc.xmaxsf - hc.xminsf) / factor)) / 2.0;
     hc.yminsf += ((hc.ymaxsf - hc.yminsf) - ((hc.ymaxsf - hc.yminsf) / factor)) / 2.0;
@@ -351,14 +372,20 @@ void HCGGraphWindow::zoom(double x, double y, double factor)
 
 void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
 {
+  double x = event->x() - 90;
+  double y = event->y() - 56;
+  if (x < 0 || y < 0 || x > 494 || y > 368)
+    return;
+  y = 368 - y;
+
   switch (event->button())
   {
   case Qt::LeftButton:
-    parentWindow->zoom(0,0,1.25); // x & y -> TODO
+    parentWindow->zoom(x, y, HCG_ZOOM_FACTOR);
     break;
-  
+
   case Qt::RightButton:
-    parentWindow->zoom(0,0,0.8);
+    parentWindow->zoom(x, y, 1.0 / HCG_ZOOM_FACTOR);
     break;
 
   default:

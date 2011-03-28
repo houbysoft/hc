@@ -34,6 +34,9 @@
 #include <QGroupBox>
 
 
+#define HCG_ZOOM_FACTOR (1.05)
+
+
 class HCGGraphWindow;
 
 
