@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QGroupBox>
+#include <QWheelEvent>
 
 
 #define HCG_ZOOM_FACTOR (1.05)
@@ -48,6 +49,7 @@ class HCGGraphDisplay : public QLabel {
 
   protected:
   void mousePressEvent(QMouseEvent *event);
+  void wheelEvent(QWheelEvent *event);
   
   public:
   HCGGraphDisplay(HCGGraphWindow *pW) {parentWindow = pW;};

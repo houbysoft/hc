@@ -392,3 +392,18 @@ void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
     break;
   }
 }
+
+
+void HCGGraphDisplay::wheelEvent(QWheelEvent *event)
+{
+  double x = event->x() - 90;
+  double y = event->y() - 56;
+  if (x < 0 || y < 0 || x > 494 || y > 368)
+  {
+    event->ignore();
+    return;
+  }
+  y = 368 - y;
+
+  parentWindow->zoom(x, y, pow(HCG_ZOOM_FACTOR, event->delta() / 8 / 15));
+}
