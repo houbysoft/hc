@@ -36,6 +36,8 @@
 
 
 #define HCG_ZOOM_FACTOR (1.05)
+// HCG_MOVE_FACTOR runs from 0 to 1. 0 means no move, 1 means center at new point.
+#define HCG_MOVE_FACTOR (0.1)
 
 
 class HCGGraphWindow;
@@ -103,7 +105,7 @@ class HCGGraphWindow : public QMainWindow {
   public slots:
   void drawGraph();
   void setCurrentIndex(int i);
-  void zoom(double x, double y, double factor);
+  void zoom(double x, double y, double zoomfactor, double movefactor);
 };
 
 #endif

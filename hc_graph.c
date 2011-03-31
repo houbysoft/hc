@@ -286,15 +286,15 @@ char hc_graph(char *e)
   {
     if (arg_xmin || arg_xmax || arg_ymin || arg_ymax)
       notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
-    xmin = hc.xmin2d;
-    xmax = hc.xmax2d;
-    ymin = hc.ymin2d;
-    ymax = hc.ymax2d;
+    xmin = hc.xmin2d[hcgt_get_idx(HCGT_2D)];
+    xmax = hc.xmax2d[hcgt_get_idx(HCGT_2D)];
+    ymin = hc.ymin2d[hcgt_get_idx(HCGT_2D)];
+    ymax = hc.ymax2d[hcgt_get_idx(HCGT_2D)];
   } else {
-    hc.xmin2d = xmin = strtod(arg_xmin,NULL);
-    hc.xmax2d = xmax = strtod(arg_xmax,NULL);
-    hc.ymin2d = ymin = strtod(arg_ymin,NULL);
-    hc.ymax2d = ymax = strtod(arg_ymax,NULL);
+    hc.xmin2d[hcgt_get_idx(HCGT_2D)] = xmin = strtod(arg_xmin,NULL);
+    hc.xmax2d[hcgt_get_idx(HCGT_2D)] = xmax = strtod(arg_xmax,NULL);
+    hc.ymin2d[hcgt_get_idx(HCGT_2D)] = ymin = strtod(arg_ymin,NULL);
+    hc.ymax2d[hcgt_get_idx(HCGT_2D)] = ymax = strtod(arg_ymax,NULL);
   }
 
   if (xmin == xmax)
@@ -335,10 +335,10 @@ char hc_graph_n(char *e)
   if (!*func_expr[0])
     arg_error("gmul() and graph() need at least one argument (expr_1).");
 
-  double xmin = hc.xmin2d;
-  double xmax = hc.xmax2d;
-  double ymin = hc.ymin2d;
-  double ymax = hc.ymax2d;
+  double xmin = hc.xmin2d[hcgt_get_idx(HCGT_2D)];
+  double xmax = hc.xmax2d[hcgt_get_idx(HCGT_2D)];
+  double ymin = hc.ymin2d[hcgt_get_idx(HCGT_2D)];
+  double ymax = hc.ymax2d[hcgt_get_idx(HCGT_2D)];
 
   double step = (xmax-xmin) / HC_GRAPH_POINTS;
   double curx = xmin;
@@ -622,15 +622,15 @@ char hc_graph_slpfld(char *e)
   {
     if (arg_xmin || arg_xmax || arg_ymin || arg_ymax)
       notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
-    xmin = hc.xminsf;
-    xmax = hc.xmaxsf;
-    ymin = hc.yminsf;
-    ymax = hc.ymaxsf;
+    xmin = hc.xmin2d[hcgt_get_idx(HCGT_SLPFLD)];
+    xmax = hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)];
+    ymin = hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)];
+    ymax = hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)];
   } else {
-    hc.xminsf = xmin = strtod(arg_xmin,NULL);
-    hc.xmaxsf = xmax = strtod(arg_xmax,NULL);
-    hc.yminsf = ymin = strtod(arg_ymin,NULL);
-    hc.ymaxsf = ymax = strtod(arg_ymax,NULL);
+    hc.xmin2d[hcgt_get_idx(HCGT_SLPFLD)] = xmin = strtod(arg_xmin,NULL);
+    hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)] = xmax = strtod(arg_xmax,NULL);
+    hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)] = ymin = strtod(arg_ymin,NULL);
+    hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)] = ymax = strtod(arg_ymax,NULL);
   }
 
   unsigned int i = 0;
@@ -757,17 +757,17 @@ char hc_graph_peq(char *e)
   {
     if (arg_xmin || arg_xmax || arg_ymin || arg_ymax || arg_tmin || arg_tmax)
       notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
-    xmin = hc.xminpeq;
-    xmax = hc.xmaxpeq;
-    ymin = hc.yminpeq;
-    ymax = hc.ymaxpeq;
+    xmin = hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)];
+    xmax = hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)];
+    ymin = hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)];
+    ymax = hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)];
     tmin = hc.tminpeq;
     tmax = hc.tmaxpeq;
   } else {
-    hc.xminpeq = xmin = strtod(arg_xmin,NULL);
-    hc.xmaxpeq = xmax = strtod(arg_xmax,NULL);
-    hc.yminpeq = ymin = strtod(arg_ymin,NULL);
-    hc.ymaxpeq = ymax = strtod(arg_ymax,NULL);
+    hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = xmin = strtod(arg_xmin,NULL);
+    hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = xmax = strtod(arg_xmax,NULL);
+    hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = ymin = strtod(arg_ymin,NULL);
+    hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = ymax = strtod(arg_ymax,NULL);
     hc.tminpeq = tmin = strtod(arg_tmin,NULL);
     hc.tmaxpeq = tmax = strtod(arg_tmax,NULL);
   }

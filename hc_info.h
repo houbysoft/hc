@@ -30,6 +30,12 @@ extern "C" {
 // hc_config's hc.flags
 #define PRINTFULL 0x1
 
+// Graph types -- do not change order; the GUI relies on these values
+enum HCGT { HCGT_NULL, HCGT_2D, HCGT_PARAMETRIC, HCGT_VALUESPOINTS, HCGT_VALUESLINE, HCGT_3D, HCGT_SLPFLD, HCGT_BOXPLOT, HCGT_COUNT };
+enum HCGT_IDX { HCGT_IDX_2D, HCGT_IDX_PARAMETRIC, HCGT_IDX_SLPFLD, HCGT_IDX_COUNT };
+
+#define hcgt_get_idx(type) (type == HCGT_2D ? HCGT_IDX_2D : type == HCGT_PARAMETRIC ? HCGT_IDX_PARAMETRIC : type == HCGT_SLPFLD ? HCGT_IDX_SLPFLD : 0)
+
 typedef struct hc_config {
   char announce; // used when command line options are supplied to supress configuration notice
   char rpn;
@@ -46,39 +52,23 @@ typedef struct hc_config {
   int graph_height;
   unsigned int graph_points_3d;
   double peqstep;
-  double xmin2d;
-  double xmax2d;
-  double ymin2d;
-  double ymax2d;
+  double xmin2d[HCGT_IDX_COUNT];
+  double xmax2d[HCGT_IDX_COUNT];
+  double ymin2d[HCGT_IDX_COUNT];
+  double ymax2d[HCGT_IDX_COUNT];
   double xmin3d;
   double xmax3d;
   double ymin3d;
   double ymax3d;
   double zmin3d;
   double zmax3d;
-  double xminsf;
-  double xmaxsf;
-  double yminsf;
-  double ymaxsf;
   double tminpeq;
   double tmaxpeq;
-  double xminpeq;
-  double xmaxpeq;
-  double yminpeq;
-  double ymaxpeq;
   char flags;
 } hc_config_;
 
 extern struct hc_config hc;
 
-// Graph types -- do not change order or numbers; the GUI relies on these values
-#define HCGT_2D 1
-#define HCGT_PARAMETRIC 2
-#define HCGT_VALUESPOINTS 3
-#define HCGT_VALUESLINE 4
-#define HCGT_3D 5
-#define HCGT_SLPFLD 6
-#define HCGT_BOXPLOT 7
 
 #ifdef __cplusplus
 }

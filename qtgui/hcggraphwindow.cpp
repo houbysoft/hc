@@ -276,19 +276,19 @@ void HCGGraphWindow::updateOptions(int type)
   switch (type)
   {
   case HCGT_2D:
-    xmin2D->setText(QString().setNum(hc.xmin2d, 'g', hc.precision));
-    xmax2D->setText(QString().setNum(hc.xmax2d, 'g', hc.precision));
-    ymin2D->setText(QString().setNum(hc.ymin2d, 'g', hc.precision));
-    ymax2D->setText(QString().setNum(hc.ymax2d, 'g', hc.precision));
+    xmin2D->setText(QString().setNum(hc.xmin2d[hcgt_get_idx(HCGT_2D)], 'g', hc.precision));
+    xmax2D->setText(QString().setNum(hc.xmax2d[hcgt_get_idx(HCGT_2D)], 'g', hc.precision));
+    ymin2D->setText(QString().setNum(hc.ymin2d[hcgt_get_idx(HCGT_2D)], 'g', hc.precision));
+    ymax2D->setText(QString().setNum(hc.ymax2d[hcgt_get_idx(HCGT_2D)], 'g', hc.precision));
     break;
 
   case HCGT_PARAMETRIC:
     tminP->setText(QString().setNum(hc.tminpeq, 'g', hc.precision));
     tmaxP->setText(QString().setNum(hc.tmaxpeq, 'g', hc.precision));
-    xminP->setText(QString().setNum(hc.xminpeq, 'g', hc.precision));
-    xmaxP->setText(QString().setNum(hc.xmaxpeq, 'g', hc.precision));
-    yminP->setText(QString().setNum(hc.yminpeq, 'g', hc.precision));
-    ymaxP->setText(QString().setNum(hc.ymaxpeq, 'g', hc.precision));  
+    xminP->setText(QString().setNum(hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)], 'g', hc.precision));
+    xmaxP->setText(QString().setNum(hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)], 'g', hc.precision));
+    yminP->setText(QString().setNum(hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)], 'g', hc.precision));
+    ymaxP->setText(QString().setNum(hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)], 'g', hc.precision));  
     break;
 
   case HCGT_3D:
@@ -301,10 +301,10 @@ void HCGGraphWindow::updateOptions(int type)
     break;
 
   case HCGT_SLPFLD:
-    xminS->setText(QString().setNum(hc.xminsf, 'g', hc.precision));
-    xmaxS->setText(QString().setNum(hc.xmaxsf, 'g', hc.precision));
-    yminS->setText(QString().setNum(hc.yminsf, 'g', hc.precision));
-    ymaxS->setText(QString().setNum(hc.ymaxsf, 'g', hc.precision));
+    xminS->setText(QString().setNum(hc.xmin2d[hcgt_get_idx(HCGT_SLPFLD)], 'g', hc.precision));
+    xmaxS->setText(QString().setNum(hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)], 'g', hc.precision));
+    yminS->setText(QString().setNum(hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)], 'g', hc.precision));
+    ymaxS->setText(QString().setNum(hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)], 'g', hc.precision));
     break;
 
   default:
@@ -314,52 +314,36 @@ void HCGGraphWindow::updateOptions(int type)
 
 
 // x and y are relative to hc_graph.c's MEM_DRIVER_X and MEM_DRIVER_Y
-void HCGGraphWindow::zoom(double x, double y, double factor)
+void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefactor)
 {
-  double tmp;
+  double distx,disty;
+  double oldx,oldy;
+  double newx,newy;
+  int i;
   switch (gtypes->currentIndex() + 1)
   {
   case HCGT_2D:
-    tmp = hc.xmax2d - hc.xmin2d;
-    hc.xmin2d += x * (tmp / 494) - fabs(tmp) / 2;
-    hc.xmax2d = hc.xmin2d + fabs(tmp);
-    tmp = hc.ymax2d - hc.ymin2d;
-    hc.ymin2d += y * (tmp / 368) - fabs(tmp) / 2;
-    hc.ymax2d = hc.ymin2d + fabs(tmp);
-    hc.xmin2d += ((hc.xmax2d - hc.xmin2d) - ((hc.xmax2d - hc.xmin2d) / factor)) / 2.0;
-    hc.xmax2d -= ((hc.xmax2d - hc.xmin2d) - ((hc.xmax2d - hc.xmin2d) / factor)) / 2.0;
-    hc.ymin2d += ((hc.ymax2d - hc.ymin2d) - ((hc.ymax2d - hc.ymin2d) / factor)) / 2.0;
-    hc.ymax2d -= ((hc.ymax2d - hc.ymin2d) - ((hc.ymax2d - hc.ymin2d) / factor)) / 2.0;
-    break;
-
   case HCGT_PARAMETRIC:
-    tmp = hc.xmaxpeq - hc.xminpeq;
-    hc.xminpeq += x * (tmp / 494) - fabs(tmp) / 2;
-    hc.xmaxpeq = hc.xminpeq + fabs(tmp);
-    tmp = hc.ymaxpeq - hc.yminpeq;
-    hc.yminpeq += y * (tmp / 368) - fabs(tmp) / 2;
-    hc.ymaxpeq = hc.yminpeq + fabs(tmp);
-    hc.xminpeq += ((hc.xmaxpeq - hc.xminpeq) - ((hc.xmaxpeq - hc.xminpeq) / factor)) / 2.0;
-    hc.xmaxpeq -= ((hc.xmaxpeq - hc.xminpeq) - ((hc.xmaxpeq - hc.xminpeq) / factor)) / 2.0;
-    hc.yminpeq += ((hc.ymaxpeq - hc.yminpeq) - ((hc.ymaxpeq - hc.yminpeq) / factor)) / 2.0;
-    hc.ymaxpeq -= ((hc.ymaxpeq - hc.yminpeq) - ((hc.ymaxpeq - hc.yminpeq) / factor)) / 2.0;
+  case HCGT_SLPFLD:
+    i = hcgt_get_idx(gtypes->currentIndex() + 1);
+    distx = hc.xmax2d[i] - hc.xmin2d[i];
+    disty = hc.ymax2d[i] - hc.ymin2d[i];
+    oldx = (hc.xmin2d[i] + hc.xmax2d[i]) / 2;
+    oldy = (hc.ymin2d[i] + hc.ymax2d[i]) / 2;
+    newx = oldx + movefactor * ((x * (distx / 494) + hc.xmin2d[i]) - oldx);
+    newy = oldy + movefactor * ((y * (disty / 368) + hc.ymin2d[i]) - oldy);
+    hc.xmin2d[i] = newx - fabs(distx) / 2;
+    hc.xmax2d[i] = newx + fabs(distx) / 2;
+    hc.ymin2d[i] = newy - fabs(disty) / 2;
+    hc.ymax2d[i] = newy + fabs(disty) / 2;
+    hc.xmin2d[i] += ((hc.xmax2d[i] - hc.xmin2d[i]) - ((hc.xmax2d[i] - hc.xmin2d[i]) / zoomfactor)) / 2.0;
+    hc.xmax2d[i] -= ((hc.xmax2d[i] - hc.xmin2d[i]) - ((hc.xmax2d[i] - hc.xmin2d[i]) / zoomfactor)) / 2.0;
+    hc.ymin2d[i] += ((hc.ymax2d[i] - hc.ymin2d[i]) - ((hc.ymax2d[i] - hc.ymin2d[i]) / zoomfactor)) / 2.0;
+    hc.ymax2d[i] -= ((hc.ymax2d[i] - hc.ymin2d[i]) - ((hc.ymax2d[i] - hc.ymin2d[i]) / zoomfactor)) / 2.0;
     break;
 
   case HCGT_3D:
     // TODO
-    break;
-
-  case HCGT_SLPFLD:
-    tmp = hc.xmaxsf - hc.xminsf;
-    hc.xminsf += x * (tmp / 494) - fabs(tmp) / 2;
-    hc.xmaxsf = hc.xminsf + fabs(tmp);
-    tmp = hc.ymaxsf - hc.yminsf;
-    hc.yminsf += y * (tmp / 368) - fabs(tmp) / 2;
-    hc.ymaxsf = hc.yminsf + fabs(tmp);
-    hc.xminsf += ((hc.xmaxsf - hc.xminsf) - ((hc.xmaxsf - hc.xminsf) / factor)) / 2.0;
-    hc.xmaxsf -= ((hc.xmaxsf - hc.xminsf) - ((hc.xmaxsf - hc.xminsf) / factor)) / 2.0;
-    hc.yminsf += ((hc.ymaxsf - hc.yminsf) - ((hc.ymaxsf - hc.yminsf) / factor)) / 2.0;
-    hc.ymaxsf -= ((hc.ymaxsf - hc.yminsf) - ((hc.ymaxsf - hc.yminsf) / factor)) / 2.0;
     break;
 
   default:
@@ -381,11 +365,11 @@ void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
   switch (event->button())
   {
   case Qt::LeftButton:
-    parentWindow->zoom(x, y, HCG_ZOOM_FACTOR);
+    parentWindow->zoom(x, y, HCG_ZOOM_FACTOR, HCG_MOVE_FACTOR);
     break;
 
   case Qt::RightButton:
-    parentWindow->zoom(x, y, 1.0 / HCG_ZOOM_FACTOR);
+    parentWindow->zoom(x, y, 1.0 / HCG_ZOOM_FACTOR, HCG_MOVE_FACTOR);
     break;
 
   default:
@@ -405,5 +389,5 @@ void HCGGraphDisplay::wheelEvent(QWheelEvent *event)
   }
   y = 368 - y;
 
-  parentWindow->zoom(x, y, pow(HCG_ZOOM_FACTOR, event->delta() / 8 / 15));
+  parentWindow->zoom(x, y, pow(HCG_ZOOM_FACTOR, event->delta() / 8 / 15), HCG_MOVE_FACTOR);
 }
