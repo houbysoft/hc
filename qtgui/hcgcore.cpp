@@ -51,6 +51,18 @@ char *HCGCore::result(QString expr)
 }
 
 
+void HCGCore::startRead()
+{
+  hc_mutex.lock();
+}
+
+
+void HCGCore::endRead()
+{
+  hc_mutex.unlock();
+}
+
+
 void HCGCore::load(QString filename)
 {
   QMutexLocker locker(&hc_mutex);

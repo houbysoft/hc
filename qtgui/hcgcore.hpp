@@ -38,6 +38,8 @@ class HCGCore : public QObject {
   void closeAll();
   bool tryUpdate();
   bool warnPrecision();
+  void startRead();
+  void endRead();
 
   public slots:
   void setPrecision(int precision);

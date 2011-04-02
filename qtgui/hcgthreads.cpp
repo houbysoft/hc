@@ -18,6 +18,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <math.h>
 #ifdef WIN32
 #include <hul.h>
 #endif
@@ -47,6 +48,90 @@ HCGResultThread::HCGResultThread(QString e)
 void HCGResultThread::run()
 {
   emit computation_finished(expr, hcgcore->result(expr));
+}
+
+
+void HCGZoomThread::run()
+{
+  double distx,disty;
+  double oldx,oldy;
+  double newx,newy;
+  double xmin2d,xmax2d,ymin2d,ymax2d;
+  int i;
+  QString cmd;
+  switch (type)
+  {
+  case HCGT_2D:
+  case HCGT_PARAMETRIC:
+  case HCGT_SLPFLD:
+    i = hcgt_get_idx(type);
+    hcgcore->startRead();
+    distx = hc.xmax2d[i] - hc.xmin2d[i];
+    disty = hc.ymax2d[i] - hc.ymin2d[i];
+    oldx = (hc.xmin2d[i] + hc.xmax2d[i]) / 2;
+    oldy = (hc.ymin2d[i] + hc.ymax2d[i]) / 2;
+    newx = oldx + movefactor * ((x * (distx / 494) + hc.xmin2d[i]) - oldx);
+    newy = oldy + movefactor * ((y * (disty / 368) + hc.ymin2d[i]) - oldy);
+    hcgcore->endRead();
+    xmin2d = newx - fabs(distx) / 2;
+    xmax2d = newx + fabs(distx) / 2;
+    ymin2d = newy - fabs(disty) / 2;
+    ymax2d = newy + fabs(disty) / 2;
+    xmin2d += ((xmax2d - xmin2d) - ((xmax2d - xmin2d) / zoomfactor)) / 2.0;
+    xmax2d -= ((xmax2d - xmin2d) - ((xmax2d - xmin2d) / zoomfactor)) / 2.0;
+    ymin2d += ((ymax2d - ymin2d) - ((ymax2d - ymin2d) / zoomfactor)) / 2.0;
+    ymax2d -= ((ymax2d - ymin2d) - ((ymax2d - ymin2d) / zoomfactor)) / 2.0;
+    break;
+
+  case HCGT_3D:
+    // TODO
+    return;
+
+  default:
+    return;
+  }
+
+  switch (type)
+  {
+  case HCGT_2D:
+    cmd = "graph(";
+    break;
+
+  case HCGT_PARAMETRIC:
+    cmd = "graphpeq(";
+    break;
+
+  case HCGT_SLPFLD:
+    cmd = "slpfld(";
+    break;
+
+  case HCGT_3D:
+    // TODO
+    return;
+  }
+  cmd += expr;
+  switch (type)
+  {
+  case HCGT_2D:
+    cmd += "," + QString().setNum(xmin2d) + "," + QString().setNum(xmax2d) + "," + QString().setNum(ymin2d) + "," + QString().setNum(ymax2d);
+    break;
+
+  case HCGT_PARAMETRIC:
+    hcgcore->startRead();
+    cmd += "," + QString().setNum(hc.tminpeq) + "," + QString().setNum(hc.tmaxpeq) + "," + QString().setNum(xmin2d) + "," + QString().setNum(xmax2d) + "," + QString().setNum(ymin2d) + "," + QString().setNum(ymax2d);
+    hcgcore->endRead();
+    break;
+
+  case HCGT_SLPFLD:
+    cmd += "," + QString().setNum(xmin2d) + "," + QString().setNum(xmax2d) + "," + QString().setNum(ymin2d) + "," + QString().setNum(ymax2d);
+    break;
+
+  case HCGT_3D:
+    // TODO
+    return;
+  }
+  cmd += ")";
+  free(hcgcore->result(cmd));
 }
 
 

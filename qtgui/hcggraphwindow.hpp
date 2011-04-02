@@ -33,11 +33,13 @@
 #include <QStackedWidget>
 #include <QGroupBox>
 #include <QWheelEvent>
+#include <QCursor>
 
 
 #define HCG_ZOOM_FACTOR (1.05)
 // HCG_MOVE_FACTOR runs from 0 to 1. 0 means no move, 1 means center at new point.
 #define HCG_MOVE_FACTOR (0.1)
+#define HCG_GET_XY(mx,my) {mx=event->x() - 90;my = event->y() - 56;if (mx < 0 || my < 0 || mx > 494 || my > 368){event->ignore();return;}my = 368 - my;}
 
 
 class HCGGraphWindow;
@@ -51,6 +53,8 @@ class HCGGraphDisplay : public QLabel {
 
   protected:
   void mousePressEvent(QMouseEvent *event);
+  void mouseReleaseEvent(QMouseEvent *event);
+  void mouseMoveEvent(QMouseEvent *event);
   void wheelEvent(QWheelEvent *event);
   
   public:

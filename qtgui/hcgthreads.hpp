@@ -56,6 +56,25 @@ class HCGResultThread : public QThread {
   ~HCGResultThread() {};
 };
 
+class HCGZoomThread : public QThread {
+  Q_OBJECT
+
+  protected:
+  void run();
+
+  private:
+  double x;
+  double y;
+  double zoomfactor;
+  double movefactor;
+  int type;
+  QString expr;
+
+  public:
+  HCGZoomThread(double ax, double ay, double azoomfactor, double amovefactor, int atype, QString aexpr) {x=ax; y=ay; zoomfactor=azoomfactor; movefactor=amovefactor; type=atype; expr=aexpr;};
+  ~HCGZoomThread() {};
+};
+
 #ifdef WIN32
 class HCGUpdateThread : public QThread {
   Q_OBJECT

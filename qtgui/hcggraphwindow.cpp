@@ -316,78 +316,48 @@ void HCGGraphWindow::updateOptions(int type)
 // x and y are relative to hc_graph.c's MEM_DRIVER_X and MEM_DRIVER_Y
 void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefactor)
 {
-  double distx,disty;
-  double oldx,oldy;
-  double newx,newy;
-  int i;
-  switch (gtypes->currentIndex() + 1)
-  {
-  case HCGT_2D:
-  case HCGT_PARAMETRIC:
-  case HCGT_SLPFLD:
-    i = hcgt_get_idx(gtypes->currentIndex() + 1);
-    distx = hc.xmax2d[i] - hc.xmin2d[i];
-    disty = hc.ymax2d[i] - hc.ymin2d[i];
-    oldx = (hc.xmin2d[i] + hc.xmax2d[i]) / 2;
-    oldy = (hc.ymin2d[i] + hc.ymax2d[i]) / 2;
-    newx = oldx + movefactor * ((x * (distx / 494) + hc.xmin2d[i]) - oldx);
-    newy = oldy + movefactor * ((y * (disty / 368) + hc.ymin2d[i]) - oldy);
-    hc.xmin2d[i] = newx - fabs(distx) / 2;
-    hc.xmax2d[i] = newx + fabs(distx) / 2;
-    hc.ymin2d[i] = newy - fabs(disty) / 2;
-    hc.ymax2d[i] = newy + fabs(disty) / 2;
-    hc.xmin2d[i] += ((hc.xmax2d[i] - hc.xmin2d[i]) - ((hc.xmax2d[i] - hc.xmin2d[i]) / zoomfactor)) / 2.0;
-    hc.xmax2d[i] -= ((hc.xmax2d[i] - hc.xmin2d[i]) - ((hc.xmax2d[i] - hc.xmin2d[i]) / zoomfactor)) / 2.0;
-    hc.ymin2d[i] += ((hc.ymax2d[i] - hc.ymin2d[i]) - ((hc.ymax2d[i] - hc.ymin2d[i]) / zoomfactor)) / 2.0;
-    hc.ymax2d[i] -= ((hc.ymax2d[i] - hc.ymin2d[i]) - ((hc.ymax2d[i] - hc.ymin2d[i]) / zoomfactor)) / 2.0;
-    break;
-
-  case HCGT_3D:
-    // TODO
-    break;
-
-  default:
-    return;
-  }
-  updateOptions(gtypes->currentIndex() + 1);
-  drawGraph();
+  HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, gtypes->currentIndex() + 1, lineedit->text());
+  zThread->start();
 }
 
 
 void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
 {
-  double x = event->x() - 90;
-  double y = event->y() - 56;
-  if (x < 0 || y < 0 || x > 494 || y > 368)
-    return;
-  y = 368 - y;
-
   switch (event->button())
   {
   case Qt::LeftButton:
-    parentWindow->zoom(x, y, HCG_ZOOM_FACTOR, HCG_MOVE_FACTOR);
-    break;
-
-  case Qt::RightButton:
-    parentWindow->zoom(x, y, 1.0 / HCG_ZOOM_FACTOR, HCG_MOVE_FACTOR);
+    setCursor(QCursor(Qt::SizeAllCursor));
     break;
 
   default:
-    break;
+    event->ignore();
   }
+}
+
+
+void HCGGraphDisplay::mouseReleaseEvent(QMouseEvent *event)
+{
+  switch (event->button())
+  {
+  case Qt::LeftButton:
+    setCursor(QCursor(Qt::ArrowCursor));
+    break;
+
+  default:
+    event->ignore();
+  }
+}
+
+
+void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *event)
+{
+  // TODO, this will move the graph
 }
 
 
 void HCGGraphDisplay::wheelEvent(QWheelEvent *event)
 {
-  double x = event->x() - 90;
-  double y = event->y() - 56;
-  if (x < 0 || y < 0 || x > 494 || y > 368)
-  {
-    event->ignore();
-    return;
-  }
-  y = 368 - y;
-
+  double x,y;
+  HCG_GET_XY(x,y);
   parentWindow->zoom(x, y, pow(HCG_ZOOM_FACTOR, event->delta() / 8 / 15), HCG_MOVE_FACTOR);
 }
