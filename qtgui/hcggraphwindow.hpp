@@ -50,6 +50,7 @@ class HCGGraphDisplay : public QLabel {
 
   private:
   HCGGraphWindow *parentWindow;
+  double movex, movey;
 
   protected:
   void mousePressEvent(QMouseEvent *event);
