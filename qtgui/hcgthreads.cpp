@@ -65,14 +65,14 @@ void HCGZoomThread::run()
   case HCGT_PARAMETRIC:
   case HCGT_SLPFLD:
     i = hcgt_get_idx(type);
-    hcgcore->startRead();
+    hcgcore->lock();
     distx = hc.xmax2d[i] - hc.xmin2d[i];
     disty = hc.ymax2d[i] - hc.ymin2d[i];
     oldx = (hc.xmin2d[i] + hc.xmax2d[i]) / 2;
     oldy = (hc.ymin2d[i] + hc.ymax2d[i]) / 2;
     newx = oldx + movefactor * ((x * (distx / 494) + hc.xmin2d[i]) - oldx);
     newy = oldy + movefactor * ((y * (disty / 368) + hc.ymin2d[i]) - oldy);
-    hcgcore->endRead();
+    hcgcore->unlock();
     xmin2d = newx - fabs(distx) / 2;
     xmax2d = newx + fabs(distx) / 2;
     ymin2d = newy - fabs(disty) / 2;
@@ -117,9 +117,9 @@ void HCGZoomThread::run()
     break;
 
   case HCGT_PARAMETRIC:
-    hcgcore->startRead();
+    hcgcore->lock();
     cmd += "," + QString().setNum(hc.tminpeq) + "," + QString().setNum(hc.tmaxpeq) + "," + QString().setNum(xmin2d) + "," + QString().setNum(xmax2d) + "," + QString().setNum(ymin2d) + "," + QString().setNum(ymax2d);
-    hcgcore->endRead();
+    hcgcore->unlock();
     break;
 
   case HCGT_SLPFLD:

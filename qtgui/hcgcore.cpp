@@ -51,13 +51,13 @@ char *HCGCore::result(QString expr)
 }
 
 
-void HCGCore::startRead()
+void HCGCore::lock()
 {
   hc_mutex.lock();
 }
 
 
-void HCGCore::endRead()
+void HCGCore::unlock()
 {
   hc_mutex.unlock();
 }
