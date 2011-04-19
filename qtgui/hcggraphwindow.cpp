@@ -338,10 +338,13 @@ void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
 
 void HCGGraphDisplay::mouseReleaseEvent(QMouseEvent *event)
 {
+  double x,y;
   switch (event->button())
   {
   case Qt::LeftButton:
     setCursor(QCursor(Qt::ArrowCursor));
+    HCG_GET_XY(x,y);
+    parentWindow->zoom(247 + movex - x, 184 + movey - y, 1, 1);
     break;
 
   default:
@@ -352,15 +355,6 @@ void HCGGraphDisplay::mouseReleaseEvent(QMouseEvent *event)
 
 void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *event)
 {
-  double x,y;
-  HCG_GET_XY(x,y);
-  // 247 is the center x coordinate, 184 is the center y coordinate
-  if (fabs(movex - x) >= 5 || fabs(movey - y) >= 5)
-  {
-    // TODO : if the user moves the mouse fast, the move will not be smooth as a result of the graph engine not keeping up; a workaround is needed
-    parentWindow->zoom(247 + movex - x, 184 + movey - y, 1, 1);
-    movex = x; movey = y;
-  }
 }
 
 
