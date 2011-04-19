@@ -41,12 +41,23 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"length", "0.000621371192", "miles", "mi", NULL},
   {"length", "(1/0.0254)", "inches", "inch", NULL},
   {"weight", "2.20462262185", "pounds", "lbs", NULL},
+  {"weight", "0.157473044", "stones", NULL},
   {"volume", "1000", "liters", "L", NULL},
   {"volume", "1000000", "mililiters", "mL", "ml", NULL},
   {"volume", "(1000000*(1/29.5735296875))", "US fluid ounces", "fl oz", "floz", "fluid ounces", NULL},
   {"temperature", "", "C", "degree Celsius", "Celsius", NULL},
   {"temperature", "", "F", "degree Fahrenheit", "Fahrenheit", NULL},
-  {"temperature", "", "K", "degree Kelvin", "Kelvin", NULL}
+  {"temperature", "", "K", "degree Kelvin", "Kelvin", NULL},
+  // check below
+  {"area", "10000", "square centimeters", "cm^2", NULL},
+  {"area", "2.47105381e-4", "acres", NULL},
+  {"area", "1000000", "square milimeters", "mm^2", NULL},
+  {"area", "1.19599005", "square yards", "yards^2", "yd^2", NULL},
+  {"area", "3.86102159e-7", "square miles", "mi^2", NULL},
+  {"area", "10.7639104", "square feet", "feet^2", NULL},
+  {"area", "1550.0031", "square inches", "inches^2", NULL},
+  {"area", "1e-6", "square kilometers", "km^2", NULL}
+  //{"area", "1.974e9", "circular mils", NULL}
 };
 
 /* hc_conversions_basenames fields
@@ -57,7 +68,8 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
 const char *hc_conversions_basenames[HC_CONVERSIONS_BASENAMES][MAX_CONVERSION_FIELDS] = {
   {"length", "meters", "m", NULL},
   {"weight", "kilograms", "kg", NULL},
-  {"volume", "cubic meters", "m^3", NULL}
+  {"volume", "cubic meters", "m^3", NULL},
+  {"area", "square meters", "m^2", NULL}
 };
 
 
