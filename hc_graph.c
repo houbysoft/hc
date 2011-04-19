@@ -61,7 +61,7 @@ void hc_graph_init()
   free(driver_memory);
   driver_memory = malloc(MEM_DRIVER_Y * MEM_DRIVER_X * 3); // 3 for RGB
   if (!driver_memory) mem_error();
-  memset(driver_memory, 255, MEM_DRIVER_Y * MEM_DRIVER_X * 3); // set all pixels to white (background)
+  memset(driver_memory, hc.bgcolor == WHITE ? 255 : 0, MEM_DRIVER_Y * MEM_DRIVER_X * 3); // set all pixels to background color
   plsmem(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
 #elif defined(HCG) && defined(WIN32)
   plsdev("wingcc");
@@ -75,7 +75,10 @@ void hc_graph_init()
     plsdev("pngcairo");
 #endif
 
-  plscol0(0,255,255,255);
+  if (hc.bgcolor == WHITE)
+    plscol0(0,255,255,255);
+  else
+    plscol0(0,0,0,0);
   plscol0(1,255,0,0); // red
   plscol0(2,255,255,0); // yellow
   plscol0(3,0,255,0); // green
@@ -90,7 +93,10 @@ void hc_graph_init()
   plscol0(12,64,224,208); // turquoise
   plscol0(13,255,0,255); // magenta
   plscol0(14,250,128,114); // salmon
-  plscol0(15,0,0,0);
+  if (hc.bgcolor == WHITE)
+    plscol0(15,0,0,0);
+  else
+    plscol0(15,255,255,255);
   plinit();
   plcol0(15);
 }

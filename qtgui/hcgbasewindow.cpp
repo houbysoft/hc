@@ -260,6 +260,17 @@ void HCGBaseWindow::setExpMode(QString mode)
 }
 
 
+void HCGBaseWindow::setColor(char bgcolor)
+{
+  if (bgcolor == WHITE)
+  {
+    white->setChecked(true);
+  } else {
+    black->setChecked(true);
+  }
+}
+
+
 void HCGBaseWindow::createOptionMenu() {
   QMenu *optmenu = menuBar()->addMenu("&Options");
 
@@ -297,6 +308,18 @@ void HCGBaseWindow::createOptionMenu() {
   connect(rpn, SIGNAL(triggered(bool)), hcgcore, SLOT(setRPN(bool)));
   optmenu->addAction(rpn);
 
+  QSignalMapper *bgcolor_mapper = new QSignalMapper(this);
+  connect(bgcolor_mapper, SIGNAL(mapped(QString)), hcgcore, SLOT(setColor(QString)));
+  QMenu *bgcolor_menu = optmenu->addMenu("Graph background color");
+  QActionGroup *bgcolor_group = new QActionGroup(this);
+  white = new QAction("White", bgcolor_group); white->setCheckable(true);
+  black = new QAction("Black", bgcolor_group); black->setCheckable(true);
+  bgcolor_mapper->setMapping(white, "white");
+  bgcolor_mapper->setMapping(black, "black");
+  connect(white, SIGNAL(triggered()), bgcolor_mapper, SLOT(map()));
+  connect(black, SIGNAL(triggered()), bgcolor_mapper, SLOT(map()));
+  bgcolor_menu->addAction(white); bgcolor_menu->addAction(black);
+
 #ifdef WIN32
   autoupdate = new QAction("Check updates on launch", optmenu); autoupdate->setCheckable(true);
   connect(autoupdate, SIGNAL(triggered(bool)), hcgcore, SLOT(setAutoUpdate(bool)));
@@ -315,6 +338,7 @@ void HCGBaseWindow::createOptionMenu() {
   connect(hcgcore, SIGNAL(angleModeChanged(QString)), this, SLOT(setAngleMode(QString)));
   connect(hcgcore, SIGNAL(expModeChanged(QString)), this, SLOT(setExpMode(QString)));
   connect(hcgcore, SIGNAL(RPNChanged(bool)), this, SLOT(setRPN(bool)));
+  connect(hcgcore, SIGNAL(colorChanged(char)), this, SLOT(setColor(char)));
 #ifdef WIN32
   connect(hcgcore, SIGNAL(autoUpdateChanged(bool)), this, SLOT(setAutoUpdate(bool)));
 #endif

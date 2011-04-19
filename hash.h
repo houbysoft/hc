@@ -159,5 +159,6 @@
 #define HASH_COUNT 92330
 #define HASH_GAMMA 2346
 #define HASH_CONVERT 81061
+#define HASH_BGCOLOR 92486
 
 #endif

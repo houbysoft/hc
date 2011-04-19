@@ -30,6 +30,10 @@ extern "C" {
 // hc_config's hc.flags
 #define PRINTFULL 0x1
 
+// hc_config's hc.bgcolor
+#define WHITE '0'
+#define BLACK '1'
+
 // Graph types -- do not change order; the GUI relies on these values
 enum HCGT { HCGT_NULL, HCGT_2D, HCGT_PARAMETRIC, HCGT_VALUESPOINTS, HCGT_VALUESLINE, HCGT_3D, HCGT_SLPFLD, HCGT_BOXPLOT, HCGT_COUNT };
 enum HCGT_IDX { HCGT_IDX_2D, HCGT_IDX_PARAMETRIC, HCGT_IDX_SLPFLD, HCGT_IDX_COUNT };
@@ -65,6 +69,7 @@ typedef struct hc_config {
   double tminpeq;
   double tmaxpeq;
   char flags;
+  char bgcolor; // background color for graphs -- either WHITE or BLACK
 } hc_config_;
 
 extern struct hc_config hc;

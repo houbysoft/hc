@@ -148,6 +148,7 @@ const char *hc_names[][5] = {
   {"\\load","dir","#","",""},
   {"\\tstep","dir","#","",""},
   {"\\3dpoints","dir","#","",""},
+  {"\\bgcolor","dir","#","","Switches graph background color between white and black."},
   // HELP TOPICS
   {"conversions","#","#","","HC is a powerful converter. See the \"Conversions\" menu in the GUI version for a list of all conversions functions"},
   {"complex","#","#","","Complex numbers are inputted and outputted with this syntax:\nreal_part i imaginary_part (without any spaces, they are added here for clarity)\n\nFor example, 5 + 3i would be written as\n5i3\nin HC. This format is inspired by the J programming language.\nAs another example, you can try to type\nsqrt(-1)\nin HC. The result given will be:\n0i1\n\nOther notes\n* Trigonometry functions will refuse to work with complex numbers unless you are in RAD mode (switch to it by typing \\rad).\n* You cannot type a non-number as the real part or imaginary part. Therefore, you cannot write something like 0ipi, if you wanted to have a number pi*i. To express this number you would have to use something like:\n0i1*pi"},
@@ -2291,6 +2292,13 @@ void hc_process_direction(char *d)
   case HASH_LOAD:
     hc_load(&d[i+1]);
     break;
+  case HASH_BGCOLOR:
+    hc.bgcolor = hc.bgcolor==WHITE ? BLACK : WHITE;
+    if (hc.bgcolor == WHITE)
+      notify("Graph background is now set to white.\n");
+    else
+      notify("Graph background is now set to black.\n");
+    break;
   default:
     error_nq("Unknown command.");
     break;
@@ -2364,6 +2372,7 @@ void hc_load_cfg()
   hc.xmax2d[hcgt_get_idx(HCGT_2D)] = hc.ymax2d[hcgt_get_idx(HCGT_2D)] = hc.xmax3d = hc.ymax3d = hc.zmax3d = hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = 10;
   hc.tminpeq = 0;
   hc.tmaxpeq = 2 * 3.1415926535897932384626433832795028841971693993751058209749445923;
+  hc.bgcolor = BLACK;
   if (!fr)
   {
     hc.rpn = FALSE;
@@ -2400,6 +2409,11 @@ void hc_load_cfg()
             else
               hc.rpn = FALSE;
             break;
+      case HASH_BGCOLOR:
+        if (buffer[i+1]==WHITE)
+          hc.bgcolor = WHITE;
+        else
+          hc.bgcolor = BLACK;
       case HASH_AUTOUPDATE:
         if (buffer[i+1]=='1')
               hc.autoupdate = TRUE;
@@ -2563,6 +2577,7 @@ void hc_save_cfg()
   fprintf(fw,"xmaxpeq=%f\n",hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
   fprintf(fw,"yminpeq=%f\n",hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
   fprintf(fw,"ymaxpeq=%f\n",hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
+  fprintf(fw,"bgcolor=%c\n",hc.bgcolor);
   fclose(fw);
 }
 

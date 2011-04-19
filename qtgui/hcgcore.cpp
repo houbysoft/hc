@@ -94,6 +94,14 @@ void HCGCore::setExpMode(QString mode)
 }
 
 
+void HCGCore::setColor(QString color)
+{
+  QMutexLocker locker(&hc_mutex);
+  hc.bgcolor = color == "white" ? WHITE : BLACK;
+  emit colorChanged(hc.bgcolor);
+}
+
+
 void HCGCore::setRPN(bool enabled)
 {
   QMutexLocker locker(&hc_mutex);
@@ -123,6 +131,7 @@ void HCGCore::emitSignals()
   emit angleModeChanged(QString(hc.angle));
   emit precisionChanged(hc.precision);
   emit autoUpdateChanged(bool(hc.autoupdate));
+  emit colorChanged(hc.bgcolor);
 }
 
 

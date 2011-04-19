@@ -46,6 +46,7 @@ class HCGCore : public QObject {
   void setAngleMode(QString mode);
   void setExpMode(QString mode);
   void setRPN(bool enabled);
+  void setColor(QString color);
   void setAutoUpdate(bool enabled);
   void cleanup();
 
@@ -62,6 +63,7 @@ class HCGCore : public QObject {
   void expModeChanged(QString mode);
   void RPNChanged(bool rpn_enabled);
   void autoUpdateChanged(bool enabled);
+  void colorChanged(char bgcolor);
   void closeAll_signal();
 };
 

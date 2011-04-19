@@ -65,7 +65,7 @@ class HCGBaseWindow : public QMainWindow {
   void createOptionMenu();
   void createLogEdit();
   QSpinBox *prec_spinbox;
-  QAction *rad,*grad,*deg,*normal,*sci,*eng,*rpn,*autoupdate;
+  QAction *rad,*grad,*deg,*normal,*sci,*eng,*rpn,*autoupdate,*white,*black;
   QTextEdit *log_edit;
 #ifdef WIN32
   QProgressBar *updateBar;
@@ -108,6 +108,7 @@ class HCGBaseWindow : public QMainWindow {
   void setAngleMode(QString mode);
   void setExpMode(QString mode);
   void setRPN(bool enabled);
+  void setColor(char bgcolor);
 #ifdef WIN32
   void setAutoUpdate(bool enabled);
   void processUpdateSilent(HUL *update);
