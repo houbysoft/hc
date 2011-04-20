@@ -56,8 +56,10 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"area", "3.86102159e-7", "square miles", "mi^2", NULL},
   {"area", "10.7639104", "square feet", "feet^2", NULL},
   {"area", "1550.0031", "square inches", "inches^2", NULL},
-  {"area", "1e-6", "square kilometers", "km^2", NULL}
-  //{"area", "1.974e9", "circular mils", NULL}
+  {"area", "1e-6", "square kilometers", "km^2", NULL},
+  {"area", "1e-4", "hectares", "ha", NULL},
+  {"area", "1e-2", "ares", NULL}
+  //{"area", "1.974e9", "circulacr mils", NULL}
 };
 
 /* hc_conversions_basenames fields
