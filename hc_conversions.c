@@ -40,6 +40,11 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"length", "0.001", "kilometers", "km", NULL},
   {"length", "0.000621371192", "miles", "mi", NULL},
   {"length", "(1/0.0254)", "inches", "inch", NULL},
+  {"length", "(1/0.9144)", "yards", "yd", NULL},
+  {"length", "1e10", "angstroms", NULL},
+  {"length", "(1/149597870691)", "astronomical units", "AU", "ua", NULL},
+  {"length", "(1/5.291772108e-11)", "atomic units", "atomic unit", NULL},
+  {"length", "10e18", "attometers", "am", NULL},
   {"weight", "2.20462262185", "pounds", "lbs", NULL},
   {"weight", "0.157473044", "stones", NULL},
   {"volume", "1000", "liters", "L", NULL},
@@ -48,9 +53,8 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"temperature", "", "C", "degree Celsius", "Celsius", NULL},
   {"temperature", "", "F", "degree Fahrenheit", "Fahrenheit", NULL},
   {"temperature", "", "K", "degree Kelvin", "Kelvin", NULL},
-  // check below
   {"area", "10000", "square centimeters", "cm^2", NULL},
-  {"area", "2.47105381e-4", "acres", NULL},
+  {"area", "(1/4046.8564224)", "acres", NULL},
   {"area", "1000000", "square milimeters", "mm^2", NULL},
   {"area", "1.19599005", "square yards", "yards^2", "yd^2", NULL},
   {"area", "3.86102159e-7", "square miles", "mi^2", NULL},
@@ -59,7 +63,6 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"area", "1e-6", "square kilometers", "km^2", NULL},
   {"area", "1e-4", "hectares", "ha", NULL},
   {"area", "1e-2", "ares", NULL}
-  //{"area", "1.974e9", "circulacr mils", NULL}
 };
 
 /* hc_conversions_basenames fields
