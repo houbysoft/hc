@@ -84,7 +84,17 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"area", "1550.0031", "square inches", "inches^2", NULL},
   {"area", "1e-6", "square kilometers", "km^2", NULL},
   {"area", "1e-4", "hectares", "ha", NULL},
-  {"area", "1e-2", "ares", NULL}
+  {"area", "1e-2", "ares", NULL},
+  {"speed", "1e2", "centimeters/second", "cm/s", NULL},
+  {"speed", "(1/3.048e-1)", "feet/second", NULL},
+  {"speed", "(1/5.08e-3)", "feet/minute", "feet/min", NULL},
+  {"speed", "(1/0.44704)", "miles/hour", "mph", NULL},
+  {"speed", "3.6", "kilometers/hour", "km/h", "kph", NULL},
+  {"speed", "(1/340.3)", "Mach", "M", "Ma", "machs", "mach", NULL},
+  {"speed", "(1/1.609344e3)", "Miles/second", "mps", "mile/s", "miles/s", NULL},
+  {"speed", "(1/26.8224)", "Miles/minute", "mpm", "mile/min", "miles/minute", NULL},
+  {"speed", "(15e5/127)", "Feet/hour", "fph", NULL},
+  {"speed", "(30e4/127)", "inches/min", "ipm", "in/m", NULL}
 };
 
 /* hc_conversions_basenames fields
@@ -96,7 +106,8 @@ const char *hc_conversions_basenames[HC_CONVERSIONS_BASENAMES][MAX_CONVERSION_FI
   {"length", "meters", "m", NULL},
   {"weight", "kilograms", "kg", NULL},
   {"volume", "cubic meters", "m^3", NULL},
-  {"area", "square meters", "m^2", NULL}
+  {"area", "square meters", "m^2", NULL},
+  {"speed", "meters/second", "m/s", NULL}
 };
 
 
