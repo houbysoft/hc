@@ -33,7 +33,7 @@
  * [x][3 to MAX_CONVERSION_FIELDS-1] : synonyms for the output unit name. Last entry is always NULL.
  */
 const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
-  {"length", "(1/0.3048)", "feet", "ft", NULL},
+  {"length", "(1/(12/39.37))", "feet", "ft", NULL},
   {"length", "1e24", "yoctometers", "ym", NULL},
   {"length", "1e21", "zeptometers", "zm", NULL},
   {"length", "1e15", "femtometers", "fermis", "fermi", NULL},
@@ -66,6 +66,7 @@ const char *hc_conversions[HC_CONVERSIONS][MAX_CONVERSION_FIELDS] = {
   {"length", "(1/(66*12/39.37))", "chains (Gunter)", "chains", "chain", NULL},
   {"length", "(1/30.48)", "chains (Ramsden's)", "engineer chains", NULL},
   {"length", "(1/0.4572)", "cubits", NULL},
+  {"length", "(1/2.2225e-2)", "fingers", NULL},
   {"weight", "2.20462262185", "pounds", "lbs", NULL},
   {"weight", "0.157473044", "stones", NULL},
   {"volume", "1000", "liters", "L", NULL},

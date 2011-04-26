@@ -28,8 +28,6 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   hbox = new QWidget(this);
   vbox = new QWidget(this);
   gdisp = new HCGGraphDisplay(this);
-  lineedit = new QLineEdit(this);
-  connect(lineedit, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
 
   vbox_layout = new QVBoxLayout(vbox);
   vbox_layout->setSpacing(0);
@@ -43,8 +41,88 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   gtypes->insertItems(0, gtypeslist);
   vbox_layout->addWidget(gtypes);
 
-  vbox_layout->addWidget(new QLabel(" Expression"));
-  vbox_layout->addWidget(lineedit);
+  QGroupBox *lineeditBox = new QGroupBox("Expression", this);
+  QVBoxLayout *lineeditVBox = new QVBoxLayout(this);
+  lineedits = new QStackedWidget(this);
+  lineeditVBox->addWidget(lineedits);
+  lineeditBox->setLayout(lineeditVBox);
+
+  // 2D line edit
+  QWidget *l2D = new QWidget(this);
+  QHBoxLayout *l2DBox = new QHBoxLayout(this);
+  l2D->setLayout(l2DBox);
+  l2DBox->addWidget(new QLabel("y1(x), y2(x), ... = "));
+  line2D = new QLineEdit();
+  connect(line2D, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  l2DBox->addWidget(line2D);
+  lineedits->addWidget(l2D);
+
+  // Parametric line edit
+  QWidget *lpar = new QWidget(this);
+  QHBoxLayout *lparBox = new QHBoxLayout(this);
+  lpar->setLayout(lparBox);
+  lparBox->addWidget(new QLabel("x(t) = "));
+  lineparx = new QLineEdit();
+  connect(lineparx, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  lparBox->addWidget(lineparx);
+  lparBox->addWidget(new QLabel("y(t) = "));
+  linepary = new QLineEdit();
+  connect(linepary, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  lparBox->addWidget(linepary);
+  lineedits->addWidget(lpar);
+
+  // Values (points) line edit
+  QWidget *lvp = new QWidget(this);
+  QHBoxLayout *lvpBox = new QHBoxLayout(this);
+  lvp->setLayout(lvpBox);
+  lvpBox->addWidget(new QLabel("[v_1, v_2, ...] = "));
+  linevp = new QLineEdit();
+  connect(linevp, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  lvpBox->addWidget(linevp);
+  lineedits->addWidget(lvp);
+
+  // Values (xyline) line edit
+  QWidget *lvl = new QWidget(this);
+  QHBoxLayout *lvlBox = new QHBoxLayout(this);
+  lvl->setLayout(lvlBox);
+  lvlBox->addWidget(new QLabel("[v_1, v_2, ...] = "));
+  linevl = new QLineEdit();
+  connect(linevl, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  lvlBox->addWidget(linevl);
+  lineedits->addWidget(lvl);
+
+  // 3D line edit
+  QWidget *l3D = new QWidget(this);
+  QHBoxLayout *l3DBox = new QHBoxLayout(this);
+  l3D->setLayout(l3DBox);
+  l3DBox->addWidget(new QLabel("z(x,y) = "));
+  line3D = new QLineEdit();
+  connect(line3D, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  l3DBox->addWidget(line3D);
+  lineedits->addWidget(l3D);
+
+  // Slope Field line edit
+  QWidget *lsf = new QWidget(this);
+  QHBoxLayout *lsfBox = new QHBoxLayout(this);
+  lsf->setLayout(lsfBox);
+  lsfBox->addWidget(new QLabel("dy/dx = "));
+  linesf = new QLineEdit();
+  connect(linesf, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  lsfBox->addWidget(linesf);
+  lineedits->addWidget(lsf);
+
+  // Boxplot line edit
+  QWidget *lbx = new QWidget(this);
+  QHBoxLayout *lbxBox = new QHBoxLayout(this);
+  lbx->setLayout(lbxBox);
+  lbxBox->addWidget(new QLabel("[v_1, v_2, ...] = "));
+  linebx = new QLineEdit();
+  connect(linebx, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  lbxBox->addWidget(linebx);
+  lineedits->addWidget(lbx);
+
+  vbox_layout->addWidget(lineeditBox);
+
 
   QGroupBox *optionsBox = new QGroupBox("Options", this);
   QVBoxLayout *optionsVBox = new QVBoxLayout(this);
@@ -183,7 +261,33 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
 {
   gdisp->setPixmap(map);
   gdisp->setFixedSize(x,y);
-  lineedit->setText(QString(args));
+  switch (type)
+  {
+  case HCGT_2D:
+    line2D->setText(QString(args));
+    break;
+  case HCGT_PARAMETRIC:
+    lineparx->setText(QString(args).split(",").first());
+    linepary->setText(QString(args).split(",").last());
+    break;
+  case HCGT_3D:
+    line3D->setText(QString(args));
+    break;
+  case HCGT_SLPFLD:
+    linesf->setText(QString(args));
+    break;
+  case HCGT_VALUESPOINTS:
+    linevp->setText(QString(args));
+    break;
+  case HCGT_VALUESLINE:
+    linevl->setText(QString(args));
+    break;
+  case HCGT_BOXPLOT:
+    linebx->setText(QString(args));
+    break;
+  default:
+    break;
+  }
   updateOptions(type);
   updateFullForm();
   show();
@@ -195,6 +299,30 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
 void HCGGraphWindow::updateFullForm()
 {
   fullform->setText("Full form : " + getFullForm());
+}
+
+
+QString HCGGraphWindow::lineText()
+{
+  switch (gtypes->currentIndex() + 1)
+  {
+  case HCGT_2D:
+    return "[" + line2D->text() + "]";
+  case HCGT_PARAMETRIC:
+    return lineparx->text() + "," + linepary->text();
+  case HCGT_VALUESPOINTS:
+    return linevp->text();
+  case HCGT_VALUESLINE:
+    return linevl->text();
+  case HCGT_3D:
+    return line3D->text();
+  case HCGT_SLPFLD:
+    return linesf->text();
+  case HCGT_BOXPLOT:
+    return linebx->text();
+  default:
+    return "";
+  }
 }
 
 
@@ -234,7 +362,7 @@ QString HCGGraphWindow::getFullForm()
   default:
     break;
   }
-  cmd += lineedit->text();
+  cmd += this->lineText();
   switch (gtypes->currentIndex() + 1)
   {
   case HCGT_2D:
@@ -273,6 +401,7 @@ void HCGGraphWindow::updateOptions(int type)
 {
   options->setCurrentIndex(type - 1);
   gtypes->setCurrentIndex(type - 1);
+  lineedits->setCurrentIndex(type - 1);
   switch (type)
   {
   case HCGT_2D:
@@ -316,7 +445,7 @@ void HCGGraphWindow::updateOptions(int type)
 // x and y are relative to hc_graph.c's MEM_DRIVER_X and MEM_DRIVER_Y
 void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefactor)
 {
-  HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, gtypes->currentIndex() + 1, lineedit->text());
+  HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, gtypes->currentIndex() + 1, this->lineText());
   zThread->start();
 }
 
