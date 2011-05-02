@@ -79,6 +79,7 @@ const char *hc_names[][5] = {
   {"graphpeq","func:expr_x,expr_y,tmin,tmax,xmin,xmax,ymin,ymax","Graphs","draw a parametric graph. tmin,...,ymax are optional","draw the parametric equation modeled by expr_x and expr_y (use t as the variable)\n    Note:\n     * the tmin, tmax, xmin, xmax, ymin and ymax arguments are optional"},
   {"graphp","func:[v_1,v_2,...,v_n]","#","","see help for graphpoints()"},
   {"graphpoints","func:[v_1,v_2,...,v_n]","Graphs","draw a data-point plot of values v_1,...,v_n","same as graphvalues(), but only draws points (ie. it does not connect them with lines)"},
+  {"graphpolar","func:expr_r,tmin,tmax,xmin,xmax,ymin,ymax","Graphs","draw a polar graph, tmin,...,ymax are optional","draw the polar equation modeled by expr_r, where t is the variable.\n    Note:\n     * the tmin, tmax, xmin, xmax, ymin and ymax arguments are optional"},
   {"graphv","func:[v_1,v_2,...,v_n]","#","","see help for graphvalues()"},
   {"graphvalues","func:[v_1,v_2,...,v_n]","Graphs","draw a xy-line plot of values v_1,...,v_n","synonym : graphv() - Use this to graph a table of values as a xy line. The values must be in a list. There are two formats which you can use; either simply list the y coordinates, and the x coordinates will be automatically added, starting from 0 and going +1 for each value, or the values can themselves be lists containing two elements: the x and the y coordinate.\n    Examples:\n     * Let's say you want to draw a line connecting three points: (0,0), (1,3), and (2,6). Since the x values are all just +1 increments, you can use : graphvalues([0,3,6]) or graphv([0,3,6])\n     * Now let's say your points are (0,0), (5,3) and (8,6). You can't use the same as above since HC would think your points' x coordinates are 0,1 and 2. For this data, you would need to use: graphvalues([[0,0],[5,3],[8,6]]) or graphv([[0,0],[5,3],[8,6]])"},
   {"gmul","func:expr_1,expr_2,...,expr_n","Graphs","deprecated - use graph([expr_1,expr_2,...,expr_n]) instead","- [DEPRECATED, use graph([expr_1, expr_2, ..., expr_n]) instead] gmul(expr_1, expr_2, ..., expr_n) - similar to graph, but can draw an arbitrary number of functions on one graph (note : to set xmin, etc., make a call to graph() first)"},
@@ -2370,8 +2371,8 @@ void hc_load_cfg()
   hc.peqstep = HC_PEQSTEP_DEFAULT;
   hc.xmin2d[hcgt_get_idx(HCGT_2D)] = hc.ymin2d[hcgt_get_idx(HCGT_2D)] = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xmin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = -10;
   hc.xmax2d[hcgt_get_idx(HCGT_2D)] = hc.ymax2d[hcgt_get_idx(HCGT_2D)] = hc.xmax3d = hc.ymax3d = hc.zmax3d = hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = 10;
-  hc.tminpeq = 0;
-  hc.tmaxpeq = 2 * 3.1415926535897932384626433832795028841971693993751058209749445923;
+  hc.tminpolar = hc.tminpeq = 0;
+  hc.tmaxpolar = hc.tmaxpeq = 2 * 3.1415926535897932384626433832795028841971693993751058209749445923;
   hc.bgcolor = BLACK;
   if (!fr)
   {
@@ -2512,6 +2513,12 @@ void hc_load_cfg()
       case HASH_TMAXPEQ:
         hc.tmaxpeq = strtod(&buffer[i+1],NULL);
         break;
+      case HASH_TMINPOLAR:
+        hc.tminpolar = strtod(&buffer[i+1],NULL);
+        break;
+      case HASH_TMAXPOLAR:
+        hc.tmaxpolar = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_XMINPEQ:
         hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = strtod(&buffer[i+1],NULL);
         break;
@@ -2573,6 +2580,8 @@ void hc_save_cfg()
   fprintf(fw,"ymaxsf=%f\n",hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)]);
   fprintf(fw,"tminpeq=%f\n",hc.tminpeq);
   fprintf(fw,"tmaxpeq=%f\n",hc.tmaxpeq);
+  fprintf(fw,"tminpolar=%f\n",hc.tminpolar);
+  fprintf(fw,"tmaxpolar=%f\n",hc.tmaxpolar);
   fprintf(fw,"xminpeq=%f\n",hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
   fprintf(fw,"xmaxpeq=%f\n",hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
   fprintf(fw,"yminpeq=%f\n",hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)]);

@@ -35,8 +35,8 @@ extern "C" {
 #define BLACK '1'
 
 // Graph types -- do not change order; the GUI relies on these values
-enum HCGT { HCGT_NULL, HCGT_2D, HCGT_PARAMETRIC, HCGT_VALUESPOINTS, HCGT_VALUESLINE, HCGT_3D, HCGT_SLPFLD, HCGT_BOXPLOT, HCGT_COUNT };
-enum HCGT_IDX { HCGT_IDX_2D, HCGT_IDX_PARAMETRIC, HCGT_IDX_SLPFLD, HCGT_IDX_COUNT };
+enum HCGT { HCGT_NULL, HCGT_2D, HCGT_PARAMETRIC, HCGT_VALUESPOINTS, HCGT_VALUESLINE, HCGT_3D, HCGT_SLPFLD, HCGT_BOXPLOT, HCGT_POLAR, HCGT_COUNT };
+enum HCGT_IDX { HCGT_IDX_2D, HCGT_IDX_PARAMETRIC, HCGT_IDX_SLPFLD, HCGT_IDX_POLAR, HCGT_IDX_COUNT };
 
 #define hcgt_get_idx(type) (type == HCGT_2D ? HCGT_IDX_2D : type == HCGT_PARAMETRIC ? HCGT_IDX_PARAMETRIC : type == HCGT_SLPFLD ? HCGT_IDX_SLPFLD : 0)
 
@@ -68,6 +68,8 @@ typedef struct hc_config {
   double zmax3d;
   double tminpeq;
   double tmaxpeq;
+  double tminpolar;
+  double tmaxpolar;
   char flags;
   char bgcolor; // background color for graphs -- either WHITE or BLACK
 } hc_config_;

@@ -52,6 +52,7 @@ void *driver_memory = NULL;
 
 
 void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
+char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double tmax, double xmin, double xmax, double ymin, double ymax, char *graph_top_label, int type, char *exprtmp);
 
 
 void hc_graph_init()
@@ -734,6 +735,71 @@ char hc_graph_slpfld(char *e)
 }
 
 
+char hc_graph_polar(char *e)
+{
+  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax;
+  func_expr = hc_get_arg(e,1);
+  t1 = hc_get_arg(e,2);
+  t2 = hc_get_arg(e,3);
+  t3 = hc_get_arg(e,4);
+  t4 = hc_get_arg(e,5);
+  t5 = hc_get_arg(e,6);
+  t6 = hc_get_arg(e,7);
+  arg_tmin = hc_result_(t1);
+  arg_tmax = hc_result_(t2);
+  arg_xmin = hc_result_(t3);
+  arg_xmax = hc_result_(t4);
+  arg_ymin = hc_result_(t5);
+  arg_ymax = hc_result_(t6);
+  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6);
+  double tmin,tmax,xmin,xmax,ymin,ymax;
+
+  if (!func_expr)
+  {
+    free(func_expr);
+    free(arg_tmin); free(arg_tmax); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
+    arg_error("graphpolar() needs at least one argument (expr_r).");
+  }
+  if (!arg_tmin || !arg_tmax || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
+  {
+    if (arg_xmin || arg_xmax || arg_ymin || arg_ymax || arg_tmin || arg_tmax)
+      notify("You haven't provided all of xmin, xmax, ymin and ymax correctly. Using defaults.\n");
+    xmin = hc.xmin2d[hcgt_get_idx(HCGT_POLAR)];
+    xmax = hc.xmax2d[hcgt_get_idx(HCGT_POLAR)];
+    ymin = hc.ymin2d[hcgt_get_idx(HCGT_POLAR)];
+    ymax = hc.ymax2d[hcgt_get_idx(HCGT_POLAR)];
+    tmin = hc.tminpolar;
+    tmax = hc.tmaxpolar;
+  } else {
+    hc.xmin2d[hcgt_get_idx(HCGT_POLAR)] = xmin = strtod(arg_xmin,NULL);
+    hc.xmax2d[hcgt_get_idx(HCGT_POLAR)] = xmax = strtod(arg_xmax,NULL);
+    hc.ymin2d[hcgt_get_idx(HCGT_POLAR)] = ymin = strtod(arg_ymin,NULL);
+    hc.ymax2d[hcgt_get_idx(HCGT_POLAR)] = ymax = strtod(arg_ymax,NULL);
+    hc.tminpolar = tmin = strtod(arg_tmin,NULL);
+    hc.tmaxpolar = tmax = strtod(arg_tmax,NULL);
+  }
+  char *graph_top_label = malloc(strlen("HoubySoft Calculator - Polar Function - r(t) = ")+strlen(func_expr)+1);
+  if (!graph_top_label)
+    mem_error();
+  strcpy(graph_top_label,"HoubySoft Calculator - Polar Function - r(t) = ");
+  strcat(graph_top_label,func_expr);
+  char *func_exprx = malloc(strlen(func_expr) + 3 + 6 + 1); if (!func_exprx) mem_error();
+  char *func_expry = malloc(strlen(func_expr) + 3 + 6 + 1); if (!func_expry) mem_error();
+  sprintf(func_exprx, "(%s)*cos(t)", func_expr);
+  sprintf(func_expry, "(%s)*sin(t)", func_expr);
+  char r = hc_graph_peq_core(func_exprx, func_expry, tmin, tmax, xmin, xmax, ymin, ymax, graph_top_label, HCGT_POLAR, func_expr);
+  free(graph_top_label);
+  free(arg_xmin);
+  free(arg_ymin);
+  free(arg_xmax);
+  free(arg_ymax);
+  free(arg_tmin);
+  free(arg_tmax);
+  free(func_exprx); free(func_expry);
+  return r;
+}
+
+
 char hc_graph_peq(char *e)
 {
   char *func_exprx,*func_expry,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax;
@@ -757,6 +823,7 @@ char hc_graph_peq(char *e)
   if (!func_exprx || !func_expry)
   {
     free(func_exprx); free(func_expry);
+    free(arg_tmin); free(arg_tmax); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
     arg_error("graphpeq() needs at least two arguments (expr_x,expr_y).");
   }
   if (!arg_tmin || !arg_tmax || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
@@ -785,8 +852,26 @@ char hc_graph_peq(char *e)
   strcat(graph_top_label,func_exprx);
   strcat(graph_top_label,", y = ");
   strcat(graph_top_label,func_expry);
-  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
+  char *exprtmp = malloc(strlen(func_exprx) + 1 + strlen(func_expry) + 1);
+  if (!exprtmp) mem_error();
+  sprintf(exprtmp, "%s,%s", func_exprx, func_expry);
+  char r = hc_graph_peq_core(func_exprx, func_expry, tmin, tmax, xmin, xmax, ymin, ymax, graph_top_label, HCGT_PARAMETRIC, exprtmp);
+  free(exprtmp);
   free(graph_top_label);
+  free(arg_xmin);
+  free(arg_ymin);
+  free(arg_xmax);
+  free(arg_ymax);
+  free(arg_tmin);
+  free(arg_tmax);
+  free(func_exprx); free(func_expry);
+  return r;
+}
+
+
+char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double tmax, double xmin, double xmax, double ymin, double ymax, char *graph_top_label, int type, char *expr)
+{
+  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
 
   double stept = HC_GRAPH_PEQ_T_STEP;
   double curt = tmin;
@@ -827,18 +912,7 @@ char hc_graph_peq(char *e)
 
   graphing_ignore_errors = FALSE;
 
-  free(arg_xmin);
-  free(arg_ymin);
-  free(arg_xmax);
-  free(arg_ymax);
-  free(arg_tmin);
-  free(arg_tmax);
-
-  char *exprtmp = malloc(strlen(func_exprx) + 1 + strlen(func_expry) + 1);
-  if (!exprtmp) mem_error();
-  sprintf(exprtmp, "%s,%s", func_exprx, func_expry);
-  hc_graph_finish(HCGT_PARAMETRIC, exprtmp);
-  free(func_exprx); free(func_expry); free(exprtmp);
+  hc_graph_finish(type, expr);
   return SUCCESS;
 }
 

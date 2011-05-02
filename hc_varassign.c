@@ -1292,6 +1292,11 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       *type = HC_VAR_EMPTY;
       break;
 
+    case HASH_GRAPHPOLAR:
+      hc_graph_polar(f_expr);
+      *type = HC_VAR_EMPTY;
+      break;
+
     case HASH_STATS:
       hc_stats(f_expr, FALSE);
       *type = HC_VAR_EMPTY;
