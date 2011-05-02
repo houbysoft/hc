@@ -118,7 +118,7 @@ extern char is_positive_int(char *); // positive or zero
 #define HC_DEC_PLACES (hc.precision*2)
 #define HC_GP3D_DEFAULT 25
 #define HC_GP3D_FAST 250
-#define HC_PEQSTEP_DEFAULT 0.02
+#define HC_PEQSTEP_DEFAULT 0.05
 
 #define PW_SIGN '^'
 #define NOT_SIGN '?'
