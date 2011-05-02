@@ -64,6 +64,7 @@ void HCGZoomThread::run()
   case HCGT_2D:
   case HCGT_PARAMETRIC:
   case HCGT_SLPFLD:
+  case HCGT_POLAR:
     i = hcgt_get_idx(type);
     hcgcore->lock();
     distx = hc.xmax2d[i] - hc.xmin2d[i];
@@ -105,6 +106,10 @@ void HCGZoomThread::run()
     cmd = "slpfld(";
     break;
 
+  case HCGT_POLAR:
+    cmd = "graphpolar(";
+    break;
+
   case HCGT_3D:
     // TODO
     return;
@@ -124,6 +129,12 @@ void HCGZoomThread::run()
 
   case HCGT_SLPFLD:
     cmd += "," + QString().setNum(xmin2d) + "," + QString().setNum(xmax2d) + "," + QString().setNum(ymin2d) + "," + QString().setNum(ymax2d);
+    break;
+
+  case HCGT_POLAR:
+    hcgcore->lock();
+    cmd += "," + QString().setNum(hc.tminpolar) + "," + QString().setNum(hc.tmaxpolar) + "," + QString().setNum(xmin2d) + "," + QString().setNum(xmax2d) + "," + QString().setNum(ymin2d) + "," + QString().setNum(ymax2d);
+    hcgcore->unlock();
     break;
 
   case HCGT_3D:

@@ -2369,8 +2369,8 @@ void hc_load_cfg()
   hc.autoupdate = TRUE;
   hc.graph_points_3d = HC_GP3D_DEFAULT;
   hc.peqstep = HC_PEQSTEP_DEFAULT;
-  hc.xmin2d[hcgt_get_idx(HCGT_2D)] = hc.ymin2d[hcgt_get_idx(HCGT_2D)] = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xmin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = -10;
-  hc.xmax2d[hcgt_get_idx(HCGT_2D)] = hc.ymax2d[hcgt_get_idx(HCGT_2D)] = hc.xmax3d = hc.ymax3d = hc.zmax3d = hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = 10;
+  hc.xmin2d[hcgt_get_idx(HCGT_2D)] = hc.ymin2d[hcgt_get_idx(HCGT_2D)] = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xmin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.xmin2d[hcgt_get_idx(HCGT_POLAR)] = hc.ymin2d[hcgt_get_idx(HCGT_POLAR)] = -10;
+  hc.xmax2d[hcgt_get_idx(HCGT_2D)] = hc.ymax2d[hcgt_get_idx(HCGT_2D)] = hc.xmax3d = hc.ymax3d = hc.zmax3d = hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.xmax2d[hcgt_get_idx(HCGT_POLAR)] = hc.ymax2d[hcgt_get_idx(HCGT_POLAR)] = 10;
   hc.tminpolar = hc.tminpeq = 0;
   hc.tmaxpolar = hc.tmaxpeq = 2 * 3.1415926535897932384626433832795028841971693993751058209749445923;
   hc.bgcolor = BLACK;
@@ -2531,6 +2531,18 @@ void hc_load_cfg()
       case HASH_YMAXPEQ:
         hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)] = strtod(&buffer[i+1],NULL);
         break;
+      case HASH_XMINPO:
+        hc.xmin2d[hcgt_get_idx(HCGT_POLAR)] = strtod(&buffer[i+1],NULL);
+        break;
+      case HASH_XMAXPO:
+        hc.xmax2d[hcgt_get_idx(HCGT_POLAR)] = strtod(&buffer[i+1],NULL);
+        break;
+      case HASH_YMINPO:
+        hc.ymin2d[hcgt_get_idx(HCGT_POLAR)] = strtod(&buffer[i+1],NULL);
+        break;
+      case HASH_YMAXPO:
+        hc.ymax2d[hcgt_get_idx(HCGT_POLAR)] = strtod(&buffer[i+1],NULL);
+        break;
       case HASH_PEQSTEP:
         hc.peqstep = strtod(&buffer[i+1],NULL);
         break;
@@ -2586,6 +2598,10 @@ void hc_save_cfg()
   fprintf(fw,"xmaxpeq=%f\n",hc.xmax2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
   fprintf(fw,"yminpeq=%f\n",hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
   fprintf(fw,"ymaxpeq=%f\n",hc.ymax2d[hcgt_get_idx(HCGT_PARAMETRIC)]);
+  fprintf(fw,"xminpo=%f\n",hc.xmin2d[hcgt_get_idx(HCGT_POLAR)]);
+  fprintf(fw,"xmaxpo=%f\n",hc.xmax2d[hcgt_get_idx(HCGT_POLAR)]);
+  fprintf(fw,"yminpo=%f\n",hc.ymin2d[hcgt_get_idx(HCGT_POLAR)]);
+  fprintf(fw,"ymaxpo=%f\n",hc.ymax2d[hcgt_get_idx(HCGT_POLAR)]);
   fprintf(fw,"bgcolor=%c\n",hc.bgcolor);
   fclose(fw);
 }

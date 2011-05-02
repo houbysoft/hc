@@ -37,7 +37,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   vbox_layout->addWidget(new QLabel(" Graph type"));
   gtypes = new QComboBox(this);
   QStringList gtypeslist;
-  gtypeslist << "2D" << "Parametric" << "Values (points)" << "Values (xyline)" << "3D" << "Slope Field" << "Boxplot";
+  gtypeslist << "2D" << "Parametric" << "Values (points)" << "Values (xyline)" << "3D" << "Slope Field" << "Boxplot" << "Polar";
   gtypes->insertItems(0, gtypeslist);
   vbox_layout->addWidget(gtypes);
 
@@ -120,6 +120,16 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   connect(linebx, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
   lbxBox->addWidget(linebx);
   lineedits->addWidget(lbx);
+
+  // Polar line edit
+  QWidget *lpl = new QWidget(this);
+  QHBoxLayout *lplBox = new QHBoxLayout(this);
+  lpl->setLayout(lplBox);
+  lplBox->addWidget(new QLabel("r(t) = "));
+  linepl = new QLineEdit();
+  connect(linepl, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
+  lplBox->addWidget(linepl);
+  lineedits->addWidget(lpl);
 
   vbox_layout->addWidget(lineeditBox);
 
@@ -223,6 +233,30 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   // Boxplot options
   options->addWidget(new QLabel("No options available for this graph type"));
 
+  // Polar options
+  QWidget *oPO = new QWidget(this);
+  QVBoxLayout *oPObox = new QVBoxLayout(this);
+  oPO->setLayout(oPObox);
+  tminPO = new QLineEdit(this);
+  tmaxPO = new QLineEdit(this);
+  xminPO = new QLineEdit(this);
+  xmaxPO = new QLineEdit(this);
+  yminPO = new QLineEdit(this);
+  ymaxPO = new QLineEdit(this);
+  oPObox->addWidget(new QLabel("tmin"));
+  oPObox->addWidget(tminPO);
+  oPObox->addWidget(new QLabel("tmax"));
+  oPObox->addWidget(tmaxPO);
+  oPObox->addWidget(new QLabel("xmin"));
+  oPObox->addWidget(xminPO);
+  oPObox->addWidget(new QLabel("xmax"));
+  oPObox->addWidget(xmaxPO);
+  oPObox->addWidget(new QLabel("ymin"));
+  oPObox->addWidget(yminPO);
+  oPObox->addWidget(new QLabel("ymax"));
+  oPObox->addWidget(ymaxPO);
+  options->addWidget(oPO);
+
   vbox_layout->addWidget(optionsBox);
   connect(gtypes, SIGNAL(activated(int)), this, SLOT(setCurrentIndex(int)));
 
@@ -285,6 +319,8 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
   case HCGT_BOXPLOT:
     linebx->setText(QString(args));
     break;
+  case HCGT_POLAR:
+    linepl->setText(QString(args));
   default:
     break;
   }
@@ -320,6 +356,8 @@ QString HCGGraphWindow::lineText()
     return linesf->text();
   case HCGT_BOXPLOT:
     return linebx->text();
+  case HCGT_POLAR:
+    return linepl->text();
   default:
     return "";
   }
@@ -359,6 +397,9 @@ QString HCGGraphWindow::getFullForm()
     cmd += "boxplot(";
     break;
 
+  case HCGT_POLAR:
+    cmd += "graphpolar(";
+
   default:
     break;
   }
@@ -379,6 +420,10 @@ QString HCGGraphWindow::getFullForm()
 
   case HCGT_SLPFLD:
     cmd += "," + xminS->text() + "," + xmaxS->text() + "," + yminS->text() + "," + ymaxS->text();
+    break;
+
+  case HCGT_POLAR:
+    cmd += "," + tminPO->text() + "," + tmaxPO->text() + "," + xminPO->text() + "," + xmaxPO->text() + "," + yminPO->text() + "," + ymaxPO->text();
     break;
 
   default:
@@ -434,6 +479,15 @@ void HCGGraphWindow::updateOptions(int type)
     xmaxS->setText(QString().setNum(hc.xmax2d[hcgt_get_idx(HCGT_SLPFLD)], 'g', hc.precision));
     yminS->setText(QString().setNum(hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)], 'g', hc.precision));
     ymaxS->setText(QString().setNum(hc.ymax2d[hcgt_get_idx(HCGT_SLPFLD)], 'g', hc.precision));
+    break;
+
+  case HCGT_POLAR:
+    tminPO->setText(QString().setNum(hc.tminpolar, 'g', hc.precision));
+    tmaxPO->setText(QString().setNum(hc.tmaxpolar, 'g', hc.precision));
+    xminPO->setText(QString().setNum(hc.xmin2d[hcgt_get_idx(HCGT_POLAR)], 'g', hc.precision));
+    xmaxPO->setText(QString().setNum(hc.xmax2d[hcgt_get_idx(HCGT_POLAR)], 'g', hc.precision));
+    yminPO->setText(QString().setNum(hc.ymin2d[hcgt_get_idx(HCGT_POLAR)], 'g', hc.precision));
+    ymaxPO->setText(QString().setNum(hc.ymax2d[hcgt_get_idx(HCGT_POLAR)], 'g', hc.precision));  
     break;
 
   default:

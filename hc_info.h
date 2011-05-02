@@ -38,7 +38,7 @@ extern "C" {
 enum HCGT { HCGT_NULL, HCGT_2D, HCGT_PARAMETRIC, HCGT_VALUESPOINTS, HCGT_VALUESLINE, HCGT_3D, HCGT_SLPFLD, HCGT_BOXPLOT, HCGT_POLAR, HCGT_COUNT };
 enum HCGT_IDX { HCGT_IDX_2D, HCGT_IDX_PARAMETRIC, HCGT_IDX_SLPFLD, HCGT_IDX_POLAR, HCGT_IDX_COUNT };
 
-#define hcgt_get_idx(type) (type == HCGT_2D ? HCGT_IDX_2D : type == HCGT_PARAMETRIC ? HCGT_IDX_PARAMETRIC : type == HCGT_SLPFLD ? HCGT_IDX_SLPFLD : 0)
+#define hcgt_get_idx(type) (type == HCGT_2D ? HCGT_IDX_2D : type == HCGT_PARAMETRIC ? HCGT_IDX_PARAMETRIC : type == HCGT_SLPFLD ? HCGT_IDX_SLPFLD : type == HCGT_POLAR ? HCGT_IDX_POLAR : 0)
 
 typedef struct hc_config {
   char announce; // used when command line options are supplied to supress configuration notice

@@ -77,7 +77,7 @@ class HCGGraphWindow : public QMainWindow {
   QWidget *vbox;
   QHBoxLayout *hbox_layout;
   QVBoxLayout *vbox_layout;
-  QLineEdit *line2D, *lineparx, *linepary, *linevp, *linevl, *line3D, *linesf, *linebx;
+  QLineEdit *line2D, *lineparx, *linepary, *linevp, *linevl, *line3D, *linesf, *linebx, *linepl;
   QComboBox *gtypes;
   QPushButton *go;
   QStackedWidget *options;
@@ -92,6 +92,12 @@ class HCGGraphWindow : public QMainWindow {
   QLineEdit *xmaxP;
   QLineEdit *yminP;
   QLineEdit *ymaxP;
+  QLineEdit *tminPO;
+  QLineEdit *tmaxPO;
+  QLineEdit *xminPO;
+  QLineEdit *xmaxPO;
+  QLineEdit *yminPO;
+  QLineEdit *ymaxPO;
   QLineEdit *xmin3D;
   QLineEdit *xmax3D;
   QLineEdit *ymin3D;
