@@ -787,7 +787,10 @@ char hc_graph_polar(char *e)
   char *func_expry = malloc(strlen(func_expr) + 3 + 6 + 1); if (!func_expry) mem_error();
   sprintf(func_exprx, "(%s)*cos(t)", func_expr);
   sprintf(func_expry, "(%s)*sin(t)", func_expr);
+  char angle_setting = hc.angle;
+  hc.angle = 'r';
   char r = hc_graph_peq_core(func_exprx, func_expry, tmin, tmax, xmin, xmax, ymin, ymax, graph_top_label, HCGT_POLAR, func_expr);
+  hc.angle = angle_setting;
   free(graph_top_label);
   free(arg_xmin);
   free(arg_ymin);
