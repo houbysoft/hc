@@ -118,7 +118,7 @@ void hc_varassign(char *e)
         hc_error(WARNING,"recursive definition");
 
 #ifdef DBG
-      printf("[%s] [%s]\n",name,args);
+      printf("[%s] [%s]",name,args);
 #endif
 
       struct hc_ventry *tmp = hc_var_first;
@@ -152,6 +152,9 @@ void hc_varassign(char *e)
         mem_error();
       tmp->value = strdup(expr);
       tmp->value = hc_impmul_resolve(tmp->value);
+#ifdef DBG
+      printf(" [%s]\n", tmp->value);
+#endif
       if (!tmp->value)
         mem_error();
     }

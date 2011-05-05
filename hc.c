@@ -2353,7 +2353,7 @@ char *hc_impmul_resolve(char *e)
         last_was_num = 0;
         could_be_num = 0;
       }
-      if (isoperator(e[i]))
+      if (isoperator(e[i]) || e[i] == '[' || e[i] == ']')
         could_be_num = 1;
     }
   }
