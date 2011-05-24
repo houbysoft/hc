@@ -53,10 +53,6 @@ char *tips[] = {
 #endif
 
 
-#ifdef WIN32
-void exit_fn() {printf("Press Enter to close this window.");getchar();}
-#endif
-
 char **hc_completion(const char *text, int start, int end);
 char *hc_cmd_generator(const char *text, int state);
 
@@ -104,9 +100,6 @@ int main(int argc, char *argv[])
       hc_load(import);
   }
 
-#ifdef WIN32
-  atexit(exit_fn);
-#endif
   char *fme;
 
   using_history();
