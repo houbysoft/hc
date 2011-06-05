@@ -145,6 +145,9 @@ extern char is_positive_int(char *); // positive or zero
 #define HC_USR_VAR 1
 #define HC_USR_FUNC 2
 
+#define HC_MAPM 1
+#define HC_UINT 2
+
 typedef enum {
   HC_VAR_INVALID, HC_VAR_EMPTY, HC_VAR_NUM, HC_VAR_STR, HC_VAR_VEC
 } HC_VAR_TYPES;

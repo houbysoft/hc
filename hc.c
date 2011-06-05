@@ -1049,9 +1049,22 @@ char *hc_postfix_result(char *e)
           }
           free(op1_str); op1_str = NULL;
           free(op2_str); op2_str = NULL;
+        } else if (op1_type == HC_VAR_VEC && op2_type == HC_VAR_VEC) {
+          // matrix multiplication
+          curr->type = HC_VAR_VEC;
+          free(curr->str); free(curr->n->str);
+          curr->n->str = NULL;
+          curr->str = list_matrix_mul(op1_str, op2_str);
+          if (!curr->str)
+          {
+            hc_postfix_result_cleanup();
+            return NULL;
+          }
+          free(op1_str); op1_str = NULL;
+          free(op2_str); op2_str = NULL;
         } else {
           hc_postfix_result_cleanup();
-          hc_error(TYPE,"* accepts either numbers, an integer and a string, a vector and a number, or an all-integer vector and a string");
+          hc_error(TYPE,"* accepts either numbers, matrices, an integer and a string, a vector and a number, or an all-integer vector and a string");
           return NULL;          
         }
         curr = curr->n; // [sp++]

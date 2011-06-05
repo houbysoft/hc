@@ -2174,7 +2174,7 @@ int hc_output(int mode, char *f_expr)
 }
 
 
-int hc_length(M_APM result, char *e)
+int hc_length_core(M_APM resM, unsigned int *resL, char type, char *e)
 {
   e = hc_result_(e);
   if (!e)
@@ -2183,7 +2183,7 @@ int hc_length(M_APM result, char *e)
   if (is_vector(e))
   {
     unsigned int i = 0;
-    unsigned long len = 1; // for the last element, which is not followed by a ','
+    unsigned int len = 1; // for the last element, which is not followed by a ','
     int par = 0;
     char *tmp = list_clean(e);
     char ignore = FALSE;
@@ -2203,13 +2203,21 @@ int hc_length(M_APM result, char *e)
       if (!par && tmp[i] == ',')
         len++;
     }
-    m_apm_set_long(result,len);
+    if (type == HC_MAPM) {
+      m_apm_set_long(resM,len);
+    } else if (type == HC_UINT) {
+      *resL = len;
+    }
     free(e);
   } else if (is_string(e))
   {
     char *tmp = get_string(e);
     free(e);
-    m_apm_set_long(result,(long) strlen(tmp));
+    if (type == HC_MAPM) {
+      m_apm_set_long(resM,(long) strlen(tmp));
+    } else if (type == HC_UINT) {
+      *resL = (unsigned int) strlen(tmp);
+    }
     free(tmp);
   } else {
     free(e);
@@ -2217,6 +2225,12 @@ int hc_length(M_APM result, char *e)
   }
 
   return SUCCESS;
+}
+
+
+int hc_length(M_APM result, char *e)
+{
+  return hc_length_core(result, NULL, HC_MAPM, e);
 }
 
 

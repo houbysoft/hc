@@ -267,6 +267,71 @@ char *list_add_sub(char *l1, char *l2, char mode)
 }
 
 
+// returns TRUE if the list supplied in a is a valid matrix (ie, it is rectangular), and places the number of rows and columns in rows and cols respectively.
+// Assumes that the list sent in is valid and cleaned.
+char list_check_is_matrix(char *a, unsigned int *rows, unsigned int *cols)
+{
+  a++; a[strlen(a)-1] = '\0';
+
+  // establish the dimensions from the first row
+  char *firstrow = hc_get_arg_r(a, 1);
+  if (!firstrow || !strlen(firstrow)) {
+    free(firstrow);
+    arg_error("supplied matrix is empty");
+  }
+  if (!is_list(firstrow)) {
+    *cols = 1;
+  } else {
+    if (!hc_length_core(NULL, cols, HC_UINT, firstrow)) {
+      free(firstrow);
+      return FALSE;
+    }
+  }
+  free(firstrow);
+
+  // check all other rows to have the same dimensions
+  char *row = NULL;
+  unsigned int r = 1;
+  unsigned int tmpcols = 0;
+  while ((row = hc_get_arg_r(a, ++r)) != NULL) {
+    if (is_list(row)) {
+      if (!hc_length_core(NULL, &tmpcols, HC_UINT, row)) {
+        free(row);
+        return FALSE;
+      }
+    } else {
+      tmpcols = 1;
+    }
+    if (*cols != tmpcols) {
+      free(row);
+      arg_error("error : supplied list is not a matrix (it is not rectangular)");
+    }
+    free(row);
+  }
+
+  *rows = r - 1;
+  return TRUE;
+}
+
+
+char *list_matrix_mul(char *a, char *b)
+{
+  unsigned int col_a, col_b, row_a, row_b;
+  // check if the supplied lists are actually matrices (ie, if they are rectangular) and that the number of columns of the first matrix equals the number of rows of the second matrix
+  if (!list_check_is_matrix(a, &row_a, &col_a) || !list_check_is_matrix(b, &row_b, &col_b)) {
+    return NULL;
+  }
+  if (col_a != row_b) {
+    arg_error("* : matrix multiplication : the number of columns of the first matrix does not match the number of rows of the second matrix.");
+  }
+
+  // multiply the matrices
+  // TODO
+
+  return NULL;
+}
+
+
 // returns 0 if the lists are equal
 int list_compare(char *l1, char *l2)
 {

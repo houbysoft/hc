@@ -27,5 +27,7 @@ extern char *list_neg(char *list);
 extern char *list_clean(char *list);
 extern char *list_simplify(char *list);
 extern int list_compare(char *l1, char *l2);
+extern char *list_matrix_mul(char *a, char *b);
+extern char list_check_is_matrix(char *a, unsigned int *rows, unsigned int *cols);
 
 #endif
