@@ -325,10 +325,49 @@ char *list_matrix_mul(char *a, char *b)
     arg_error("* : matrix multiplication : the number of columns of the first matrix does not match the number of rows of the second matrix.");
   }
 
+  unsigned int need_space_col_a = hc_need_space_int(col_a);
   // multiply the matrices
-  // TODO
+  unsigned int rmalloc = 2;
+  char *r = malloc(rmalloc); if (!r) mem_error();
+  r[0] = '['; r[1] = '\0';
 
-  return NULL;
+  unsigned int i, j;
+
+  // This uses the naive algorithm, as this is unlikely to be used for huge matrices. Nevertheless,
+  // it might be worth implementing a smarter algorithm, such as Strassen's.
+  for (i=0; i < row_a; i++) {
+    rmalloc += 1;
+    r = realloc(r, rmalloc); if (!r) mem_error();
+    strcat(r, "[");
+
+    unsigned int need_space_i = hc_need_space_int(i);
+
+    for (j=0; j < col_b; j++) {
+      // ith row of a times jth column of b
+
+      char *res_expr = malloc(4 + strlen(a) + 1 + 4 + need_space_i + 1 + 1 + strlen(b) + 1 + 4 + hc_need_space_int(j) + 1 + 1 + 2 + need_space_col_a + 3 + 1); if (!res_expr) mem_error();
+      sprintf(res_expr, "sum(%s][%i][x]*%s][x][%i],0,%i-1)", a, i, b, j, col_a); // the last ] is stripped from a and b by list_check_is_matrix()
+      char *res_tmp = hc_result_(res_expr);
+      free(res_expr);
+      if (!res_tmp) {
+        free(r);
+        return NULL;
+      }
+      rmalloc += 1+strlen(res_tmp);
+      r = realloc(r, rmalloc); if (!r) mem_error();
+      strcat(r, res_tmp);
+      free(res_tmp);
+      strcat(r, ",");
+    }
+
+    rmalloc += 1;
+    r = realloc(r, rmalloc); if (!r) mem_error();
+    r[strlen(r)-1] = ']';
+    strcat(r, ",");
+  }
+  r[strlen(r)-1] = ']';
+
+  return r;
 }
 
 
