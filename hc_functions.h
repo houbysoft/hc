@@ -92,6 +92,7 @@ extern char *hc_2eng(char *);
 extern char *hc_strip_0s(char *e);
 extern char *hc_strip_0s_real(char *e);
 extern char *hc_format_num(char *r, char save_as_last_result);
+extern char *hc_format_vec(char *r);
 
 extern char *hc_2str(char *);
 extern int hc_2num(M_APM, M_APM, char *);

@@ -277,32 +277,11 @@ char *hc_result(char *e)
 
     r = hc_format_num(r, TRUE); // TRUE means to save r as last result
   } else if (is_vector(r)) {
-    r[strlen(r)-1] = '\0';
-    char *r_new = malloc(2);
-    if (!r_new)
-      mem_error();
-    strcpy(r_new,"[");
-    long idx = 1;
-    char *curarg = hc_get_arg((char *)(r + sizeof(char)),idx);
-    while (curarg)
-    {
-      if (is_num(curarg))
-      {
-        char *tmp = curarg;
-        curarg = hc_strip_0s(curarg);
-        free(tmp);
-      }
-      r_new = realloc(r_new, strlen(r_new)+1+strlen(curarg)+1);
-      strcat(r_new,curarg);
-      strcat(r_new,",");
-      free(curarg);
-      curarg = hc_get_arg((char *)(r + sizeof(char)),++idx);
-    }
-    r_new[strlen(r_new)-1] = ']';
-    free(r);
-    r = r_new;
     free(hc_lans_strvec);
     hc_lans_type = HC_VAR_VEC;
+
+    r = hc_format_vec(r);
+
     hc_lans_strvec = strdup(r);
   } else if (is_string(r)) {
     free(hc_lans_strvec);

@@ -1601,6 +1601,38 @@ char *hc_strip_0s(char *e)
 
 // Returns a version of r ready to output to screen.
 // Frees r.
+char *hc_format_vec(char *r) {
+  r[strlen(r)-1] = '\0';
+  char *r_new = malloc(2);
+  if (!r_new)
+    mem_error();
+  strcpy(r_new,"[");
+  long idx = 1;
+  char *curarg = hc_get_arg((char *)(r + sizeof(char)),idx);
+  while (curarg)
+  {
+    if (is_num(curarg))
+    {
+      char *tmp = curarg;
+      curarg = hc_strip_0s(curarg);
+      free(tmp);
+    } else if (is_vector(curarg)) {
+      curarg = hc_format_vec(curarg);
+    }
+    r_new = realloc(r_new, strlen(r_new)+1+strlen(curarg)+1);
+    strcat(r_new,curarg);
+    strcat(r_new,",");
+    free(curarg);
+    curarg = hc_get_arg((char *)(r + sizeof(char)),++idx);
+  }
+  r_new[strlen(r_new)-1] = ']';
+  free(r);
+  return r_new;
+}
+
+
+// Returns a version of r ready to output to screen.
+// Frees r.
 // if save_as_last_result is TRUE, saves r as the last result
 char *hc_format_num(char *r, char save_as_last_result)
 {
