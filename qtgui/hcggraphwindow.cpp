@@ -545,8 +545,6 @@ void HCGGraphDisplay::wheelEvent(QWheelEvent *event)
 {
   if (zoomTimer->isActive()) {
     zoomTimer->stop();
-  } else {
-    HCG_GET_XY(zoomx,zoomy);
   }
   zoomdelta += event->delta();
   QToolTip::showText(QCursor::pos(), "Release wheel to zoom " + QString().setNum(pow(HCG_ZOOM_FACTOR, zoomdelta / 8 / 15)) + "x", this);

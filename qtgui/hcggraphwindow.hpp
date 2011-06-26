@@ -112,7 +112,6 @@ class HCGGraphDisplay : public QLabel {
   private:
   HCGGraphWindow *parentWindow;
   double movex, movey;
-  double zoomx, zoomy;
   double zoomdelta;
   QTimer *zoomTimer;
 
@@ -130,7 +129,7 @@ class HCGGraphDisplay : public QLabel {
     parentWindow = pW;
     zoomdelta = 0;
     zoomTimer = new QTimer(this);
-    zoomTimer->setInterval(2000);
+    zoomTimer->setInterval(1500);
     zoomTimer->setSingleShot(true);
     connect(zoomTimer, SIGNAL(timeout()), this, SLOT(doZoom()));
   };
@@ -139,7 +138,7 @@ class HCGGraphDisplay : public QLabel {
   public slots:
   void doZoom() {
     QToolTip::showText(QCursor::pos(), "", this);
-    parentWindow->zoom(zoomx, zoomy, pow(HCG_ZOOM_FACTOR, zoomdelta / 8 / 15), HCG_MOVE_FACTOR);
+    parentWindow->zoom(0, 0, pow(HCG_ZOOM_FACTOR, zoomdelta / 8 / 15), 0);
     zoomdelta = 0;
   };
 };
