@@ -34,6 +34,9 @@
 #include <QGroupBox>
 #include <QWheelEvent>
 #include <QCursor>
+#include <QTimer>
+#include <QToolTip>
+#include <math.h>
 
 
 #define HCG_ZOOM_FACTOR (1.05)
@@ -42,26 +45,7 @@
 #define HCG_GET_XY(mx,my) {mx=event->x() - 90;my = event->y() - 56;if (mx < 0 || my < 0 || mx > 494 || my > 368){event->ignore();return;}my = 368 - my;}
 
 
-class HCGGraphWindow;
-
-
-class HCGGraphDisplay : public QLabel {
-  Q_OBJECT
-
-  private:
-  HCGGraphWindow *parentWindow;
-  double movex, movey;
-
-  protected:
-  void mousePressEvent(QMouseEvent *event);
-  void mouseReleaseEvent(QMouseEvent *event);
-  void mouseMoveEvent(QMouseEvent *event);
-  void wheelEvent(QWheelEvent *event);
-  
-  public:
-  HCGGraphDisplay(HCGGraphWindow *pW) {parentWindow = pW;};
-  ~HCGGraphDisplay() {};
-};
+class HCGGraphDisplay;
 
 
 class HCGGraphWindow : public QMainWindow {
@@ -119,6 +103,45 @@ class HCGGraphWindow : public QMainWindow {
   void drawGraph();
   void setCurrentIndex(int i);
   void zoom(double x, double y, double zoomfactor, double movefactor);
+};
+
+
+class HCGGraphDisplay : public QLabel {
+  Q_OBJECT
+
+  private:
+  HCGGraphWindow *parentWindow;
+  double movex, movey;
+  double zoomx, zoomy;
+  double zoomdelta;
+  QTimer *zoomTimer;
+
+  protected:
+  void mousePressEvent(QMouseEvent *event);
+  void mouseReleaseEvent(QMouseEvent *event);
+  void mouseMoveEvent(QMouseEvent *event);
+  void wheelEvent(QWheelEvent *event);
+  void hideEvent(QHideEvent *event) {
+    zoomTimer->stop();
+  };
+
+  public:
+  HCGGraphDisplay(HCGGraphWindow *pW) {
+    parentWindow = pW;
+    zoomdelta = 0;
+    zoomTimer = new QTimer(this);
+    zoomTimer->setInterval(2000);
+    zoomTimer->setSingleShot(true);
+    connect(zoomTimer, SIGNAL(timeout()), this, SLOT(doZoom()));
+  };
+  ~HCGGraphDisplay() {};
+
+  public slots:
+  void doZoom() {
+    QToolTip::showText(QCursor::pos(), "", this);
+    parentWindow->zoom(zoomx, zoomy, pow(HCG_ZOOM_FACTOR, zoomdelta / 8 / 15), HCG_MOVE_FACTOR);
+    zoomdelta = 0;
+  };
 };
 
 #endif

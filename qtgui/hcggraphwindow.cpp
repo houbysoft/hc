@@ -543,7 +543,12 @@ void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *event)
 
 void HCGGraphDisplay::wheelEvent(QWheelEvent *event)
 {
-  double x,y;
-  HCG_GET_XY(x,y);
-  parentWindow->zoom(x, y, pow(HCG_ZOOM_FACTOR, event->delta() / 8 / 15), HCG_MOVE_FACTOR);
+  if (zoomTimer->isActive()) {
+    zoomTimer->stop();
+  } else {
+    HCG_GET_XY(zoomx,zoomy);
+  }
+  zoomdelta += event->delta();
+  QToolTip::showText(QCursor::pos(), "Release wheel to zoom " + QString().setNum(pow(HCG_ZOOM_FACTOR, zoomdelta / 8 / 15)) + "x", this);
+  zoomTimer->start();
 }
