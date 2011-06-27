@@ -62,6 +62,7 @@ class HCGGraphWindow : public QMainWindow {
   QHBoxLayout *hbox_layout;
   QVBoxLayout *vbox_layout;
   QLineEdit *line2D, *lineparx, *linepary, *linevp, *linevl, *line3D, *linesf, *linebx, *linepl;
+  QPushButton *reset2Dbtn, *resetPbtn, *reset3Dbtn, *resetSbtn, *resetPObtn;
   QComboBox *gtypes;
   QPushButton *go;
   QStackedWidget *options;
@@ -103,6 +104,7 @@ class HCGGraphWindow : public QMainWindow {
   void drawGraph();
   void setCurrentIndex(int i);
   void zoom(double x, double y, double zoomfactor, double movefactor);
+  void reset2D(); void resetP(); void reset3D(); void resetS(); void resetPO();
 };
 
 

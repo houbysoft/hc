@@ -148,6 +148,8 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   xmax2D = new QLineEdit(this);
   ymin2D = new QLineEdit(this);
   ymax2D = new QLineEdit(this);
+  reset2Dbtn = new QPushButton("Reset to defaults", this);
+  connect(reset2Dbtn, SIGNAL(clicked()), this, SLOT(reset2D()));
   o2Dbox->addWidget(new QLabel("xmin"));
   o2Dbox->addWidget(xmin2D);
   o2Dbox->addWidget(new QLabel("xmax"));
@@ -156,6 +158,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   o2Dbox->addWidget(ymin2D);
   o2Dbox->addWidget(new QLabel("ymax"));
   o2Dbox->addWidget(ymax2D);
+  o2Dbox->addWidget(reset2Dbtn);
   options->addWidget(o2D);
 
   // Parametric options
@@ -168,6 +171,8 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   xmaxP = new QLineEdit(this);
   yminP = new QLineEdit(this);
   ymaxP = new QLineEdit(this);
+  resetPbtn = new QPushButton("Reset to defaults", this);
+  connect(resetPbtn, SIGNAL(clicked()), this, SLOT(resetP()));
   oPbox->addWidget(new QLabel("tmin"));
   oPbox->addWidget(tminP);
   oPbox->addWidget(new QLabel("tmax"));
@@ -180,6 +185,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   oPbox->addWidget(yminP);
   oPbox->addWidget(new QLabel("ymax"));
   oPbox->addWidget(ymaxP);
+  oPbox->addWidget(resetPbtn);
   options->addWidget(oP);
 
   // Values (points) options
@@ -198,6 +204,8 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   ymax3D = new QLineEdit(this);
   zmin3D = new QLineEdit(this);
   zmax3D = new QLineEdit(this);
+  reset3Dbtn = new QPushButton("Reset to defaults", this);
+  connect(reset3Dbtn, SIGNAL(clicked()), this, SLOT(reset3D()));
   o3Dbox->addWidget(new QLabel("xmin"));
   o3Dbox->addWidget(xmin3D);
   o3Dbox->addWidget(new QLabel("xmax"));
@@ -210,6 +218,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   o3Dbox->addWidget(zmin3D);
   o3Dbox->addWidget(new QLabel("zmax"));
   o3Dbox->addWidget(zmax3D);
+  o3Dbox->addWidget(reset3Dbtn);
   options->addWidget(o3D);
 
   // Slope Field options
@@ -220,6 +229,8 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   xmaxS = new QLineEdit(this);
   yminS = new QLineEdit(this);
   ymaxS = new QLineEdit(this);
+  resetSbtn = new QPushButton("Reset to defaults", this);
+  connect(resetSbtn, SIGNAL(clicked()), this, SLOT(resetS()));
   oSbox->addWidget(new QLabel("xmin"));
   oSbox->addWidget(xminS);
   oSbox->addWidget(new QLabel("xmax"));
@@ -228,6 +239,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   oSbox->addWidget(yminS);
   oSbox->addWidget(new QLabel("ymax"));
   oSbox->addWidget(ymaxS);
+  oSbox->addWidget(resetSbtn);
   options->addWidget(oS);
 
   // Boxplot options
@@ -243,6 +255,8 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   xmaxPO = new QLineEdit(this);
   yminPO = new QLineEdit(this);
   ymaxPO = new QLineEdit(this);
+  resetPObtn = new QPushButton("Reset to defaults", this);
+  connect(resetPObtn, SIGNAL(clicked()), this, SLOT(resetPO()));
   oPObox->addWidget(new QLabel("tmin"));
   oPObox->addWidget(tminPO);
   oPObox->addWidget(new QLabel("tmax"));
@@ -255,6 +269,7 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   oPObox->addWidget(yminPO);
   oPObox->addWidget(new QLabel("ymax"));
   oPObox->addWidget(ymaxPO);
+  oPObox->addWidget(resetPObtn);
   options->addWidget(oPO);
 
   vbox_layout->addWidget(optionsBox);
@@ -281,6 +296,62 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   setCentralWidget(hbox);
   setCurrentIndex(0);
   show();
+}
+
+
+void HCGGraphWindow::reset2D()
+{
+  xmin2D->setText("-10");
+  xmax2D->setText("10");
+  ymin2D->setText("-10");
+  ymax2D->setText("10");
+  drawGraph();
+}
+
+
+void HCGGraphWindow::resetP()
+{
+  tminP->setText("0");
+  tmaxP->setText("2pi");
+  xminP->setText("-10");
+  xmaxP->setText("10");
+  yminP->setText("-10");
+  ymaxP->setText("10");
+  drawGraph();
+}
+
+
+void HCGGraphWindow::reset3D()
+{
+  xmin3D->setText("-10");
+  xmax3D->setText("10");
+  ymin3D->setText("-10");
+  ymax3D->setText("10");
+  zmin3D->setText("-10");
+  zmax3D->setText("10");
+  drawGraph();
+}
+
+
+void HCGGraphWindow::resetS()
+{
+  xminS->setText("-10");
+  xmaxS->setText("10");
+  yminS->setText("-10");
+  ymaxS->setText("10");
+  drawGraph();
+}
+
+
+void HCGGraphWindow::resetPO()
+{
+  tminPO->setText("0");
+  tmaxPO->setText("2pi");
+  xminPO->setText("-10");
+  xmaxPO->setText("10");
+  yminPO->setText("-10");
+  ymaxPO->setText("10");
+  drawGraph();
 }
 
 
