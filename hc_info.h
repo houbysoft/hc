@@ -44,7 +44,7 @@ typedef struct hc_config {
   char announce; // used when command line options are supplied to supress configuration notice
   char rpn;
   char autoupdate;
-  int precision;
+  unsigned int precision;
   char output_format;
   char exp;
   char angle;

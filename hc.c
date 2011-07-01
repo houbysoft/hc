@@ -439,7 +439,7 @@ char *hc_i2p(char *f)
   char *e = malloc(e_alloc);
   if (!e)
     mem_error();
-  int i=0,j=0;
+  unsigned int i=0,j=0;
 
   char neg=0;
   char last_was_operator[2]={TRUE,TRUE}; // used to distinguish when ! is being used as factorial and when as NOT
@@ -959,8 +959,8 @@ char *hc_postfix_result(char *e)
   char op1_type,op2_type;
   
   char *tmp_num = NULL;
-  unsigned tmp_num_alloc = 0;
-  int i=0,j=0;
+  unsigned int tmp_num_alloc = 0;
+  unsigned int i=0,j=0;
   
   op1_r = m_apm_init();
   op1_i = m_apm_init();
@@ -1967,7 +1967,7 @@ char *hc_postfix_result(char *e)
           if (!v_name || !f_expr)
             mem_error();
           f_expr[0] = '\0';
-          int ti = 0;
+          unsigned int ti = 0;
           while ((isalpha(e[i]) || isdigit(e[i])) && (ti < MAX_V_NAME - 1)) // the first to be checked can't be a digit since that would be caught above
           {
             v_name[ti++] = e[i++];

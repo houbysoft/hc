@@ -36,12 +36,6 @@ char *gamma_coefficients = NULL;
 unsigned int gamma_coefficients_lp = 0;
 
 
-double hc_strtod(const char *e, char *unused)
-{
-  return strtod(e,NULL);
-}
-
-
 char *strreplace_(char *in, char *old, char *new)
 {
 #ifdef DBG
@@ -1193,7 +1187,7 @@ int hc_mmass(M_APM result, char *e)
 
   double res = 0;
   double tmp = 0;
-  int i=0;
+  unsigned int i=0;
 
   for (; i<strlen(e); i++)
   {
@@ -2647,7 +2641,7 @@ char *hc_2dec(char base, char *in)
 {
   int i = strlen(in)-1;
   int power = 0;
-  int decp = i;
+  unsigned int decp = i;
   M_APM res = m_apm_init(); m_apm_copy(res,MM_Zero);
   M_APM t1 = m_apm_init();
   M_APM t2 = m_apm_init();

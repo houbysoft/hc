@@ -613,7 +613,7 @@ double hc_get_element_info(char *el, int info)
 }
 
 
-double hc_mmass_el(char *e, int *i)
+double hc_mmass_el(char *e, unsigned int *i)
 {
   char element[3];
   double element_aw=0;
@@ -649,10 +649,10 @@ double hc_mmass_el(char *e, int *i)
 }
 
 
-double hc_mmass_par(char *e, int *i)
+double hc_mmass_par(char *e, unsigned int *i)
 {
   int par = 1;
-  int j = *i + 1;
+  unsigned int j = *i + 1;
   char count[32];
   double par_aw=0;
   ++*i;

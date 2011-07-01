@@ -28,7 +28,7 @@
 
 
 // returns 0 (FAIL) on error
-char hc_get_by_index(char *data, char *type, char *scan, int *i)
+char hc_get_by_index(char *data, char *type, char *scan, unsigned int *i)
 {
   int pct = 1;
   unsigned int oldi = *i;
@@ -62,7 +62,7 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
   // scan[*i] points at the '[' of the beginning of the index
   unsigned int tmp_idx_alloc = MAX_EXPR;
   char *tmp_idx = malloc(tmp_idx_alloc);
-  int j=0,k=1;
+  unsigned int j=0,k=1;
   for (; scanres[k]!=']'; k++)
   {
     if (!isdigit(scanres[k]))
@@ -88,7 +88,7 @@ char hc_get_by_index(char *data, char *type, char *scan, int *i)
   {
     data = strip_spaces(data);
     data[strlen(data)-1] = '\0'; // delete the last '"'
-    if (atoi(tmp_idx) >= strlen((char *)(data + 1)))
+    if ((unsigned int)atoi(tmp_idx) >= strlen((char *)(data + 1)))
     {
       free(tmp_idx);
       arg_error("index out of range.");

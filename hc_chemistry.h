@@ -136,7 +136,7 @@
 #define EL_RG 3637
 
 extern double hc_get_element_info(char *el, int info);
-extern double hc_mmass_el(char *e, int *i);
-extern double hc_mmass_par(char *e, int *i);
+extern double hc_mmass_el(char *e, unsigned int *i);
+extern double hc_mmass_par(char *e, unsigned int *i);
 
 #endif

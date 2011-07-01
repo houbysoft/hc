@@ -136,7 +136,7 @@ int hc_convert(M_APM result, char *e)
   unsigned int i = 0, j = 0;
   char found_in_unit_idx, found_out_unit_idx;
   found_in_unit_idx = found_out_unit_idx = FALSE;
-  unsigned int in_unit_idx, out_unit_idx;
+  unsigned int in_unit_idx=0, out_unit_idx=0;
   for (i = 0; (!found_in_unit_idx || !found_out_unit_idx) && i < HC_CONVERSIONS; i++)
   {
     if (!found_in_unit_idx)
