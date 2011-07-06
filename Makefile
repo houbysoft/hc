@@ -17,6 +17,12 @@ OBJS=main.o hc.o hc_functions.o hc_varassign.o hc_graph.o hc_complex.o m_apmc.o 
 hc: cleanup ${OBJS}
 	gcc `pkg-config --cflags --libs plplotd` ${LOPT} ${OBJS} /usr/lib/libmapm.so.0 -lm -lreadline -o $@
 
+
+clean:
+	rm -f *.o
+	rm -f hc
+
+
 cleanup: hc.make.cli
 
 hc.make.cli:
