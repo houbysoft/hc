@@ -5,7 +5,7 @@
 # additional options to pass to gcc when compiling
 # -DDDBG for even more debug messages
 #COPT=-DDBG -g -lefence -Wall
-COPT=-Wall
+COPT=-Wall -O3
 #COPT=-DI_HATE_TIPS -Wall
 
 
