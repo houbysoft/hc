@@ -931,6 +931,42 @@ char *hc_i2p(char *f)
 }
 
 
+void hc_postfix_load_curr(struct hc_stack_element *curr, char type, char *tmp_num) {
+  curr->type = type;
+  if (curr->type == HC_VAR_NUM)
+  {
+    char *tmp_num2;
+    tmp_num2 = hc_real_part(tmp_num);
+    if (tmp_num2[0]=='_')
+      tmp_num2[0] = '-';
+    m_apm_set_string(curr->re,tmp_num2); // set real part
+    free(tmp_num2);
+    tmp_num2 = hc_imag_part(tmp_num);
+    if (tmp_num2)
+    {
+      if (tmp_num2[0]=='_')
+	tmp_num2[0] = '-';
+      m_apm_set_string(curr->im,tmp_num2); // set imaginary part
+      free(tmp_num2);
+    } else {
+      m_apm_set_string(curr->im,"0"); // set null imaginary part
+    }
+    free(tmp_num);
+    free(curr->str);
+    curr->str = NULL;
+  } else if (curr->type == HC_VAR_STR)
+  {
+    curr->str = tmp_num;
+  } else if (curr->type == HC_VAR_VEC)
+  {
+    curr->str = tmp_num;
+  } else if (curr->type == HC_VAR_EMPTY)
+  {
+    curr->str = tmp_num;
+  }
+}
+
+
 char *hc_postfix_result(char *e)
 {
 #ifdef DBG
@@ -1841,17 +1877,6 @@ char *hc_postfix_result(char *e)
           }
           if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
           tmp_num[j++] = e[i++];
-          while (e[i]=='[') // index
-          {
-            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
-            tmp_num[j] = 0;
-            if (!hc_get_by_index(tmp_num,&type,e,&i))
-            {
-              hc_postfix_result_cleanup();
-              return NULL;
-            }
-            j = strlen(tmp_num);
-          }
         } else if (e[i]=='[') {
           type = HC_VAR_VEC;
           unsigned int pct = 1;
@@ -1891,17 +1916,6 @@ char *hc_postfix_result(char *e)
             tmp_num_alloc = strlen(tmp_num) + 1;
           }
           j = strlen(tmp_num);
-          while (e[i]=='[') // index
-          {
-            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
-            tmp_num[j]=0;
-            if (!hc_get_by_index(tmp_num,&type,e,&i))
-            {
-              hc_postfix_result_cleanup();
-              return NULL;
-            }
-            j = strlen(tmp_num);
-          }
         } else if (e[i]=='\'') { // lambda expression
           char *lambda_end = strchr_outofblock((char *)(e + i + 1),'\'');
           if (!lambda_end)
@@ -1942,18 +1956,6 @@ char *hc_postfix_result(char *e)
           free(lambda_expr); free(args);
           j = strlen(tmp_num);
           tmp_num_alloc = j + 1;
-          while (e[i]=='[')
-          {
-            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
-            tmp_num[j]=0;
-            if (!hc_get_by_index(tmp_num,&type,e,&i))
-            {
-              hc_postfix_result_cleanup();
-              return NULL;
-            }
-            j = strlen(tmp_num);
-          }
-          j = strlen(tmp_num);
         } else {
           if (!isalpha(e[i]))
           {
@@ -2025,52 +2027,25 @@ char *hc_postfix_result(char *e)
           free(v_name); free(f_expr);
           j = strlen(tmp_num);
           tmp_num_alloc = j + 1;
-          while (e[i]=='[')
-          {
-            if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
-            tmp_num[j]=0;
-            if (!hc_get_by_index(tmp_num,&type,e,&i))
-            {
-              hc_postfix_result_cleanup();
-              return NULL;
-            }
-            j = strlen(tmp_num);
-          }
-          j = strlen(tmp_num);
         }
-        i--;
         if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
         tmp_num[j]=0; // continue here
-        curr->type = type;
-        if (curr->type == HC_VAR_NUM)
-        {
-          char *tmp_num2;
-          tmp_num2 = hc_real_part(tmp_num);
-          if (tmp_num2[0]=='_')
-            tmp_num2[0] = '-';
-          m_apm_set_string(curr->re,tmp_num2); // set real part
-          free(tmp_num2);
-          tmp_num2 = hc_imag_part(tmp_num);
-          if (tmp_num2)
-          {
-            if (tmp_num2[0]=='_')
-              tmp_num2[0] = '-';
-            m_apm_set_string(curr->im,tmp_num2); // set imaginary part
-            free(tmp_num2);
-          } else {
-            m_apm_set_string(curr->im,"0"); // set null imaginary part
-          }
-          free(tmp_num);
-        } else if (curr->type == HC_VAR_STR)
-        {
-          curr->str = tmp_num;
-        } else if (curr->type == HC_VAR_VEC)
-        {
-          curr->str = tmp_num;
-        } else if (curr->type == HC_VAR_EMPTY)
-        {
-          curr->str = tmp_num;
-        }
+	while (e[i] == '[') // index
+	{
+	  if (type != HC_VAR_VEC && type != HC_VAR_STR) {
+	    hc_postfix_result_cleanup();
+	    hc_error(TYPE, "[] (index) accepts only vectors/lists and strings");
+	    return NULL;
+	  }
+	  if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
+	  tmp_num[j]=0;
+	  if (!hc_get_by_index(tmp_num, &type, e, &i)) {
+	    hc_postfix_result_cleanup();
+	    return NULL;
+	  }
+	  j = strlen(tmp_num);
+	}
+	hc_postfix_load_curr(curr, type, tmp_num); // frees tmp_num as necessary automatically
         tmp_num = NULL;
         tmp_num_alloc = 0;
         if (curr->n == NULL)
@@ -2083,6 +2058,7 @@ char *hc_postfix_result(char *e)
         }
         curr->n->p = curr;
         curr = curr->n;
+	i--;
         sp++; // only used for syntax checking
         break;
       }
