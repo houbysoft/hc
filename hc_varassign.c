@@ -1386,7 +1386,6 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       {
         if (var_tmp->type == HC_USR_FUNC && var_tmp->hash == v_hash)
         {
-          // f_expr
           char *t1, *t2;
           unsigned int k=1;
           t1 = hc_get_arg_r(f_expr,k);
@@ -1401,7 +1400,7 @@ char *hc_value(char *type, char *v_name, char *f_expr)
             free(fme);
             free(t1); free(t2);
             k++;
-            t1 = hc_get_arg(f_expr,k);
+            t1 = hc_get_arg_r(f_expr,k);
             t2 = hc_get_arg(var_tmp->args,k);
           }
           if (t1 || t2)
@@ -1423,8 +1422,8 @@ char *hc_value(char *type, char *v_name, char *f_expr)
               else if (is_vector(result))
                 *type = HC_VAR_VEC;
               else if (!strlen(result))
-        *type = HC_VAR_EMPTY;
-          else {
+		*type = HC_VAR_EMPTY;
+	      else {
                 notify("Invalid variable type. This is most likely a bug, please report it.\n");
                 free(result);
                 return NULL;

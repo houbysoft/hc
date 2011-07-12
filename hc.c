@@ -312,7 +312,7 @@ char *hc_result_(char *e)
     return r;
   }
   char buf_isvarassign = isvarassign(e);
-  
+
   if (strchr_outofblock(e,';') && !(buf_isvarassign))
   {
     return hc_result_mul(e);
@@ -368,10 +368,6 @@ char *hc_result_normal(char *f)
     hc_nested--;
     return NULL;
   }
-
-#ifdef DDBG
-  printf("hc_nested = %i\n",hc_nested);
-#endif
 
   char *e = strdup(f);
   if (!e) mem_error();
@@ -985,19 +981,19 @@ char *hc_postfix_result(char *e)
   first->n->im = m_apm_init();
   first->n->str = NULL;
   first->n->n = NULL;
-  
+
   curr = first;
   int sp = 0;
-  
+
   M_APM op1_r,op1_i,op2_r,op2_i;
   char *op1_str=NULL,*op2_str=NULL;
 
   char op1_type,op2_type;
-  
+
   char *tmp_num = NULL;
   unsigned int tmp_num_alloc = 0;
   unsigned int i=0,j=0;
-  
+
   op1_r = m_apm_init();
   op1_i = m_apm_init();
   op2_r = m_apm_init();
@@ -2029,7 +2025,7 @@ char *hc_postfix_result(char *e)
           tmp_num_alloc = j + 1;
         }
         if (j >= tmp_num_alloc) { tmp_num = hc_enlarge_buffer(tmp_num, &tmp_num_alloc); }
-        tmp_num[j]=0; // continue here
+        tmp_num[j]=0;
 	while (e[i] == '[') // index
 	{
 	  if (type != HC_VAR_VEC && type != HC_VAR_STR) {
