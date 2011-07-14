@@ -25,6 +25,9 @@
 
 
 HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
+  setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+  setFixedSize(sizeHint());
+
   hbox = new QWidget(this);
   vbox = new QWidget(this);
   gdisp = new HCGGraphDisplay(this);
