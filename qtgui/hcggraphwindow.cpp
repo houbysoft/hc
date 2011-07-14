@@ -142,29 +142,29 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
 
   // 2D options
   QWidget *o2D = new QWidget(this);
-  QVBoxLayout *o2Dbox = new QVBoxLayout(this);
-  o2D->setLayout(o2Dbox);
+  QGridLayout *o2DL = new QGridLayout(this);
+  o2D->setLayout(o2DL);
   xmin2D = new QLineEdit(this);
   xmax2D = new QLineEdit(this);
   ymin2D = new QLineEdit(this);
   ymax2D = new QLineEdit(this);
   reset2Dbtn = new QPushButton("Reset to defaults", this);
   connect(reset2Dbtn, SIGNAL(clicked()), this, SLOT(reset2D()));
-  o2Dbox->addWidget(new QLabel("xmin"));
-  o2Dbox->addWidget(xmin2D);
-  o2Dbox->addWidget(new QLabel("xmax"));
-  o2Dbox->addWidget(xmax2D);
-  o2Dbox->addWidget(new QLabel("ymin"));
-  o2Dbox->addWidget(ymin2D);
-  o2Dbox->addWidget(new QLabel("ymax"));
-  o2Dbox->addWidget(ymax2D);
-  o2Dbox->addWidget(reset2Dbtn);
+  o2DL->addWidget(new QLabel("xmin: ", o2D), 0, 0);
+  o2DL->addWidget(xmin2D, 0, 1);
+  o2DL->addWidget(new QLabel("xmax: ", o2D), 1, 0);
+  o2DL->addWidget(xmax2D, 1, 1);
+  o2DL->addWidget(new QLabel("ymin: ", o2D), 2, 0);
+  o2DL->addWidget(ymin2D, 2, 1);
+  o2DL->addWidget(new QLabel("ymax: ", o2D), 3, 0);
+  o2DL->addWidget(ymax2D, 3, 1);
+  o2DL->addWidget(reset2Dbtn, 4, 1);
   options->addWidget(o2D);
 
   // Parametric options
   QWidget *oP = new QWidget(this);
-  QVBoxLayout *oPbox = new QVBoxLayout(this);
-  oP->setLayout(oPbox);
+  QGridLayout *oPL = new QGridLayout(this);
+  oP->setLayout(oPL);
   tminP = new QLineEdit(this);
   tmaxP = new QLineEdit(this);
   xminP = new QLineEdit(this);
@@ -173,19 +173,19 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   ymaxP = new QLineEdit(this);
   resetPbtn = new QPushButton("Reset to defaults", this);
   connect(resetPbtn, SIGNAL(clicked()), this, SLOT(resetP()));
-  oPbox->addWidget(new QLabel("tmin"));
-  oPbox->addWidget(tminP);
-  oPbox->addWidget(new QLabel("tmax"));
-  oPbox->addWidget(tmaxP);
-  oPbox->addWidget(new QLabel("xmin"));
-  oPbox->addWidget(xminP);
-  oPbox->addWidget(new QLabel("xmax"));
-  oPbox->addWidget(xmaxP);
-  oPbox->addWidget(new QLabel("ymin"));
-  oPbox->addWidget(yminP);
-  oPbox->addWidget(new QLabel("ymax"));
-  oPbox->addWidget(ymaxP);
-  oPbox->addWidget(resetPbtn);
+  oPL->addWidget(new QLabel("tmin: ", oP), 0, 0);
+  oPL->addWidget(tminP, 0, 1);
+  oPL->addWidget(new QLabel("tmax: ", oP), 1, 0);
+  oPL->addWidget(tmaxP, 1, 1);
+  oPL->addWidget(new QLabel("xmin: ", oP), 2, 0);
+  oPL->addWidget(xminP, 2, 1);
+  oPL->addWidget(new QLabel("xmax: ", oP), 3, 0);
+  oPL->addWidget(xmaxP, 3, 1);
+  oPL->addWidget(new QLabel("ymin: ", oP), 4, 0);
+  oPL->addWidget(yminP, 4, 1);
+  oPL->addWidget(new QLabel("ymax: ", oP), 5, 0);
+  oPL->addWidget(ymaxP, 5, 1);
+  oPL->addWidget(resetPbtn, 6, 1);
   options->addWidget(oP);
 
   // Values (points) options
@@ -196,8 +196,8 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
 
   // 3D options
   QWidget *o3D = new QWidget(this);
-  QVBoxLayout *o3Dbox = new QVBoxLayout(this);
-  o3D->setLayout(o3Dbox);
+  QGridLayout *o3DL = new QGridLayout(this);
+  o3D->setLayout(o3DL);
   xmin3D = new QLineEdit(this);
   xmax3D = new QLineEdit(this);
   ymin3D = new QLineEdit(this);
@@ -206,40 +206,40 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   zmax3D = new QLineEdit(this);
   reset3Dbtn = new QPushButton("Reset to defaults", this);
   connect(reset3Dbtn, SIGNAL(clicked()), this, SLOT(reset3D()));
-  o3Dbox->addWidget(new QLabel("xmin"));
-  o3Dbox->addWidget(xmin3D);
-  o3Dbox->addWidget(new QLabel("xmax"));
-  o3Dbox->addWidget(xmax3D);
-  o3Dbox->addWidget(new QLabel("ymin"));
-  o3Dbox->addWidget(ymin3D);
-  o3Dbox->addWidget(new QLabel("ymax"));
-  o3Dbox->addWidget(ymax3D);
-  o3Dbox->addWidget(new QLabel("zmin"));
-  o3Dbox->addWidget(zmin3D);
-  o3Dbox->addWidget(new QLabel("zmax"));
-  o3Dbox->addWidget(zmax3D);
-  o3Dbox->addWidget(reset3Dbtn);
+  o3DL->addWidget(new QLabel("xmin: ", o3D), 0, 0);
+  o3DL->addWidget(xmin3D, 0, 1);
+  o3DL->addWidget(new QLabel("xmax: ", o3D), 1, 0);
+  o3DL->addWidget(xmax3D, 1, 1);
+  o3DL->addWidget(new QLabel("ymin: ", o3D), 2, 0);
+  o3DL->addWidget(ymin3D, 2, 1);
+  o3DL->addWidget(new QLabel("ymax: ", o3D), 3, 0);
+  o3DL->addWidget(ymax3D, 3, 1);
+  o3DL->addWidget(new QLabel("zmin: ", o3D), 4, 0);
+  o3DL->addWidget(zmin3D, 4, 1);
+  o3DL->addWidget(new QLabel("zmax: ", o3D), 5, 0);
+  o3DL->addWidget(zmax3D, 5, 1);
+  o3DL->addWidget(reset3Dbtn, 6, 1);
   options->addWidget(o3D);
 
   // Slope Field options
   QWidget *oS = new QWidget(this);
-  QVBoxLayout *oSbox = new QVBoxLayout(this);
-  oS->setLayout(oSbox);
+  QGridLayout *oSL = new QGridLayout(this);
+  oS->setLayout(oSL);
   xminS = new QLineEdit(this);
   xmaxS = new QLineEdit(this);
   yminS = new QLineEdit(this);
   ymaxS = new QLineEdit(this);
   resetSbtn = new QPushButton("Reset to defaults", this);
   connect(resetSbtn, SIGNAL(clicked()), this, SLOT(resetS()));
-  oSbox->addWidget(new QLabel("xmin"));
-  oSbox->addWidget(xminS);
-  oSbox->addWidget(new QLabel("xmax"));
-  oSbox->addWidget(xmaxS);
-  oSbox->addWidget(new QLabel("ymin"));
-  oSbox->addWidget(yminS);
-  oSbox->addWidget(new QLabel("ymax"));
-  oSbox->addWidget(ymaxS);
-  oSbox->addWidget(resetSbtn);
+  oSL->addWidget(new QLabel("xmin: ", oS), 0, 0);
+  oSL->addWidget(xminS, 0, 1);
+  oSL->addWidget(new QLabel("xmax: ", oS), 1, 0);
+  oSL->addWidget(xmaxS, 1, 1);
+  oSL->addWidget(new QLabel("ymin: ", oS), 2, 0);
+  oSL->addWidget(yminS, 2, 1);
+  oSL->addWidget(new QLabel("ymax: ", oS), 3, 0);
+  oSL->addWidget(ymaxS, 3, 1);
+  oSL->addWidget(resetSbtn, 4, 1);
   options->addWidget(oS);
 
   // Boxplot options
@@ -247,8 +247,8 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
 
   // Polar options
   QWidget *oPO = new QWidget(this);
-  QVBoxLayout *oPObox = new QVBoxLayout(this);
-  oPO->setLayout(oPObox);
+  QGridLayout *oPOL = new QGridLayout(this);
+  oPO->setLayout(oPOL);
   tminPO = new QLineEdit(this);
   tmaxPO = new QLineEdit(this);
   xminPO = new QLineEdit(this);
@@ -257,19 +257,19 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   ymaxPO = new QLineEdit(this);
   resetPObtn = new QPushButton("Reset to defaults", this);
   connect(resetPObtn, SIGNAL(clicked()), this, SLOT(resetPO()));
-  oPObox->addWidget(new QLabel("tmin"));
-  oPObox->addWidget(tminPO);
-  oPObox->addWidget(new QLabel("tmax"));
-  oPObox->addWidget(tmaxPO);
-  oPObox->addWidget(new QLabel("xmin"));
-  oPObox->addWidget(xminPO);
-  oPObox->addWidget(new QLabel("xmax"));
-  oPObox->addWidget(xmaxPO);
-  oPObox->addWidget(new QLabel("ymin"));
-  oPObox->addWidget(yminPO);
-  oPObox->addWidget(new QLabel("ymax"));
-  oPObox->addWidget(ymaxPO);
-  oPObox->addWidget(resetPObtn);
+  oPOL->addWidget(new QLabel("tmin: "), 0, 0);
+  oPOL->addWidget(tminPO, 0, 1);
+  oPOL->addWidget(new QLabel("tmax: "), 1, 0);
+  oPOL->addWidget(tmaxPO, 1, 1);
+  oPOL->addWidget(new QLabel("xmin: "), 2, 0);
+  oPOL->addWidget(xminPO, 2, 1);
+  oPOL->addWidget(new QLabel("xmax: "), 3, 0);
+  oPOL->addWidget(xmaxPO, 3, 1);
+  oPOL->addWidget(new QLabel("ymin: "), 4, 0);
+  oPOL->addWidget(yminPO, 4, 1);
+  oPOL->addWidget(new QLabel("ymax: "), 5, 0);
+  oPOL->addWidget(ymaxPO, 5, 1);
+  oPOL->addWidget(resetPObtn, 6, 1);
   options->addWidget(oPO);
 
   vbox_layout->addWidget(optionsBox);
