@@ -275,11 +275,6 @@ HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
   vbox_layout->addWidget(optionsBox);
   connect(gtypes, SIGNAL(activated(int)), this, SLOT(setCurrentIndex(int)));
 
-  fullform = new QLineEdit(this);
-  fullform->setReadOnly(true);
-  vbox_layout->addWidget(fullform);
-  updateFullForm();
-
   go = new QPushButton(" Go ", this);
   connect(go, SIGNAL(clicked()), this, SLOT(drawGraph()));
   vbox_layout->addWidget(go);
@@ -358,7 +353,6 @@ void HCGGraphWindow::resetPO()
 void HCGGraphWindow::setCurrentIndex(int i)
 {
   updateOptions(i + 1);
-  updateFullForm();
 }
 
 
@@ -396,16 +390,9 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
     break;
   }
   updateOptions(type);
-  updateFullForm();
   show();
   activateWindow();
   raise();
-}
-
-
-void HCGGraphWindow::updateFullForm()
-{
-  fullform->setText("Full form : " + getFullForm());
 }
 
 
@@ -507,7 +494,6 @@ QString HCGGraphWindow::getFullForm()
 
 void HCGGraphWindow::drawGraph()
 {
-  updateFullForm();
   HCGResultThread *resThread = new HCGResultThread(getFullForm());
   resThread->start();
 }

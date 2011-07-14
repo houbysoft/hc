@@ -52,11 +52,9 @@ class HCGGraphWindow : public QMainWindow {
   Q_OBJECT
   private:
   void updateOptions(int type);
-  void updateFullForm();
   QString getFullForm();
   QString lineText();
   HCGGraphDisplay *gdisp;
-  QLineEdit *fullform;
   QWidget *hbox;
   QWidget *vbox;
   QHBoxLayout *hbox_layout;
