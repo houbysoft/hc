@@ -62,7 +62,6 @@ class HCGGraphWindow : public QMainWindow {
   QLineEdit *line2D, *lineparx, *linepary, *linevp, *linevl, *line3D, *linesf, *linebx, *linepl;
   QPushButton *reset2Dbtn, *resetPbtn, *reset3Dbtn, *resetSbtn, *resetPObtn;
   QComboBox *gtypes;
-  QPushButton *go;
   QStackedWidget *options;
   QStackedWidget *lineedits;
   QLineEdit *xmin2D;
