@@ -254,6 +254,7 @@ void HCGScriptWindow::closeEvent(QCloseEvent *event) {
 
 void HCGScriptWindow::insert(QString string) {
   scripteditor->insertPlainText(string);
+  focusInput();
 }
 
 
