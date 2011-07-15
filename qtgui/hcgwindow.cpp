@@ -147,6 +147,7 @@ void HCGWindow::setRunning(bool running)
 void HCGWindow::insert(QString string)
 {
   inputline->insert(string);
+  focusInput();
 }
 
 

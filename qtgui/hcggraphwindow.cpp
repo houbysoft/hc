@@ -484,6 +484,7 @@ QLineEdit *HCGGraphWindow::getCurrentLineEdit() {
 
 void HCGGraphWindow::insert(QString string) {
   getCurrentLineEdit()->insert(string);
+  focusInput();
 }
 
 
