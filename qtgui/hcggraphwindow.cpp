@@ -20,13 +20,17 @@
 #include <math.h>
 #include "main.hpp"
 #include "hcggraphwindow.hpp"
+#include "hcgscriptwindow.hpp"
 #include "hcgthreads.hpp"
 #include "../hc_info.h"
 
 
-HCGGraphWindow::HCGGraphWindow() : QMainWindow() {
+HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
   setFixedSize(sizeHint());
+
+  createFileMenu();
+  createMenus();
 
   hbox = new QWidget(this);
   vbox = new QWidget(this);
@@ -444,6 +448,74 @@ QString HCGGraphWindow::lineText()
   default:
     return "";
   }
+}
+
+
+
+QLineEdit *HCGGraphWindow::getCurrentLineEdit() {
+  switch (gtypes->currentIndex() + 1) {
+  case HCGT_2D:
+    return line2D;
+  case HCGT_PARAMETRIC:
+    if (lineparx->hasFocus())
+      return lineparx;
+    else if (linepary->hasFocus())
+      return linepary;
+    else
+      return lineparx;
+  case HCGT_VALUESPOINTS:
+    return linevp;
+  case HCGT_VALUESLINE:
+    return linevl;
+  case HCGT_3D:
+    return line3D;
+  case HCGT_SLPFLD:
+    return linesf;
+  case HCGT_BOXPLOT:
+    return linebx;
+  case HCGT_POLAR:
+    return linepl;
+
+  default:
+    return line2D; // should never get here
+  }
+}
+
+
+void HCGGraphWindow::insert(QString string) {
+  getCurrentLineEdit()->insert(string);
+}
+
+
+void HCGGraphWindow::focusInput() {
+  getCurrentLineEdit()->setFocus();
+}
+
+
+void HCGGraphWindow::openScript() {
+  QString filename = QFileDialog::getOpenFileName(this, "Open File", opendir);
+  if (!filename.isNull()) {
+    opendir = QFileInfo(filename).dir().absolutePath();
+    new HCGScriptWindow(filename);
+  }
+}
+
+
+void HCGGraphWindow::createFileMenu() {
+  struct SubMenu newmenu;
+  newmenu.menu = menuBar()->addMenu("&File");
+  QAction *newEval = new QAction("&New Evaluation Window", newmenu.menu);
+  newmenu.menu->addAction(newEval);
+  connect(newEval, SIGNAL(triggered()), this, SLOT(newEval()));
+  QAction *newAct = new QAction("&New Script", newmenu.menu);
+  connect(newAct, SIGNAL(triggered()), this, SLOT(newScript()));
+  newmenu.menu->addAction(newAct);
+  QAction *openAct = new QAction("&Open Script...", newmenu.menu);
+  connect(openAct, SIGNAL(triggered()), this, SLOT(openScript()));
+  newmenu.menu->addAction(openAct);
+  QAction *quit = new QAction("&Close", newmenu.menu);
+  connect(quit, SIGNAL(triggered()), this, SLOT(close()));
+  newmenu.menu->addAction(quit);
 }
 
 

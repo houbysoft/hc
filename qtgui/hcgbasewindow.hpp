@@ -28,7 +28,6 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QMenu>
-#include "hcggraphwindow.hpp"
 #ifdef WIN32
 #include <hul.h>
 #endif

@@ -36,7 +36,11 @@
 #include <QCursor>
 #include <QTimer>
 #include <QToolTip>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMenuBar>
 #include <math.h>
+#include "hcgbasewindow.hpp"
 
 
 #define HCG_ZOOM_FACTOR (1.05)
@@ -48,12 +52,14 @@
 class HCGGraphDisplay;
 
 
-class HCGGraphWindow : public QMainWindow {
+class HCGGraphWindow : public HCGBaseWindow {
   Q_OBJECT
   private:
   void updateOptions(int type);
   QString getFullForm();
   QString lineText();
+  QLineEdit *getCurrentLineEdit();
+  void createFileMenu();
   HCGGraphDisplay *gdisp;
   QWidget *hbox;
   QWidget *vbox;
@@ -100,6 +106,10 @@ class HCGGraphWindow : public QMainWindow {
   public slots:
   void drawGraph();
   void setCurrentIndex(int i);
+  void insert(QString string);
+  void focusInput();
+  void getInputResult() {};
+  void openScript();
   void zoom(double x, double y, double zoomfactor, double movefactor);
   void reset2D(); void resetP(); void reset3D(); void resetS(); void resetPO();
 };

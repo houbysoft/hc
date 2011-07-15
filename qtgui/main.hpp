@@ -21,6 +21,7 @@
 #define MAIN_HPP
 
 #include "hcgwindow.hpp"
+#include "hcggraphwindow.hpp"
 #include "hcgcore.hpp"
 
 extern HCGCore *hcgcore;
