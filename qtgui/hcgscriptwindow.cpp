@@ -109,6 +109,7 @@ void HCGScriptWindow::saveFile(QString fname)
 
   filename = fname;
   scripteditor->document()->setModified(false);
+  setWindowModified(false);
   updateTitle();
   file.close();
 }
@@ -179,14 +180,9 @@ void HCGScriptWindow::updateTitle()
 {
   if (!filename.length())
   {
-    setWindowTitle("Script Editor - HC");
+    setWindowTitle("[*]Script Editor - HC");
   } else {
-    if (scripteditor->document()->isModified())
-    {
-      setWindowTitle("*"+filename+" - Script Editor - HC");
-    } else {
-      setWindowTitle(filename+" - Script Editor - HC");
-    }
+    setWindowTitle("[*]"+filename+" - Script Editor - HC");
   }
 }
 
@@ -199,8 +195,7 @@ void HCGScriptWindow::resetFont(const QTextCharFormat f) {
 
 
 void HCGScriptWindow::textChanged() {
-  if (filename.length())
-    updateTitle();
+  setWindowModified(true);
 }
 
 
