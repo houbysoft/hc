@@ -970,6 +970,10 @@ char hc_graph_values(char *e, char draw_lines)
       char *curtmp = list_clean(cur);
       char *curx = hc_get_arg(curtmp,1);
       char *cury = hc_get_arg(curtmp,2);
+      if (!curx || !is_num(curx) || !cury || !is_num(cury)) {
+	free(curx); free(cury); free(cur); free(points_orig);
+	arg_error("graphvalues() : invalid point list supplied.");
+      }
       if (idx == 1)
       {
         xmin = xmax = lastpointx = strtod(curx,NULL);
@@ -993,6 +997,16 @@ char hc_graph_values(char *e, char draw_lines)
     }
 
     free(cur);
+  }
+
+  if (xmin == xmax) {
+    free(points_orig);
+    arg_error("graphvalues() : invalid point list; make sure to specify at least two points to graph.");
+  }
+
+  if (ymin == ymax) {
+    ymin -= 1.0;
+    ymax += 1.0;
   }
 
   hc_graph_init2d("HoubySoft Calculator - Graph", "x", "y", xmin, xmax, ymin, ymax);
