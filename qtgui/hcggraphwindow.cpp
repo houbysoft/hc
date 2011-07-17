@@ -82,7 +82,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   QWidget *lvp = new QWidget(this);
   QHBoxLayout *lvpBox = new QHBoxLayout(this);
   lvp->setLayout(lvpBox);
-  lvpBox->addWidget(new QLabel("[v_1, v_2, ...] = "));
+  lvpBox->addWidget(new QLabel("value_1, value_2, ... = "));
   linevp = new QLineEdit();
   connect(linevp, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
   lvpBox->addWidget(linevp);
@@ -92,7 +92,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   QWidget *lvl = new QWidget(this);
   QHBoxLayout *lvlBox = new QHBoxLayout(this);
   lvl->setLayout(lvlBox);
-  lvlBox->addWidget(new QLabel("[v_1, v_2, ...] = "));
+  lvlBox->addWidget(new QLabel("value_1, value_2, ... = "));
   linevl = new QLineEdit();
   connect(linevl, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
   lvlBox->addWidget(linevl);
@@ -122,7 +122,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   QWidget *lbx = new QWidget(this);
   QHBoxLayout *lbxBox = new QHBoxLayout(this);
   lbx->setLayout(lbxBox);
-  lbxBox->addWidget(new QLabel("[v_1, v_2, ...] = "));
+  lbxBox->addWidget(new QLabel("value_1, value_2, ... = "));
   linebx = new QLineEdit();
   connect(linebx, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
   lbxBox->addWidget(linebx);
@@ -385,36 +385,43 @@ void HCGGraphWindow::setCurrentIndex(int i)
 }
 
 
-void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args)
+void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args2)
 {
   gdisp->setPixmap(map);
   gdisp->setFixedSize(x,y);
+  QString args = QString(args2).trimmed();
+  if (type == HCGT_VALUESPOINTS || type == HCGT_VALUESLINE || type == HCGT_BOXPLOT) {
+    if (args.startsWith('['))
+      args.remove(0, 1);
+    if (args.endsWith(']'))
+      args.chop(1);
+  }
   switch (type)
   {
   case HCGT_2D:
-    line2D->setText(QString(args));
+    line2D->setText(args);
     break;
   case HCGT_PARAMETRIC:
-    lineparx->setText(QString(args).split(",").first());
-    linepary->setText(QString(args).split(",").last());
+    lineparx->setText(args.split(",").first());
+    linepary->setText(args.split(",").last());
     break;
   case HCGT_3D:
-    line3D->setText(QString(args));
+    line3D->setText(args);
     break;
   case HCGT_SLPFLD:
-    linesf->setText(QString(args));
+    linesf->setText(args);
     break;
   case HCGT_VALUESPOINTS:
-    linevp->setText(QString(args));
+    linevp->setText(args);
     break;
   case HCGT_VALUESLINE:
-    linevl->setText(QString(args));
+    linevl->setText(args);
     break;
   case HCGT_BOXPLOT:
-    linebx->setText(QString(args));
+    linebx->setText(args);
     break;
   case HCGT_POLAR:
-    linepl->setText(QString(args));
+    linepl->setText(args);
   default:
     break;
   }
@@ -534,11 +541,11 @@ QString HCGGraphWindow::getFullForm()
     break;
 
   case HCGT_VALUESPOINTS:
-    cmd += "graphpoints(";
+    cmd += "graphpoints([";
     break;
 
   case HCGT_VALUESLINE:
-    cmd += "graphvalues(";
+    cmd += "graphvalues([";
     break;
 
   case HCGT_3D:
@@ -550,7 +557,7 @@ QString HCGGraphWindow::getFullForm()
     break;
 
   case HCGT_BOXPLOT:
-    cmd += "boxplot(";
+    cmd += "boxplot([";
     break;
 
   case HCGT_POLAR:
@@ -570,12 +577,21 @@ QString HCGGraphWindow::getFullForm()
     cmd += "," + tminP->text() + "," + tmaxP->text() + "," + xminP->text() + "," + xmaxP->text() + "," + yminP->text() + "," + ymaxP->text();
     break;
 
+  case HCGT_VALUESPOINTS:
+  case HCGT_VALUESLINE:
+    cmd += "]";
+    break;
+
   case HCGT_3D:
     cmd += "," + xmin3D->text() + "," + xmax3D->text() + "," + ymin3D->text() + "," + ymax3D->text() + "," + zmin3D->text() + "," + zmax3D->text();
     break;
 
   case HCGT_SLPFLD:
     cmd += "," + xminS->text() + "," + xmaxS->text() + "," + yminS->text() + "," + ymaxS->text();
+    break;
+
+  case HCGT_BOXPLOT:
+    cmd += "]";
     break;
 
   case HCGT_POLAR:
