@@ -104,6 +104,23 @@ char hc_stats(char *f, char g)
     } else {
       tmp_res_val = tmp_res;
     }
+    if (!is_num(tmp_res_val) || (tmp_res_eff && !is_num(tmp_res_eff))) {
+      hc_error(ARG, "stats() : invalid value : %s", tmp_res);
+      free(tmp); free(f_tmp);
+      if (tmp_res_val != tmp_res)
+	free(tmp_res_val);
+      free(tmp_res); free(tmp_res_eff);
+      m_apm_free(numtmp); m_apm_free(numtmp2); m_apm_free(numtmp3); m_apm_free(numtmp4); m_apm_free(n); m_apm_free(avg_re); m_apm_free(avg_im); m_apm_free(min_re); m_apm_free(min_im); m_apm_free(max_re); m_apm_free(max_im); m_apm_free(sumx_re); m_apm_free(sumx_im); m_apm_free(sumx2_re); m_apm_free(sumx2_im);
+      while (first->n)
+      {
+	m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+	first = first->n;
+	free(first->p);
+      }
+      m_apm_free(first->re);m_apm_free(first->im);m_apm_free(first->ef);
+      free(first);
+      return FAIL;
+    }
     tmp_num_re = hc_real_part(tmp_res_val);
     tmp_num_im = hc_imag_part(tmp_res_val);
     m_apm_set_string(curr->re,tmp_num_re);
