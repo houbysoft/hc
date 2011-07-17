@@ -58,10 +58,8 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(this, SIGNAL(updateStatus_signal(int)), this, SLOT(updateStatus_slot(int)), Qt::QueuedConnection);
 #endif
   connect(hcgcore, SIGNAL(closeAll_signal()), this, SLOT(close()));
-  createShortcut("Ctrl+O", this, SLOT(openScript()));
-  createShortcut("Ctrl+N", this, SLOT(newScript()));
-  createShortcut("Ctrl+G", this, SLOT(showGraph()));
-  createShortcut("Ctrl+Q", this, SLOT(close()));
+  QShortcut *sc = new QShortcut(QKeySequence(tr("Ctrl+Q")), this);
+  QObject::connect(sc, SIGNAL(activated()), this, SLOT(close()));
 
   log_edit = NULL;
 #ifdef WIN32
@@ -154,6 +152,7 @@ void HCGBaseWindow::createMenus() {
         } else if (curpath == "Graphs")
         {
           QAction *showGraphAction = new QAction("Show Graph Window", newmenu.menu);
+	  showGraphAction->setShortcut(tr("Ctrl+G"));
           connect(showGraphAction, SIGNAL(triggered()), this, SLOT(showGraph()));
           newmenu.menu->addAction(showGraphAction);
         }
@@ -455,13 +454,6 @@ void HCGBaseWindow::freeResult(QString expr, char *result)
 void HCGBaseWindow::generalHelp()
 {
   QMessageBox::information(this, "How to use Help", "The input line in the \"Help\" menu serves for giving you specific help information. To use it, simply enter the name of a function, constant, or a topic and press Enter.\nYou can also leave it blank and press Enter; it will then give you some general help information and names of topics you can use.\nAlternatively, you can also type help(\"name of topic goes here\") into the normal input line on the bottom of the calculator.");
-}
-
-
-void HCGBaseWindow::createShortcut(const char *seq, const QObject *rec, const char *method)
-{
-  QShortcut *sc = new QShortcut(QKeySequence(tr(seq)), this);
-  QObject::connect(sc, SIGNAL(activated()), rec, method);
 }
 
 

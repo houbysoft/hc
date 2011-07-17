@@ -516,12 +516,15 @@ void HCGGraphWindow::createFileMenu() {
   newmenu.menu->addAction(newEval);
   connect(newEval, SIGNAL(triggered()), this, SLOT(newEval()));
   QAction *newAct = new QAction("&New Script", newmenu.menu);
+  newAct->setShortcut(tr("Ctrl+N"));
   connect(newAct, SIGNAL(triggered()), this, SLOT(newScript()));
   newmenu.menu->addAction(newAct);
   QAction *openAct = new QAction("&Open Script...", newmenu.menu);
+  openAct->setShortcut(tr("Ctrl+O"));
   connect(openAct, SIGNAL(triggered()), this, SLOT(openScript()));
   newmenu.menu->addAction(openAct);
   QAction *quit = new QAction("&Close", newmenu.menu);
+  quit->setShortcut(tr("Ctrl+W"));
   connect(quit, SIGNAL(triggered()), this, SLOT(close()));
   newmenu.menu->addAction(quit);
 }

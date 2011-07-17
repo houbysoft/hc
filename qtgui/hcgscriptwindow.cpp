@@ -29,6 +29,7 @@
 #include <QTimer>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QShortcut>
 #include "hcgscriptwindow.hpp"
 #include "main.hpp"
 
@@ -57,8 +58,8 @@ HCGScriptWindow::HCGScriptWindow(QString fname) : HCGBaseWindow()
 
   createFileMenu();
   createMenus();
-  createShortcut("Ctrl+S", this, SLOT(saveScript()));
-  createShortcut("F9", this, SLOT(runScript()));
+  QShortcut *sc = new QShortcut(QKeySequence(tr("F9")), this);
+  QObject::connect(sc, SIGNAL(activated()), this, SLOT(runScript()));
 
   setCentralWidget(vbox);
   settings = new QSettings(this);
@@ -285,18 +286,23 @@ void HCGScriptWindow::createFileMenu() {
   connect(newEval, SIGNAL(triggered()), this, SLOT(newEval()));
   newmenu.menu->addAction(newEval);
   QAction *newAct = new QAction("&New Script", newmenu.menu);
+  newAct->setShortcut(tr("Ctrl+N"));
   connect(newAct, SIGNAL(triggered()), this, SLOT(newScript()));
   newmenu.menu->addAction(newAct);
   QAction *openAct = new QAction("&Open Script...", newmenu.menu);
+  openAct->setShortcut(tr("Ctrl+O"));
   connect(openAct, SIGNAL(triggered()), this, SLOT(openScript()));
   newmenu.menu->addAction(openAct);
   QAction *saveact = new QAction("&Save Script", newmenu.menu);
+  saveact->setShortcut(tr("Ctrl+S"));
   connect(saveact, SIGNAL(triggered()), this, SLOT(saveScript()));
   newmenu.menu->addAction(saveact);
   QAction *saveasact = new QAction("&Save Script As...", newmenu.menu);
+  saveasact->setShortcut(tr("Shift+Ctrl+S"));
   connect(saveasact, SIGNAL(triggered()), this, SLOT(saveScriptAs()));
   newmenu.menu->addAction(saveasact);
   QAction *quit = new QAction("&Close", newmenu.menu);
+  quit->setShortcut(tr("Ctrl+W"));
   connect(quit, SIGNAL(triggered()), this, SLOT(close()));
   newmenu.menu->addAction(quit);
 }
