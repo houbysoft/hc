@@ -145,6 +145,7 @@ const char *hc_names[][5] = {
   {"\\deg","dir","#","",""},
   {"\\rad","dir","#","",""},
   {"\\grad","dir","#","",""},
+  {"\\gshowimag","dir","#","","Switches between real and real+imaginary graphing."},
   {"\\clear","dir","#","",""},
   {"\\load","dir","#","",""},
   {"\\tstep","dir","#","",""},
@@ -2170,6 +2171,13 @@ void hc_process_direction(char *d)
     else
       notify("RPN mode is now off.\n");
     break;
+  case HASH_GSHOWIMAG:
+    hc.graph_show_imag = hc.graph_show_imag==TRUE ? FALSE : TRUE;
+    if (hc.graph_show_imag)
+      notify("Graph will now show real and imaginary parts.\n");
+    else
+      notify("Graph will now show only the real part.\n");
+    break;
   case HASH_SCI:
     hc.exp = 's';
     notify("Exponential format is now SCI.\n");
@@ -2331,6 +2339,7 @@ void hc_load_cfg()
   FILE *fr = fopen(HC_CFG_FILE,"r");
   hc.angle = 'r';
   hc.autoupdate = TRUE;
+  hc.graph_show_imag = FALSE;
   hc.graph_points_3d = HC_GP3D_DEFAULT;
   hc.peqstep = HC_PEQSTEP_DEFAULT;
   hc.xmin2d[hcgt_get_idx(HCGT_2D)] = hc.ymin2d[hcgt_get_idx(HCGT_2D)] = hc.xmin3d = hc.ymin3d = hc.zmin3d = hc.xmin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.ymin2d[hcgt_get_idx(HCGT_SLPFLD)] = hc.xmin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.ymin2d[hcgt_get_idx(HCGT_PARAMETRIC)] = hc.xmin2d[hcgt_get_idx(HCGT_POLAR)] = hc.ymin2d[hcgt_get_idx(HCGT_POLAR)] = -10;
@@ -2374,11 +2383,18 @@ void hc_load_cfg()
             else
               hc.rpn = FALSE;
             break;
+      case HASH_GSHOWIMAG:
+	if (buffer[i+1]=='1')
+	  hc.graph_show_imag = TRUE;
+	else
+	  hc.graph_show_imag = FALSE;
+	break;
       case HASH_BGCOLOR:
         if (buffer[i+1]==WHITE)
           hc.bgcolor = WHITE;
         else
           hc.bgcolor = BLACK;
+	break;
       case HASH_AUTOUPDATE:
         if (buffer[i+1]=='1')
               hc.autoupdate = TRUE;
@@ -2538,6 +2554,7 @@ void hc_save_cfg()
     fprintf(fw,"pldev=$\n");
   fprintf(fw,"angle=%c\n",hc.angle);
   fprintf(fw,"expf=%c\n",hc.exp);
+  fprintf(fw,"gshowimag=%i\n",hc.graph_show_imag==0 ? FALSE : TRUE);
   fprintf(fw,"3dpoints=%i\n",hc.graph_points_3d);
   fprintf(fw,"peqstep=%f\n",hc.peqstep);
   fprintf(fw,"xmin2d=%f\n",hc.xmin2d[hcgt_get_idx(HCGT_2D)]);

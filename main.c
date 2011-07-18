@@ -134,8 +134,10 @@ int main(int argc, char *argv[])
       free(expr2);
     }
 
-    if (strcmp(expr,"exit")==0 || strcmp(expr,"quit")==0)
+    if (strcmp(expr,"exit")==0 || strcmp(expr,"quit")==0) {
+      free(expr);
       exit(0);
+    }
     fme = hc_result(expr);
     if (fme && strlen(fme))
     {

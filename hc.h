@@ -37,6 +37,7 @@
 #define HC_CFG_BUF_SIZE 512
 #define HC_NESTED_MAX 128
 
+// has to be pair
 #define HC_GRAPH_N_MAX 128
 
 #define SUCCESS 1

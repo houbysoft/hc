@@ -337,6 +337,27 @@ char hc_graph_n(char *e)
   while ((func_expr[j] = hc_get_arg(e,j+1))!=NULL)
   {
     j++;
+    if (hc.graph_show_imag) {
+      func_expr[j] = malloc(strlen("im()") + strlen(func_expr[j-1]) + 1);
+      if (!func_expr[j]) mem_error();
+      sprintf(func_expr[j], "im(%s)", func_expr[j-1]);
+      func_expr[j-1] = realloc(func_expr[j-1], strlen("re()") + strlen(func_expr[j-1]) + 1);
+      char *tmp = malloc(strlen("re()") + strlen(func_expr[j-1]) + 1);
+      if (!func_expr[j-1]) mem_error(); if (!tmp) mem_error();
+      sprintf(tmp, "re(%s)", func_expr[j-1]);
+      strcpy(func_expr[j-1], tmp);
+      free(tmp);
+      j++;
+    }
+    // HC_GRAPH_N_MAX has to be pair, so it's ok to check only here
+    if (j >= HC_GRAPH_N_MAX) {
+      int k=0;
+      for (; k < j; k++)
+	free(func_expr[k]);
+      free(func_expr);
+      hc_error(ARG, "hc_graph_n() : error : cannot graph more than %i functions on one graph, please reduce the number of functions.", HC_GRAPH_N_MAX);
+      return FAIL;
+    }
   }
 
   if (!*func_expr[0])

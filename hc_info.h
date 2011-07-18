@@ -51,6 +51,7 @@ typedef struct hc_config {
   char keys; // GUI only - whether the clickable keys should be displayed
   char bypass_nested; // used to bypass the recursion protection
   char *plplot_dev_override;
+  char graph_show_imag;
   int graph_points;
   int graph_width;
   int graph_height;
