@@ -97,6 +97,8 @@ class HCGGraphWindow : public HCGBaseWindow {
   QLineEdit *xmaxS;
   QLineEdit *yminS;
   QLineEdit *ymaxS;
+  unsigned int zoomTypesIndex;
+  QString zoomLineText;
 
 
   public:

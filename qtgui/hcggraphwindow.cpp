@@ -32,6 +32,9 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   createFileMenu();
   createMenus();
 
+  zoomTypesIndex = 1;
+  zoomLineText = "";
+
   hbox = new QWidget(this);
   vbox = new QWidget(this);
   gdisp = new HCGGraphDisplay(this);
@@ -440,6 +443,8 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
   show();
   activateWindow();
   raise();
+  zoomLineText = this->lineText();
+  zoomTypesIndex = type;
 }
 
 
@@ -632,7 +637,7 @@ void HCGGraphWindow::drawGraph()
 {
   QString ff = getFullForm();
   if (!ff.isEmpty()) {
-    HCGResultThread *resThread = new HCGResultThread(getFullForm());
+    HCGResultThread *resThread = new HCGResultThread(ff);
     resThread->start();
   }
 }
@@ -695,7 +700,7 @@ void HCGGraphWindow::updateOptions(int type)
 // x and y are relative to hc_graph.c's MEM_DRIVER_X and MEM_DRIVER_Y
 void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefactor)
 {
-  HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, gtypes->currentIndex() + 1, this->lineText());
+  HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, zoomTypesIndex, zoomLineText);
   zThread->start();
 }
 
