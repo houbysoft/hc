@@ -343,7 +343,7 @@ char hc_graph_n(char *e)
     }
     // HC_GRAPH_N_MAX has to be pair, so it's ok to check only here
     if (j >= HC_GRAPH_N_MAX) {
-      int k=0;
+      unsigned int k=0;
       for (; k < j; k++)
 	free(func_expr[k]);
       free(func_expr);
