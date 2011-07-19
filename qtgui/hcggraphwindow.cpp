@@ -448,9 +448,15 @@ QString HCGGraphWindow::lineText()
   switch (gtypes->currentIndex() + 1)
   {
   case HCGT_2D:
-    return "[" + line2D->text() + "]";
+    if (line2D->text().isEmpty())
+      return "";
+    else
+      return "[" + line2D->text() + "]";
   case HCGT_PARAMETRIC:
-    return lineparx->text() + "," + linepary->text();
+    if (lineparx->text().isEmpty() || linepary->text().isEmpty())
+      return "";
+    else
+      return lineparx->text() + "," + linepary->text();
   case HCGT_VALUESPOINTS:
     return linevp->text();
   case HCGT_VALUESLINE:
@@ -580,6 +586,8 @@ QString HCGGraphWindow::getFullForm()
   default:
     break;
   }
+  if (this->lineText().isEmpty())
+    return "";
   cmd += this->lineText();
   switch (gtypes->currentIndex() + 1)
   {
@@ -622,8 +630,11 @@ QString HCGGraphWindow::getFullForm()
 
 void HCGGraphWindow::drawGraph()
 {
-  HCGResultThread *resThread = new HCGResultThread(getFullForm());
-  resThread->start();
+  QString ff = getFullForm();
+  if (!ff.isEmpty()) {
+    HCGResultThread *resThread = new HCGResultThread(getFullForm());
+    resThread->start();
+  }
 }
 
 
