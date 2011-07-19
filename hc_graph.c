@@ -29,6 +29,7 @@
 #include "hc_complex.h"
 #include "hc_list.h"
 #include "hc_utils.h"
+#include "hc_info.h"
 
 
 #define HC_GRAPH_POINTS 300
@@ -38,15 +39,6 @@
 
 
 #ifdef MEM_DRIVER
-
-#ifndef MEM_DRIVER_X
-#define MEM_DRIVER_X 640 // do not change this, the Qt GUI relies on these values (see question http://stackoverflow.com/questions/5450611 for description of the problem)
-#endif
-
-#ifndef MEM_DRIVER_Y
-#define MEM_DRIVER_Y 480
-#endif
-
 void *driver_memory = NULL;
 #endif
 

@@ -38,6 +38,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   hbox = new QWidget(this);
   vbox = new QWidget(this);
   gdisp = new HCGGraphDisplay(this);
+  gdisp->setFixedSize(MEM_DRIVER_X, MEM_DRIVER_Y);
 
   vbox_layout = new QVBoxLayout(vbox);
   vbox_layout->setSpacing(0);

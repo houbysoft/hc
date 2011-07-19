@@ -38,6 +38,16 @@ extern "C" {
 enum HCGT { HCGT_NULL, HCGT_2D, HCGT_PARAMETRIC, HCGT_VALUESPOINTS, HCGT_VALUESLINE, HCGT_3D, HCGT_SLPFLD, HCGT_BOXPLOT, HCGT_POLAR, HCGT_COUNT };
 enum HCGT_IDX { HCGT_IDX_2D, HCGT_IDX_PARAMETRIC, HCGT_IDX_SLPFLD, HCGT_IDX_POLAR, HCGT_IDX_COUNT };
 
+#ifdef MEM_DRIVER
+#ifndef MEM_DRIVER_X
+#define MEM_DRIVER_X 640 // do not change this, the Qt GUI relies on these values (see question http://stackoverflow.com/questions/5450611 for description of the problem)
+#endif
+
+#ifndef MEM_DRIVER_Y
+#define MEM_DRIVER_Y 480
+#endif
+#endif
+
 #define hcgt_get_idx(type) (type == HCGT_2D ? HCGT_IDX_2D : type == HCGT_PARAMETRIC ? HCGT_IDX_PARAMETRIC : type == HCGT_SLPFLD ? HCGT_IDX_SLPFLD : type == HCGT_POLAR ? HCGT_IDX_POLAR : 0)
 
 typedef struct hc_config {
