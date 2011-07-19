@@ -42,6 +42,7 @@ class HCGCore : public QObject {
   void unlock();
 
   public slots:
+  void setShowImag(bool enabled);
   void setPrecision(int precision);
   void setAngleMode(QString mode);
   void setExpMode(QString mode);
@@ -64,6 +65,7 @@ class HCGCore : public QObject {
   void RPNChanged(bool rpn_enabled);
   void autoUpdateChanged(bool enabled);
   void colorChanged(char bgcolor);
+  void showImagChanged(bool enabled);
   void closeAll_signal();
 };
 

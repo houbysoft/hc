@@ -70,6 +70,13 @@ void HCGCore::load(QString filename)
 }
 
 
+void HCGCore::setShowImag(bool enabled) {
+  QMutexLocker locker(&hc_mutex);
+  hc.graph_show_imag = enabled ? TRUE : FALSE;
+  emit showImagChanged(hc.graph_show_imag);
+}
+
+
 void HCGCore::setPrecision(int precision)
 {
   QMutexLocker locker(&hc_mutex);
@@ -132,6 +139,7 @@ void HCGCore::emitSignals()
   emit precisionChanged(hc.precision);
   emit autoUpdateChanged(bool(hc.autoupdate));
   emit colorChanged(hc.bgcolor);
+  emit showImagChanged(hc.graph_show_imag);
 }
 
 

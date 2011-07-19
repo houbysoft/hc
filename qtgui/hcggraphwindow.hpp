@@ -70,6 +70,7 @@ class HCGGraphWindow : public HCGBaseWindow {
   QComboBox *gtypes;
   QStackedWidget *options;
   QStackedWidget *lineedits;
+  QCheckBox *graph_imag_checkbox;
   QLineEdit *xmin2D;
   QLineEdit *xmax2D;
   QLineEdit *ymin2D;
@@ -106,6 +107,7 @@ class HCGGraphWindow : public HCGBaseWindow {
   public slots:
   void drawGraph();
   void setCurrentIndex(int i);
+  void setShowImag(bool enabled);
   void insert(QString string);
   void focusInput();
   void getInputResult() {};

@@ -56,12 +56,17 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // 2D line edit
   QWidget *l2D = new QWidget(this);
-  QHBoxLayout *l2DBox = new QHBoxLayout(this);
-  l2D->setLayout(l2DBox);
-  l2DBox->addWidget(new QLabel("y1(x), y2(x), ... = "));
+  QGridLayout *l2DGrid = new QGridLayout(this);
+  l2D->setLayout(l2DGrid);
+  l2DGrid->addWidget(new QLabel("y1(x), y2(x), ... = "), 0, 0);
   line2D = new QLineEdit();
   connect(line2D, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
-  l2DBox->addWidget(line2D);
+  l2DGrid->addWidget(line2D, 0, 1);
+  graph_imag_checkbox = new QCheckBox("Show imaginary part", this);
+  connect(graph_imag_checkbox, SIGNAL(clicked(bool)), this, SLOT(setShowImag(bool)));
+  connect(hcgcore, SIGNAL(showImagChanged(bool)), graph_imag_checkbox, SLOT(setChecked(bool)));
+  hcgcore->emitSignals();
+  l2DGrid->addWidget(graph_imag_checkbox, 1, 1);
   lineedits->addWidget(l2D);
 
   // Parametric line edit
@@ -382,6 +387,12 @@ void HCGGraphWindow::resetPO()
 void HCGGraphWindow::setCurrentIndex(int i)
 {
   updateOptions(i + 1);
+}
+
+
+void HCGGraphWindow::setShowImag(bool enabled) {
+  hcgcore->setShowImag(enabled);
+  drawGraph();
 }
 
 
