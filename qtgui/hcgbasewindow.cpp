@@ -72,6 +72,22 @@ HCGBaseWindow::~HCGBaseWindow() {
 }
 
 
+void HCGBaseWindow::loadConversionUnits(QStringList &units) {
+  int i = 0;
+  for (; i < HC_CONVERSIONS; i++) {
+    units << hc_conversions[i][HC_CONVERSIONS_NAME_START_IDX];
+  }
+  for (i=0; i < HC_CONVERSIONS_BASENAMES; i++) {
+    units << hc_conversions_basenames[i][1];
+  }
+  QMap<QString, QString> strMap;
+  foreach (QString unit, units) {
+    strMap.insert(unit.toLower(), unit);
+  }
+  units = strMap.values();
+}
+
+
 void HCGBaseWindow::createMenus() {
   createOptionMenu();
 
@@ -120,20 +136,7 @@ void HCGBaseWindow::createMenus() {
           connect(convert_input, SIGNAL(returnPressed()), this, SLOT(doConversion()));
           convert_layout->addWidget(convert_input);
           QStringList units;
-          int i = 0;
-          for (; i < HC_CONVERSIONS; i++)
-          {
-            units << hc_conversions[i][HC_CONVERSIONS_NAME_START_IDX];
-          }
-          for (i=0; i < HC_CONVERSIONS_BASENAMES; i++)
-          {
-            units << hc_conversions_basenames[i][1];
-          }
-          QMap<QString, QString> strMap;
-          foreach (QString unit, units) {
-            strMap.insert(unit.toLower(), unit);
-          }
-          units = strMap.values();
+	  loadConversionUnits(units);
           convert_unit_in = new QComboBox(convert_box);
           convert_unit_in->insertItems(0, units);
           convert_layout->addWidget(convert_unit_in);
