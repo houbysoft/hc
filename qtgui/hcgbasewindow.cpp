@@ -72,13 +72,35 @@ HCGBaseWindow::~HCGBaseWindow() {
 }
 
 
-void HCGBaseWindow::loadConversionUnits(QStringList &units) {
+void HCGBaseWindow::loadConversionUnits(QStringList &units, const char *curFrom) {
+  units.clear();
   int i = 0;
-  for (; i < HC_CONVERSIONS; i++) {
-    units << hc_conversions[i][HC_CONVERSIONS_NAME_START_IDX];
+  const char *type = NULL;
+  if (curFrom) {
+    for (i=0; i < HC_CONVERSIONS; i++) {
+      if (strcmp(curFrom, hc_conversions[i][HC_CONVERSIONS_NAME_START_IDX]) == 0) {
+	type = hc_conversions[i][0];
+	break;
+      }
+    }
+
+    if (!type) {
+      for (i=0; i < HC_CONVERSIONS_BASENAMES; i++) {
+	if (strcmp(curFrom, hc_conversions_basenames[i][1]) == 0) {
+	  type = hc_conversions_basenames[i][0];
+	  break;
+	}
+      }
+    }
+  }
+
+  for (i=0; i < HC_CONVERSIONS; i++) {
+    if (!type || (strcmp(type, hc_conversions[i][0]) == 0 && strcmp(curFrom, hc_conversions[i][HC_CONVERSIONS_NAME_START_IDX]) != 0))
+      units << hc_conversions[i][HC_CONVERSIONS_NAME_START_IDX];
   }
   for (i=0; i < HC_CONVERSIONS_BASENAMES; i++) {
-    units << hc_conversions_basenames[i][1];
+    if (!type || (strcmp(type, hc_conversions_basenames[i][0]) == 0 && strcmp(curFrom, hc_conversions_basenames[i][1]) != 0))
+      units << hc_conversions_basenames[i][1];
   }
   QMap<QString, QString> strMap;
   foreach (QString unit, units) {

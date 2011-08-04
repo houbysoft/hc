@@ -81,7 +81,7 @@ class HCGBaseWindow : public QMainWindow {
   void updateStatus(int status);
 #endif
   void disp_rgb(unsigned int x, unsigned int y, void *data, int type, char *args);
-  void loadConversionUnits(QStringList &units);
+  void loadConversionUnits(QStringList &units, const char *curFrom = NULL);
 
   public slots:
   void newEval();
