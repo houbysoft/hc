@@ -117,6 +117,7 @@ class HCGBaseWindow : public QMainWindow {
 #endif
   void doConversion();
   void showGraph();
+  void updateOutUnits(QString el);
   virtual void insert(QString string) = 0;
   virtual void focusInput() = 0;
   virtual void getInputResult() = 0;

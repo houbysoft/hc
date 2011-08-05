@@ -161,9 +161,11 @@ void HCGBaseWindow::createMenus() {
 	  loadConversionUnits(units);
           convert_unit_in = new QComboBox(convert_box);
           convert_unit_in->insertItems(0, units);
+	  connect(convert_unit_in, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateOutUnits(QString)));
           convert_layout->addWidget(convert_unit_in);
           convert_layout->addWidget(new QLabel(" to "));
           convert_unit_out = new QComboBox(convert_box);
+	  loadConversionUnits(units, (const char *)convert_unit_in->currentText().toAscii());
           convert_unit_out->insertItems(0, units);
           convert_layout->addWidget(convert_unit_out);
           convert_go = new QPushButton("OK", convert_box);
@@ -368,6 +370,14 @@ void HCGBaseWindow::createOptionMenu() {
   connect(hcgcore, SIGNAL(autoUpdateChanged(bool)), this, SLOT(setAutoUpdate(bool)));
 #endif
   hcgcore->emitSignals();
+}
+
+
+void HCGBaseWindow::updateOutUnits(QString el) {
+  QStringList units;
+  loadConversionUnits(units, (const char *)el.toAscii());
+  convert_unit_out->clear();
+  convert_unit_out->insertItems(0, units);
 }
 
 
