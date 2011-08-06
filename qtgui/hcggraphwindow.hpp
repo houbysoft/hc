@@ -39,6 +39,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenuBar>
+#include <QCheckBox>
 #include <math.h>
 #include "hcgbasewindow.hpp"
 
