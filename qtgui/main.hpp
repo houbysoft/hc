@@ -38,5 +38,6 @@ extern "C" char *hc_result(char *);
 extern "C" void hc_load(char *fname_);
 extern "C" void hc_load_cfg();
 extern "C" void hc_save_cfg();
+extern "C" char *hc_get_arg(char *, char);
 
 #endif

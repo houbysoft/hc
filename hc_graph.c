@@ -43,6 +43,24 @@ void *driver_memory = NULL;
 #endif
 
 
+const unsigned int pl_colors[][3] = {
+  {255, 0,   0  }, // red
+  {255, 255, 0  }, // yellow
+  {0,   255, 0  }, // green
+  {127, 255, 212}, // aquamarine
+  {255, 105, 180}, // pink
+  {245, 222, 179}, // wheat
+  {190, 190, 190}, // gray
+  {160, 82,  45 }, // brown
+  {0,   0,   255}, // blue
+  {138, 43,  226}, // blue violet
+  {0,   255, 255}, // cyan
+  {64,  224, 208}, // turquoise
+  {255, 0,   255}, // magenta
+  {250, 128, 114}  // salmon
+};
+
+
 void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
 char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double tmax, double xmin, double xmax, double ymin, double ymax, char *graph_top_label, int type, char *exprtmp);
 
@@ -72,20 +90,11 @@ void hc_graph_init()
     plscol0(0,255,255,255);
   else
     plscol0(0,0,0,0);
-  plscol0(1,255,0,0); // red
-  plscol0(2,255,255,0); // yellow
-  plscol0(3,0,255,0); // green
-  plscol0(4,127,255,212); // aquamarine
-  plscol0(5,255,105,180); // pink
-  plscol0(6,245,222,179); // wheat
-  plscol0(7,190,190,190); // grey
-  plscol0(8,160,82,45); // brown
-  plscol0(9,0,0,255); // blue
-  plscol0(10,138,43,226); // blue violet
-  plscol0(11,0,255,255); // cyan
-  plscol0(12,64,224,208); // turquoise
-  plscol0(13,255,0,255); // magenta
-  plscol0(14,250,128,114); // salmon
+
+  unsigned int i = 1;
+  for (; i <= PL_COLORS_LEN; i++)
+    plscol0(i, pl_colors[i-1][0], pl_colors[i-1][1], pl_colors[i-1][2]);
+
   if (hc.bgcolor == WHITE)
     plscol0(15,0,0,0);
   else

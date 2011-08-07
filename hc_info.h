@@ -87,6 +87,8 @@ typedef struct hc_config {
 
 extern struct hc_config hc;
 
+#define PL_COLORS_LEN 14
+extern const unsigned int pl_colors[][3];
 
 #ifdef __cplusplus
 }

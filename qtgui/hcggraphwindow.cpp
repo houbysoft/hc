@@ -29,6 +29,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
   setFixedSize(sizeHint());
 
+  legendWindow = NULL;
   createFileMenu();
   createMenus();
 
@@ -71,6 +72,9 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   connect(hcgcore, SIGNAL(showImagChanged(bool)), graph_imag_checkbox, SLOT(setChecked(bool)));
   hcgcore->emitSignals();
   l2DGrid->addWidget(graph_imag_checkbox, 1, 1);
+  graph_show_legend = new QPushButton("Show legend", this);
+  connect(graph_show_legend, SIGNAL(clicked()), this, SLOT(showLegend()));
+  l2DGrid->addWidget(graph_show_legend, 2, 1);
   lineedits->addWidget(l2D);
 
   // Parametric line edit
@@ -332,6 +336,59 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 }
 
 
+void HCGGraphWindow::createLegend() {
+  legendWindow = new QMainWindow(this);
+  legendWindow->setWindowTitle("Legend");
+  legendText = new QTextEdit(legendWindow);
+  legendText->setReadOnly(true);
+  legendWindow->setCentralWidget(legendText);
+}
+
+
+void HCGGraphWindow::updateLegend() {
+#define APPEND_LEGEND_COLOR() legend.append(QString("<font color=\"#%1%2%3\">&#9608;&#9608;</font>").arg(pl_colors[color_idx][0], (int)2, (int)16, QChar('0')).arg(pl_colors[color_idx][1], (int)2, (int)16, QChar('0')).arg(pl_colors[color_idx][2], (int)2, (int)16, QChar('0')))
+
+  if (!legendWindow)
+    createLegend();
+
+  QString legend;
+
+  char *line = strdup(line2D->text().toAscii().constData());
+  unsigned int idx = 1;
+  unsigned int color_idx = 0;
+  char *tmp = hc_get_arg(line, idx++);
+  while (tmp) {
+    if (graph_imag_checkbox->isChecked()) {
+      APPEND_LEGEND_COLOR();
+      legend.append(" re(" + QString(tmp) + ")<br>");
+      color_idx++;
+      if (color_idx == PL_COLORS_LEN) color_idx = 0;
+      APPEND_LEGEND_COLOR();
+      legend.append(" im(" + QString(tmp) + ")<br>");
+      color_idx++;
+      if (color_idx == PL_COLORS_LEN) color_idx = 0;
+    } else {
+      APPEND_LEGEND_COLOR();
+      legend.append(" " + QString(tmp) + "<br>");
+      color_idx++;
+      if (color_idx == PL_COLORS_LEN) color_idx = 0;
+    }
+    free(tmp);
+    tmp = hc_get_arg(line, idx++);
+  }
+  free(tmp); free(line);
+  legendText->setHtml(legend);
+}
+
+
+void HCGGraphWindow::showLegend() {
+  updateLegend();
+
+  if (!legendWindow->isVisible())
+    legendWindow->show();
+}
+
+
 void HCGGraphWindow::reset2D()
 {
   xmin2D->setText("-10");
@@ -415,6 +472,7 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
   {
   case HCGT_2D:
     line2D->setText(args);
+    updateLegend();
     break;
   case HCGT_PARAMETRIC:
     lineparx->setText(args.split(",").first());

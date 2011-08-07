@@ -61,6 +61,7 @@ class HCGGraphWindow : public HCGBaseWindow {
   QString lineText();
   QLineEdit *getCurrentLineEdit();
   void createFileMenu();
+  void createLegend();
   HCGGraphDisplay *gdisp;
   QWidget *hbox;
   QWidget *vbox;
@@ -68,6 +69,7 @@ class HCGGraphWindow : public HCGBaseWindow {
   QVBoxLayout *vbox_layout;
   QLineEdit *line2D, *lineparx, *linepary, *linevp, *linevl, *line3D, *linesf, *linebx, *linepl;
   QPushButton *reset2Dbtn, *resetPbtn, *reset3Dbtn, *resetSbtn, *resetPObtn;
+  QPushButton *graph_show_legend;
   QComboBox *gtypes;
   QStackedWidget *options;
   QStackedWidget *lineedits;
@@ -100,6 +102,8 @@ class HCGGraphWindow : public HCGBaseWindow {
   QLineEdit *ymaxS;
   unsigned int zoomTypesIndex;
   QString zoomLineText;
+  QMainWindow *legendWindow;
+  QTextEdit *legendText;
 
 
   public:
@@ -117,6 +121,8 @@ class HCGGraphWindow : public HCGBaseWindow {
   void openScript();
   void zoom(double x, double y, double zoomfactor, double movefactor);
   void reset2D(); void resetP(); void reset3D(); void resetS(); void resetPO();
+  void showLegend();
+  void updateLegend();
 };
 
 
