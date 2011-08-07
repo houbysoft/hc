@@ -325,10 +325,11 @@ char hc_graph_n(char *e)
   char **func_expr = malloc(sizeof(char *)*HC_GRAPH_N_MAX);
   if (!func_expr)
     mem_error();
-  unsigned int j=0;
-  while ((func_expr[j] = hc_get_arg(e,j+1))!=NULL)
+  unsigned int j=0, arg_idx=0;
+  while ((func_expr[j] = hc_get_arg(e,arg_idx+1))!=NULL)
   {
     j++;
+    arg_idx++;
     if (hc.graph_show_imag) {
       func_expr[j] = malloc(strlen("im()") + strlen(func_expr[j-1]) + 1);
       if (!func_expr[j]) mem_error();
