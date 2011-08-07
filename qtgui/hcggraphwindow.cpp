@@ -766,6 +766,9 @@ void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefact
 
 void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
 {
+  if (!pixmap())
+    return;
+
   switch (event->button())
   {
   case Qt::LeftButton:
@@ -781,6 +784,9 @@ void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
 
 void HCGGraphDisplay::mouseReleaseEvent(QMouseEvent *event)
 {
+  if (!pixmap())
+    return;
+
   double x,y;
   switch (event->button())
   {
@@ -803,6 +809,9 @@ void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *event)
 
 void HCGGraphDisplay::wheelEvent(QWheelEvent *event)
 {
+  if (!pixmap())
+    return;
+
   if (zoomTimer->isActive()) {
     zoomTimer->stop();
   }
