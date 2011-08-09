@@ -67,13 +67,14 @@ char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double t
 
 void hc_graph_init()
 {
+  plspage(0, 0, GRAPH_PIXELS_X, GRAPH_PIXELS_Y, 0, 0);
 #if defined(MEM_DRIVER)
   plsdev("mem");
   free(driver_memory);
-  driver_memory = malloc(MEM_DRIVER_Y * MEM_DRIVER_X * 3); // 3 for RGB
+  driver_memory = malloc(GRAPH_PIXELS_Y * GRAPH_PIXELS_X * 3); // 3 for RGB
   if (!driver_memory) mem_error();
-  memset(driver_memory, hc.bgcolor == WHITE ? 255 : 0, MEM_DRIVER_Y * MEM_DRIVER_X * 3); // set all pixels to background color
-  plsmem(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory);
+  memset(driver_memory, hc.bgcolor == WHITE ? 255 : 0, GRAPH_PIXELS_Y * GRAPH_PIXELS_X * 3); // set all pixels to background color
+  plsmem(GRAPH_PIXELS_X, GRAPH_PIXELS_Y, driver_memory);
 #elif defined(HCG) && defined(WIN32)
   plsdev("wingcc");
 #elif defined(HCG) && !defined(WIN32)
@@ -173,7 +174,7 @@ void hc_graph_finish(int type, char *args)
   hcg_disp_graph("tmp-graph.png");
   remove("tmp-graph.png");
 #elif defined(MEM_DRIVER)
-  hcg_disp_rgb(MEM_DRIVER_X, MEM_DRIVER_Y, driver_memory, type, args);
+  hcg_disp_rgb(GRAPH_PIXELS_X, GRAPH_PIXELS_Y, driver_memory, type, args);
   free(driver_memory);
   driver_memory = NULL;
 #endif

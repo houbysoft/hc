@@ -39,7 +39,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   hbox = new QWidget(this);
   vbox = new QWidget(this);
   gdisp = new HCGGraphDisplay(this);
-  gdisp->setFixedSize(MEM_DRIVER_X, MEM_DRIVER_Y);
+  gdisp->setFixedSize(GRAPH_PIXELS_X, GRAPH_PIXELS_Y);
 
   vbox_layout = new QVBoxLayout(vbox);
   vbox_layout->setSpacing(0);
@@ -756,7 +756,7 @@ void HCGGraphWindow::updateOptions(int type)
 }
 
 
-// x and y are relative to hc_graph.c's MEM_DRIVER_X and MEM_DRIVER_Y
+// x and y are relative to hc_graph.c's GRAPH_PIXELS_X and GRAPH_PIXELS_Y
 void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefactor)
 {
   HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, zoomTypesIndex, zoomLineText);
