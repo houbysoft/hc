@@ -353,6 +353,9 @@ void HCGGraphWindow::updateLegend() {
 
   QString legend;
 
+  if (line2D->text().size() == 0)
+    return;
+
   char *line = strdup(line2D->text().toAscii().constData());
   unsigned int idx = 1;
   unsigned int color_idx = 0;
