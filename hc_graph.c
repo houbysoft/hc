@@ -327,6 +327,29 @@ char hc_graph(char *e)
 }
 
 
+// Calculate minimum precision required to draw the graph correctly.
+// This uses GRAPH_PIXELS_Y to determine the lowest possible precision
+// that will still be undistinguishable from higher precision due to the
+// number of available pixels. If the computed precision is higher than the
+// current precision, the current precision is kept.
+unsigned int hc_graph_precision2d(double ymin, double ymax) {
+  int ymax_exponent = (int)floor(log10(fabs(ymax)));
+  int res_exponent = (int)floor(log10(fabs(ymax - ymin) / (double)GRAPH_PIXELS_Y));
+
+  unsigned int new_precision;
+  if (ymax_exponent > 0)
+    new_precision = abs(res_exponent) + abs(ymax_exponent);
+  else
+    new_precision = abs(res_exponent);
+
+  if (new_precision > hc.precision)
+    return hc.precision;
+  else if (new_precision <= 1)
+    return 2;
+  else
+    return new_precision;
+}
+
 
 // 2D graphs of more than one function
 // Arguments : func_expr_1, func_expr_2, ..., func_expr_n
@@ -375,6 +398,8 @@ char hc_graph_n(char *e)
   double curx = xmin;
 
   graphing_ignore_errors = TRUE;
+  unsigned int old_precision = hc.precision;
+  hc.precision = hc_graph_precision2d(ymin, ymax);
 
   unsigned int k=j;
   double x1=0,y1=0,x2=0,y2=0;
@@ -443,6 +468,7 @@ char hc_graph_n(char *e)
     }
   }
   graphing_ignore_errors = FALSE;
+  hc.precision = old_precision;
 
   for (j=0; j<k; j++)
   {
