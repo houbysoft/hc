@@ -54,14 +54,14 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
   vbox_layout->addWidget(gtypes);
 
   QGroupBox *lineeditBox = new QGroupBox("Expression", this);
-  QVBoxLayout *lineeditVBox = new QVBoxLayout(this);
+  QVBoxLayout *lineeditVBox = new QVBoxLayout(lineeditBox);
   lineedits = new QStackedWidget(this);
   lineeditVBox->addWidget(lineedits);
   lineeditBox->setLayout(lineeditVBox);
 
   // 2D line edit
   QWidget *l2D = new QWidget(this);
-  QGridLayout *l2DGrid = new QGridLayout(this);
+  QGridLayout *l2DGrid = new QGridLayout(l2D);
   l2D->setLayout(l2DGrid);
   l2DGrid->addWidget(new QLabel("y1(x), y2(x), ... = "), 0, 0);
   line2D = new QLineEdit();
@@ -79,7 +79,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Parametric line edit
   QWidget *lpar = new QWidget(this);
-  QHBoxLayout *lparBox = new QHBoxLayout(this);
+  QHBoxLayout *lparBox = new QHBoxLayout(lpar);
   lpar->setLayout(lparBox);
   lparBox->addWidget(new QLabel("x(t) = "));
   lineparx = new QLineEdit();
@@ -93,7 +93,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Values (points) line edit
   QWidget *lvp = new QWidget(this);
-  QHBoxLayout *lvpBox = new QHBoxLayout(this);
+  QHBoxLayout *lvpBox = new QHBoxLayout(lvp);
   lvp->setLayout(lvpBox);
   lvpBox->addWidget(new QLabel("value_1, value_2, ... = "));
   linevp = new QLineEdit();
@@ -103,7 +103,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Values (xyline) line edit
   QWidget *lvl = new QWidget(this);
-  QHBoxLayout *lvlBox = new QHBoxLayout(this);
+  QHBoxLayout *lvlBox = new QHBoxLayout(lvl);
   lvl->setLayout(lvlBox);
   lvlBox->addWidget(new QLabel("value_1, value_2, ... = "));
   linevl = new QLineEdit();
@@ -113,7 +113,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // 3D line edit
   QWidget *l3D = new QWidget(this);
-  QHBoxLayout *l3DBox = new QHBoxLayout(this);
+  QHBoxLayout *l3DBox = new QHBoxLayout(l3D);
   l3D->setLayout(l3DBox);
   l3DBox->addWidget(new QLabel("z(x,y) = "));
   line3D = new QLineEdit();
@@ -123,7 +123,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Slope Field line edit
   QWidget *lsf = new QWidget(this);
-  QHBoxLayout *lsfBox = new QHBoxLayout(this);
+  QHBoxLayout *lsfBox = new QHBoxLayout(lsf);
   lsf->setLayout(lsfBox);
   lsfBox->addWidget(new QLabel("dy/dx = "));
   linesf = new QLineEdit();
@@ -133,7 +133,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Boxplot line edit
   QWidget *lbx = new QWidget(this);
-  QHBoxLayout *lbxBox = new QHBoxLayout(this);
+  QHBoxLayout *lbxBox = new QHBoxLayout(lbx);
   lbx->setLayout(lbxBox);
   lbxBox->addWidget(new QLabel("value_1, value_2, ... = "));
   linebx = new QLineEdit();
@@ -143,7 +143,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Polar line edit
   QWidget *lpl = new QWidget(this);
-  QHBoxLayout *lplBox = new QHBoxLayout(this);
+  QHBoxLayout *lplBox = new QHBoxLayout(lpl);
   lpl->setLayout(lplBox);
   lplBox->addWidget(new QLabel("r(t) = "));
   linepl = new QLineEdit();
@@ -155,14 +155,14 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
 
   QGroupBox *optionsBox = new QGroupBox("Options", this);
-  QVBoxLayout *optionsVBox = new QVBoxLayout(this);
+  QVBoxLayout *optionsVBox = new QVBoxLayout(optionsBox);
   options = new QStackedWidget(this);
   optionsVBox->addWidget(options);
   optionsBox->setLayout(optionsVBox);
 
   // 2D options
   QWidget *o2D = new QWidget(this);
-  QGridLayout *o2DL = new QGridLayout(this);
+  QGridLayout *o2DL = new QGridLayout(o2D);
   o2D->setLayout(o2DL);
   xmin2D = new QLineEdit(this);
   connect(xmin2D, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
@@ -187,7 +187,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Parametric options
   QWidget *oP = new QWidget(this);
-  QGridLayout *oPL = new QGridLayout(this);
+  QGridLayout *oPL = new QGridLayout(oP);
   oP->setLayout(oPL);
   tminP = new QLineEdit(this);
   connect(tminP, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
@@ -226,7 +226,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // 3D options
   QWidget *o3D = new QWidget(this);
-  QGridLayout *o3DL = new QGridLayout(this);
+  QGridLayout *o3DL = new QGridLayout(o3D);
   o3D->setLayout(o3DL);
   xmin3D = new QLineEdit(this);
   connect(xmin3D, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
@@ -259,7 +259,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Slope Field options
   QWidget *oS = new QWidget(this);
-  QGridLayout *oSL = new QGridLayout(this);
+  QGridLayout *oSL = new QGridLayout(oS);
   oS->setLayout(oSL);
   xminS = new QLineEdit(this);
   connect(xminS, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
@@ -287,7 +287,7 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   // Polar options
   QWidget *oPO = new QWidget(this);
-  QGridLayout *oPOL = new QGridLayout(this);
+  QGridLayout *oPOL = new QGridLayout(oPO);
   oPO->setLayout(oPOL);
   tminPO = new QLineEdit(this);
   connect(tminPO, SIGNAL(returnPressed()), this, SLOT(drawGraph()));
