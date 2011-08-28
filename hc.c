@@ -290,7 +290,7 @@ char *hc_result(char *e)
     hc_lans_strvec = strdup(r);
   } else {
     free(r);
-    syntax_error2();
+    hc_error(SYNTAX,"invalid result : this is probably a bug, please report it at bugs.houbysoft.com");
     return NULL;
   }
   free(hc_lans_strform);
@@ -1285,7 +1285,7 @@ char *hc_postfix_result(char *e)
           if (!e[i+1])
           {
             hc_postfix_result_cleanup();
-            syntax_error2();
+            hc_error(SYNTAX,"expected input after character %i : %c", i+1, e[i]);
             return NULL;
           }
           e[i] = '@';
@@ -1957,7 +1957,7 @@ char *hc_postfix_result(char *e)
           if (!isalpha(e[i]))
           {
             hc_postfix_result_cleanup();
-            syntax_error2();
+            hc_error(SYNTAX,"at character %i : %c", i+1, e[i]);
             return NULL;
           }
           char *v_name = malloc(MAX_V_NAME * sizeof(char));
@@ -2065,10 +2065,10 @@ char *hc_postfix_result(char *e)
   if (sp!=1)
   {
     hc_postfix_result_cleanup();
-    syntax_error2();
+    hc_error(SYNTAX,"no result");
     return NULL;
   }
-  
+
   curr = curr->p;
 
   char *result = hc_strrepr(curr);

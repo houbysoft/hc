@@ -43,17 +43,6 @@
 #define SUCCESS 1
 #define FAIL 0
 
-#ifdef DBG
-#define syntax_error() {printf("Syntax Error @ %s:%i.\n",__FILE__,__LINE__);exit(2);}
-#define syntax_error2() syntax_error()
-#else
-#define syntax_error() {printf("Syntax Error.\n");exit(2);}
-#ifndef HCG_E
-#define syntax_error2() {if (announce_errors==TRUE) {printf("Syntax Error.\n");announce_errors=FALSE;}}
-#else
-#define syntax_error2() {if (announce_errors==TRUE) {notify_error("Syntax Error.\n");announce_errors=FALSE;}}
-#endif
-#endif
 #ifndef HCG_E
 #define d0_error() {if (!graphing_ignore_errors){printf("Division by zero error.\n");}}
 #else
