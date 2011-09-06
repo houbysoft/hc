@@ -476,29 +476,39 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
   case HCGT_2D:
     line2D->setText(args);
     updateLegend();
+    gdisp->showZoomButtons();
     break;
   case HCGT_PARAMETRIC:
     lineparx->setText(args.split(",").first());
     linepary->setText(args.split(",").last());
+    gdisp->showZoomButtons();
     break;
   case HCGT_3D:
     line3D->setText(args);
+    gdisp->hideZoomButtons();
     break;
   case HCGT_SLPFLD:
     linesf->setText(args);
+    gdisp->showZoomButtons();
     break;
   case HCGT_VALUESPOINTS:
     linevp->setText(args);
+    gdisp->hideZoomButtons();
     break;
   case HCGT_VALUESLINE:
     linevl->setText(args);
+    gdisp->hideZoomButtons();
     break;
   case HCGT_BOXPLOT:
     linebx->setText(args);
+    gdisp->hideZoomButtons();
     break;
   case HCGT_POLAR:
     linepl->setText(args);
+    gdisp->showZoomButtons();
+    break;
   default:
+    gdisp->hideZoomButtons();
     break;
   }
   updateOptions(type);
@@ -767,6 +777,51 @@ void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefact
 }
 
 
+HCGGraphDisplay::HCGGraphDisplay(HCGGraphWindow *pW) {
+  parentWindow = pW;
+  zoomButtons = new QWidget(this);
+  QHBoxLayout *zoomButtonsLayout = new QHBoxLayout(zoomButtons);
+  zoomIn = new QPushButton("+");
+  zoomOut = new QPushButton("-");
+  connect(zoomIn, SIGNAL(clicked()), this, SLOT(doZoomIn()));
+  connect(zoomOut, SIGNAL(clicked()), this, SLOT(doZoomOut()));
+  zoomButtonsLayout->addWidget(zoomOut);
+  zoomButtonsLayout->addWidget(zoomIn);
+  zoomButtons->setLayout(zoomButtonsLayout);
+  hideZoomButtons();
+}
+
+
+void HCGGraphDisplay::doZoomIn() {
+  if (!pixmap())
+    return;
+
+  hideZoomButtons();
+
+  parentWindow->zoom(0, 0, pow(HCG_ZOOM_FACTOR, zoom_delta / 8 / 15), 0);
+}
+
+
+void HCGGraphDisplay::doZoomOut() {
+  if (!pixmap())
+    return;
+
+  hideZoomButtons();
+
+  parentWindow->zoom(0, 0, pow(HCG_ZOOM_FACTOR, -zoom_delta / 8 / 15), 0);
+}
+
+
+void HCGGraphDisplay::hideZoomButtons() {
+  zoomButtons->hide();
+}
+
+
+void HCGGraphDisplay::showZoomButtons() {
+  zoomButtons->show();
+}
+
+
 void HCGGraphDisplay::mousePressEvent(QMouseEvent *event)
 {
   if (!pixmap())
@@ -807,18 +862,4 @@ void HCGGraphDisplay::mouseReleaseEvent(QMouseEvent *event)
 
 void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *event)
 {
-}
-
-
-void HCGGraphDisplay::wheelEvent(QWheelEvent *event)
-{
-  if (!pixmap())
-    return;
-
-  if (zoomTimer->isActive()) {
-    zoomTimer->stop();
-  }
-  zoomdelta += event->delta();
-  QToolTip::showText(QCursor::pos(), "Release wheel to zoom " + QString().setNum(pow(HCG_ZOOM_FACTOR, zoomdelta / 8 / 15)) + "x", this);
-  zoomTimer->start();
 }

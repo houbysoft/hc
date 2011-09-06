@@ -131,36 +131,26 @@ class HCGGraphDisplay : public QLabel {
 
   private:
   HCGGraphWindow *parentWindow;
+  QWidget *zoomButtons;
+  QPushButton *zoomIn, *zoomOut;
   double movex, movey;
-  double zoomdelta;
-  QTimer *zoomTimer;
+  static const int zoom_delta = 120;
 
   protected:
   void mousePressEvent(QMouseEvent *event);
   void mouseReleaseEvent(QMouseEvent *event);
   void mouseMoveEvent(QMouseEvent *event);
-  void wheelEvent(QWheelEvent *event);
-  void hideEvent(QHideEvent *event) {
-    zoomTimer->stop();
-  };
+  void hideEvent(QHideEvent *event) {};
 
   public:
-  HCGGraphDisplay(HCGGraphWindow *pW) {
-    parentWindow = pW;
-    zoomdelta = 0;
-    zoomTimer = new QTimer(this);
-    zoomTimer->setInterval(1500);
-    zoomTimer->setSingleShot(true);
-    connect(zoomTimer, SIGNAL(timeout()), this, SLOT(doZoom()));
-  };
+  HCGGraphDisplay(HCGGraphWindow *pW);
   ~HCGGraphDisplay() {};
 
   public slots:
-  void doZoom() {
-    QToolTip::showText(QCursor::pos(), "", this);
-    parentWindow->zoom(0, 0, pow(HCG_ZOOM_FACTOR, zoomdelta / 8 / 15), 0);
-    zoomdelta = 0;
-  };
+  void hideZoomButtons();
+  void showZoomButtons();
+  void doZoomIn();
+  void doZoomOut();
 };
 
 #endif
