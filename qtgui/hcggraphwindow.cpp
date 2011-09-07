@@ -476,39 +476,39 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
   case HCGT_2D:
     line2D->setText(args);
     updateLegend();
-    gdisp->showZoomButtons();
+    gdisp->enableZoom(true);
     break;
   case HCGT_PARAMETRIC:
     lineparx->setText(args.split(",").first());
     linepary->setText(args.split(",").last());
-    gdisp->showZoomButtons();
+    gdisp->enableZoom(true);
     break;
   case HCGT_3D:
     line3D->setText(args);
-    gdisp->hideZoomButtons();
+    gdisp->enableZoom(false);
     break;
   case HCGT_SLPFLD:
     linesf->setText(args);
-    gdisp->showZoomButtons();
+    gdisp->enableZoom(true);
     break;
   case HCGT_VALUESPOINTS:
     linevp->setText(args);
-    gdisp->hideZoomButtons();
+    gdisp->enableZoom(false);
     break;
   case HCGT_VALUESLINE:
     linevl->setText(args);
-    gdisp->hideZoomButtons();
+    gdisp->enableZoom(false);
     break;
   case HCGT_BOXPLOT:
     linebx->setText(args);
-    gdisp->hideZoomButtons();
+    gdisp->enableZoom(false);
     break;
   case HCGT_POLAR:
     linepl->setText(args);
-    gdisp->showZoomButtons();
+    gdisp->enableZoom(true);
     break;
   default:
-    gdisp->hideZoomButtons();
+    gdisp->enableZoom(false);
     break;
   }
   updateOptions(type);
@@ -779,6 +779,7 @@ void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefact
 
 HCGGraphDisplay::HCGGraphDisplay(HCGGraphWindow *pW) {
   parentWindow = pW;
+  enableZoomButtons = false;
   zoomButtons = new QWidget(this);
   QHBoxLayout *zoomButtonsLayout = new QHBoxLayout(zoomButtons);
   zoomIn = new QPushButton("+");
@@ -809,6 +810,18 @@ void HCGGraphDisplay::doZoomOut() {
   hideZoomButtons();
 
   parentWindow->zoom(0, 0, pow(HCG_ZOOM_FACTOR, -zoom_delta / 8 / 15), 0);
+}
+
+
+void HCGGraphDisplay::enableZoom(bool enable) {
+  enableZoomButtons = enable;
+  if (enableZoomButtons) {
+    if (underMouse()) {
+      showZoomButtons();
+    }
+  } else {
+    hideZoomButtons();
+  }
 }
 
 
@@ -862,4 +875,15 @@ void HCGGraphDisplay::mouseReleaseEvent(QMouseEvent *event)
 
 void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *event)
 {
+}
+
+
+void HCGGraphDisplay::enterEvent(QEvent *event) {
+  if (enableZoomButtons)
+    showZoomButtons();
+}
+
+
+void HCGGraphDisplay::leaveEvent(QEvent *event) {
+  hideZoomButtons();
 }

@@ -134,12 +134,15 @@ class HCGGraphDisplay : public QLabel {
   QWidget *zoomButtons;
   QPushButton *zoomIn, *zoomOut;
   double movex, movey;
-  static const int zoom_delta = 120;
+  bool enableZoomButtons;
+  static const int zoom_delta = 360;
 
   protected:
   void mousePressEvent(QMouseEvent *event);
   void mouseReleaseEvent(QMouseEvent *event);
   void mouseMoveEvent(QMouseEvent *event);
+  void enterEvent(QEvent *event);
+  void leaveEvent(QEvent *event);
   void hideEvent(QHideEvent *event) {};
 
   public:
@@ -149,6 +152,7 @@ class HCGGraphDisplay : public QLabel {
   public slots:
   void hideZoomButtons();
   void showZoomButtons();
+  void enableZoom(bool enable);
   void doZoomIn();
   void doZoomOut();
 };
