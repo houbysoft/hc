@@ -64,7 +64,9 @@ char *hc_map(char *e)
     free(cur);
   }
   res[0] = '[';
-  res[strlen(res)-1] = ']';
+  alloc += 1;
+  res = realloc(res, alloc);
+  strcat(res,"]");
   free(list_orig); free(fn);
   return res;
 }
