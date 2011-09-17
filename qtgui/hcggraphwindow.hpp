@@ -140,10 +140,10 @@ class HCGGraphDisplay : public QLabel {
   protected:
   void mousePressEvent(QMouseEvent *event);
   void mouseReleaseEvent(QMouseEvent *event);
-  void mouseMoveEvent(QMouseEvent *event);
+  void mouseMoveEvent(QMouseEvent *);
   void enterEvent(QEvent *event);
   void leaveEvent(QEvent *event);
-  void hideEvent(QHideEvent *event) {};
+  void hideEvent(QHideEvent *) {};
 
   public:
   HCGGraphDisplay(HCGGraphWindow *pW);

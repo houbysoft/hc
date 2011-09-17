@@ -110,7 +110,7 @@ void HCGBaseWindow::loadConversionUnits(QStringList &units, const char *curFrom)
 }
 
 
-void HCGBaseWindow::createMenus() {
+void HCGBaseWindow::createMenus(const QStringList *excludeList) {
   createOptionMenu();
 
   QList<struct SubMenu> TopMenus;
@@ -126,6 +126,9 @@ void HCGBaseWindow::createMenus() {
     top = &TopMenus;
     QStringList path = QString(hc_names[i][2]).split("/");
     int nested=0;
+    if (excludeList && excludeList->contains(path[0])) {
+      continue;
+    }
     while (!path.isEmpty())
     {
       QString curpath = path.takeFirst();
@@ -456,7 +459,7 @@ void HCGBaseWindow::checkUpdates() {
 }
 
 
-void HCGBaseWindow::completerHelp(const QString text)
+void HCGBaseWindow::completerHelp(const QString)
 {
   this->help(COMPLETER);
 }
@@ -480,7 +483,7 @@ void HCGBaseWindow::help(char caller)
 }
 
 
-void HCGBaseWindow::freeResult(QString expr, char *result)
+void HCGBaseWindow::freeResult(QString, char *result)
 {
   free(result);
 }

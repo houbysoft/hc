@@ -31,7 +31,10 @@ HCGGraphWindow::HCGGraphWindow() : HCGBaseWindow() {
 
   legendWindow = NULL;
   createFileMenu();
-  createMenus();
+  QStringList *excludeList = new QStringList();
+  *excludeList << QString("Stats") << QString("Programming") << QString("Graphs");
+  createMenus(excludeList);
+  delete excludeList;
 
   zoomTypesIndex = 1;
   zoomLineText = "";
@@ -873,17 +876,17 @@ void HCGGraphDisplay::mouseReleaseEvent(QMouseEvent *event)
 }
 
 
-void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *event)
+void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *)
 {
 }
 
 
-void HCGGraphDisplay::enterEvent(QEvent *event) {
+void HCGGraphDisplay::enterEvent(QEvent *) {
   if (enableZoomButtons)
     showZoomButtons();
 }
 
 
-void HCGGraphDisplay::leaveEvent(QEvent *event) {
+void HCGGraphDisplay::leaveEvent(QEvent *) {
   hideZoomButtons();
 }

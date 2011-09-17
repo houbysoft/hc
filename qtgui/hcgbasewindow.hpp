@@ -48,7 +48,7 @@ class HCGBaseWindow : public QMainWindow {
 
 
   protected:
-  void createMenus();
+  void createMenus(const QStringList *excludeList = NULL);
   QString opendir;
   QString savedir;
   QLineEdit *helpline;

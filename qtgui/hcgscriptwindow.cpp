@@ -187,7 +187,7 @@ void HCGScriptWindow::updateTitle()
 }
 
 
-void HCGScriptWindow::resetFont(const QTextCharFormat f) {
+void HCGScriptWindow::resetFont(const QTextCharFormat) {
   QFont font("Courier");
   font.setStyleHint(QFont::TypeWriter);
   scripteditor->setCurrentFont(font);
