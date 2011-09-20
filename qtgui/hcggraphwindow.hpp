@@ -131,9 +131,10 @@ class HCGGraphDisplay : public QLabel {
 
   private:
   HCGGraphWindow *parentWindow;
-  QWidget *zoomButtons;
-  QPushButton *zoomIn, *zoomOut;
+  QWidget *buttons;
+  QPushButton *zoomIn, *zoomOut, *editLabels;
   double movex, movey;
+  bool graphInitialized;
   bool enableZoomButtons;
   static const int zoom_delta = 360;
 
@@ -150,11 +151,12 @@ class HCGGraphDisplay : public QLabel {
   ~HCGGraphDisplay() {};
 
   public slots:
-  void hideZoomButtons();
-  void showZoomButtons();
+  void hideButtons();
+  void showButtons();
   void enableZoom(bool enable);
   void doZoomIn();
   void doZoomOut();
+  void editLabelsDialog();
 };
 
 #endif

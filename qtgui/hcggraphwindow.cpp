@@ -782,17 +782,20 @@ void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefact
 
 HCGGraphDisplay::HCGGraphDisplay(HCGGraphWindow *pW) {
   parentWindow = pW;
-  enableZoomButtons = false;
-  zoomButtons = new QWidget(this);
-  QHBoxLayout *zoomButtonsLayout = new QHBoxLayout(zoomButtons);
+  graphInitialized = enableZoomButtons = false;
+  buttons = new QWidget(this);
+  QHBoxLayout *buttonsLayout = new QHBoxLayout(buttons);
   zoomIn = new QPushButton("+");
   zoomOut = new QPushButton("-");
+  editLabels = new QPushButton("Edit labels...");
   connect(zoomIn, SIGNAL(clicked()), this, SLOT(doZoomIn()));
   connect(zoomOut, SIGNAL(clicked()), this, SLOT(doZoomOut()));
-  zoomButtonsLayout->addWidget(zoomOut);
-  zoomButtonsLayout->addWidget(zoomIn);
-  zoomButtons->setLayout(zoomButtonsLayout);
-  hideZoomButtons();
+  connect(editLabels, SIGNAL(clicked()), this, SLOT(editLabelsDialog()));
+  buttonsLayout->addWidget(zoomOut);
+  buttonsLayout->addWidget(zoomIn);
+  buttonsLayout->addWidget(editLabels);
+  buttons->setLayout(buttonsLayout);
+  hideButtons();
 }
 
 
@@ -800,7 +803,7 @@ void HCGGraphDisplay::doZoomIn() {
   if (!pixmap())
     return;
 
-  hideZoomButtons();
+  hideButtons();
 
   parentWindow->zoom(0, 0, pow(HCG_ZOOM_FACTOR, zoom_delta / 8 / 15), 0);
 }
@@ -810,31 +813,47 @@ void HCGGraphDisplay::doZoomOut() {
   if (!pixmap())
     return;
 
-  hideZoomButtons();
+  hideButtons();
 
   parentWindow->zoom(0, 0, pow(HCG_ZOOM_FACTOR, -zoom_delta / 8 / 15), 0);
 }
 
 
+void HCGGraphDisplay::editLabelsDialog() {
+  if (!pixmap())
+    return;
+
+  hideButtons();
+
+  // TODO
+}
+
+
 void HCGGraphDisplay::enableZoom(bool enable) {
+  graphInitialized = true;
   enableZoomButtons = enable;
-  if (enableZoomButtons) {
-    if (underMouse()) {
-      showZoomButtons();
-    }
+  if (underMouse()) {
+    showButtons();
   } else {
-    hideZoomButtons();
+    hideButtons();
   }
 }
 
 
-void HCGGraphDisplay::hideZoomButtons() {
-  zoomButtons->hide();
+void HCGGraphDisplay::hideButtons() {
+  buttons->hide();
 }
 
 
-void HCGGraphDisplay::showZoomButtons() {
-  zoomButtons->show();
+void HCGGraphDisplay::showButtons() {
+  if (enableZoomButtons) {
+    zoomIn->show();
+    zoomOut->show();
+  } else {
+    zoomIn->hide();
+    zoomOut->hide();
+  }
+  buttons->show();
 }
 
 
@@ -882,11 +901,11 @@ void HCGGraphDisplay::mouseMoveEvent(QMouseEvent *)
 
 
 void HCGGraphDisplay::enterEvent(QEvent *) {
-  if (enableZoomButtons)
-    showZoomButtons();
+  if (graphInitialized)
+    showButtons();
 }
 
 
 void HCGGraphDisplay::leaveEvent(QEvent *) {
-  hideZoomButtons();
+  hideButtons();
 }
