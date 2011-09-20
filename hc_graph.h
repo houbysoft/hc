@@ -28,7 +28,7 @@ extern void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, char
 extern void hc_graph_finish(int type, char *args);
 
 extern char hc_graph(char *e);
-extern char hc_graph_n(char *e);
+extern char hc_graph_n(char *e, char *label_top, char *label_x, char *label_y);
 extern char hc_graph3d(char *e);
 extern char hc_graph_slpfld(char *e);
 extern char hc_graph_peq(char *e);

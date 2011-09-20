@@ -1264,7 +1264,7 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       break;
 
     case HASH_GMUL:
-      hc_graph_n(f_expr);
+      hc_graph_n(f_expr,NULL,NULL,NULL);
       *type = HC_VAR_EMPTY;
       break;
 

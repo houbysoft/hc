@@ -271,23 +271,31 @@ void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw)
 // Arguments : func_name, xmin, xmax, ymin, ymax
 char hc_graph(char *e)
 {
-  char *func_expr,*t1,*t2,*t3,*t4,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax;
+  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_expr = hc_get_arg(e,1);
   t1 = hc_get_arg(e,2);
   t2 = hc_get_arg(e,3);
   t3 = hc_get_arg(e,4);
   t4 = hc_get_arg(e,5);
+  t5 = hc_get_arg(e,6);
+  t6 = hc_get_arg(e,7);
+  t7 = hc_get_arg(e,8);
   arg_xmin = hc_result_(t1);
   arg_xmax = hc_result_(t2);
   arg_ymin = hc_result_(t3);
   arg_ymax = hc_result_(t4);
+  arg_label_top = hc_result_(t5);
+  arg_label_x = hc_result_(t6);
+  arg_label_y = hc_result_(t7);
+
   free(t1);free(t3);
   free(t2);free(t4);
+  free(t5); free(t6); free(t7);
   double xmin,xmax,ymin,ymax;
 
   if (!func_expr || !strlen(func_expr))
   {
-    free(func_expr); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
+    free(func_expr); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_label_top); free(arg_label_x); free(arg_label_y);
     arg_error("graph() needs at least one argument (expr).");
   }
 
@@ -308,21 +316,43 @@ char hc_graph(char *e)
 
   if (xmin == xmax)
   {
-    free(func_expr); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
+    free(func_expr); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_label_top); free(arg_label_x); free(arg_label_y);
     arg_error("graph() : xmin and xmax are set to the same value");
+  }
+
+  if (arg_label_top || arg_label_x || arg_label_y) {
+    if (arg_label_top && arg_label_x && arg_label_y) {
+      char *tmp1, *tmp2, *tmp3;
+      tmp1 = get_string(arg_label_top); tmp2 = get_string(arg_label_x); tmp3 = get_string(arg_label_y);
+      if (!tmp1 || !tmp2 || !tmp3) {
+	free(tmp1); free(tmp2); free(tmp3); free(arg_label_top); free(arg_label_x); free(arg_label_y);
+	arg_label_top = arg_label_x = arg_label_y = NULL;
+	hc_error(WARNING, "You haven't provided all three labels (top, x, y) correctly (as strings). Using defaults.\n");
+      } else {
+	free(arg_label_top); free(arg_label_x); free(arg_label_y);
+	arg_label_top = tmp1; arg_label_x = tmp2; arg_label_y = tmp3;
+      }
+    } else {
+      hc_error(WARNING, "You haven't provided all three labels (top, x, y). Using defaults.\n");
+      free(arg_label_top); free(arg_label_x); free(arg_label_y);
+      arg_label_top = arg_label_x = arg_label_y = NULL;
+    }
   }
 
   if (is_vector(func_expr))
   {
-    hc_graph_n(list_clean(func_expr));
+    hc_graph_n(list_clean(func_expr), arg_label_top, arg_label_x, arg_label_y);
   } else {
-    hc_graph_n(func_expr);
+    hc_graph_n(func_expr, arg_label_top, arg_label_x, arg_label_y);
   }
   free(func_expr);
   free(arg_xmin);
   free(arg_xmax);
   free(arg_ymin);
   free(arg_ymax);
+  free(arg_label_top);
+  free(arg_label_x);
+  free(arg_label_y);
   return SUCCESS;
 }
 
@@ -353,7 +383,8 @@ unsigned int hc_graph_precision2d(double ymin, double ymax) {
 
 // 2D graphs of more than one function
 // Arguments : func_expr_1, func_expr_2, ..., func_expr_n
-char hc_graph_n(char *e)
+// Labels can either be NULL to use defaults, or a string
+char hc_graph_n(char *e, char *label_top, char *label_x, char *label_y)
 {
   char **func_expr = malloc(sizeof(char *)*HC_GRAPH_N_MAX);
   if (!func_expr)
@@ -422,7 +453,7 @@ char hc_graph_n(char *e)
     if (j<k-1)
       strcat(lbl,"; ");
   }
-  hc_graph_init2d(lbl, "x", "y", xmin, xmax, ymin, ymax);
+  hc_graph_init2d(label_top == NULL ? lbl : label_top, label_x == NULL ? "x" : label_x, label_y == NULL ? "y" : label_y, xmin, xmax, ymin, ymax);
   free(lbl);
   int color=1;
 
