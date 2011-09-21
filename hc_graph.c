@@ -293,26 +293,16 @@ void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw)
 // Arguments : func_name, xmin, xmax, ymin, ymax
 char hc_graph(char *e)
 {
-  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_label_top,*arg_label_x,*arg_label_y;
+  char *func_expr,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_expr = hc_get_arg(e,1);
-  t1 = hc_get_arg(e,2);
-  t2 = hc_get_arg(e,3);
-  t3 = hc_get_arg(e,4);
-  t4 = hc_get_arg(e,5);
-  t5 = hc_get_arg(e,6);
-  t6 = hc_get_arg(e,7);
-  t7 = hc_get_arg(e,8);
-  arg_xmin = hc_result_(t1);
-  arg_xmax = hc_result_(t2);
-  arg_ymin = hc_result_(t3);
-  arg_ymax = hc_result_(t4);
-  arg_label_top = hc_result_(t5);
-  arg_label_x = hc_result_(t6);
-  arg_label_y = hc_result_(t7);
+  arg_xmin = hc_get_arg_r(e,2);
+  arg_xmax = hc_get_arg_r(e,3);
+  arg_ymin = hc_get_arg_r(e,4);
+  arg_ymax = hc_get_arg_r(e,5);
+  arg_label_top = hc_get_arg_r(e,6);
+  arg_label_x = hc_get_arg_r(e,7);
+  arg_label_y = hc_get_arg_r(e,8);
 
-  free(t1);free(t3);
-  free(t2);free(t4);
-  free(t5); free(t6); free(t7);
   double xmin,xmax,ymin,ymax;
 
   if (!func_expr || !strlen(func_expr))
@@ -521,22 +511,14 @@ char hc_graph_n(char *e, char *label_top, char *label_x, char *label_y)
 
 char hc_graph3d(char *e)
 {
-  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_zmin,*arg_zmax;
+  char *func_expr,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_zmin,*arg_zmax;
   func_expr = hc_get_arg(e,1);
-  t1 = hc_get_arg(e,2);
-  t2 = hc_get_arg(e,3);
-  t3 = hc_get_arg(e,4);
-  t4 = hc_get_arg(e,5);
-  t5 = hc_get_arg(e,6);
-  t6 = hc_get_arg(e,7);
-  arg_xmin = hc_result_(t1);
-  arg_xmax = hc_result_(t2);
-  arg_ymin = hc_result_(t3);
-  arg_ymax = hc_result_(t4);
-  arg_zmin = hc_result_(t5);
-  arg_zmax = hc_result_(t6);
-  free(t1); free(t2); free(t3);
-  free(t4); free(t5); free(t6);
+  arg_xmin = hc_get_arg_r(e,2);
+  arg_xmax = hc_get_arg_r(e,3);
+  arg_ymin = hc_get_arg_r(e,4);
+  arg_ymax = hc_get_arg_r(e,5);
+  arg_zmin = hc_get_arg_r(e,6);
+  arg_zmax = hc_get_arg_r(e,7);
   double xmin,xmax,ymin,ymax,zmin,zmax;
 
   if (!func_expr)
@@ -695,23 +677,15 @@ char hc_graph3d(char *e)
 
 char hc_graph_slpfld(char *e)
 {
-  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_label_top,*arg_label_x,*arg_label_y;
+  char *func_expr,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_expr = hc_get_arg(e,1);
-  t1 = hc_get_arg(e,2);
-  t2 = hc_get_arg(e,3);
-  t3 = hc_get_arg(e,4);
-  t4 = hc_get_arg(e,5);
-  t5 = hc_get_arg(e,6);
-  t6 = hc_get_arg(e,7);
-  t7 = hc_get_arg(e,8);
-  arg_xmin = hc_result_(t1);
-  arg_xmax = hc_result_(t2);
-  arg_ymin = hc_result_(t3);
-  arg_ymax = hc_result_(t4);
-  arg_label_top = hc_result_(t5);
-  arg_label_x = hc_result_(t6);
-  arg_label_y = hc_result_(t7);
-  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6); free(t7);
+  arg_xmin = hc_get_arg_r(e,2);
+  arg_xmax = hc_get_arg_r(e,3);
+  arg_ymin = hc_get_arg_r(e,4);
+  arg_ymax = hc_get_arg_r(e,5);
+  arg_label_top = hc_get_arg_r(e,6);
+  arg_label_x = hc_get_arg_r(e,7);
+  arg_label_y = hc_get_arg_r(e,8);
   double xmin,xmax,ymin,ymax;
 
   if (!func_expr)
@@ -832,27 +806,17 @@ char hc_graph_slpfld(char *e)
 
 char hc_graph_polar(char *e)
 {
-  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*t8,*t9,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax,*arg_label_top,*arg_label_x,*arg_label_y;
+  char *func_expr,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_expr = hc_get_arg(e,1);
-  t1 = hc_get_arg(e,2);
-  t2 = hc_get_arg(e,3);
-  t3 = hc_get_arg(e,4);
-  t4 = hc_get_arg(e,5);
-  t5 = hc_get_arg(e,6);
-  t6 = hc_get_arg(e,7);
-  t7 = hc_get_arg(e,8);
-  t8 = hc_get_arg(e,9);
-  t9 = hc_get_arg(e,10);
-  arg_tmin = hc_result_(t1);
-  arg_tmax = hc_result_(t2);
-  arg_xmin = hc_result_(t3);
-  arg_xmax = hc_result_(t4);
-  arg_ymin = hc_result_(t5);
-  arg_ymax = hc_result_(t6);
-  arg_label_top = hc_result_(t7);
-  arg_label_x = hc_result_(t8);
-  arg_label_y = hc_result_(t9);
-  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6); free(t7); free(t8); free(t9);
+  arg_tmin = hc_get_arg_r(e,2);
+  arg_tmax = hc_get_arg_r(e,3);
+  arg_xmin = hc_get_arg_r(e,4);
+  arg_xmax = hc_get_arg_r(e,5);
+  arg_ymin = hc_get_arg_r(e,6);
+  arg_ymax = hc_get_arg_r(e,7);
+  arg_label_top = hc_get_arg_r(e,8);
+  arg_label_x = hc_get_arg_r(e,9);
+  arg_label_y = hc_get_arg_r(e,10);
   double tmin,tmax,xmin,xmax,ymin,ymax;
 
   if (!func_expr)
@@ -910,28 +874,18 @@ char hc_graph_polar(char *e)
 
 char hc_graph_peq(char *e)
 {
-  char *func_exprx,*func_expry,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*t8,*t9,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax,*arg_label_top,*arg_label_x,*arg_label_y;
+  char *func_exprx,*func_expry,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_exprx = hc_get_arg(e,1);
   func_expry = hc_get_arg(e,2);
-  t1 = hc_get_arg(e,3);
-  t2 = hc_get_arg(e,4);
-  t3 = hc_get_arg(e,5);
-  t4 = hc_get_arg(e,6);
-  t5 = hc_get_arg(e,7);
-  t6 = hc_get_arg(e,8);
-  t7 = hc_get_arg(e,9);
-  t8 = hc_get_arg(e,10);
-  t9 = hc_get_arg(e,11);
-  arg_tmin = hc_result_(t1);
-  arg_tmax = hc_result_(t2);
-  arg_xmin = hc_result_(t3);
-  arg_xmax = hc_result_(t4);
-  arg_ymin = hc_result_(t5);
-  arg_ymax = hc_result_(t6);
-  arg_label_top = hc_result_(t7);
-  arg_label_x = hc_result_(t8);
-  arg_label_y = hc_result_(t9);
-  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6); free(t7); free(t8); free(t9);
+  arg_tmin = hc_get_arg_r(e,3);
+  arg_tmax = hc_get_arg_r(e,4);
+  arg_xmin = hc_get_arg_r(e,5);
+  arg_xmax = hc_get_arg_r(e,6);
+  arg_ymin = hc_get_arg_r(e,7);
+  arg_ymax = hc_get_arg_r(e,8);
+  arg_label_top = hc_get_arg_r(e,9);
+  arg_label_x = hc_get_arg_r(e,10);
+  arg_label_y = hc_get_arg_r(e,11);
   double tmin,tmax,xmin,xmax,ymin,ymax;
 
   if (!func_exprx || !func_expry)
