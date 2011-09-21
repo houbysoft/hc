@@ -43,6 +43,28 @@ void *driver_memory = NULL;
 #endif
 
 
+#define PROCESS_LABELS_2D() {\
+  if (arg_label_top || arg_label_x || arg_label_y) {\
+    if (arg_label_top && arg_label_x && arg_label_y) {\
+      char *tmp1, *tmp2, *tmp3;\
+      tmp1 = get_string(arg_label_top); tmp2 = get_string(arg_label_x); tmp3 = get_string(arg_label_y);\
+      if (!tmp1 || !tmp2 || !tmp3) {\
+	free(tmp1); free(tmp2); free(tmp3); free(arg_label_top); free(arg_label_x); free(arg_label_y);\
+	arg_label_top = arg_label_x = arg_label_y = NULL;\
+	hc_error(WARNING, "You haven't provided all three labels (top, x, y) correctly (as strings). Using defaults.\n");\
+      } else {\
+	free(arg_label_top); free(arg_label_x); free(arg_label_y);\
+	arg_label_top = tmp1; arg_label_x = tmp2; arg_label_y = tmp3;\
+      }\
+    } else {\
+      hc_error(WARNING, "You haven't provided all three labels (top, x, y). Using defaults.\n");\
+      free(arg_label_top); free(arg_label_x); free(arg_label_y);\
+      arg_label_top = arg_label_x = arg_label_y = NULL;\
+    }\
+  }\
+}
+
+
 const unsigned int pl_colors[][3] = {
   {255, 0,   0  }, // red
   {255, 255, 0  }, // yellow
@@ -62,7 +84,7 @@ const unsigned int pl_colors[][3] = {
 
 
 void plfbox(PLFLT x, PLFLT y25, PLFLT y50, PLFLT y75, PLFLT lw, PLFLT uw);
-char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double tmax, double xmin, double xmax, double ymin, double ymax, char *graph_top_label, int type, char *exprtmp);
+char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double tmax, double xmin, double xmax, double ymin, double ymax, char *graph_top_label, char *graph_x_label, char *graph_y_label, int type, char *exprtmp);
 
 
 void hc_graph_init()
@@ -320,24 +342,7 @@ char hc_graph(char *e)
     arg_error("graph() : xmin and xmax are set to the same value");
   }
 
-  if (arg_label_top || arg_label_x || arg_label_y) {
-    if (arg_label_top && arg_label_x && arg_label_y) {
-      char *tmp1, *tmp2, *tmp3;
-      tmp1 = get_string(arg_label_top); tmp2 = get_string(arg_label_x); tmp3 = get_string(arg_label_y);
-      if (!tmp1 || !tmp2 || !tmp3) {
-	free(tmp1); free(tmp2); free(tmp3); free(arg_label_top); free(arg_label_x); free(arg_label_y);
-	arg_label_top = arg_label_x = arg_label_y = NULL;
-	hc_error(WARNING, "You haven't provided all three labels (top, x, y) correctly (as strings). Using defaults.\n");
-      } else {
-	free(arg_label_top); free(arg_label_x); free(arg_label_y);
-	arg_label_top = tmp1; arg_label_x = tmp2; arg_label_y = tmp3;
-      }
-    } else {
-      hc_error(WARNING, "You haven't provided all three labels (top, x, y). Using defaults.\n");
-      free(arg_label_top); free(arg_label_x); free(arg_label_y);
-      arg_label_top = arg_label_x = arg_label_y = NULL;
-    }
-  }
+  PROCESS_LABELS_2D();
 
   if (is_vector(func_expr))
   {
@@ -690,17 +695,23 @@ char hc_graph3d(char *e)
 
 char hc_graph_slpfld(char *e)
 {
-  char *func_expr,*t1,*t2,*t3,*t4,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax;
+  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_expr = hc_get_arg(e,1);
   t1 = hc_get_arg(e,2);
   t2 = hc_get_arg(e,3);
   t3 = hc_get_arg(e,4);
   t4 = hc_get_arg(e,5);
+  t5 = hc_get_arg(e,6);
+  t6 = hc_get_arg(e,7);
+  t7 = hc_get_arg(e,8);
   arg_xmin = hc_result_(t1);
   arg_xmax = hc_result_(t2);
   arg_ymin = hc_result_(t3);
   arg_ymax = hc_result_(t4);
-  free(t1); free(t2); free(t3); free(t4);
+  arg_label_top = hc_result_(t5);
+  arg_label_x = hc_result_(t6);
+  arg_label_y = hc_result_(t7);
+  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6); free(t7);
   double xmin,xmax,ymin,ymax;
 
   if (!func_expr)
@@ -779,12 +790,14 @@ char hc_graph_slpfld(char *e)
   }
   graphing_ignore_errors = FALSE;
 
+  PROCESS_LABELS_2D();
+
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Slope Field - dy/dx = ")+strlen(func_expr)+1);
   if (!graph_top_label)
     mem_error();
   strcpy(graph_top_label,"HoubySoft Calculator - Slope Field - dy/dx = ");
   strcat(graph_top_label,func_expr);
-  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
+  hc_graph_init2d(arg_label_top ? arg_label_top : graph_top_label, arg_label_x ? arg_label_x : "x", arg_label_y ? arg_label_y : "y", xmin, xmax, ymin, ymax);
   free(graph_top_label);
 
   for (i=0; i<HC_GRAPH_POINTS_SF; i++)
@@ -811,6 +824,7 @@ char hc_graph_slpfld(char *e)
 
   hc_graph_finish(HCGT_SLPFLD, func_expr);
   free(func_expr);
+  free(arg_label_top); free(arg_label_x); free(arg_label_y);
 
   return SUCCESS; 
 }
@@ -818,7 +832,7 @@ char hc_graph_slpfld(char *e)
 
 char hc_graph_polar(char *e)
 {
-  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax;
+  char *func_expr,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*t8,*t9,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_expr = hc_get_arg(e,1);
   t1 = hc_get_arg(e,2);
   t2 = hc_get_arg(e,3);
@@ -826,19 +840,25 @@ char hc_graph_polar(char *e)
   t4 = hc_get_arg(e,5);
   t5 = hc_get_arg(e,6);
   t6 = hc_get_arg(e,7);
+  t7 = hc_get_arg(e,8);
+  t8 = hc_get_arg(e,9);
+  t9 = hc_get_arg(e,10);
   arg_tmin = hc_result_(t1);
   arg_tmax = hc_result_(t2);
   arg_xmin = hc_result_(t3);
   arg_xmax = hc_result_(t4);
   arg_ymin = hc_result_(t5);
   arg_ymax = hc_result_(t6);
-  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6);
+  arg_label_top = hc_result_(t7);
+  arg_label_x = hc_result_(t8);
+  arg_label_y = hc_result_(t9);
+  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6); free(t7); free(t8); free(t9);
   double tmin,tmax,xmin,xmax,ymin,ymax;
 
   if (!func_expr)
   {
     free(func_expr);
-    free(arg_tmin); free(arg_tmax); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
+    free(arg_tmin); free(arg_tmax); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_label_top); free(arg_label_x); free(arg_label_y);
     arg_error("graphpolar() needs at least one argument (expr_r).");
   }
   if (!arg_tmin || !arg_tmax || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
@@ -859,6 +879,9 @@ char hc_graph_polar(char *e)
     hc.tminpolar = tmin = strtod(arg_tmin,NULL);
     hc.tmaxpolar = tmax = strtod(arg_tmax,NULL);
   }
+
+  PROCESS_LABELS_2D();
+
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Polar Function - r(t) = ")+strlen(func_expr)+1);
   if (!graph_top_label)
     mem_error();
@@ -870,7 +893,7 @@ char hc_graph_polar(char *e)
   sprintf(func_expry, "(%s)*sin(t)", func_expr);
   char angle_setting = hc.angle;
   hc.angle = 'r';
-  char r = hc_graph_peq_core(func_exprx, func_expry, tmin, tmax, xmin, xmax, ymin, ymax, graph_top_label, HCGT_POLAR, func_expr);
+  char r = hc_graph_peq_core(func_exprx, func_expry, tmin, tmax, xmin, xmax, ymin, ymax, arg_label_top ? arg_label_top : graph_top_label, arg_label_x, arg_label_y, HCGT_POLAR, func_expr);
   hc.angle = angle_setting;
   free(graph_top_label);
   free(arg_xmin);
@@ -879,6 +902,7 @@ char hc_graph_polar(char *e)
   free(arg_ymax);
   free(arg_tmin);
   free(arg_tmax);
+  free(arg_label_top); free(arg_label_x); free(arg_label_y);
   free(func_exprx); free(func_expry);
   return r;
 }
@@ -886,7 +910,7 @@ char hc_graph_polar(char *e)
 
 char hc_graph_peq(char *e)
 {
-  char *func_exprx,*func_expry,*t1,*t2,*t3,*t4,*t5,*t6,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax;
+  char *func_exprx,*func_expry,*t1,*t2,*t3,*t4,*t5,*t6,*t7,*t8,*t9,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_tmin,*arg_tmax,*arg_label_top,*arg_label_x,*arg_label_y;
   func_exprx = hc_get_arg(e,1);
   func_expry = hc_get_arg(e,2);
   t1 = hc_get_arg(e,3);
@@ -895,19 +919,25 @@ char hc_graph_peq(char *e)
   t4 = hc_get_arg(e,6);
   t5 = hc_get_arg(e,7);
   t6 = hc_get_arg(e,8);
+  t7 = hc_get_arg(e,9);
+  t8 = hc_get_arg(e,10);
+  t9 = hc_get_arg(e,11);
   arg_tmin = hc_result_(t1);
   arg_tmax = hc_result_(t2);
   arg_xmin = hc_result_(t3);
   arg_xmax = hc_result_(t4);
   arg_ymin = hc_result_(t5);
   arg_ymax = hc_result_(t6);
-  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6);
+  arg_label_top = hc_result_(t7);
+  arg_label_x = hc_result_(t8);
+  arg_label_y = hc_result_(t9);
+  free(t1); free(t2); free(t3); free(t4); free(t5); free(t6); free(t7); free(t8); free(t9);
   double tmin,tmax,xmin,xmax,ymin,ymax;
 
   if (!func_exprx || !func_expry)
   {
     free(func_exprx); free(func_expry);
-    free(arg_tmin); free(arg_tmax); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax);
+    free(arg_tmin); free(arg_tmax); free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_label_top); free(arg_label_x); free(arg_label_y);
     arg_error("graphpeq() needs at least two arguments (expr_x,expr_y).");
   }
   if (!arg_tmin || !arg_tmax || !arg_xmin || !arg_xmax || !arg_ymin || !arg_ymax)
@@ -929,6 +959,8 @@ char hc_graph_peq(char *e)
     hc.tmaxpeq = tmax = strtod(arg_tmax,NULL);
   }
 
+  PROCESS_LABELS_2D();
+
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Parametric Function - x = , y = ")+strlen(func_exprx)+strlen(func_expry)+1);
   if (!graph_top_label)
     mem_error();
@@ -939,7 +971,8 @@ char hc_graph_peq(char *e)
   char *exprtmp = malloc(strlen(func_exprx) + 1 + strlen(func_expry) + 1);
   if (!exprtmp) mem_error();
   sprintf(exprtmp, "%s,%s", func_exprx, func_expry);
-  char r = hc_graph_peq_core(func_exprx, func_expry, tmin, tmax, xmin, xmax, ymin, ymax, graph_top_label, HCGT_PARAMETRIC, exprtmp);
+
+  char r = hc_graph_peq_core(func_exprx, func_expry, tmin, tmax, xmin, xmax, ymin, ymax, arg_label_top ? arg_label_top : graph_top_label, arg_label_x, arg_label_y, HCGT_PARAMETRIC, exprtmp);
   free(exprtmp);
   free(graph_top_label);
   free(arg_xmin);
@@ -949,13 +982,14 @@ char hc_graph_peq(char *e)
   free(arg_tmin);
   free(arg_tmax);
   free(func_exprx); free(func_expry);
+  free(arg_label_top); free(arg_label_x); free(arg_label_y);
   return r;
 }
 
 
-char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double tmax, double xmin, double xmax, double ymin, double ymax, char *graph_top_label, int type, char *expr)
+char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double tmax, double xmin, double xmax, double ymin, double ymax, char *graph_top_label, char *graph_x_label, char *graph_y_label, int type, char *expr)
 {
-  hc_graph_init2d(graph_top_label, "x", "y", xmin, xmax, ymin, ymax);
+  hc_graph_init2d(graph_top_label, graph_x_label ? graph_x_label : "x", graph_y_label ? graph_y_label : "y", xmin, xmax, ymin, ymax);
 
   double stept = HC_GRAPH_PEQ_T_STEP;
   double curt = tmin;
