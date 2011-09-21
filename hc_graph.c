@@ -1124,7 +1124,15 @@ char hc_graph_values(char *e, char draw_lines)
     ymax += 1.0;
   }
 
-  hc_graph_init2d("HoubySoft Calculator - Graph", "x", "y", xmin, xmax, ymin, ymax);
+  char *arg_label_top,*arg_label_x,*arg_label_y;
+  arg_label_top = hc_get_arg_r(e,2);
+  arg_label_x = hc_get_arg_r(e,3);
+  arg_label_y = hc_get_arg_r(e,4);
+
+  PROCESS_LABELS_2D();
+
+  hc_graph_init2d(arg_label_top ? arg_label_top : "HoubySoft Calculator - Graph", arg_label_x ? arg_label_x : "x", arg_label_y ? arg_label_y : "y", xmin, xmax, ymin, ymax);
+  free(arg_label_top); free(arg_label_x); free(arg_label_y);
 
   graphing_ignore_errors = TRUE;
   cur = NULL;
