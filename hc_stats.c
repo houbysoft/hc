@@ -35,11 +35,12 @@
 
 // hc_stats()
 //   arguments:
-//     - e : list of comma separated arguments passed by the user
+//     - first argument in f : list of comma separated arguments passed by the user
+//     - optional additional arguments in f : top label, x label, y label for boxplots
 //     - g : passed by the internal functions, TRUE if we should draw a boxplot, FALSE if we only should display information
 char hc_stats(char *f, char g)
 {
-  char *f_tmp = hc_result_(f);
+  char *f_tmp = hc_get_arg_r(f,1);
   if (!f_tmp || !is_list(f_tmp))
   {
     free(f_tmp);
@@ -620,7 +621,13 @@ char hc_stats(char *f, char g)
 
   if (g)
   {
-    hc_graph_boxplot("#frHC - Box plot", "", "", f, pl_min, pl_max, pl_q1, pl_q2, pl_q3);
+    char *arg_label_top,*arg_label_x,*arg_label_y;
+    arg_label_top = hc_get_arg_r(f,2);
+    arg_label_x = hc_get_arg_r(f,3);
+    arg_label_y = hc_get_arg_r(f,4);
+    PROCESS_LABELS_2D();
+    hc_graph_boxplot(arg_label_top ? arg_label_top : "HC - Box plot", arg_label_x ? arg_label_x : "", arg_label_y ? arg_label_y : "", f, pl_min, pl_max, pl_q1, pl_q2, pl_q3);
+    free(arg_label_top); free(arg_label_x); free(arg_label_y);
   } else {
     notify(out_string);
     free(out_string);
