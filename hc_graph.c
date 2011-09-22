@@ -65,6 +65,29 @@ void *driver_memory = NULL;
 }
 
 
+#define PROCESS_LABELS_3D() {\
+  if (arg_label_top || arg_label_x || arg_label_y || arg_label_z) {\
+    if (arg_label_top && arg_label_x && arg_label_y && arg_label_z) {\
+      char *tmp1, *tmp2, *tmp3, *tmp4;					\
+      tmp1 = get_string(arg_label_top); tmp2 = get_string(arg_label_x); tmp3 = get_string(arg_label_y); tmp4 = get_string(arg_label_z); \
+      if (!tmp1 || !tmp2 || !tmp3 || !tmp4) {\
+	free(tmp1); free(tmp2); free(tmp3); free(tmp4); free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z); \
+	arg_label_top = arg_label_x = arg_label_y = arg_label_z = NULL;\
+	hc_error(WARNING, "You haven't provided all four labels (top, x, y, z) correctly (as strings). Using defaults.\n");\
+      } else {\
+	free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z); \
+	arg_label_top = tmp1; arg_label_x = tmp2; arg_label_y = tmp3; arg_label_z = tmp4; \
+      }\
+    } else {\
+      hc_error(WARNING, "You haven't provided all four labels (top, x, y, z). Using defaults.\n");\
+      free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z); \
+      arg_label_top = arg_label_x = arg_label_y = arg_label_z = NULL;\
+    }\
+  }\
+}
+
+
+
 const unsigned int pl_colors[][3] = {
   {255, 0,   0  }, // red
   {255, 255, 0  }, // yellow
@@ -511,7 +534,7 @@ char hc_graph_n(char *e, char *label_top, char *label_x, char *label_y)
 
 char hc_graph3d(char *e)
 {
-  char *func_expr,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_zmin,*arg_zmax;
+  char *func_expr,*arg_xmin,*arg_xmax,*arg_ymin,*arg_ymax,*arg_zmin,*arg_zmax,*arg_label_top,*arg_label_x,*arg_label_y,*arg_label_z;
   func_expr = hc_get_arg(e,1);
   arg_xmin = hc_get_arg_r(e,2);
   arg_xmax = hc_get_arg_r(e,3);
@@ -519,11 +542,15 @@ char hc_graph3d(char *e)
   arg_ymax = hc_get_arg_r(e,5);
   arg_zmin = hc_get_arg_r(e,6);
   arg_zmax = hc_get_arg_r(e,7);
+  arg_label_top = hc_get_arg_r(e,8);
+  arg_label_x = hc_get_arg_r(e,9);
+  arg_label_y = hc_get_arg_r(e,10);
+  arg_label_z = hc_get_arg_r(e,11);
   double xmin,xmax,ymin,ymax,zmin,zmax;
 
   if (!func_expr)
   {
-    free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_zmin); free(arg_zmax);
+    free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_zmin); free(arg_zmax); free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z);
     arg_error("graph3() needs at least one argument (expr).");
   }
 
@@ -547,7 +574,7 @@ char hc_graph3d(char *e)
   }
   if (xmin == xmax || ymin == ymax)
   {
-    free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_zmin); free(arg_zmax);
+    free(arg_xmin); free(arg_xmax); free(arg_ymin); free(arg_ymax); free(arg_zmin); free(arg_zmax); free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z);
     arg_error("graph3() : xmin and xmax or ymin and ymax are set to the same value");
   }
 
@@ -610,12 +637,15 @@ char hc_graph3d(char *e)
   }
   graphing_ignore_errors = FALSE;
 
+  PROCESS_LABELS_3D();
+
   char *graph_top_label = malloc(strlen("HoubySoft Calculator - Graph - ")+strlen(func_expr)+1);
   if (!graph_top_label)
     mem_error();
   strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
   strcat(graph_top_label,func_expr);
-  hc_graph_init3d(graph_top_label, "x", "y", "z", xmin, xmax, ymin, ymax, zmin, zmax);
+  hc_graph_init3d(arg_label_top ? arg_label_top : graph_top_label, arg_label_x ? arg_label_x : "x", arg_label_y ? arg_label_y : "y", arg_label_z ? arg_label_z : "z", xmin, xmax, ymin, ymax, zmin, zmax);
+  free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z);
   free(graph_top_label);
   if (!discont)
     hc_graph_mesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D);
