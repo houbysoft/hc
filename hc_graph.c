@@ -164,18 +164,18 @@ void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, char *args,
   plcol0(9);
   plfbox(1, q1, q2, q3, min, max);
 
-  hc_graph_finish(HCGT_BOXPLOT, args);
+  hc_graph_finish(HCGT_BOXPLOT, args, label_top, label_x, label_y, NULL);
 }
 
 
-void hc_graph_finish(int type, char *args)
+void hc_graph_finish(int type, char *args, char *tl, char *xl, char *yl, char *zl)
 {
   plend();
 #if defined(HCG) && !defined(WIN32) && !defined(MEM_DRIVER)
   hcg_disp_graph("tmp-graph.png");
   remove("tmp-graph.png");
 #elif defined(MEM_DRIVER)
-  hcg_disp_rgb(GRAPH_PIXELS_X, GRAPH_PIXELS_Y, driver_memory, type, args);
+  hcg_disp_rgb(GRAPH_PIXELS_X, GRAPH_PIXELS_Y, driver_memory, type, args, tl, xl, yl, zl);
   free(driver_memory);
   driver_memory = NULL;
 #endif
@@ -428,7 +428,6 @@ char hc_graph_n(char *e, char *label_top, char *label_x, char *label_y)
       strcat(lbl,"; ");
   }
   hc_graph_init2d(label_top == NULL ? lbl : label_top, label_x == NULL ? "x" : label_x, label_y == NULL ? "y" : label_y, xmin, xmax, ymin, ymax);
-  free(lbl);
   int color=1;
 
   for (j=0; j<k; j++)
@@ -481,8 +480,9 @@ char hc_graph_n(char *e, char *label_top, char *label_x, char *label_y)
   }
   free(func_expr);
 
-  hc_graph_finish(HCGT_2D, e);
+  hc_graph_finish(HCGT_2D, e, label_top, label_x, label_y, NULL);
 
+  free(lbl);
   return SUCCESS;
 }
 
@@ -601,8 +601,6 @@ char hc_graph3d(char *e)
   strcpy(graph_top_label,"HoubySoft Calculator - Graph - ");
   strcat(graph_top_label,func_expr);
   hc_graph_init3d(arg_label_top ? arg_label_top : graph_top_label, arg_label_x ? arg_label_x : "x", arg_label_y ? arg_label_y : "y", arg_label_z ? arg_label_z : "z", xmin, xmax, ymin, ymax, zmin, zmax);
-  free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z);
-  free(graph_top_label);
   if (!discont)
     hc_graph_mesh(a_x,a_y,a,HC_GRAPH_POINTS_3D,HC_GRAPH_POINTS_3D);
   else
@@ -654,7 +652,9 @@ char hc_graph3d(char *e)
   }
   free(a);
 
-  hc_graph_finish(HCGT_3D, func_expr);
+  hc_graph_finish(HCGT_3D, func_expr, arg_label_top, arg_label_x, arg_label_y, arg_label_z);
+  free(arg_label_top); free(arg_label_x); free(arg_label_y); free(arg_label_z);
+  free(graph_top_label);
   free(func_expr);
 
   return SUCCESS; 
@@ -758,7 +758,6 @@ char hc_graph_slpfld(char *e)
   strcpy(graph_top_label,"HoubySoft Calculator - Slope Field - dy/dx = ");
   strcat(graph_top_label,func_expr);
   hc_graph_init2d(arg_label_top ? arg_label_top : graph_top_label, arg_label_x ? arg_label_x : "x", arg_label_y ? arg_label_y : "y", xmin, xmax, ymin, ymax);
-  free(graph_top_label);
 
   for (i=0; i<HC_GRAPH_POINTS_SF; i++)
   {
@@ -782,7 +781,8 @@ char hc_graph_slpfld(char *e)
   }
   free(a);
 
-  hc_graph_finish(HCGT_SLPFLD, func_expr);
+  hc_graph_finish(HCGT_SLPFLD, func_expr, arg_label_top, arg_label_x, arg_label_y, NULL);
+  free(graph_top_label);
   free(func_expr);
   free(arg_label_top); free(arg_label_x); free(arg_label_y);
 
@@ -970,7 +970,7 @@ char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double t
 
   graphing_ignore_errors = FALSE;
 
-  hc_graph_finish(type, expr);
+  hc_graph_finish(type, expr, graph_x_label && graph_y_label ? graph_top_label : NULL, graph_x_label, graph_y_label, NULL);
   return SUCCESS;
 }
 
@@ -978,10 +978,11 @@ char hc_graph_peq_core(char *func_exprx, char *func_expry, double tmin, double t
 // Draw a graph using the values specified. If draw_lines is 0, the points are not connected with lines; if it is 1, they are connected with lines.
 char hc_graph_values(char *e, char draw_lines)
 {
-  char *points_orig = hc_get_arg_r(e,1);
+  char *pts = hc_get_arg(e,1); // pts are used later to pass to hc_graph_finish
+  char *points_orig = hc_result_(pts);
   if (!points_orig || !is_list(points_orig))
   {
-    free(points_orig);
+    free(pts); free(points_orig);
     arg_error("graphvalues() : argument needs to be a list of point coordinates");
   }
   char *points = list_clean(points_orig);
@@ -1002,7 +1003,7 @@ char hc_graph_values(char *e, char draw_lines)
     }
     else if ((is_list(cur) && mode==1) || (!is_list(cur) && mode==2))
     {
-      free(cur); free(points_orig);
+      free(cur); free(pts); free(points_orig);
       arg_error("graphvalues() : inconsistent input");
     } else if (mode==0) {
       mode = 1;
@@ -1026,7 +1027,7 @@ char hc_graph_values(char *e, char draw_lines)
       char *curx = hc_get_arg(curtmp,1);
       char *cury = hc_get_arg(curtmp,2);
       if (!curx || !is_num(curx) || !cury || !is_num(cury)) {
-	free(curx); free(cury); free(cur); free(points_orig);
+	free(curx); free(cury); free(cur); free(pts); free(points_orig);
 	arg_error("graphvalues() : invalid point list supplied.");
       }
       if (idx == 1)
@@ -1036,7 +1037,7 @@ char hc_graph_values(char *e, char draw_lines)
       } else {
         if (strtod(curx,NULL) <= lastpointx)
         {
-          free(curx); free(cury); free(cur); free(points_orig);
+          free(curx); free(cury); free(cur); free(pts); free(points_orig);
           arg_error("graphvalues() : invalid point list. x values are not in ascending order.");
         } else {
           lastpointx = strtod(curx,NULL);
@@ -1055,7 +1056,7 @@ char hc_graph_values(char *e, char draw_lines)
   }
 
   if (xmin == xmax) {
-    free(points_orig);
+    free(points_orig); free(pts);
     arg_error("graphvalues() : invalid point list; make sure to specify at least two points to graph.");
   }
 
@@ -1072,7 +1073,6 @@ char hc_graph_values(char *e, char draw_lines)
   PROCESS_LABELS_2D();
 
   hc_graph_init2d(arg_label_top ? arg_label_top : "HoubySoft Calculator - Graph", arg_label_x ? arg_label_x : "x", arg_label_y ? arg_label_y : "y", xmin, xmax, ymin, ymax);
-  free(arg_label_top); free(arg_label_x); free(arg_label_y);
 
   graphing_ignore_errors = TRUE;
   cur = NULL;
@@ -1119,7 +1119,9 @@ char hc_graph_values(char *e, char draw_lines)
 
   free(points_orig);
 
-  hc_graph_finish(draw_lines ? HCGT_VALUESLINE : HCGT_VALUESPOINTS, e);
+  hc_graph_finish(draw_lines ? HCGT_VALUESLINE : HCGT_VALUESPOINTS, pts, arg_label_top, arg_label_x, arg_label_y, NULL);
+  free(pts);
+  free(arg_label_top); free(arg_label_x); free(arg_label_y);
 
   return SUCCESS;
 }
