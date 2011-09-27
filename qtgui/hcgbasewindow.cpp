@@ -52,7 +52,7 @@ HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(this, SIGNAL(notify_signal(QString)), this, SLOT(notify_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(notify_console_signal(QString)), this, SLOT(notify_console_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(notify_error_signal(QString)), this, SLOT(notify_error_slot(QString)), Qt::BlockingQueuedConnection);
-  connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *, int, char *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *, int, char *)), Qt::BlockingQueuedConnection);
+  connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *, int, char *, char *, char *, char *, char *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *, int, char *, char *, char *, char *, char *)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(prompt_signal(QString, QString *)), this, SLOT(prompt_slot(QString, QString *)), Qt::BlockingQueuedConnection);
 #ifdef WIN32
   connect(this, SIGNAL(updateStatus_signal(int)), this, SLOT(updateStatus_slot(int)), Qt::QueuedConnection);
@@ -576,14 +576,14 @@ void HCGBaseWindow::showGraph()
 }
 
 
-void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data, int type, char *args)
+void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data, int type, char *args, char *tl, char *xl, char *yl, char *zl)
 {
   QImage graph((uchar *)data, x, y, QImage::Format_RGB888);
   if (!graph_window)
   {
     graph_window = new HCGGraphWindow();
   }
-  graph_window->updateGraph(QPixmap::fromImage(graph), x, y, type, args);
+  graph_window->updateGraph(QPixmap::fromImage(graph), x, y, type, args, tl, xl, yl, zl);
 }
 
 
@@ -619,7 +619,7 @@ void HCGBaseWindow::updateStatus(int status)
 #endif
 
 
-void HCGBaseWindow::disp_rgb(unsigned int x, unsigned int y, void *data, int type, char *args)
+void HCGBaseWindow::disp_rgb(unsigned int x, unsigned int y, void *data, int type, char *args, char *tl, char *xl, char *yl, char *zl)
 {
-  emit disp_rgb_signal(x, y, data, type, args);
+  emit disp_rgb_signal(x, y, data, type, args, tl, xl, yl, zl);
 }

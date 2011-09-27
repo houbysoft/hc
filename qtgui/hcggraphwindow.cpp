@@ -463,7 +463,7 @@ void HCGGraphWindow::setShowImag(bool enabled) {
 }
 
 
-void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args2)
+void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args2, char *tl, char *xl, char *yl, char *zl)
 {
   gdisp->setPixmap(map);
   gdisp->setFixedSize(x,y);
@@ -515,6 +515,7 @@ void HCGGraphWindow::updateGraph(QPixmap map, unsigned int x, unsigned int y, in
     break;
   }
   updateOptions(type);
+  gdisp->setLabels(type, tl, xl, yl, zl);
   show();
   activateWindow();
   raise();
@@ -701,7 +702,14 @@ QString HCGGraphWindow::getFullForm()
     break;
 
   default:
-    break;  
+    break;
+  }
+  if (!gdisp->labelDialog->defaultsCB->isChecked()) {
+    cmd += ",\"" + gdisp->labelDialog->topl->text() + "\",\"" + gdisp->labelDialog->xl->text() + "\",\"" + gdisp->labelDialog->yl->text();
+    if (gtypes->currentIndex() + 1 == HCGT_3D) {
+      cmd += "\",\"" + gdisp->labelDialog->zl->text();
+    }
+    cmd += "\"";
   }
   cmd += ")";
   return cmd;
@@ -723,6 +731,7 @@ void HCGGraphWindow::updateOptions(int type)
   options->setCurrentIndex(type - 1);
   gtypes->setCurrentIndex(type - 1);
   lineedits->setCurrentIndex(type - 1);
+  gdisp->setCurrentIndex(type); // no -1 here, enum HCGT values are used
   switch (type)
   {
   case HCGT_2D:
@@ -781,6 +790,7 @@ void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefact
 
 
 HCGGraphDisplay::HCGGraphDisplay(HCGGraphWindow *pW) {
+  labelDialog = new HCGLabelDialog(this);
   parentWindow = pW;
   graphInitialized = enableZoomButtons = false;
   buttons = new QWidget(this);
@@ -825,7 +835,8 @@ void HCGGraphDisplay::editLabelsDialog() {
 
   hideButtons();
 
-  // TODO
+  labelDialog->open();
+  labelDialog->focusInput();
 }
 
 
@@ -908,4 +919,231 @@ void HCGGraphDisplay::enterEvent(QEvent *) {
 
 void HCGGraphDisplay::leaveEvent(QEvent *) {
   hideButtons();
+}
+
+
+HCGLabelDialog::HCGLabelDialog(HCGGraphDisplay *aparent) : QDialog(aparent, Qt::Dialog | Qt::Sheet) {
+  parent = aparent;
+
+  QGridLayout *l = new QGridLayout(this);
+  setLayout(l);
+
+  defaults_2D = defaults_P = defaults_PO = defaults_3D = defaults_S = defaults_VL = defaults_VP = true;
+  zl_enabled = false;
+
+  l->addWidget(new QLabel("Top label: ", this), 0, 0);
+  topl = new QLineEdit(this);
+  l->addWidget(topl, 0, 1);
+  l->addWidget(new QLabel("x axis label: ", this), 1, 0);
+  xl = new QLineEdit(this);
+  l->addWidget(xl, 1, 1);
+  l->addWidget(new QLabel("y axis label: ", this), 2, 0);
+  yl = new QLineEdit(this);
+  l->addWidget(yl, 2, 1);
+  l->addWidget(new QLabel("z axis label: ", this), 3, 0);
+  zl = new QLineEdit(this);
+  l->addWidget(zl, 3, 1);
+  l->addWidget(new QLabel("Use defaults: ", this), 4, 0);
+  defaultsCB = new QCheckBox(this);
+  connect(defaultsCB, SIGNAL(clicked(bool)), this, SLOT(defaultsChanged(bool)));
+  l->addWidget(defaultsCB, 4, 1);
+
+  QPushButton *cancel = new QPushButton("Cancel", this);
+  connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
+  QPushButton *ok = new QPushButton("Update labels", this);
+  connect(ok, SIGNAL(clicked()), this, SLOT(updateLabels()));
+  ok->setDefault(true);
+
+  l->addWidget(cancel, 5, 0);
+  l->addWidget(ok, 5, 1);
+}
+
+
+void HCGLabelDialog::focusInput() {
+  topl->selectAll();
+  topl->setFocus();
+}
+
+
+void HCGLabelDialog::updateLabels() {
+  parent->parentWindow->drawGraph();
+  this->hide();
+}
+
+
+void HCGLabelDialog::defaultsChanged(bool checked) {
+  if (checked) {
+    topl->setEnabled(false);
+    xl->setEnabled(false);
+    yl->setEnabled(false);
+    zl->setEnabled(false);
+  } else {
+    topl->setEnabled(true);
+    xl->setEnabled(true);
+    yl->setEnabled(true);
+    if (zl_enabled)
+      zl->setEnabled(true);
+  }
+}
+
+
+void HCGLabelDialog::setCurrentIndex(int type) {
+  switch (type) {
+  case HCGT_2D:
+    defaultsCB->setChecked(defaults_2D);
+    topl->setText(tl_2D);
+    xl->setText(xl_2D);
+    yl->setText(yl_2D);
+    zl_enabled = false;
+    break;
+
+  case HCGT_PARAMETRIC:
+    defaultsCB->setChecked(defaults_P);
+    topl->setText(tl_P);
+    xl->setText(xl_P);
+    yl->setText(yl_P);
+    zl_enabled = false;
+    break;
+
+  case HCGT_3D:
+    defaultsCB->setChecked(defaults_3D);
+    topl->setText(tl_3D);
+    xl->setText(xl_3D);
+    yl->setText(yl_3D);
+    zl->setText(zl_3D);
+    zl_enabled = true;
+    break;
+
+  case HCGT_SLPFLD:
+    defaultsCB->setChecked(defaults_S);
+    topl->setText(tl_S);
+    xl->setText(xl_S);
+    yl->setText(yl_S);
+    zl_enabled = false;
+    break;
+
+  case HCGT_POLAR:
+    defaultsCB->setChecked(defaults_PO);
+    topl->setText(tl_PO);
+    xl->setText(xl_PO);
+    yl->setText(yl_PO);
+    zl_enabled = false;
+    break;
+
+  case HCGT_VALUESPOINTS:
+    defaultsCB->setChecked(defaults_VP);
+    topl->setText(tl_VP);
+    xl->setText(xl_VP);
+    yl->setText(yl_VP);
+    zl_enabled = false;
+    break;
+
+  case HCGT_VALUESLINE:
+    defaultsCB->setChecked(defaults_VL);
+    topl->setText(tl_VL);
+    xl->setText(xl_VL);
+    yl->setText(yl_VL);
+    zl_enabled = false;
+    break;
+
+  case HCGT_BOXPLOT:
+    defaultsCB->setChecked(defaults_B);
+    topl->setText(tl_B);
+    xl->setText(xl_B);
+    yl->setText(yl_B);
+    zl_enabled = false;
+    break;
+
+  default:
+    break;
+  }
+
+  zl->setEnabled(zl_enabled);
+  if (!zl_enabled) {
+    zl->setText("N/A");
+  }
+  defaultsChanged(defaultsCB->isChecked());
+}
+
+
+void HCGLabelDialog::setLabels(int type, char *tl, char *xl, char *yl, char *zl) {
+  switch (type) {
+  case HCGT_2D:
+    defaults_2D = !tl;
+    if (!defaults_2D) {
+      tl_2D = QString(tl);
+      xl_2D = QString(xl);
+      yl_2D = QString(yl);
+    }
+    break;
+
+  case HCGT_PARAMETRIC:
+    defaults_P = !tl;
+    if (!defaults_P) {
+      tl_P = QString(tl);
+      xl_P = QString(xl);
+      yl_P = QString(yl);
+    }
+    break;
+
+  case HCGT_3D:
+    defaults_3D = !tl;
+    if (!defaults_3D) {
+      tl_3D = QString(tl);
+      xl_3D = QString(xl);
+      yl_3D = QString(yl);
+      zl_3D = QString(zl);
+    }
+    break;
+
+  case HCGT_SLPFLD:
+    defaults_S = !tl;
+    if (!defaults_S) {
+      tl_S = QString(tl);
+      xl_S = QString(xl);
+      yl_S = QString(yl);
+    }
+    break;
+
+  case HCGT_POLAR:
+    defaults_PO = !tl;
+    if (!defaults_PO) {
+      tl_PO = QString(tl);
+      xl_PO = QString(xl);
+      yl_PO = QString(yl);
+    }
+    break;
+
+  case HCGT_VALUESPOINTS:
+    defaults_VP = !tl;
+    if (!defaults_VP) {
+      tl_VP = QString(tl);
+      xl_VP = QString(xl);
+      yl_VP = QString(yl);
+    }
+    break;
+
+  case HCGT_VALUESLINE:
+    defaults_VL = !tl;
+    if (!defaults_VP) {
+      tl_VL = QString(tl);
+      xl_VL = QString(xl);
+      yl_VL = QString(yl);
+    }
+    break;
+
+  case HCGT_BOXPLOT:
+    defaults_B = !tl;
+    if (!defaults_B) {
+      tl_B = QString(tl);
+      xl_B = QString(xl);
+      yl_B = QString(yl);
+    }
+    break;
+
+  default:
+    break;
+  }
+
+  setCurrentIndex(type);
 }

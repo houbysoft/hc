@@ -80,7 +80,7 @@ class HCGBaseWindow : public QMainWindow {
 #ifdef WIN32
   void updateStatus(int status);
 #endif
-  void disp_rgb(unsigned int x, unsigned int y, void *data, int type, char *args);
+  void disp_rgb(unsigned int x, unsigned int y, void *data, int type, char *args, char *tl, char *xl, char *yl, char *zl);
   void loadConversionUnits(QStringList &units, const char *curFrom = NULL);
 
   public slots:
@@ -101,7 +101,7 @@ class HCGBaseWindow : public QMainWindow {
 #ifdef WIN32
   void updateStatus_slot(int status);
 #endif
-  void disp_rgb_slot(unsigned int x, unsigned int y, void *data, int type, char *args);
+  void disp_rgb_slot(unsigned int x, unsigned int y, void *data, int type, char *args, char *tl, char *xl, char *yl, char *zl);
   void freeResult(QString expr, char *result);
   void setPrecision(int precision);
   void setAngleMode(QString mode);
@@ -131,7 +131,7 @@ class HCGBaseWindow : public QMainWindow {
 #ifdef WIN32
   void updateStatus_signal(int status);
 #endif
-  void disp_rgb_signal(unsigned int x, unsigned int y, void *data, int type, char *args);
+  void disp_rgb_signal(unsigned int x, unsigned int y, void *data, int type, char *args, char *tl, char *xl, char *yl, char *zl);
 };
 
 #endif

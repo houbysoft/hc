@@ -109,7 +109,7 @@ class HCGGraphWindow : public HCGBaseWindow {
   public:
   HCGGraphWindow();
   ~HCGGraphWindow() {};
-  void updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args);
+  void updateGraph(QPixmap map, unsigned int x, unsigned int y, int type, char *args, char *tl, char *xl, char *yl, char *zl);
 
   public slots:
   void drawGraph();
@@ -126,11 +126,40 @@ class HCGGraphWindow : public HCGBaseWindow {
 };
 
 
+class HCGLabelDialog : public QDialog {
+  Q_OBJECT
+
+  private:
+  HCGGraphDisplay *parent;
+  bool zl_enabled;
+  QString tl_2D, xl_2D, yl_2D;
+  QString tl_P, xl_P, yl_P;
+  QString tl_PO, xl_PO, yl_PO;
+  QString tl_VP, xl_VP, yl_VP;
+  QString tl_VL, xl_VL, yl_VL;
+  QString tl_B, xl_B, yl_B;
+  QString tl_3D, xl_3D, yl_3D, zl_3D;
+  QString tl_S, xl_S, yl_S;
+  bool defaults_2D, defaults_P, defaults_PO, defaults_3D, defaults_S, defaults_VP, defaults_VL, defaults_B;
+
+  public:
+  QCheckBox *defaultsCB;
+  QLineEdit *topl,*xl,*yl,*zl;
+  void focusInput();
+  HCGLabelDialog(HCGGraphDisplay *aparent = 0);
+
+  public slots:
+  void setCurrentIndex(int type);
+  void setLabels(int type, char *tl, char *xl, char *yl, char *zl);
+  void updateLabels();
+  void defaultsChanged(bool checked);
+};
+
+
 class HCGGraphDisplay : public QLabel {
   Q_OBJECT
 
   private:
-  HCGGraphWindow *parentWindow;
   QWidget *buttons;
   QPushButton *zoomIn, *zoomOut, *editLabels;
   double movex, movey;
@@ -147,6 +176,8 @@ class HCGGraphDisplay : public QLabel {
   void hideEvent(QHideEvent *) {};
 
   public:
+  HCGGraphWindow *parentWindow;
+  HCGLabelDialog *labelDialog;
   HCGGraphDisplay(HCGGraphWindow *pW);
   ~HCGGraphDisplay() {};
 
@@ -157,6 +188,13 @@ class HCGGraphDisplay : public QLabel {
   void doZoomIn();
   void doZoomOut();
   void editLabelsDialog();
+  void setCurrentIndex(int type) {
+    labelDialog->setCurrentIndex(type);
+  };
+  void setLabels(int type, char *tl, char *xl, char *yl, char *zl) {
+    labelDialog->setLabels(type, tl, xl, yl, zl);
+  }
 };
+
 
 #endif
