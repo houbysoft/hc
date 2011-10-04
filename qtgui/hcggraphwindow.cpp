@@ -784,7 +784,7 @@ void HCGGraphWindow::updateOptions(int type)
 // x and y are relative to hc_graph.c's GRAPH_PIXELS_X and GRAPH_PIXELS_Y
 void HCGGraphWindow::zoom(double x, double y, double zoomfactor, double movefactor)
 {
-  HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, zoomTypesIndex, zoomLineText);
+  HCGZoomThread *zThread = new HCGZoomThread(x, y, zoomfactor, movefactor, zoomTypesIndex, zoomLineText, gdisp->labelDialog->defaultsCB->isChecked(), gdisp->labelDialog->topl->text(), gdisp->labelDialog->xl->text(), gdisp->labelDialog->yl->text(), gdisp->labelDialog->zl->text());
   zThread->start();
 }
 

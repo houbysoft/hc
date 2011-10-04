@@ -141,6 +141,13 @@ void HCGZoomThread::run()
     // TODO
     return;
   }
+  if (!useDefaultLabels) {
+    cmd += ",\"" + tl + "\",\"" + xl + "\",\"" + yl;
+    if (type == HCGT_3D) {
+      cmd += "\",\"" + zl;
+    }
+    cmd += "\"";
+  }
   cmd += ")";
   free(hcgcore->result(cmd));
 }

@@ -68,10 +68,11 @@ class HCGZoomThread : public QThread {
   double zoomfactor;
   double movefactor;
   int type;
-  QString expr;
+  bool useDefaultLabels;
+  QString expr, tl, xl, yl, zl;
 
   public:
-  HCGZoomThread(double ax, double ay, double azoomfactor, double amovefactor, int atype, QString aexpr) {x=ax; y=ay; zoomfactor=azoomfactor; movefactor=amovefactor; type=atype; expr=aexpr;};
+  HCGZoomThread(double ax, double ay, double azoomfactor, double amovefactor, int atype, QString aexpr, bool auseDefaultLabels, QString atl, QString axl, QString ayl, QString azl) {x=ax; y=ay; zoomfactor=azoomfactor; movefactor=amovefactor; type=atype; expr=aexpr; useDefaultLabels=auseDefaultLabels; tl=atl; xl=axl; yl=ayl; zl=azl;};
   ~HCGZoomThread() {};
 };
 
