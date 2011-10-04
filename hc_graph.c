@@ -160,7 +160,7 @@ void hc_graph_boxplot(char *label_top, char *label_x, char *label_y, char *args,
   plwind(-2, 5, min - (max - min) * 0.1, max + (max - min) * 0.1);
   plcol0(15);
   plbox("bc", 1.0, 0, "bcgnst", 0, 0);
-  pllab(label_x, label_y, label_top);
+  pllab(label_x ? label_x : "", label_y ? label_y : "", label_top ? label_top : "HC - Box plot");
   plcol0(9);
   plfbox(1, q1, q2, q3, min, max);
 

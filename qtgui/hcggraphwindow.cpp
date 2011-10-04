@@ -928,7 +928,7 @@ HCGLabelDialog::HCGLabelDialog(HCGGraphDisplay *aparent) : QDialog(aparent, Qt::
   QGridLayout *l = new QGridLayout(this);
   setLayout(l);
 
-  defaults_2D = defaults_P = defaults_PO = defaults_3D = defaults_S = defaults_VL = defaults_VP = true;
+  defaults_2D = defaults_P = defaults_PO = defaults_3D = defaults_S = defaults_VL = defaults_VP = defaults_B = true;
   zl_enabled = false;
 
   l->addWidget(new QLabel("Top label: ", this), 0, 0);
