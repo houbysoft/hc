@@ -10,6 +10,14 @@ You can also type "help" in the command prompt if you need any help - or contact
 
 RELEASE NOTES
 =============
+6.0
+  - completely new graphing interface that is much easier to use
+  - added (interactive) zooming and moving to all 2D graphs in the GUI
+  - added way to change graph labels, both from command line and in the new graphing interface
+  - more conversions added, conversion menu improved - now the second item will contain only units filtered according to what was selected as the input unit
+  - added graphpolar() to make it easier to draw polar graphs
+  - added matrix multiplication
+  - many small fixes and optimizations
 5.1
   - unified conversion functions into convert(), and made the whole conversion system more versatile and easy to extend
   - in the Windows GUI, automatic updates were added and integrated directly into the main executable

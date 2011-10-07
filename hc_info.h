@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#define VERSION "5.1"
+#define VERSION "6.0"
 #define STATUS_URL_GUI "http://houbysoft.com/status/hcg_w32"
 
 // hc_config's hc.flags
