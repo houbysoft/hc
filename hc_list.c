@@ -280,7 +280,9 @@ char list_check_is_matrix(char *a, unsigned int *rows, unsigned int *cols)
     arg_error("supplied matrix is empty");
   }
   if (!is_list(firstrow)) {
-    *cols = 1;
+    free(firstrow);
+    arg_error("error : supplied list is not a 2D matrix");
+    return FALSE;
   } else {
     if (!hc_length_core(NULL, cols, HC_UINT, firstrow)) {
       free(firstrow);
