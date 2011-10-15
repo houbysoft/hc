@@ -83,10 +83,18 @@ int hc_help(char *e)
     }
     if (i == HC_NAMES)
     {
+#ifndef HCG
       print = malloc(strlen("Sorry, no help was found for \"\". Try hitting TAB twice to get a list of functions.\n")+strlen(search)+1);
+#else
+      print = malloc(strlen("Sorry, no help was found for \"\".\n")+strlen(search)+1);
+#endif
       if (!print)
         mem_error();
+#ifndef HCG
       sprintf(print,"Sorry, no help was found for \"%s\". Try hitting TAB twice to get a list of functions.\n",search);
+#else
+      sprintf(print,"Sorry, no help was found for \"%s\".\n",search);
+#endif
     }
   }
 
