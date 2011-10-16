@@ -72,7 +72,9 @@ class HCGZoomThread : public QThread {
   QString expr, tl, xl, yl, zl;
 
   public:
-  HCGZoomThread(double ax, double ay, double azoomfactor, double amovefactor, int atype, QString aexpr, bool auseDefaultLabels, QString atl, QString axl, QString ayl, QString azl) {x=ax; y=ay; zoomfactor=azoomfactor; movefactor=amovefactor; type=atype; expr=aexpr; useDefaultLabels=auseDefaultLabels; tl=atl; xl=axl; yl=ayl; zl=azl;};
+  HCGZoomThread(double ax, double ay, double azoomfactor, double amovefactor, int atype, QString aexpr, bool auseDefaultLabels, QString atl, QString axl, QString ayl, QString azl) {x=ax; y=ay; zoomfactor=azoomfactor; movefactor=amovefactor; type=atype; expr=aexpr; useDefaultLabels=auseDefaultLabels; tl=atl; xl=axl; yl=ayl; zl=azl;
+    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+};
   ~HCGZoomThread() {};
 };
 
@@ -87,7 +89,9 @@ class HCGUpdateThread : public QThread {
   void checking_finished(HUL *update);
 
   public:
-  HCGUpdateThread() {};
+  HCGUpdateThread() {
+    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+  };
   ~HCGUpdateThread() {};
 };
 

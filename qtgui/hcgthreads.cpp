@@ -30,6 +30,7 @@
 HCGScriptThread::HCGScriptThread(QString fname)
 {
   filename = fname;
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 
@@ -42,6 +43,7 @@ void HCGScriptThread::run()
 HCGResultThread::HCGResultThread(QString e)
 {
   expr = e;
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 
@@ -163,6 +165,7 @@ void HCGUpdateThread::run()
 HCGApplyUpdateThread::HCGApplyUpdateThread(HUL *update)
 {
   u = update;
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 
