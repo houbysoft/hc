@@ -98,7 +98,7 @@ int hc_help(char *e)
     }
   }
 
-  notify(print);
+  notify_nonmodal(print);
   free(print);
   free(search);
   return SUCCESS;

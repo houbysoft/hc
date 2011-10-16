@@ -194,6 +194,12 @@ void notify(char *str)
 }
 
 
+void notify_nonmodal(char *str)
+{
+  hcg->notify_nonmodal(QString(str));
+}
+
+
 void notify_console(char *str)
 {
   hcg->notify_console(QString(str));

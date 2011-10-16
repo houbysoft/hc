@@ -74,6 +74,7 @@ class HCGBaseWindow : public QMainWindow {
   HCGBaseWindow();
   ~HCGBaseWindow();
   void notify(QString str);
+  void notify_nonmodal(QString str);
   void notify_console(QString str);
   void notify_error(QString str);
   void prompt(QString str, QString *answer);
@@ -95,6 +96,7 @@ class HCGBaseWindow : public QMainWindow {
   void enterHelp();
   void generalHelp();
   void notify_slot(QString str);
+  void notify_nonmodal_slot(QString str);
   void notify_console_slot(QString str);
   void notify_error_slot(QString str);
   void prompt_slot(QString str, QString *answer);
@@ -125,6 +127,7 @@ class HCGBaseWindow : public QMainWindow {
 
   signals:
   void notify_signal(QString str);
+  void notify_nonmodal_signal(QString str);
   void notify_console_signal(QString str);
   void notify_error_signal(QString str);
   void prompt_signal(QString str, QString *answer);

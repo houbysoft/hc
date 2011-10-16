@@ -50,6 +50,7 @@
 
 HCGBaseWindow::HCGBaseWindow() : QMainWindow() {
   connect(this, SIGNAL(notify_signal(QString)), this, SLOT(notify_slot(QString)), Qt::BlockingQueuedConnection);
+  connect(this, SIGNAL(notify_nonmodal_signal(QString)), this, SLOT(notify_nonmodal_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(notify_console_signal(QString)), this, SLOT(notify_console_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(notify_error_signal(QString)), this, SLOT(notify_error_slot(QString)), Qt::BlockingQueuedConnection);
   connect(this, SIGNAL(disp_rgb_signal(unsigned int, unsigned int, void *, int, char *, char *, char *, char *, char *)), this, SLOT(disp_rgb_slot(unsigned int, unsigned int, void *, int, char *, char *, char *, char *, char *)), Qt::BlockingQueuedConnection);
@@ -510,6 +511,16 @@ void HCGBaseWindow::notify_slot(QString str)
 }
 
 
+void HCGBaseWindow::notify_nonmodal_slot(QString str)
+{
+  QMessageBox *msgBox = new QMessageBox(this);
+  msgBox->setText(str);
+  msgBox->setWindowModality(Qt::NonModal);
+  msgBox->setAttribute(Qt::WA_DeleteOnClose);
+  msgBox->show();
+}
+
+
 void HCGBaseWindow::notify_console_slot(QString str)
 {
   if (!log_edit)
@@ -590,6 +601,12 @@ void HCGBaseWindow::disp_rgb_slot(unsigned int x, unsigned int y, void *data, in
 void HCGBaseWindow::notify(QString str)
 {
   emit notify_signal(str);
+}
+
+
+void HCGBaseWindow::notify_nonmodal(QString str)
+{
+  emit notify_nonmodal_signal(str);
 }
 
 
