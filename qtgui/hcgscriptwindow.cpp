@@ -88,6 +88,7 @@ void HCGScriptWindow::readFile(QString fname)
   updateTitle();
 
   file.close();
+  setWindowModified(false);
 }
 
 
