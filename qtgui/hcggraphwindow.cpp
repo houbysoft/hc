@@ -798,14 +798,25 @@ HCGGraphDisplay::HCGGraphDisplay(HCGGraphWindow *pW) {
   zoomIn = new QPushButton("+");
   zoomOut = new QPushButton("-");
   editLabels = new QPushButton("Edit labels...");
+  copyToClipboard = new QPushButton("Copy to clipboard");
   connect(zoomIn, SIGNAL(clicked()), this, SLOT(doZoomIn()));
   connect(zoomOut, SIGNAL(clicked()), this, SLOT(doZoomOut()));
   connect(editLabels, SIGNAL(clicked()), this, SLOT(editLabelsDialog()));
+  connect(copyToClipboard, SIGNAL(clicked()), this, SLOT(copyGraphToClipboard()));
   buttonsLayout->addWidget(zoomOut);
   buttonsLayout->addWidget(zoomIn);
   buttonsLayout->addWidget(editLabels);
+  buttonsLayout->addWidget(copyToClipboard);
   buttons->setLayout(buttonsLayout);
   hideButtons();
+}
+
+
+void HCGGraphDisplay::copyGraphToClipboard() {
+  if (!pixmap())
+    return;
+
+  QApplication::clipboard()->setPixmap(*pixmap());
 }
 
 

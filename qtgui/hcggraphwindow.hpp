@@ -40,6 +40,8 @@
 #include <QFileInfo>
 #include <QMenuBar>
 #include <QCheckBox>
+#include <QApplication>
+#include <QClipboard>
 #include <math.h>
 #include "hcgbasewindow.hpp"
 
@@ -161,7 +163,7 @@ class HCGGraphDisplay : public QLabel {
 
   private:
   QWidget *buttons;
-  QPushButton *zoomIn, *zoomOut, *editLabels;
+  QPushButton *zoomIn, *zoomOut, *editLabels, *copyToClipboard;
   double movex, movey;
   bool graphInitialized;
   bool enableZoomButtons;
@@ -188,6 +190,7 @@ class HCGGraphDisplay : public QLabel {
   void doZoomIn();
   void doZoomOut();
   void editLabelsDialog();
+  void copyGraphToClipboard();
   void setCurrentIndex(int type) {
     labelDialog->setCurrentIndex(type);
   };
