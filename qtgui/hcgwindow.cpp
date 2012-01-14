@@ -37,7 +37,10 @@ extern "C" void hcg_disp_rgb(unsigned int x, unsigned int y, void *data, int typ
 
 HCGWindow::HCGWindow() : HCGBaseWindow() {
   vbox = new QWidget(this);
-  scrollback = new QTextEdit("Welcome to HC! To evaluate an expression, type it below and press enter.",vbox);
+  scrollback = new QTextBrowser(vbox);
+  scrollback->setOpenExternalLinks(true);
+  insertAtEnd(PLAIN, "Welcome! Type an expression below and press enter.\n");
+  insertAtEnd(HTML, QString("Need a <a href=\"") + HC_QUICK_TUTORIAL_URL + QString("\">quick tutorial</a>?"));
   scrollback->document()->setMaximumBlockCount(MAX_SCROLLBACK_BLOCKS);
   scrollback->setReadOnly(TRUE);
   insertAtEnd(PLAIN,"\n");

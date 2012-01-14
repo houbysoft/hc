@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QTextEdit>
+#include <QTextBrowser>
 #include <QSettings>
 #include <QCloseEvent>
 #include <QList>
@@ -33,6 +33,11 @@
 #define PLAIN 0
 #define HTML 1
 #define MAX_SCROLLBACK_BLOCKS 2500
+#ifdef WIN32
+#define HC_QUICK_TUTORIAL_URL "http://houbysoft.com/hc/quicktutorial.php?system=windows"
+#else
+#define HC_QUICK_TUTORIAL_URL "http://houbysoft.com/hc/quicktutorial.php?system=linux"
+#endif
 
 
 class HCGWindow : public HCGBaseWindow {
@@ -46,7 +51,7 @@ class HCGWindow : public HCGBaseWindow {
   private:
   QWidget *vbox;
   QVBoxLayout *vbox_layout;
-  QTextEdit *scrollback;
+  QTextBrowser *scrollback;
   HCGinputline *inputline;
   QSettings *settings;
 
