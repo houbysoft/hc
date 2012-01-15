@@ -34,9 +34,9 @@
 #define HTML 1
 #define MAX_SCROLLBACK_BLOCKS 2500
 #ifdef WIN32
-#define HC_QUICK_TUTORIAL_URL "http://houbysoft.com/hc/quicktutorial.php?system=windows"
+#define HC_QUICK_TUTORIAL_URL "http://houbysoft.com/hc/quicktutorial.php?useros=windows"
 #else
-#define HC_QUICK_TUTORIAL_URL "http://houbysoft.com/hc/quicktutorial.php?system=linux"
+#define HC_QUICK_TUTORIAL_URL "http://houbysoft.com/hc/quicktutorial.php?useros=linux"
 #endif
 
 
