@@ -114,6 +114,9 @@ extern char hc_get_type(char *e);
 
 extern char hc_reim(char part, M_APM re, M_APM im, char *e);
 
+extern char *hc_tobin(char *);
+extern char *hc_tohex(char *);
+
 extern char *gamma_coefficients;
 
 #endif

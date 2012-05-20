@@ -99,5 +99,7 @@ test("matrix multiplication 2", [[ceil(pi)]] * [[floor(e^2) ]] == [[28]])
 pts = [[105.689,87.618,41.483], [105.095,82.959,43.597], [101.589, 85.165, 42.112], [102.455, 87.884, 45.551], [106.443, 86.009, 45.782]]
 d(a,b) = sqrt((a[0]-b[0])^2 + (a[1]-b[1])^2 + (a[2]-b[2])^2)
 test("distance formula", d(pts[0], pts[1]) == 5.1505449226271195)
+test("tohex()", tohex(0xDEADBEEF) == "0xDEADBEEF")
+test("tobin()", tobin(0b10101010101) == "0b10101010101")
 
 print("END OF TESTING. If no errors were reported, all tests passed successfully.")

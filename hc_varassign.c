@@ -1326,6 +1326,18 @@ char *hc_value(char *type, char *v_name, char *f_expr)
       {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
       break;
 
+    case HASH_TOBIN:
+      *type = HC_VAR_STR;
+      if ((f_result_str = hc_tobin(f_expr)) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
+    case HASH_TOHEX:
+      *type = HC_VAR_STR;
+      if ((f_result_str = hc_tohex(f_expr)) == NULL)
+      {m_apm_free(tmp_num_re); m_apm_free(tmp_num_im); m_apm_free(f_result_re); m_apm_free(f_result_im); return 0;}
+      break;
+
     default:
       success = FALSE;
       break;

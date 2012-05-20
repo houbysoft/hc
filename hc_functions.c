@@ -2498,6 +2498,60 @@ char *str_multiply(char *str, M_APM n)
 }
 
 
+char *hc_tobin(char *e) {
+  e = hc_result_(e);
+  if (!e)
+    return FAIL;
+  if (!is_positive_int(e)) {
+    free(e);
+    arg_error("tobin() only accepts positive integer arguments");
+  } else {
+    unsigned int tmp = atoi(e);
+    unsigned int r_size = 1 + 2 + sizeof(tmp) * 8 + 1 + 1;
+    char *r_orig = malloc(r_size);
+    char *r = r_orig;
+    if (!r) mem_error();
+
+    r += (r_size - 1);
+    *r-- = '\0';
+    *r-- = '\"';
+    for (int i = sizeof(tmp) * 8 - 1; i >= 0; i--) {
+      *r-- = (tmp & 1) + '0';
+      tmp >>= 1;
+    }
+    *r-- = 'b';
+    *r-- = '0';
+    *r-- = '\"';
+
+    // remove zeros
+    int i = 3;
+    while (r_orig[i] == '0' && r_orig[i+1] != '\0')
+      i++;
+
+    unsigned int len = 3 + strlen(r_orig+i);
+    memmove(r_orig + 3, r_orig + i, strlen(r_orig + i));
+    r_orig[len] = '\0';
+    return r_orig;
+  }
+}
+
+
+char *hc_tohex(char *e) {
+  e = hc_result_(e);
+  if (!e)
+    return FAIL;
+  if (!is_positive_int(e)) {
+    free(e);
+    arg_error("tohex() only accepts positive integer arguments");
+  } else {
+    unsigned int tmp = atoi(e);
+    char *r = malloc(1 + 2 + hc_need_space_int(tmp) + 1 + 1); // hc_need_space_int() gives space necessary for the decimal representation of its argument. Since the hexadecimal representation will always be smaller or the same length as the decimal representation, this can be safely used here.
+    if (!r) mem_error();
+    sprintf(r, "\"0x%X\"", tmp);
+    return r;
+  }
+}
+
 
 char *hc_2str(char *e)
 {

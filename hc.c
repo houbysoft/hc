@@ -120,6 +120,8 @@ const char *hc_names[][5] = {
   {"sum","func:expr,low,high","Functions/Math","\"sigma sum\" with x as the variable","'capital Sigma sum'. expr can contain 'x', which will be incremented from low to high inclusive.\n    Example:\n     * sum(x^2,1,5) == 55"},
   {"tan","func:x","Functions/Trigonometry","tangent of x",""},
   {"tanh","func:x","Functions/Trigonometry","hyperbolic tangent of x",""},
+  {"tobin","func:x","Functions/Misc","Show x in base 2","Shows a string containing the representation of x in base 2. For instance, tobin(5) would show \"0b101\"."},
+  {"tohex","func:x","Functions/Misc","Show x in base 16","Shows a string containing the representation of x in base 16. For instance, tohex(42) would show \"0x2A\"."},
   {"totient","func:x","Functions/Math","Euler's totient of x","Euler's totient function. An interesting application is primality testing, for example. If n is prime, totient(n) = n-1. For example, totient(422753)=422752."},
   {"while","func:condition,body","Programming","evaluates body while condition is true","executes body while condition holds.\n    Example:\n     * for a prime number x, totient(x)==x-1. We can use this property to find the first prime number starting from 1001:\n       n = 1001; while(totient(n)!=n-1, n+=2); n\n       The result would be 1009."},
   {"write","func:filename,element_1,element_2,...,element_n","Functions/Misc","same as print, but writes to file specified with filename","behaves like the print function (run help(\"print\") to learn more), but writes to the file specified with filename."},
