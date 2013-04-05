@@ -134,6 +134,7 @@ const char *hc_names[][5] = {
   {"g","cnst:9.80655","Constants","std gravitational acceleration on Earth",""},
   {"answer","cnst:42","Constants","H2G2","The Answer to Life, the Universe, and Everything. A constant that needs no explanation."},
   {"na","cnst:6.0221415e23","Constants","Avogadro constant",""},
+  {"ke","cnst:8987551787.3681764","Constants","Coulomb's constant",""},  
   // OTHERS
   {"help","cmd","#","",""},
   {"credits","cmd","#","",""},
